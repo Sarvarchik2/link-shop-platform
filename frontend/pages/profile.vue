@@ -143,12 +143,12 @@
               <h3>Профиль владельца магазина</h3>
               <p>Этот профиль предназначен для владельцев магазинов. Если вы хотите создать магазин, нажмите кнопку ниже.</p>
               <NuxtLink to="/register-shop" class="create-shop-btn">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <line x1="12" y1="5" x2="12" y2="19"></line>
                   <line x1="5" y1="12" x2="19" y2="12"></line>
-                </svg>
+            </svg>
                 Создать магазин
-              </NuxtLink>
+          </NuxtLink>
               <p class="redirect-note">
                 Если вы покупатель, перейдите в <NuxtLink to="/customer-profile" class="redirect-link">профиль покупателя</NuxtLink>
               </p>

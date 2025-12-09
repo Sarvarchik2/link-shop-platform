@@ -38,7 +38,7 @@
       </div>
     </nav>
 
-    <!-- Hero Section -->
+      <!-- Hero Section -->
     <section class="hero-section">
       <div class="container">
         <div class="hero-content">
@@ -160,8 +160,8 @@
               <li>✓ Интеграции с платежными системами</li>
             </ul>
             <NuxtLink to="/register-shop" class="pricing-button">Выбрать план</NuxtLink>
-          </div>
-          
+      </div>
+
           <div class="pricing-card">
             <div class="pricing-header">
               <h3 class="pricing-name">Профессиональный</h3>
@@ -225,9 +225,9 @@
             Посмотреть все магазины
           </NuxtLink>
         </div>
-      </div>
+        </div>
     </section>
-
+        
     <!-- CTA Section -->
     <section class="cta-section">
       <div class="container">
@@ -238,8 +238,8 @@
             Создать магазин бесплатно
           </NuxtLink>
         </div>
-      </div>
-    </section>
+        </div>
+      </section>
   </div>
 </template>
 

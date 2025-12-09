@@ -71,7 +71,7 @@ const handleLogin = async () => {
   
   loading.value = true
   try {
-    await login(phone.value, password.value)
+  await login(phone.value, password.value)
   } catch (e) {
     console.error('Login error details:', e)
     let errorMessage = 'Неверный номер телефона или пароль'

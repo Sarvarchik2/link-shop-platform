@@ -98,7 +98,7 @@ const handleRegister = async () => {
   
   loading.value = true
   try {
-    await register(phone.value, password.value, firstName.value, lastName.value)
+  await register(phone.value, password.value, firstName.value, lastName.value)
   } catch (e) {
     console.error('Register error details:', e)
     let errorMessage = 'Ошибка при регистрации. Этот номер телефона уже зарегистрирован.'

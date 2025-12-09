@@ -657,26 +657,26 @@ def toggle_shop_active(shop_id: int, is_active: bool, current_user: User = Depen
 @app.post("/register", response_model=Token)
 def register(user: UserCreate):
     try:
-        with Session(engine) as session:
-            existing_user = session.exec(select(User).where(User.phone == user.phone)).first()
-            if existing_user:
-                raise HTTPException(status_code=400, detail="Phone number already registered")
+    with Session(engine) as session:
+        existing_user = session.exec(select(User).where(User.phone == user.phone)).first()
+        if existing_user:
+            raise HTTPException(status_code=400, detail="Phone number already registered")
             
             if not user.phone or not user.password:
                 raise HTTPException(status_code=400, detail="Phone and password are required")
             
-            hashed_password = get_password_hash(user.password)
-            db_user = User(
-                phone=user.phone, 
-                password_hash=hashed_password,
+        hashed_password = get_password_hash(user.password)
+        db_user = User(
+            phone=user.phone, 
+            password_hash=hashed_password,
                 first_name=user.first_name or "",
                 last_name=user.last_name or ""
-            )
-            session.add(db_user)
-            session.commit()
-            session.refresh(db_user)
-            access_token = create_access_token(data={"sub": db_user.phone})
-            return {"access_token": access_token, "token_type": "bearer"}
+        )
+        session.add(db_user)
+        session.commit()
+        session.refresh(db_user)
+        access_token = create_access_token(data={"sub": db_user.phone})
+        return {"access_token": access_token, "token_type": "bearer"}
     except HTTPException:
         raise
     except Exception as e:
@@ -686,20 +686,20 @@ def register(user: UserCreate):
 @app.post("/token", response_model=Token)
 def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
     try:
-        with Session(engine) as session:
+    with Session(engine) as session:
             if not form_data.username or not form_data.password:
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
                     detail="Phone and password are required"
                 )
             
-            user = session.exec(select(User).where(User.phone == form_data.username)).first()
+        user = session.exec(select(User).where(User.phone == form_data.username)).first()
             if not user:
-                raise HTTPException(
-                    status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail="Incorrect phone or password",
-                    headers={"WWW-Authenticate": "Bearer"},
-                )
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Incorrect phone or password",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
             
             if not verify_password(form_data.password, user.password_hash):
                 raise HTTPException(
@@ -708,8 +708,8 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
                     headers={"WWW-Authenticate": "Bearer"},
                 )
             
-            access_token = create_access_token(data={"sub": user.phone})
-            return {"access_token": access_token, "token_type": "bearer"}
+        access_token = create_access_token(data={"sub": user.phone})
+        return {"access_token": access_token, "token_type": "bearer"}
     except HTTPException:
         raise
     except Exception as e:
@@ -954,7 +954,7 @@ def create_order(order_create: OrderCreate, shop_slug: Optional[str] = None, cur
             ))
 
         db_order = Order(
-            user_id=current_user.id,
+            user_id=current_user.id, 
             shop_id=shop_id,
             total_price=total_price, 
             status="pending",

@@ -18,7 +18,7 @@ export const useAuth = () => {
             token.value = data.access_token
             await fetchUser()
             useToast().success('Добро пожаловать!')
-            if (redirect) {
+        if (redirect) {
                 await navigateTo('/')
             }
         } catch (error) {
