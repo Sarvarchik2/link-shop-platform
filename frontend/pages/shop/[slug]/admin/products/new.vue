@@ -1,5 +1,5 @@
 <template>
-  <div class="add-product-page" v-if="shopSlug">
+  <div class="add-product-page">
     <div class="page-header">
       <NuxtLink :to="`/shop/${shopSlug}/admin/products`" class="back-btn">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
