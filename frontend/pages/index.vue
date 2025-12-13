@@ -560,7 +560,7 @@ const profileLink = computed(() => {
   if (!user.value) return '/login'
   if (user.value.role === 'platform_admin') return '/platform/admin'
   if (myShops.value && myShops.value.length > 0) return '/profile'
-  return '/customer-profile'
+  return '/profile'
 })
 
 // Animation states

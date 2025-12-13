@@ -1,4 +1,5 @@
 <template>
+  <div>
   <!-- Desktop Header -->
   <header class="header desktop-header">
     <div class="container">
@@ -14,8 +15,8 @@
 
         <!-- Navigation (Desktop only) -->
         <nav class="nav-links">
-          <NuxtLink to="/" class="nav-link">Главная</NuxtLink>
-          <NuxtLink to="/platform" class="nav-link">Магазины</NuxtLink>
+          <NuxtLink :to="homeLink" class="nav-link">Главная</NuxtLink>
+          <NuxtLink :to="shopProductsLink" class="nav-link">Магазин</NuxtLink>
           <NuxtLink v-if="user" to="/orders" class="nav-link">Заказы</NuxtLink>
         </nav>
 
@@ -104,41 +105,115 @@
       <span>Sevimlilar</span>
     </NuxtLink>
   </nav>
+  </div>
 </template>
 
 <script setup>
 const { totalItems } = useCart()
 const { user, token } = useAuth()
 
-// Get user's shops to determine profile link - only if authenticated
-const { data: myShops, refresh: refreshShops, error: shopsError } = await useFetch('http://localhost:8000/platform/shops/me', {
-  server: false,
-  headers: computed(() => ({
-    'Authorization': token.value ? `Bearer ${token.value}` : ''
-  })),
-  watch: [token],
-  immediate: false,
-  // Skip request if no token
-  lazy: true
+// Only fetch shops if user is shop_owner or platform_admin
+const shouldFetchShops = computed(() => {
+  return token.value && (user.value?.role === 'shop_owner' || user.value?.role === 'platform_admin')
 })
 
-// Обновляем список магазинов при изменении токена
-watch(token, async (newToken) => {
-  if (newToken) {
+const myShops = ref([])
+const shopsError = ref(null)
+
+const refreshShops = async () => {
+  // Дополнительная проверка перед запросом
+  if (!token.value || !user.value) {
+    myShops.value = []
+    return
+  }
+  
+  // Проверяем роль пользователя перед запросом
+  const userRole = user.value?.role
+  if (!userRole || (userRole !== 'shop_owner' && userRole !== 'platform_admin')) {
+    myShops.value = []
+    return
+  }
+  
+  shopsError.value = null
+  
+  try {
+    const shops = await $fetch('http://localhost:8000/platform/shops/me', {
+      headers: {
+        'Authorization': `Bearer ${token.value}`
+      }
+    })
+    myShops.value = shops || []
+  } catch (e) {
+    // Ignore 404 errors silently - user might not have shops
+    if (e?.statusCode !== 404) {
+      shopsError.value = e
+      console.error('[AppHeader] Ошибка загрузки магазинов:', e)
+    }
+    myShops.value = []
+  }
+}
+
+// Обновляем список магазинов при изменении токена/роли
+watch([token, user], async ([newToken, newUser]) => {
+  // Не делаем запрос, если нет токена или пользователя
+  if (!newToken || !newUser || !newUser.role) {
+    myShops.value = []
+    return
+  }
+  
+  // Проверяем роль перед запросом
+  const userRole = newUser.role
+  if (userRole === 'shop_owner' || userRole === 'platform_admin') {
+    await refreshShops()
+  } else {
+    myShops.value = []
+  }
+}, { immediate: false })
+
+// Обновляем при монтировании компонента
+onMounted(async () => {
+  // Если пользователь еще не загружен, загружаем его
+  if (token.value && !user.value) {
+    const { fetchUser } = useAuth()
     try {
-      await refreshShops()
+      await fetchUser()
     } catch (e) {
-      // Ignore errors - user might not have shops
-      console.log('[AppHeader] Не удалось загрузить магазины пользователя (это нормально, если у пользователя нет магазинов)')
+      console.error('[AppHeader] Ошибка загрузки пользователя:', e)
+      return
     }
   }
-}, { immediate: true })
-
-// Обработка ошибок загрузки магазинов
-watch(shopsError, (error) => {
-  if (error && error.statusCode !== 404) {
-    console.error('[AppHeader] Ошибка загрузки магазинов:', error)
+  
+  // Делаем запрос только если пользователь загружен и имеет нужную роль
+  if (token.value && user.value?.role) {
+    const userRole = user.value.role
+    if (userRole === 'shop_owner' || userRole === 'platform_admin') {
+      await refreshShops()
+    }
   }
+})
+
+const route = useRoute()
+
+// Determine home link - if on shop page, link to shop home, otherwise to platform home
+const homeLink = computed(() => {
+  // Check if we're on a shop page
+  const shopSlug = route.params.shop
+  if (shopSlug) {
+    return `/${shopSlug}`
+  }
+  // Otherwise link to platform home
+  return '/'
+})
+
+// Determine shop products link - if on shop page, link to its products, otherwise to platform
+const shopProductsLink = computed(() => {
+  // Check if we're on a shop page
+  const shopSlug = route.params.shop
+  if (shopSlug) {
+    return `/${shopSlug}/products`
+  }
+  // Otherwise link to platform (list of all shops)
+  return '/platform'
 })
 
 const getProfileLink = computed(() => {
@@ -155,7 +230,7 @@ const getProfileLink = computed(() => {
   }
   
   // Otherwise customer profile
-  return '/customer-profile'
+  return '/profile'
 })
 </script>
 

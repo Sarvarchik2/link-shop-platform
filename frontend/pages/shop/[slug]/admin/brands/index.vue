@@ -114,10 +114,9 @@
         </div>
   
         <div class="admin-content">
-          <div v-if="!brands || brands.length === 0" class="empty-state">
+          <div v-if="isEmpty" class="empty-state">
             <p>Бренды не найдены</p>
           </div>
-          
           <div v-else class="brands-grid">
             <div v-for="brand in brands" :key="brand.id" class="brand-card">
               <div class="brand-logo-wrapper">
@@ -161,6 +160,8 @@
       'Authorization': token.value ? `Bearer ${token.value}` : ''
     }))
   })
+  
+  const isEmpty = computed(() => !brands.value || brands.value.length === 0)
   
   watch(brands, (newBrands) => {
     if (newBrands) {

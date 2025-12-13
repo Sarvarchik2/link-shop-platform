@@ -3,6 +3,12 @@
     <AppHeader />
     
     <main class="container py-8">
+      <!-- Shop Name -->
+      <div v-if="shop" class="shop-header mb-8">
+        <h1 class="shop-name">{{ shop.name }}</h1>
+        <p v-if="shop.description" class="shop-description">{{ shop.description }}</p>
+      </div>
+      
       <!-- Hero Section -->
       <div v-if="banner" class="hero-card mb-8">
         <div class="hero-content">
@@ -82,6 +88,7 @@
 const route = useRoute()
 const shopSlug = route.params.shop
 
+const { data: shop } = await useFetch(`http://localhost:8000/platform/shops/${shopSlug}`, { server: false })
 const { data: banner } = await useFetch(`http://localhost:8000/banner?shop_slug=${shopSlug}`, { server: false })
 const { data: brands } = await useFetch(`http://localhost:8000/brands?shop_slug=${shopSlug}`, { server: false })
 const { data: products, pending } = await useFetch(`http://localhost:8000/products?shop_slug=${shopSlug}`, {
@@ -100,6 +107,30 @@ const featuredProducts = computed(() => {
   min-height: 100vh;
   background: #FAFAFA;
   padding-bottom: 100px;
+}
+
+.shop-header {
+  text-align: center;
+  padding: 32px 20px;
+  background: white;
+  border-radius: 24px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+  border: 1px solid #E5E7EB;
+}
+
+.shop-name {
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: #111;
+  margin-bottom: 12px;
+  letter-spacing: -0.5px;
+}
+
+.shop-description {
+  font-size: 1.125rem;
+  color: #6B7280;
+  margin: 0;
+  line-height: 1.6;
 }
 
 .hero-card {
@@ -318,6 +349,19 @@ const featuredProducts = computed(() => {
 }
 
 @media (max-width: 768px) {
+  .shop-header {
+    padding: 24px 16px;
+    border-radius: 16px;
+  }
+  
+  .shop-name {
+    font-size: 1.75rem;
+  }
+  
+  .shop-description {
+    font-size: 1rem;
+  }
+  
   .hero-card {
     padding: 32px 24px;
     min-height: 280px;

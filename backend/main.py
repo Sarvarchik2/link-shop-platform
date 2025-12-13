@@ -86,6 +86,55 @@ class SubscriptionUpdate(SQLModel):
     subscription_status: str
     expires_at: Optional[datetime] = None
 
+class SubscriptionPlan(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    name: str  # Название плана (Базовый, Профессиональный и т.д.)
+    slug: str = Field(index=True, unique=True)  # Уникальный идентификатор (basic, pro и т.д.)
+    price: float  # Цена в долларах
+    period_days: int = 30  # Период подписки в днях
+    description: Optional[str] = None  # Описание плана
+    features: Optional[str] = None  # JSON строка с списком функций ["Функция 1", "Функция 2"]
+    is_active: bool = True  # Активен ли план для покупки
+    is_trial: bool = False  # Является ли пробным периодом
+    display_order: int = 0  # Порядок отображения
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+class SubscriptionPlanCreate(SQLModel):
+    name: str
+    slug: str
+    price: float
+    period_days: int = 30
+    description: Optional[str] = None
+    features: Optional[List[str]] = None
+    is_active: bool = True
+    is_trial: bool = False
+    display_order: int = 0
+
+class SubscriptionPlanUpdate(SQLModel):
+    name: Optional[str] = None
+    slug: Optional[str] = None
+    price: Optional[float] = None
+    period_days: Optional[int] = None
+    description: Optional[str] = None
+    features: Optional[List[str]] = None
+    is_active: Optional[bool] = None
+    is_trial: Optional[bool] = None
+    display_order: Optional[int] = None
+
+class SubscriptionPlanRead(SQLModel):
+    id: int
+    name: str
+    slug: str
+    price: float
+    period_days: int
+    description: Optional[str] = None
+    features: Optional[str] = None  # JSON string
+    features_list: Optional[List[str]] = None  # Parsed features list
+    is_active: bool
+    is_trial: bool
+    display_order: int
+    created_at: datetime
+
 class Brand(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str
@@ -1377,6 +1426,195 @@ def get_all_users_platform(current_user: User = Depends(get_current_platform_adm
 def get_all_users(current_user: User = Depends(get_current_admin)):
     with Session(engine) as session:
         return session.exec(select(User)).all()
+
+# --- Subscription Plans Endpoints ---
+
+@app.get("/platform/admin/subscription-plans", response_model=List[SubscriptionPlanRead])
+def get_all_subscription_plans(current_user: User = Depends(get_current_platform_admin)):
+    """Get all subscription plans - only platform admin"""
+    import json
+    with Session(engine) as session:
+        plans = session.exec(select(SubscriptionPlan).order_by(SubscriptionPlan.display_order, SubscriptionPlan.id)).all()
+        result = []
+        for plan in plans:
+            features_list = None
+            if plan.features:
+                try:
+                    features_list = json.loads(plan.features)
+                except:
+                    features_list = []
+            result.append(SubscriptionPlanRead(
+                id=plan.id,
+                name=plan.name,
+                slug=plan.slug,
+                price=plan.price,
+                period_days=plan.period_days,
+                description=plan.description,
+                features=plan.features,
+                features_list=features_list,
+                is_active=plan.is_active,
+                is_trial=plan.is_trial,
+                display_order=plan.display_order,
+                created_at=plan.created_at
+            ))
+        return result
+
+@app.get("/subscription-plans", response_model=List[SubscriptionPlanRead])
+def get_active_subscription_plans():
+    """Get active subscription plans - public endpoint"""
+    import json
+    with Session(engine) as session:
+        plans = session.exec(
+            select(SubscriptionPlan)
+            .where(SubscriptionPlan.is_active == True)
+            .order_by(SubscriptionPlan.display_order, SubscriptionPlan.id)
+        ).all()
+        result = []
+        for plan in plans:
+            features_list = None
+            if plan.features:
+                try:
+                    features_list = json.loads(plan.features)
+                except:
+                    features_list = []
+            result.append(SubscriptionPlanRead(
+                id=plan.id,
+                name=plan.name,
+                slug=plan.slug,
+                price=plan.price,
+                period_days=plan.period_days,
+                description=plan.description,
+                features=plan.features,
+                features_list=features_list,
+                is_active=plan.is_active,
+                is_trial=plan.is_trial,
+                display_order=plan.display_order,
+                created_at=plan.created_at
+            ))
+        return result
+
+@app.post("/platform/admin/subscription-plans", response_model=SubscriptionPlanRead)
+def create_subscription_plan(plan_data: SubscriptionPlanCreate, current_user: User = Depends(get_current_platform_admin)):
+    """Create a new subscription plan - only platform admin"""
+    import json
+    with Session(engine) as session:
+        # Check if slug already exists
+        existing = session.exec(select(SubscriptionPlan).where(SubscriptionPlan.slug == plan_data.slug)).first()
+        if existing:
+            raise HTTPException(status_code=400, detail="Plan with this slug already exists")
+        
+        features_json = None
+        if plan_data.features:
+            features_json = json.dumps(plan_data.features)
+        
+        plan = SubscriptionPlan(
+            name=plan_data.name,
+            slug=plan_data.slug,
+            price=plan_data.price,
+            period_days=plan_data.period_days,
+            description=plan_data.description,
+            features=features_json,
+            is_active=plan_data.is_active,
+            is_trial=plan_data.is_trial,
+            display_order=plan_data.display_order
+        )
+        session.add(plan)
+        session.commit()
+        session.refresh(plan)
+        
+        features_list = None
+        if plan.features:
+            try:
+                features_list = json.loads(plan.features)
+            except:
+                features_list = []
+        
+        return SubscriptionPlanRead(
+            id=plan.id,
+            name=plan.name,
+            slug=plan.slug,
+            price=plan.price,
+            period_days=plan.period_days,
+            description=plan.description,
+            features=plan.features,
+            features_list=features_list,
+            is_active=plan.is_active,
+            is_trial=plan.is_trial,
+            display_order=plan.display_order,
+            created_at=plan.created_at
+        )
+
+@app.put("/platform/admin/subscription-plans/{plan_id}", response_model=SubscriptionPlanRead)
+def update_subscription_plan(plan_id: int, plan_data: SubscriptionPlanUpdate, current_user: User = Depends(get_current_platform_admin)):
+    """Update a subscription plan - only platform admin"""
+    import json
+    with Session(engine) as session:
+        plan = session.get(SubscriptionPlan, plan_id)
+        if not plan:
+            raise HTTPException(status_code=404, detail="Subscription plan not found")
+        
+        # Check slug uniqueness if changed
+        if plan_data.slug and plan_data.slug != plan.slug:
+            existing = session.exec(select(SubscriptionPlan).where(SubscriptionPlan.slug == plan_data.slug)).first()
+            if existing:
+                raise HTTPException(status_code=400, detail="Plan with this slug already exists")
+        
+        if plan_data.name is not None:
+            plan.name = plan_data.name
+        if plan_data.slug is not None:
+            plan.slug = plan_data.slug
+        if plan_data.price is not None:
+            plan.price = plan_data.price
+        if plan_data.period_days is not None:
+            plan.period_days = plan_data.period_days
+        if plan_data.description is not None:
+            plan.description = plan_data.description
+        if plan_data.features is not None:
+            plan.features = json.dumps(plan_data.features)
+        if plan_data.is_active is not None:
+            plan.is_active = plan_data.is_active
+        if plan_data.is_trial is not None:
+            plan.is_trial = plan_data.is_trial
+        if plan_data.display_order is not None:
+            plan.display_order = plan_data.display_order
+        
+        session.add(plan)
+        session.commit()
+        session.refresh(plan)
+        
+        features_list = None
+        if plan.features:
+            try:
+                features_list = json.loads(plan.features)
+            except:
+                features_list = []
+        
+        return SubscriptionPlanRead(
+            id=plan.id,
+            name=plan.name,
+            slug=plan.slug,
+            price=plan.price,
+            period_days=plan.period_days,
+            description=plan.description,
+            features=plan.features,
+            features_list=features_list,
+            is_active=plan.is_active,
+            is_trial=plan.is_trial,
+            display_order=plan.display_order,
+            created_at=plan.created_at
+        )
+
+@app.delete("/platform/admin/subscription-plans/{plan_id}")
+def delete_subscription_plan(plan_id: int, current_user: User = Depends(get_current_platform_admin)):
+    """Delete a subscription plan - only platform admin"""
+    with Session(engine) as session:
+        plan = session.get(SubscriptionPlan, plan_id)
+        if not plan:
+            raise HTTPException(status_code=404, detail="Subscription plan not found")
+        
+        session.delete(plan)
+        session.commit()
+        return {"message": "Subscription plan deleted successfully"}
 
 @app.get("/shop/{shop_slug}/admin/orders", response_model=List[OrderReadWithUser])
 def get_shop_orders(shop_slug: str, current_user: User = Depends(get_current_user)):

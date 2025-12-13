@@ -18,6 +18,33 @@
                 <span v-else>🏪 Владелец магазина</span>
               </p>
               
+              <!-- Links based on role -->
+              <div class="profile-role-links">
+                <NuxtLink 
+                  v-if="user?.role === 'platform_admin'" 
+                  to="/platform/admin" 
+                  class="role-link platform-link"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                    <path d="M2 17l10 5 10-5"></path>
+                    <path d="M2 12l10 5 10-5"></path>
+                  </svg>
+                  Открыть админку платформы
+                </NuxtLink>
+                <NuxtLink 
+                  v-else-if="myShops && myShops.length > 0" 
+                  :to="`/shop/${myShops[0].slug}/admin`" 
+                  class="role-link shop-link"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                  </svg>
+                  Мой магазин
+                </NuxtLink>
+              </div>
+              
               <!-- Desktop Quick Stats -->
               <div class="profile-stats">
                 <div class="stat-item">
@@ -121,19 +148,7 @@
                 </div>
               </div>
 
-              <div class="info-item">
-                <div class="info-icon">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-              </svg>
-            </div>
-                <div class="info-content">
-                  <span class="info-label">Hisob turi</span>
-                  <span class="info-value role-badge" :class="user?.role">
-                    {{ user?.role === 'admin' ? 'Administrator' : 'Mijoz' }}
-                  </span>
-                </div>
-              </div>
+             
             </div>
           </div>
 
@@ -279,28 +294,88 @@ definePageMeta({
 
 const { user, logout, token } = useAuth()
 
-const { data: myShops, refresh: refreshShops, pending: shopsPending } = await useFetch('http://localhost:8000/platform/shops/me', {
-  server: false,
-  headers: token.value ? {
-    'Authorization': `Bearer ${token.value}`
-  } : {},
-  watch: [token],
-  immediate: !!token.value,
-  lazy: true
+// Only fetch shops if user is shop_owner or platform_admin
+const shouldFetchShops = computed(() => {
+  return token.value && (user.value?.role === 'shop_owner' || user.value?.role === 'platform_admin')
 })
 
+const myShops = ref([])
+const shopsPending = ref(false)
+const shopsError = ref(null)
 
-// Обновляем список магазинов при загрузке страницы и при изменении токена
-watch(token, async (newToken) => {
-  if (newToken) {
-    await refreshShops()
+const refreshShops = async () => {
+  // Дополнительная проверка перед запросом
+  if (!token.value || !user.value) {
+    myShops.value = []
+    return
   }
-}, { immediate: true })
+  
+  // Проверяем роль пользователя перед запросом
+  const userRole = user.value?.role
+  if (!userRole || (userRole !== 'shop_owner' && userRole !== 'platform_admin')) {
+    myShops.value = []
+    return
+  }
+  
+  shopsPending.value = true
+  shopsError.value = null
+  
+  try {
+    const shops = await $fetch('http://localhost:8000/platform/shops/me', {
+      headers: {
+        'Authorization': `Bearer ${token.value}`
+      }
+    })
+    myShops.value = shops || []
+  } catch (e) {
+    // Ignore 404 errors silently - user might not have shops yet
+    if (e?.statusCode !== 404) {
+      shopsError.value = e
+      console.error('[Profile] Ошибка загрузки магазинов:', e)
+    }
+    myShops.value = []
+  } finally {
+    shopsPending.value = false
+  }
+}
+
+
+// Обновляем список магазинов при загрузке страницы и при изменении токена/роли
+watch([token, user], async ([newToken, newUser]) => {
+  // Не делаем запрос, если нет токена или пользователя
+  if (!newToken || !newUser || !newUser.role) {
+    myShops.value = []
+    return
+  }
+  
+  // Проверяем роль перед запросом
+  const userRole = newUser.role
+  if (userRole === 'shop_owner' || userRole === 'platform_admin') {
+    await refreshShops()
+  } else {
+    myShops.value = []
+  }
+}, { immediate: false })
 
 // Обновляем при монтировании компонента
 onMounted(async () => {
-  if (token.value) {
-    await refreshShops()
+  // Если пользователь еще не загружен, загружаем его
+  if (token.value && !user.value) {
+    const { fetchUser } = useAuth()
+    try {
+      await fetchUser()
+    } catch (e) {
+      console.error('[Profile] Ошибка загрузки пользователя:', e)
+      return
+    }
+  }
+  
+  // Делаем запрос только если пользователь загружен и имеет нужную роль
+  if (token.value && user.value?.role) {
+    const userRole = user.value.role
+    if (userRole === 'shop_owner' || userRole === 'platform_admin') {
+      await refreshShops()
+    }
   }
 })
 
@@ -433,6 +508,52 @@ const handleLogout = () => {
 .profile-role {
   font-size: 0.875rem;
   color: #6B7280;
+  margin-bottom: 16px;
+}
+
+.profile-role-links {
+  margin-top: 16px;
+}
+
+.role-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s;
+  width: 100%;
+  justify-content: center;
+}
+
+.role-link.platform-link {
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+.role-link.platform-link:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+}
+
+.role-link.shop-link {
+  background: #111;
+  color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.role-link.shop-link:hover {
+  background: #000;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.role-link svg {
+  flex-shrink: 0;
 }
 
 .profile-stats {
