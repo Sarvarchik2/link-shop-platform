@@ -156,7 +156,10 @@ const handleLogout = () => {
 
 const { data: categories, error, refresh } = await useFetch(`http://localhost:8000/categories?shop_slug=${shopSlug}`, {
   server: false,
-  lazy: true
+  lazy: true,
+  headers: computed(() => ({
+    'Authorization': token.value ? `Bearer ${token.value}` : ''
+  }))
 })
 
 watch(categories, (newCategories) => {

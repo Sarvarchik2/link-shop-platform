@@ -180,43 +180,29 @@ const handleLogout = () => {
 
 const { data: products, error, refresh } = await useFetch(`http://localhost:8000/products?shop_slug=${shopSlug}`, {
   server: false,
-  lazy: true
-})
-
-watch(products, (newProducts) => {
-  if (newProducts) {
-    console.log('[Products List] Товары загружены:', newProducts.length)
-  }
+  lazy: true,
+  headers: computed(() => ({
+    'Authorization': token.value ? `Bearer ${token.value}` : ''
+  }))
 })
 
 watch(error, (newError) => {
   if (newError) {
-    console.error('[Products List] Ошибка загрузки товаров:', newError.message)
-    console.error('[Products List] Детали ошибки:', {
-      statusCode: newError.statusCode,
-      data: newError.data
-    })
+    console.error('[Products List] Ошибка загрузки товаров:', newError)
   }
 })
 
 const deleteProduct = async (id) => {
   if (!confirm('Вы уверены, что хотите удалить этот товар?')) return
   try {
-    console.log('[Products List] Удаление товара:', id)
     await $fetch(`http://localhost:8000/products/${id}`, {
       method: 'DELETE',
       headers: { Authorization: `Bearer ${token.value}` }
     })
-    console.log('[Products List] Товар удален успешно')
     refresh()
     useToast().success('Товар удален')
   } catch (e) {
     console.error('[Products List] Ошибка при удалении товара:', e)
-    console.error('[Products List] Детали ошибки:', {
-      message: e.message,
-      statusCode: e.statusCode,
-      data: e.data
-    })
     useToast().error(e.data?.detail || e.message || 'Ошибка при удалении товара')
   }
 }

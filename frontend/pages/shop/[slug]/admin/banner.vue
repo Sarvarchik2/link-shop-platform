@@ -207,7 +207,10 @@ const form = ref({
 
 // Fetch current banner
 const { data: banner } = await useFetch(`http://localhost:8000/banner?shop_slug=${shopSlug}`, {
-  server: false
+  server: false,
+  headers: {
+    'Authorization': `Bearer ${token.value}`
+  }
 })
 
 watch(banner, (newBanner) => {

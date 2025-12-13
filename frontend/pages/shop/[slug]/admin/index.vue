@@ -427,9 +427,7 @@ const { data: stats, pending, refresh, error } = await useFetch(`http://localhos
 })
 
 watch(stats, (newStats) => {
-  if (newStats) {
-    console.log('[Shop Admin Dashboard] Статистика загружена:', newStats)
-  }
+  // Stats loaded
 })
 
 watch(error, (newError) => {

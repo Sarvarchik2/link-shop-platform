@@ -1,5 +1,5 @@
 <template>
-  <div class="add-product-page">
+  <div class="add-product-page" v-if="shopSlug">
     <div class="page-header">
       <NuxtLink :to="`/shop/${shopSlug}/admin/products`" class="back-btn">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -148,6 +148,10 @@
       </form>
     </div>
   </div>
+  <div v-else class="error-state">
+    <p>Ошибка: не удалось загрузить информацию о магазине</p>
+    <NuxtLink to="/profile" class="btn btn-primary">Вернуться в профиль</NuxtLink>
+  </div>
 </template>
 
 <script setup>
@@ -159,11 +163,26 @@ definePageMeta({
 console.log('[Add Product] Страница загружается...')
 
 const route = useRoute()
-const shopSlug = route.params.slug
-console.log('[Add Product] Shop slug:', shopSlug)
+const shopSlug = computed(() => {
+  const slug = route.params.slug
+  console.log('[Add Product] Shop slug из route:', slug)
+  if (!slug) {
+    console.error('[Add Product] ОШИБКА: shop slug не найден в route.params')
+  }
+  return slug
+})
+console.log('[Add Product] Shop slug:', shopSlug.value)
 
 const { token } = useAuth()
 console.log('[Add Product] Token:', token.value ? 'есть' : 'нет')
+
+// Проверка что все необходимое загружено
+onMounted(() => {
+  console.log('[Add Product] Компонент смонтирован, shopSlug:', shopSlug.value)
+  if (!shopSlug.value) {
+    console.error('[Add Product] КРИТИЧЕСКАЯ ОШИБКА: shopSlug отсутствует!')
+  }
+})
 
 const loading = ref(false)
 const uploadingImages = ref(false)
@@ -171,20 +190,34 @@ const brands = ref([])
 const categories = ref([])
 const brandsError = ref(null)
 const categoriesError = ref(null)
+const toast = useToast()
 
 onMounted(async () => {
-  console.log('[Add Product] Компонент смонтирован')
+  console.log('[Add Product] Компонент смонтирован, shopSlug:', shopSlug.value)
+  
+  if (!shopSlug.value) {
+    console.error('[Add Product] ОШИБКА: shopSlug отсутствует, невозможно загрузить данные')
+    return
+  }
   
   // Загружаем данные после монтирования
   try {
-    console.log('[Add Product] Загрузка брендов и категорий...')
+    console.log('[Add Product] Загрузка брендов и категорий для shop:', shopSlug.value)
     const [brandsData, categoriesData] = await Promise.all([
-      $fetch(`http://localhost:8000/brands?shop_slug=${shopSlug}`).catch(e => {
+      $fetch(`http://localhost:8000/brands?shop_slug=${shopSlug.value}`, {
+        headers: {
+          'Authorization': `Bearer ${token.value}`
+        }
+      }).catch(e => {
         console.error('[Add Product] Ошибка загрузки брендов:', e)
         brandsError.value = e
         return []
       }),
-      $fetch(`http://localhost:8000/categories?shop_slug=${shopSlug}`).catch(e => {
+      $fetch(`http://localhost:8000/categories?shop_slug=${shopSlug.value}`, {
+        headers: {
+          'Authorization': `Bearer ${token.value}`
+        }
+      }).catch(e => {
         console.error('[Add Product] Ошибка загрузки категорий:', e)
         categoriesError.value = e
         return []
@@ -292,8 +325,6 @@ const form = reactive({
   description: ''
 })
 
-const toast = useToast()
-
 const handleSubmit = async () => {
   if (uploadedImages.value.length === 0) {
     toast.warning('Пожалуйста, добавьте хотя бы одно изображение')
@@ -319,9 +350,14 @@ const handleSubmit = async () => {
     }
     
     console.log('[Add Product] Отправка данных:', productData)
-    console.log('[Add Product] Shop slug:', shopSlug)
+    console.log('[Add Product] Shop slug:', shopSlug.value)
     
-    const response = await $fetch(`http://localhost:8000/products?shop_slug=${shopSlug}`, {
+    if (!shopSlug.value) {
+      toast.error('Ошибка: не указан магазин')
+      return
+    }
+    
+    const response = await $fetch(`http://localhost:8000/products?shop_slug=${shopSlug.value}`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${token.value}` },
       body: productData
@@ -329,7 +365,7 @@ const handleSubmit = async () => {
     
     console.log('[Add Product] Товар создан успешно:', response)
     toast.success('Товар успешно создан!')
-    navigateTo(`/shop/${shopSlug}/admin/products`)
+    navigateTo(`/shop/${shopSlug.value}/admin/products`)
   } catch (e) {
     console.error('[Add Product] Ошибка при создании товара:', e)
     console.error('[Add Product] Детали ошибки:', {
@@ -723,6 +759,22 @@ const handleSubmit = async () => {
 
 .btn-secondary:hover {
   background: #E5E7EB;
+}
+
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 40px;
+  text-align: center;
+}
+
+.error-state p {
+  font-size: 1.25rem;
+  color: #EF4444;
+  margin-bottom: 24px;
 }
 
 @media (max-width: 768px) {

@@ -305,10 +305,10 @@ async def get_current_platform_admin(current_user: User = Depends(get_current_us
         raise HTTPException(status_code=403, detail="Not authorized")
     return current_user
 
-def get_shop_owner_or_admin(shop_slug: str, current_user: User):
+def get_shop_owner_or_admin(shop_slug: str, current_user: User, check_subscription: bool = False):
     """Check if user is shop owner or platform admin"""
     # Don't check subscription here -> owners need access to manage/renew even if expired
-    shop = get_shop_by_slug(shop_slug, check_subscription=False)
+    shop = get_shop_by_slug(shop_slug, check_subscription=check_subscription)
     
     if current_user.role == "platform_admin":
         return shop
@@ -734,11 +734,11 @@ def read_users_me(current_user: User = Depends(get_current_user)):
     return current_user
 
 @app.get("/products", response_model=List[Product])
-def get_products(category: Optional[str] = None, brand: Optional[str] = None, shop_slug: Optional[str] = None):
+def get_products(category: Optional[str] = Query(None), brand: Optional[str] = Query(None), shop_slug: Optional[str] = Query(None)):
     with Session(engine) as session:
         statement = select(Product)
         if shop_slug:
-            shop = get_shop_by_slug(shop_slug)
+            shop = get_shop_by_slug(shop_slug, check_subscription=False)
             statement = statement.where(Product.shop_id == shop.id)
         if category:
             statement = statement.where(Product.category == category)
@@ -894,11 +894,11 @@ def toggle_favorite(product_id: int):
 # --- Brand & Category Endpoints ---
 
 @app.get("/brands", response_model=List[Brand])
-def get_brands(shop_slug: Optional[str] = None):
+def get_brands(shop_slug: Optional[str] = Query(None)):
     with Session(engine) as session:
         statement = select(Brand)
         if shop_slug:
-            shop = get_shop_by_slug(shop_slug)
+            shop = get_shop_by_slug(shop_slug, check_subscription=False)
             statement = statement.where(Brand.shop_id == shop.id)
         return session.exec(statement).all()
 
@@ -942,11 +942,11 @@ def delete_brand(brand_id: int, current_user: User = Depends(get_current_user)):
         return {"ok": True}
 
 @app.get("/categories", response_model=List[Category])
-def get_categories(shop_slug: Optional[str] = None):
+def get_categories(shop_slug: Optional[str] = Query(None)):
     with Session(engine) as session:
         statement = select(Category)
         if shop_slug:
-            shop = get_shop_by_slug(shop_slug)
+            shop = get_shop_by_slug(shop_slug, check_subscription=False)
             statement = statement.where(Category.shop_id == shop.id)
         return session.exec(statement).all()
 
@@ -1458,7 +1458,7 @@ def update_order_status(order_id: int, status_update: OrderStatusUpdate, current
 # --- Banner Endpoints ---
 
 @app.get("/banner", response_model=Banner)
-def get_banner(shop_slug: Optional[str] = None):
+def get_banner(shop_slug: Optional[str] = Query(None)):
     with Session(engine) as session:
         # Default banner data
         default_banner = Banner(
@@ -1490,7 +1490,7 @@ def get_banner(shop_slug: Optional[str] = None):
             return banner or default_banner
 
 @app.put("/banner", response_model=Banner)
-def update_banner(banner_update: BannerUpdate, shop_slug: Optional[str] = None, current_user: User = Depends(get_current_user)):
+def update_banner(banner_update: BannerUpdate, shop_slug: Optional[str] = Query(None), current_user: User = Depends(get_current_user)):
     with Session(engine) as session:
         shop_id = None
         if shop_slug:
