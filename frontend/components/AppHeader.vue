@@ -110,22 +110,36 @@
 const { totalItems } = useCart()
 const { user, token } = useAuth()
 
-// Get user's shops to determine profile link
-const { data: myShops, refresh: refreshShops } = await useFetch('http://localhost:8000/platform/shops/me', {
+// Get user's shops to determine profile link - only if authenticated
+const { data: myShops, refresh: refreshShops, error: shopsError } = await useFetch('http://localhost:8000/platform/shops/me', {
   server: false,
-  headers: token.value ? {
-    'Authorization': `Bearer ${token.value}`
-  } : {},
+  headers: computed(() => ({
+    'Authorization': token.value ? `Bearer ${token.value}` : ''
+  })),
   watch: [token],
-  immediate: false
+  immediate: false,
+  // Skip request if no token
+  lazy: true
 })
 
 // Обновляем список магазинов при изменении токена
 watch(token, async (newToken) => {
   if (newToken) {
-    await refreshShops()
+    try {
+      await refreshShops()
+    } catch (e) {
+      // Ignore errors - user might not have shops
+      console.log('[AppHeader] Не удалось загрузить магазины пользователя (это нормально, если у пользователя нет магазинов)')
+    }
   }
 }, { immediate: true })
+
+// Обработка ошибок загрузки магазинов
+watch(shopsError, (error) => {
+  if (error && error.statusCode !== 404) {
+    console.error('[AppHeader] Ошибка загрузки магазинов:', error)
+  }
+})
 
 const getProfileLink = computed(() => {
   if (!user.value) return '/login'

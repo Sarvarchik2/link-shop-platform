@@ -1,959 +1,722 @@
 <template>
-  <div class="landing-page">
-    <!-- Navigation Bar -->
-    <nav class="platform-navbar">
-      <div class="container">
-        <div class="nav-content">
-          <NuxtLink to="/" class="nav-logo">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
-              <line x1="1" y1="10" x2="23" y2="10"></line>
-            </svg>
-            <span>Link Shop Platform</span>
+  <div class="antialiased selection:bg-zinc-900 selection:text-white">
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 glass border-b border-zinc-100/50 transition-all duration-300">
+      <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+        <div class="flex items-center gap-8">
+          <NuxtLink to="/" class="text-lg font-semibold tracking-tight flex items-center gap-2">
+            <div class="w-5 h-5 bg-black rounded-md flex items-center justify-center text-white">
+              <iconify-icon icon="lucide:box" width="12"></iconify-icon>
+            </div>
+            LinkShop
           </NuxtLink>
-          
-          <div class="nav-links">
-            <NuxtLink to="/" class="nav-link">Главная</NuxtLink>
-            <NuxtLink to="/platform" class="nav-link">Магазины</NuxtLink>
-            <NuxtLink to="/register-shop" class="nav-link">Создать магазин</NuxtLink>
+          <div class="hidden md:flex items-center gap-6 text-sm font-medium text-zinc-500">
+            <a href="#features" class="hover:text-black transition-colors">Функции</a>
+            <a href="#solutions" class="hover:text-black transition-colors">Решения</a>
+            <a href="#pricing" class="hover:text-black transition-colors">Цены</a>
+            <a href="#clients" class="hover:text-black transition-colors">Клиенты</a>
           </div>
-          
-          <div class="nav-actions">
-            <template v-if="token || user">
-              <button @click="goToProfile" class="nav-btn profile-btn">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                  <circle cx="12" cy="7" r="4"></circle>
-                </svg>
-                Профиль
-              </button>
-            </template>
-            
-            <template v-else>
-              <NuxtLink to="/login" class="nav-btn login-btn">Войти</NuxtLink>
-              <NuxtLink to="/register" class="nav-btn register-btn">Зарегистрироваться</NuxtLink>
-            </template>
-          </div>
+        </div>
+        <div class="flex items-center gap-4">
+          <NuxtLink v-if="!user" to="/login" class="text-sm font-medium text-zinc-500 hover:text-black transition-colors">Войти</NuxtLink>
+          <NuxtLink v-else :to="profileLink" class="text-sm font-medium text-zinc-500 hover:text-black transition-colors">Профиль</NuxtLink>
+          <NuxtLink to="/register-shop" class="bg-black text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-zinc-800 transition-all shadow-lg shadow-zinc-200/50">
+            Создать магазин
+          </NuxtLink>
         </div>
       </div>
     </nav>
 
       <!-- Hero Section -->
-    <section class="hero-section">
-      <div class="container">
-        <div class="hero-content">
-          <h1 class="hero-title">Создайте свой интернет-магазин за минуты</h1>
-          <p class="hero-subtitle">
-            Link Shop Platform - это современная платформа для создания и управления интернет-магазинами. 
-            Начните продавать онлайн уже сегодня!
+    <section class="relative pt-32 pb-20 overflow-hidden perspective-container">
+      <!-- Background Gradients -->
+      <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-gradient-to-b from-zinc-100/50 to-transparent rounded-[100%] blur-3xl -z-10 opacity-60"></div>
+
+      <div class="max-w-5xl mx-auto px-6 text-center z-10 relative">
+        <div :class="['reveal', { active: heroRevealed }]">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-50 border border-zinc-200 text-xs font-medium text-zinc-600 mb-8 animate-float">
+            <span class="relative flex h-2 w-2">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+            </span>
+            LinkShop 2.0 уже доступен
+          </div>
+
+          <h1 class="text-5xl md:text-7xl font-semibold tracking-tight text-zinc-900 mb-8 leading-[1.1]">
+            Ваш магазин. Мгновенно. <br>
+            <span class="text-zinc-400">Профессионально.</span>
+          </h1>
+
+          <p class="text-lg md:text-xl text-zinc-500 max-w-2xl mx-auto mb-10 leading-relaxed font-normal">
+            Единая платформа для управления продажами, складом и аналитикой. Замените Excel таблицы и рутину на
+            интеллектуальную автоматизацию Commerce OS.
           </p>
-          <div class="hero-actions">
-            <NuxtLink to="/register-shop" class="btn-primary">
-              Создать магазин
+
+          <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-20">
+            <NuxtLink to="/register-shop" class="w-full sm:w-auto px-8 py-3.5 bg-black text-white rounded-full font-medium shadow-xl shadow-zinc-900/10 hover:shadow-2xl hover:bg-zinc-800 transition-all flex items-center justify-center gap-2 group">
+              Начать бесплатно
+              <iconify-icon icon="lucide:arrow-right" class="group-hover:translate-x-1 transition-transform"></iconify-icon>
             </NuxtLink>
-            <NuxtLink to="/platform" class="btn-secondary">
-              Посмотреть магазины
-            </NuxtLink>
+            <button class="w-full sm:w-auto px-8 py-3.5 bg-white border border-zinc-200 text-zinc-700 rounded-full font-medium hover:bg-zinc-50 hover:border-zinc-300 transition-all flex items-center justify-center gap-2">
+              <iconify-icon icon="lucide:play-circle" width="18"></iconify-icon>
+              Демо видео
+            </button>
           </div>
         </div>
-        <div class="hero-image">
-          <div class="hero-visual">
-            <div class="floating-card card-1">🛍️</div>
-            <div class="floating-card card-2">📦</div>
-            <div class="floating-card card-3">💳</div>
+
+        <!-- Hero Dashboard Visual -->
+        <div 
+          ref="heroDashboard"
+          class="relative mx-auto w-full max-w-[1000px] aspect-[16/10] bg-white rounded-xl border border-zinc-200 shadow-2xl overflow-hidden transition-transform duration-100 ease-out origin-bottom select-none">
+          <!-- Browser Header -->
+          <div class="h-8 bg-zinc-50 border-b border-zinc-100 flex items-center px-4 gap-2">
+            <div class="flex gap-1.5">
+              <div class="w-2.5 h-2.5 rounded-full bg-zinc-300"></div>
+              <div class="w-2.5 h-2.5 rounded-full bg-zinc-300"></div>
+              <div class="w-2.5 h-2.5 rounded-full bg-zinc-300"></div>
+            </div>
+            <div class="mx-auto w-1/3 h-4 bg-white rounded flex items-center justify-center text-[10px] text-zinc-400 font-medium shadow-sm border border-zinc-100">
+              linkshop.uz/dashboard
+            </div>
+          </div>
+
+          <!-- Dashboard Content Placeholder (High Density) -->
+          <div class="p-6 grid grid-cols-4 gap-6 h-full bg-zinc-50/30">
+            <!-- Sidebar -->
+            <div class="hidden md:flex col-span-1 flex-col gap-2 border-r border-zinc-100 pr-4">
+              <div class="h-8 w-full bg-zinc-100 rounded mb-4"></div>
+              <div class="h-6 w-3/4 bg-zinc-100 rounded"></div>
+              <div class="h-6 w-full bg-zinc-100 rounded"></div>
+              <div class="h-6 w-5/6 bg-zinc-100 rounded"></div>
+              <div class="mt-auto h-20 w-full bg-zinc-100 rounded"></div>
+            </div>
+            <!-- Main Area -->
+            <div class="col-span-4 md:col-span-3 flex flex-col gap-6">
+              <!-- Stats Row -->
+              <div class="grid grid-cols-3 gap-4">
+                <div class="bg-white p-4 rounded-lg border border-zinc-100 shadow-sm">
+                  <div class="text-xs text-zinc-400 mb-1">Total Revenue</div>
+                  <div class="text-2xl font-semibold text-zinc-900">$12,402</div>
+                  <div class="mt-2 h-1 w-full bg-zinc-100 rounded-full overflow-hidden">
+                    <div class="h-full w-[70%] bg-zinc-900 rounded-full"></div>
+                  </div>
+                </div>
+                <div class="bg-white p-4 rounded-lg border border-zinc-100 shadow-sm">
+                  <div class="text-xs text-zinc-400 mb-1">Orders</div>
+                  <div class="text-2xl font-semibold text-zinc-900">156</div>
+                  <div class="mt-2 h-1 w-full bg-zinc-100 rounded-full overflow-hidden">
+                    <div class="h-full w-[45%] bg-zinc-900 rounded-full"></div>
+                  </div>
+                </div>
+                <div class="bg-white p-4 rounded-lg border border-zinc-100 shadow-sm">
+                  <div class="text-xs text-zinc-400 mb-1">Active Now</div>
+                  <div class="text-2xl font-semibold text-zinc-900">24</div>
+                  <div class="flex gap-1 mt-2">
+                    <div class="h-4 w-1 bg-green-400 rounded-full"></div>
+                    <div class="h-2 w-1 bg-green-200 rounded-full"></div>
+                    <div class="h-3 w-1 bg-green-300 rounded-full"></div>
+                  </div>
+                </div>
+              </div>
+              <!-- Chart Area -->
+              <div class="flex-1 bg-white rounded-lg border border-zinc-100 shadow-sm p-6 relative overflow-hidden">
+                <div class="flex justify-between items-center mb-6">
+                  <div class="h-4 w-32 bg-zinc-100 rounded"></div>
+                  <div class="h-8 w-24 bg-zinc-50 rounded border border-zinc-100"></div>
+                </div>
+                <!-- Simulated Chart Line -->
+                <svg class="w-full h-[200px] text-zinc-900" preserveAspectRatio="none">
+                  <path
+                    d="M0,150 C50,150 50,100 100,100 C150,100 150,180 200,180 C250,180 250,40 300,40 C350,40 350,120 400,120 C450,120 450,80 500,80 C550,80 550,160 600,160 C650,160 650,20 700,20"
+                    fill="none" stroke="currentColor" stroke-width="2"
+                    vector-effect="non-scaling-stroke" opacity="0.8" />
+                  <defs>
+                    <linearGradient id="gradient" x1="0" x2="0" y1="0" y2="1">
+                      <stop offset="0%" stop-color="rgba(0,0,0,0.1)" />
+                      <stop offset="100%" stop-color="rgba(0,0,0,0)" />
+                    </linearGradient>
+                  </defs>
+                  <path
+                    d="M0,150 C50,150 50,100 100,100 C150,100 150,180 200,180 C250,180 250,40 300,40 C350,40 350,120 400,120 C450,120 450,80 500,80 C550,80 550,160 600,160 C650,160 650,20 700,20 V200 H0 Z"
+                    fill="url(#gradient)" stroke="none" />
+                </svg>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Features Section -->
-    <section class="features-section">
-      <div class="container">
-        <h2 class="section-title">Почему выбирают нас?</h2>
-        <div class="features-grid">
-          <div class="feature-card">
-            <div class="feature-icon">⚡</div>
-            <h3 class="feature-title">Быстрый старт</h3>
-            <p class="feature-description">
-              Создайте магазин за несколько минут. Не нужно настраивать серверы или писать код.
-            </p>
+    <!-- Trusted By Section -->
+    <section id="clients" class="py-12 border-b border-zinc-100">
+      <div class="max-w-7xl mx-auto px-6 text-center">
+        <p class="text-sm font-medium text-zinc-500 mb-8">ВЫБОР СОВРЕМЕННЫХ БРЕНДОВ</p>
+        <div class="flex flex-wrap justify-center items-center gap-12 md:gap-20 opacity-40 grayscale hover:grayscale-0 transition-all duration-500">
+          <!-- Simple Geometric Logo Placeholders -->
+          <div class="h-8 w-24 bg-zinc-800 rounded mask-logo flex items-center justify-center font-bold text-white text-xs tracking-widest">
+            ACME
           </div>
-          
-          <div class="feature-card">
-            <div class="feature-icon">💰</div>
-            <h3 class="feature-title">Гибкие подписки</h3>
-            <p class="feature-description">
-              Пробный период 30 дней. Выберите план, который подходит именно вам.
-            </p>
+          <div class="h-8 w-24 bg-zinc-800 rounded mask-logo flex items-center justify-center font-bold text-white text-xs tracking-widest">
+            ORBIT
           </div>
-          
-          <div class="feature-card">
-            <div class="feature-icon">🎨</div>
-            <h3 class="feature-title">Свой домен</h3>
-            <p class="feature-description">
-              Ваш магазин будет доступен по уникальному адресу: link-platform-shop.uz/ваш-магазин
-            </p>
+          <div class="h-8 w-24 bg-zinc-800 rounded mask-logo flex items-center justify-center font-bold text-white text-xs tracking-widest">
+            WAVE
           </div>
-          
-          <div class="feature-card">
-            <div class="feature-icon">📊</div>
-            <h3 class="feature-title">Аналитика</h3>
-            <p class="feature-description">
-              Полная статистика продаж, заказов и клиентов в удобной админ-панели.
-            </p>
+          <div class="h-8 w-24 bg-zinc-800 rounded mask-logo flex items-center justify-center font-bold text-white text-xs tracking-widest">
+            LUMEN
           </div>
-          
-          <div class="feature-card">
-            <div class="feature-icon">🔒</div>
-            <h3 class="feature-title">Безопасность</h3>
-            <p class="feature-description">
-              Все данные защищены. Регулярные резервные копии и SSL-шифрование.
-            </p>
-          </div>
-          
-          <div class="feature-card">
-            <div class="feature-icon">📱</div>
-            <h3 class="feature-title">Мобильная версия</h3>
-            <p class="feature-description">
-              Ваш магазин автоматически адаптируется под все устройства.
-            </p>
+          <div class="h-8 w-24 bg-zinc-800 rounded mask-logo flex items-center justify-center font-bold text-white text-xs tracking-widest">
+            PROTA
           </div>
         </div>
       </div>
+    </section>
+
+    <!-- Bento Grid Section -->
+    <section id="features" class="py-32 bg-zinc-50/50">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="mb-20 max-w-2xl reveal" :class="{ active: featuresRevealed }">
+          <h2 class="text-3xl md:text-5xl font-semibold tracking-tight text-zinc-900 mb-6">Всё, что нужно для
+            роста. <br>В одной системе.</h2>
+          <p class="text-lg text-zinc-500">Наш набор инструментов покрывает каждый аспект современной электронной
+            коммерции.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[minmax(300px,auto)]">
+          <!-- Card 1: Inventory (Wide) -->
+          <div class="md:col-span-2 bg-white rounded-2xl border border-zinc-200/80 p-8 shadow-sm hover:shadow-xl transition-all duration-300 group overflow-hidden relative reveal" :class="{ active: featuresRevealed }">
+            <div class="relative z-10">
+              <div class="w-10 h-10 rounded-lg bg-zinc-100 flex items-center justify-center mb-6 text-zinc-700">
+                <iconify-icon icon="lucide:layers" width="20"></iconify-icon>
+              </div>
+              <h3 class="text-xl font-semibold mb-2">Умный склад</h3>
+              <p class="text-zinc-500 text-sm max-w-sm">Отслеживание остатков в реальном времени.
+                Автоматические уведомления о низком запасе.</p>
+            </div>
+
+            <!-- Visual Widget: Table -->
+            <div class="absolute right-0 bottom-0 w-3/4 md:w-1/2 h-4/5 bg-zinc-50 border-t border-l border-zinc-200 rounded-tl-2xl p-6 shadow-inner group-hover:scale-[1.02] transition-transform duration-500 origin-bottom-right">
+              <table class="w-full text-xs text-left">
+                <thead class="text-zinc-400 border-b border-zinc-200">
+                  <tr>
+                    <th class="pb-2 font-medium">SKU</th>
+                    <th class="pb-2 font-medium">Товар</th>
+                    <th class="pb-2 font-medium">Stock</th>
+                    <th class="pb-2 font-medium text-right">Status</th>
+                  </tr>
+                </thead>
+                <tbody class="text-zinc-700">
+                  <tr class="border-b border-zinc-100">
+                    <td class="py-3 font-mono text-[10px] text-zinc-400">#8021</td>
+                    <td class="py-3 font-medium">Cotton Tee</td>
+                    <td class="py-3">124</td>
+                    <td class="py-3 text-right">
+                      <span class="bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-[10px]">OK</span>
+                    </td>
+                  </tr>
+                  <tr class="border-b border-zinc-100">
+                    <td class="py-3 font-mono text-[10px] text-zinc-400">#8022</td>
+                    <td class="py-3 font-medium">Linen Pants</td>
+                    <td class="py-3">12</td>
+                    <td class="py-3 text-right">
+                      <span class="bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full text-[10px]">Low</span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="py-3 font-mono text-[10px] text-zinc-400">#8023</td>
+                    <td class="py-3 font-medium">Wool Hat</td>
+                    <td class="py-3">0</td>
+                    <td class="py-3 text-right">
+                      <span class="bg-red-100 text-red-700 px-2 py-0.5 rounded-full text-[10px]">Out</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Card 2: Analytics -->
+          <div class="md:col-span-1 bg-white rounded-2xl border border-zinc-200/80 p-8 shadow-sm hover:shadow-xl transition-all duration-300 group overflow-hidden relative reveal" :class="{ active: featuresRevealed }">
+            <div class="relative z-10">
+              <div class="w-10 h-10 rounded-lg bg-zinc-100 flex items-center justify-center mb-6 text-zinc-700">
+                <iconify-icon icon="lucide:bar-chart-2" width="20"></iconify-icon>
+              </div>
+              <h3 class="text-xl font-semibold mb-2">Аналитика</h3>
+              <p class="text-zinc-500 text-sm">Глубокие инсайты.</p>
+            </div>
+
+            <!-- Visual Widget: Chart -->
+            <div class="absolute bottom-6 left-6 right-6 h-32 group-hover:scale-105 transition-transform duration-500">
+              <svg class="w-full h-full overflow-visible" viewBox="0 0 100 50" preserveAspectRatio="none">
+                <path d="M0,50 L20,35 L40,42 L60,15 L80,25 L100,5" fill="none" stroke="black"
+                  stroke-width="1.5" class="animate-draw" />
+                <circle cx="100" cy="5" r="3" fill="white" stroke="black" stroke-width="1.5" />
+              </svg>
+            </div>
+          </div>
+
+          <!-- Card 3: Speed -->
+          <div class="md:col-span-1 bg-zinc-900 text-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 group overflow-hidden relative reveal" :class="{ active: featuresRevealed }">
+            <div class="relative z-10">
+              <div class="w-10 h-10 rounded-lg bg-zinc-800 flex items-center justify-center mb-6 text-white border border-zinc-700">
+                <iconify-icon icon="lucide:zap" width="20"></iconify-icon>
+              </div>
+              <h3 class="text-xl font-semibold mb-2">Скорость</h3>
+              <p class="text-zinc-400 text-sm">Оптимизирован для молниеносной загрузки.</p>
+            </div>
+            <div class="absolute bottom-4 right-4 text-6xl font-bold text-zinc-800 select-none opacity-20 group-hover:opacity-40 transition-opacity">
+              99
+            </div>
+          </div>
+          
+          <!-- Card 4: Sync -->
+          <div class="md:col-span-2 bg-white rounded-2xl border border-zinc-200/80 p-8 shadow-sm hover:shadow-xl transition-all duration-300 group overflow-hidden relative flex items-center justify-between reveal" :class="{ active: featuresRevealed }">
+            <div class="relative z-10 max-w-xs">
+              <div class="w-10 h-10 rounded-lg bg-zinc-100 flex items-center justify-center mb-6 text-zinc-700">
+                <iconify-icon icon="lucide:refresh-ccw" width="20"></iconify-icon>
+              </div>
+              <h3 class="text-xl font-semibold mb-2">Авто-Синхронизация</h3>
+              <p class="text-zinc-500 text-sm">Изменения на складе мгновенно отражаются в витрине. Никаких
+                задержек.</p>
+            </div>
+
+            <!-- Visual: Sync Animation -->
+            <div class="hidden md:flex items-center gap-8 pr-12 opacity-80 group-hover:opacity-100 transition-opacity">
+              <div class="w-24 h-32 bg-zinc-50 border border-zinc-200 rounded-lg flex flex-col items-center justify-center shadow-sm">
+                <iconify-icon icon="lucide:store" width="32" class="text-zinc-400 mb-2"></iconify-icon>
+                <span class="text-[10px] font-mono text-zinc-400 uppercase">Storefront</span>
+              </div>
+
+              <div class="flex flex-col items-center gap-2 text-zinc-300">
+                <iconify-icon icon="lucide:arrow-right" width="24"
+                  class="group-hover:translate-x-2 transition-transform duration-500"></iconify-icon>
+                <iconify-icon icon="lucide:arrow-left" width="24"
+                  class="group-hover:-translate-x-2 transition-transform duration-500 delay-75"></iconify-icon>
+      </div>
+
+              <div class="w-24 h-32 bg-zinc-900 border border-zinc-800 rounded-lg flex flex-col items-center justify-center shadow-lg">
+                <iconify-icon icon="lucide:database" width="32" class="text-zinc-500 mb-2"></iconify-icon>
+                <span class="text-[10px] font-mono text-zinc-500 uppercase">Admin</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- How It Works (Timeline) -->
+    <section id="solutions" class="py-32 bg-white relative">
+      <div class="max-w-4xl mx-auto px-6">
+        <h2 class="text-center text-3xl md:text-5xl font-semibold tracking-tight text-zinc-900 mb-24 reveal" :class="{ active: timelineRevealed }">Путь к
+          продажам</h2>
+
+        <div class="relative">
+          <!-- Vertical Line Container -->
+          <div class="absolute left-8 md:left-1/2 top-0 bottom-0 w-px bg-zinc-100 -translate-x-1/2"></div>
+          <!-- Animated Line -->
+          <div 
+            ref="timelineLine"
+            class="absolute left-8 md:left-1/2 top-0 w-px bg-black -translate-x-1/2 transition-all duration-300"
+            :style="{ height: timelineProgress + '%' }"></div>
+
+          <!-- Step 1 -->
+          <div class="relative flex flex-col md:flex-row items-center gap-8 md:gap-24 mb-32 group reveal" :class="{ active: timelineRevealed }">
+            <div class="md:w-1/2 text-left md:text-right order-2 md:order-1">
+              <h3 class="text-2xl font-semibold mb-2">Создайте аккаунт</h3>
+              <p class="text-zinc-500">Зарегистрируйтесь за 30 секунд. Кредитная карта не требуется.</p>
+            </div>
+            <div class="absolute left-8 md:left-1/2 -translate-x-1/2 w-16 h-16 bg-white border border-zinc-200 rounded-full flex items-center justify-center z-10 shadow-lg group-hover:scale-110 transition-transform duration-300 order-1 md:order-2">
+              <iconify-icon icon="lucide:user" width="24"></iconify-icon>
+            </div>
+            <div class="md:w-1/2 order-3 pl-16 md:pl-0"></div>
+          </div>
+
+          <!-- Step 2 -->
+          <div class="relative flex flex-col md:flex-row items-center gap-8 md:gap-24 mb-32 group reveal" :class="{ active: timelineRevealed }">
+            <div class="md:w-1/2 order-2 md:order-1"></div>
+            <div class="absolute left-8 md:left-1/2 -translate-x-1/2 w-16 h-16 bg-white border border-zinc-200 rounded-full flex items-center justify-center z-10 shadow-lg group-hover:scale-110 transition-transform duration-300 order-1 md:order-2">
+              <iconify-icon icon="lucide:upload-cloud" width="24"></iconify-icon>
+            </div>
+            <div class="md:w-1/2 text-left order-2 md:order-3">
+              <h3 class="text-2xl font-semibold mb-2">Загрузите товары</h3>
+              <p class="text-zinc-500">Импортируйте через Excel или добавьте вручную. Загрузите фото.</p>
+            </div>
+          </div>
+
+          <!-- Step 3 -->
+          <div class="relative flex flex-col md:flex-row items-center gap-8 md:gap-24 group reveal" :class="{ active: timelineRevealed }">
+            <div class="md:w-1/2 text-left md:text-right order-2 md:order-1">
+              <h3 class="text-2xl font-semibold mb-2">Начните продавать</h3>
+              <p class="text-zinc-500">Опубликуйте магазин и принимайте первые заказы мгновенно.</p>
+            </div>
+            <div class="absolute left-8 md:left-1/2 -translate-x-1/2 w-16 h-16 bg-black text-white border border-black rounded-full flex items-center justify-center z-10 shadow-lg group-hover:scale-110 transition-transform duration-300 order-1 md:order-2">
+              <iconify-icon icon="lucide:rocket" width="24"></iconify-icon>
+            </div>
+            <div class="md:w-1/2 order-3 pl-16 md:pl-0"></div>
+          </div>
+        </div>
+              </div>
     </section>
 
     <!-- Pricing Section -->
-    <section class="pricing-section">
-      <div class="container">
-        <h2 class="section-title">Тарифы и подписки</h2>
-        <div class="pricing-grid">
-          <div class="pricing-card">
-            <div class="pricing-header">
-              <h3 class="pricing-name">Пробный период</h3>
-              <div class="pricing-price">
-                <span class="price-amount">Бесплатно</span>
-                <span class="price-period">30 дней</span>
-              </div>
-            </div>
-            <ul class="pricing-features">
-              <li>✓ Полный доступ ко всем функциям</li>
-              <li>✓ Неограниченное количество товаров</li>
-              <li>✓ Управление заказами</li>
-              <li>✓ Аналитика и статистика</li>
-            </ul>
-            <NuxtLink to="/register-shop" class="pricing-button">Начать бесплатно</NuxtLink>
-          </div>
-          
-          <div class="pricing-card featured">
-            <div class="pricing-badge">Популярный</div>
-            <div class="pricing-header">
-              <h3 class="pricing-name">Базовый</h3>
-              <div class="pricing-price">
-                <span class="price-amount">$29</span>
-                <span class="price-period">в месяц</span>
-              </div>
-            </div>
-            <ul class="pricing-features">
-              <li>✓ Все функции пробного периода</li>
-              <li>✓ Приоритетная поддержка</li>
-              <li>✓ Расширенная аналитика</li>
-              <li>✓ Интеграции с платежными системами</li>
-            </ul>
-            <NuxtLink to="/register-shop" class="pricing-button">Выбрать план</NuxtLink>
-      </div>
+    <section id="pricing" class="py-32 bg-zinc-50 border-t border-zinc-200">
+      <div class="max-w-7xl mx-auto px-6">
+        <h2 class="text-3xl md:text-5xl font-semibold tracking-tight text-center mb-6 reveal" :class="{ active: pricingRevealed }">Тарифные планы</h2>
+        <p class="text-center text-zinc-500 mb-20 reveal" :class="{ active: pricingRevealed }">Прозрачное ценообразование. Без скрытых комиссий.</p>
 
-          <div class="pricing-card">
-            <div class="pricing-header">
-              <h3 class="pricing-name">Профессиональный</h3>
-              <div class="pricing-price">
-                <span class="price-amount">$79</span>
-                <span class="price-period">в месяц</span>
-              </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+          <!-- Starter -->
+          <div class="bg-white rounded-2xl p-8 border border-zinc-200 shadow-sm hover:shadow-lg transition-all reveal" :class="{ active: pricingRevealed }">
+            <h3 class="text-xl font-medium mb-2">Starter</h3>
+            <div class="text-4xl font-bold mb-6">$0<span class="text-base font-normal text-zinc-500">/мес</span>
             </div>
-            <ul class="pricing-features">
-              <li>✓ Все функции базового плана</li>
-              <li>✓ API доступ</li>
-              <li>✓ Кастомный дизайн</li>
-              <li>✓ Персональный менеджер</li>
-            </ul>
-            <NuxtLink to="/register-shop" class="pricing-button">Выбрать план</NuxtLink>
-          </div>
-        </div>
-      </div>
-    </section>
+            <p class="text-sm text-zinc-500 mb-8 border-b border-zinc-100 pb-8">Идеально для теста ниши и первых
+              продаж.</p>
 
-    <!-- Shops Section -->
-    <section class="shops-section">
-      <div class="container">
-        <h2 class="section-title">Магазины на платформе</h2>
-        <div v-if="shopsPending" class="text-center py-12 text-gray-400">
-          <div class="loading-spinner"></div>
-          <p class="mt-4">Магазины загружаются...</p>
-        </div>
-        <div v-else-if="shops && shops.length > 0" class="shops-grid">
-          <NuxtLink 
-            v-for="shop in shops.slice(0, 6)" 
-            :key="shop.id"
-            :to="`/${shop.slug}`"
-            class="shop-card"
-          >
-            <div class="shop-logo-wrapper">
-              <img 
-                v-if="shop.logo_url" 
-                :src="shop.logo_url" 
-                :alt="shop.name" 
-                class="shop-logo-img" 
-              />
-              <div v-else class="shop-logo-placeholder">
-                {{ shop.name.charAt(0).toUpperCase() }}
-              </div>
+            <ul class="space-y-4 mb-8">
+              <li class="flex items-center gap-3 text-sm">
+                <iconify-icon icon="lucide:check" class="text-green-500"></iconify-icon> 10 Товаров
+              </li>
+              <li class="flex items-center gap-3 text-sm">
+                <iconify-icon icon="lucide:check" class="text-green-500"></iconify-icon> Базовая аналитика
+              </li>
+              <li class="flex items-center gap-3 text-sm">
+                <iconify-icon icon="lucide:check" class="text-green-500"></iconify-icon> Субдомен linkshop
+              </li>
+              <li class="flex items-center gap-3 text-sm">
+                <iconify-icon icon="lucide:check" class="text-green-500"></iconify-icon> Техподдержка Email
+              </li>
+              <li class="flex items-center gap-3 text-sm opacity-50">
+                <iconify-icon icon="lucide:x" class="text-zinc-300"></iconify-icon> Свой домен
+              </li>
+              <li class="flex items-center gap-3 text-sm opacity-50">
+                <iconify-icon icon="lucide:x" class="text-zinc-300"></iconify-icon> API Access
+              </li>
+              <li class="flex items-center gap-3 text-sm opacity-50">
+                <iconify-icon icon="lucide:x" class="text-zinc-300"></iconify-icon> 0% Комиссия
+              </li>
+            </ul>
+            <NuxtLink to="/register-shop" class="w-full py-3 border border-zinc-200 rounded-lg text-sm font-semibold hover:border-black hover:bg-zinc-50 transition-colors block text-center">
+              Выбрать Starter
+            </NuxtLink>
+          </div>
+
+          <!-- Pro -->
+          <div class="bg-white rounded-2xl p-8 border border-zinc-900 shadow-2xl relative md:-mt-8 md:mb-8 reveal" :class="{ active: pricingRevealed }">
+            <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black text-white px-3 py-1 rounded-full text-xs font-medium tracking-wide">
+              POPULAR
             </div>
-            <h3 class="shop-name">{{ shop.name }}</h3>
-            <p v-if="shop.description" class="shop-description">{{ shop.description }}</p>
-            <div class="shop-status">
-              <span :class="['status-badge', getStatusClass(shop.subscription_status)]">
-                {{ getStatusText(shop.subscription_status) }}
-              </span>
-            </div>
+            <h3 class="text-xl font-medium mb-2">Pro</h3>
+            <div class="text-4xl font-bold mb-6">$29<span class="text-base font-normal text-zinc-500">/мес</span></div>
+            <p class="text-sm text-zinc-500 mb-8 border-b border-zinc-100 pb-8">Для растущих брендов с активными
+              продажами.</p>
+
+            <ul class="space-y-4 mb-8">
+              <li class="flex items-center gap-3 text-sm">
+                <iconify-icon icon="lucide:check" class="text-black"></iconify-icon> 
+                <span class="font-semibold">Безлимит товаров</span>
+              </li>
+              <li class="flex items-center gap-3 text-sm">
+                <iconify-icon icon="lucide:check" class="text-black"></iconify-icon> 
+                <span class="font-semibold">0% Комиссия</span>
+              </li>
+              <li class="flex items-center gap-3 text-sm">
+                <iconify-icon icon="lucide:check" class="text-black"></iconify-icon> Подключение своего домена
+              </li>
+              <li class="flex items-center gap-3 text-sm">
+                <iconify-icon icon="lucide:check" class="text-black"></iconify-icon> Расширенная аналитика
+              </li>
+              <li class="flex items-center gap-3 text-sm">
+                <iconify-icon icon="lucide:check" class="text-black"></iconify-icon> Интеграция с Instagram
+              </li>
+              <li class="flex items-center gap-3 text-sm">
+                <iconify-icon icon="lucide:check" class="text-black"></iconify-icon> Приоритетная поддержка
+              </li>
+              <li class="flex items-center gap-3 text-sm">
+                <iconify-icon icon="lucide:check" class="text-black"></iconify-icon> Управление SEO
+              </li>
+            </ul>
+            <NuxtLink to="/register-shop" class="w-full py-3 bg-black text-white rounded-lg text-sm font-semibold hover:bg-zinc-800 transition-colors shadow-lg block text-center">
+              Начать Pro
           </NuxtLink>
         </div>
-        <div v-else class="text-center py-12 text-gray-400">
-          <p>Пока нет зарегистрированных магазинов</p>
-        </div>
-        <div v-if="shops && shops.length > 6" class="text-center mt-8">
-          <NuxtLink to="/platform" class="btn-secondary">
-            Посмотреть все магазины
+
+          <!-- Business -->
+          <div class="bg-white rounded-2xl p-8 border border-zinc-200 shadow-sm hover:shadow-lg transition-all reveal" :class="{ active: pricingRevealed }">
+            <h3 class="text-xl font-medium mb-2">Business</h3>
+            <div class="text-4xl font-bold mb-6">$99<span class="text-base font-normal text-zinc-500">/мес</span></div>
+            <p class="text-sm text-zinc-500 mb-8 border-b border-zinc-100 pb-8">Масштабирование и автоматизация
+              процессов.</p>
+
+            <ul class="space-y-4 mb-8">
+              <li class="flex items-center gap-3 text-sm">
+                <iconify-icon icon="lucide:check" class="text-green-500"></iconify-icon> Всё из Pro
+              </li>
+              <li class="flex items-center gap-3 text-sm">
+                <iconify-icon icon="lucide:check" class="text-green-500"></iconify-icon> Multi-Warehouse (Склады)
+              </li>
+              <li class="flex items-center gap-3 text-sm">
+                <iconify-icon icon="lucide:check" class="text-green-500"></iconify-icon> 10 Сотрудников
+              </li>
+              <li class="flex items-center gap-3 text-sm">
+                <iconify-icon icon="lucide:check" class="text-green-500"></iconify-icon> API Access
+              </li>
+              <li class="flex items-center gap-3 text-sm">
+                <iconify-icon icon="lucide:check" class="text-green-500"></iconify-icon> Персональный менеджер
+              </li>
+              <li class="flex items-center gap-3 text-sm">
+                <iconify-icon icon="lucide:check" class="text-green-500"></iconify-icon> B2B функции
+              </li>
+              <li class="flex items-center gap-3 text-sm">
+                <iconify-icon icon="lucide:check" class="text-green-500"></iconify-icon> Whitelabel Admin
+              </li>
+            </ul>
+            <NuxtLink to="/register-shop" class="w-full py-3 border border-zinc-200 rounded-lg text-sm font-semibold hover:border-black hover:bg-zinc-50 transition-colors block text-center">
+              Связаться с нами
           </NuxtLink>
+          </div>
         </div>
         </div>
     </section>
         
-    <!-- CTA Section -->
-    <section class="cta-section">
-      <div class="container">
-        <div class="cta-content">
-          <h2 class="cta-title">Готовы начать?</h2>
-          <p class="cta-subtitle">Создайте свой интернет-магазин прямо сейчас</p>
-          <NuxtLink to="/register-shop" class="btn-primary large">
-            Создать магазин бесплатно
+    <!-- Footer -->
+    <footer class="bg-white border-t border-zinc-200 pt-20 pb-12">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-12 mb-20">
+          <div class="col-span-2">
+            <NuxtLink to="/" class="text-xl font-bold tracking-tight flex items-center gap-2 mb-6">
+              <div class="w-6 h-6 bg-black rounded-md flex items-center justify-center text-white">
+                <iconify-icon icon="lucide:box" width="14"></iconify-icon>
+              </div>
+              LinkShop
           </NuxtLink>
+            <p class="text-zinc-500 text-sm max-w-xs leading-relaxed">
+              Операционная система для современной торговли. Создаем инструменты, которые помогают
+              предпринимателям расти быстрее.
+            </p>
+          </div>
+          <div>
+            <h4 class="font-semibold mb-6 text-sm">Продукт</h4>
+            <ul class="space-y-4 text-sm text-zinc-500">
+              <li><a href="#features" class="hover:text-black transition-colors">Функции</a></li>
+              <li><a href="#solutions" class="hover:text-black transition-colors">Интеграции</a></li>
+              <li><a href="#" class="hover:text-black transition-colors">Шаблоны</a></li>
+              <li><a href="#" class="hover:text-black transition-colors">Roadmap</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="font-semibold mb-6 text-sm">Компания</h4>
+            <ul class="space-y-4 text-sm text-zinc-500">
+              <li><a href="#" class="hover:text-black transition-colors">О нас</a></li>
+              <li><a href="#" class="hover:text-black transition-colors">Карьера</a></li>
+              <li><a href="#" class="hover:text-black transition-colors">Блог</a></li>
+              <li><a href="#" class="hover:text-black transition-colors">Бренд</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="font-semibold mb-6 text-sm">Legal</h4>
+            <ul class="space-y-4 text-sm text-zinc-500">
+              <li><a href="#" class="hover:text-black transition-colors">Privacy</a></li>
+              <li><a href="#" class="hover:text-black transition-colors">Terms</a></li>
+              <li><a href="#" class="hover:text-black transition-colors">Cookie Policy</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-zinc-100 text-sm text-zinc-400">
+          <p>&copy; 2024 LinkShop Technologies Inc. All rights reserved.</p>
+          <div class="flex gap-6 mt-4 md:mt-0">
+            <a href="#" class="hover:text-black transition-colors">
+              <iconify-icon icon="lucide:twitter" width="20"></iconify-icon>
+            </a>
+            <a href="#" class="hover:text-black transition-colors">
+              <iconify-icon icon="lucide:github" width="20"></iconify-icon>
+            </a>
+            <a href="#" class="hover:text-black transition-colors">
+              <iconify-icon icon="lucide:linkedin" width="20"></iconify-icon>
+            </a>
         </div>
         </div>
-      </section>
+      </div>
+    </footer>
   </div>
 </template>
 
 <script setup>
-const { user, token, fetchUser } = useAuth()
+const { user, token } = useAuth()
 
-// Загружаем пользователя при монтировании, если есть токен
-onMounted(async () => {
-  if (token.value && !user.value) {
-    await fetchUser()
-  }
-})
-
-// Получаем магазины пользователя для навигационной панели
-const { data: myShops, refresh: refreshShops } = await useFetch('http://localhost:8000/platform/shops/me', {
+// Get user's shops to determine profile link
+const { data: myShops } = await useFetch('http://localhost:8000/platform/shops/me', {
   server: false,
   headers: token.value ? {
     'Authorization': `Bearer ${token.value}`
   } : {},
   watch: [token],
-  immediate: false
+  immediate: false,
+  lazy: true
 })
 
-// Обновляем список магазинов при изменении токена
-watch(token, async (newToken) => {
-  if (newToken) {
-    await refreshShops()
-  }
-}, { immediate: true })
+const profileLink = computed(() => {
+  if (!user.value) return '/login'
+  if (user.value.role === 'platform_admin') return '/platform/admin'
+  if (myShops.value && myShops.value.length > 0) return '/profile'
+  return '/customer-profile'
+})
 
-// Функция для перехода в профиль с автоматическим перенаправлением
-const goToProfile = async () => {
-  // Если пользователь не загружен, загружаем
-  if (token.value && !user.value) {
-    await fetchUser()
-  }
-  
-  // Если нет токена - на страницу входа
-  if (!token.value) {
-    await navigateTo('/login')
-    return
-  }
-  
-  // Если админ платформы - сразу в админку платформы
-  if (user.value?.role === 'platform_admin') {
-    await navigateTo('/platform/admin')
-    return
-  }
-  
-  // Обновляем список магазинов перед проверкой
-  if (token.value) {
-    await refreshShops()
-  }
-  
-  // Если владелец магазина - в админку первого магазина
-  if (myShops.value && myShops.value.length > 0) {
-    await navigateTo(`/shop/${myShops.value[0].slug}/admin`)
-    return
-  }
-  
-  // Иначе в профиль
-  await navigateTo('/profile')
-}
+// Animation states
+const heroRevealed = ref(false)
+const featuresRevealed = ref(false)
+const timelineRevealed = ref(false)
+const pricingRevealed = ref(false)
+const timelineProgress = ref(0)
 
-const { data: shops, pending: shopsPending } = await useFetch('http://localhost:8000/platform/shops', { server: false })
+// Refs for DOM elements
+const heroDashboard = ref(null)
+const timelineLine = ref(null)
 
-const getStatusClass = (status) => {
-  const statusMap = {
-    'trial': 'status-trial',
-    'active': 'status-active',
-    'expired': 'status-expired',
-    'cancelled': 'status-cancelled'
-  }
-  return statusMap[status] || 'status-trial'
-}
+// Scroll reveal observer
+onMounted(() => {
+  // Hero reveal
+  heroRevealed.value = true
 
-const getStatusText = (status) => {
-  const statusMap = {
-    'trial': 'Пробный период',
-    'active': 'Активен',
-    'expired': 'Истек',
-    'cancelled': 'Отменен'
+  // Features reveal
+  const featuresObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        featuresRevealed.value = true
+      }
+    })
+  }, { threshold: 0.1 })
+  
+  const featuresSection = document.querySelector('#features')
+  if (featuresSection) {
+    featuresObserver.observe(featuresSection)
   }
-  return statusMap[status] || status
-}
+
+  // Timeline reveal
+  const timelineObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        timelineRevealed.value = true
+      }
+    })
+  }, { threshold: 0.1 })
+  
+  const timelineSection = document.querySelector('#solutions')
+  if (timelineSection) {
+    timelineObserver.observe(timelineSection)
+  }
+
+  // Pricing reveal
+  const pricingObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        pricingRevealed.value = true
+      }
+    })
+  }, { threshold: 0.1 })
+  
+  const pricingSection = document.querySelector('#pricing')
+  if (pricingSection) {
+    pricingObserver.observe(pricingSection)
+  }
+
+  // Hero Dashboard 3D Tilt Effect on Scroll
+  const handleScroll = () => {
+    const scrollY = window.scrollY
+    if (window.innerWidth > 768 && scrollY < 800 && heroDashboard.value) {
+      const rotation = Math.min(scrollY * 0.05, 10)
+      const translate = scrollY * 0.1
+      heroDashboard.value.style.transform = `perspective(1000px) rotateX(${rotation}deg) translateY(${translate}px)`
+    }
+
+    // Timeline Progress Bar
+    const timelineSectionEl = document.querySelector('#solutions')
+    if (timelineSectionEl && timelineLine.value) {
+      const rect = timelineSectionEl.getBoundingClientRect()
+      const windowHeight = window.innerHeight
+
+      if (rect.top < windowHeight / 2 && rect.bottom > windowHeight / 2) {
+        const totalHeight = rect.height
+        let progress = ((windowHeight / 2 - rect.top) / totalHeight) * 100
+        progress = Math.min(Math.max(progress, 0), 100)
+        timelineProgress.value = progress
+      } else if (rect.top > windowHeight / 2) {
+        timelineProgress.value = 0
+      } else {
+        timelineProgress.value = 100
+      }
+    }
+  }
+
+  window.addEventListener('scroll', handleScroll)
+  handleScroll() // Initial call
+
+  onUnmounted(() => {
+    window.removeEventListener('scroll', handleScroll)
+  })
+})
 </script>
 
 <style scoped>
-.landing-page {
-  min-height: 100vh;
-  background: #FAFAFA;
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #ffffff;
+  color: #09090b;
 }
 
-/* Platform Navigation Bar */
-.platform-navbar {
-  background: white;
-  border-bottom: 1px solid #E5E7EB;
-  padding: 16px 0;
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+/* Hide scrollbar for clean UI */
+:global(::-webkit-scrollbar) {
+  width: 8px;
 }
 
-.nav-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 24px;
+:global(::-webkit-scrollbar-track) {
+  background: #ffffff;
 }
 
-.nav-logo {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-weight: 900;
-  font-size: 1.125rem;
-  color: #111;
-  text-decoration: none;
-  transition: opacity 0.2s;
+:global(::-webkit-scrollbar-thumb) {
+  background: #e4e4e7;
+  border-radius: 4px;
 }
 
-.nav-logo:hover {
-  opacity: 0.8;
+:global(::-webkit-scrollbar-thumb:hover) {
+  background: #a1a1aa;
 }
 
-.nav-logo svg {
-  color: #111;
+/* Scroll Reveal Utility Classes */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.nav-links {
-  display: flex;
-  gap: 32px;
-  align-items: center;
-  flex: 1;
-  justify-content: center;
+.reveal.active {
+  opacity: 1;
+  transform: translateY(0);
 }
 
-.nav-link {
-  font-weight: 600;
-  font-size: 0.95rem;
-  color: #666;
-  text-decoration: none;
-  transition: color 0.2s;
-  position: relative;
+/* Glassmorphism */
+.glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(228, 228, 231, 0.6);
 }
 
-.nav-link:hover,
-.nav-link.router-link-active {
-  color: #111;
+/* Gradient Text */
+.text-gradient {
+  background: linear-gradient(to bottom right, #18181b 0%, #52525b 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-.nav-link.router-link-active::after {
-  content: '';
-  position: absolute;
-  bottom: -8px;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: #111;
+/* 3D Perspective Container */
+.perspective-container {
+  perspective: 2000px;
 }
 
-.nav-actions {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-}
-
-.nav-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 20px;
-  border-radius: 12px;
-  font-weight: 600;
-  font-size: 0.875rem;
-  text-decoration: none;
-  transition: all 0.2s;
-  border: 2px solid transparent;
-  cursor: pointer;
-  background: transparent;
-  color: #111;
-}
-
-.nav-btn.profile-btn {
-  background: #F3F4F6;
-  color: #111;
-}
-
-.nav-btn.profile-btn:hover {
-  background: #E5E7EB;
-  transform: translateY(-2px);
-}
-
-.nav-btn.login-btn {
-  background: transparent;
-  color: #111;
-  border-color: #E5E7EB;
-}
-
-.nav-btn.login-btn:hover {
-  border-color: #111;
-  background: #F9FAFB;
-}
-
-.nav-btn.register-btn {
-  background: #111;
-  color: white;
-}
-
-.nav-btn.register-btn:hover {
-  background: #000;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-}
-
-@media (max-width: 768px) {
-  .nav-content {
-    flex-wrap: wrap;
-  }
-  
-  .nav-links {
-    order: 3;
-    width: 100%;
-    justify-content: center;
-    gap: 16px;
-    padding-top: 12px;
-    border-top: 1px solid #E5E7EB;
-  }
-  
-  .nav-actions {
-    gap: 8px;
-  }
-  
-  .nav-btn {
-    padding: 8px 16px;
-    font-size: 0.75rem;
-  }
-}
-
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 16px;
-}
-
-/* Hero Section */
-.hero-section {
-  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-  color: white;
-  padding: 100px 0;
-  position: relative;
-  overflow: hidden;
-}
-
-.hero-section .container {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 60px;
-  align-items: center;
-}
-
-.hero-content {
-  z-index: 2;
-}
-
-.hero-title {
-  font-size: 3.5rem;
-  font-weight: 900;
-  line-height: 1.1;
-  margin-bottom: 24px;
-  letter-spacing: -1px;
-}
-
-.hero-subtitle {
-  font-size: 1.25rem;
-  opacity: 0.9;
-  margin-bottom: 40px;
-  line-height: 1.6;
-}
-
-.hero-actions {
-  display: flex;
-  gap: 16px;
-  flex-wrap: wrap;
-}
-
-.btn-primary {
-  display: inline-block;
-  background: white;
-  color: #111;
-  padding: 16px 32px;
-  border-radius: 50px;
-  font-weight: 700;
-  font-size: 1rem;
-  text-decoration: none;
-  transition: all 0.3s;
-  box-shadow: 0 4px 20px rgba(255,255,255,0.2);
-}
-
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(255,255,255,0.3);
-}
-
-.btn-primary.large {
-  padding: 20px 40px;
-  font-size: 1.125rem;
-}
-
-.btn-secondary {
-  display: inline-block;
-  background: transparent;
-  color: white;
-  padding: 16px 32px;
-  border: 2px solid rgba(255,255,255,0.3);
-  border-radius: 50px;
-  font-weight: 700;
-  font-size: 1rem;
-  text-decoration: none;
-  transition: all 0.3s;
-}
-
-.btn-secondary:hover {
-  background: rgba(255,255,255,0.1);
-  border-color: white;
-}
-
-.hero-image {
-  position: relative;
-  height: 400px;
-}
-
-.hero-visual {
-  position: relative;
-  width: 100%;
-  height: 100%;
-}
-
-.floating-card {
-  position: absolute;
-  width: 120px;
-  height: 120px;
-  background: rgba(255,255,255,0.1);
-  backdrop-filter: blur(10px);
-  border-radius: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 3rem;
-  animation: float 3s ease-in-out infinite;
-}
-
-.card-1 {
-  top: 0;
-  left: 0;
-  animation-delay: 0s;
-}
-
-.card-2 {
-  top: 50%;
-  right: 0;
-  transform: translateY(-50%);
-  animation-delay: 1s;
-}
-
-.card-3 {
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  animation-delay: 2s;
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-20px); }
-}
-
-/* Features Section */
-.features-section {
-  padding: 80px 0;
-  background: white;
-}
-
-.section-title {
-  font-size: 2.5rem;
-  font-weight: 900;
-  text-align: center;
-  margin-bottom: 60px;
-  color: #111;
-}
-
-.features-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 32px;
-}
-
-.feature-card {
-  background: #F9FAFB;
-  border-radius: 24px;
-  padding: 40px;
-  text-align: center;
-  transition: all 0.3s;
-}
-
-.feature-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 12px 40px rgba(0,0,0,0.1);
-}
-
-.feature-icon {
-  font-size: 3rem;
-  margin-bottom: 20px;
-}
-
-.feature-title {
-  font-size: 1.5rem;
-  font-weight: 800;
-  margin-bottom: 12px;
-  color: #111;
-}
-
-.feature-description {
-  color: #666;
-  line-height: 1.6;
-}
-
-/* Pricing Section */
-.pricing-section {
-  padding: 80px 0;
-  background: #FAFAFA;
-}
-
-.pricing-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 32px;
-  max-width: 1100px;
-  margin: 0 auto;
-}
-
-.pricing-card {
-  background: white;
-  border-radius: 24px;
-  padding: 40px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-  position: relative;
-  transition: all 0.3s;
-}
-
-.pricing-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 12px 40px rgba(0,0,0,0.15);
-}
-
-.pricing-card.featured {
-  border: 3px solid #111;
-  transform: scale(1.05);
-}
-
-.pricing-badge {
-  position: absolute;
-  top: -12px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #111;
-  color: white;
-  padding: 6px 20px;
-  border-radius: 20px;
-  font-size: 0.75rem;
-  font-weight: 700;
-}
-
-.pricing-header {
-  text-align: center;
-  margin-bottom: 32px;
-  padding-bottom: 32px;
-  border-bottom: 2px solid #F3F4F6;
-}
-
-.pricing-name {
-  font-size: 1.5rem;
-  font-weight: 800;
-  margin-bottom: 16px;
-  color: #111;
-}
-
-.pricing-price {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-}
-
-.price-amount {
-  font-size: 3rem;
-  font-weight: 900;
-  color: #111;
-}
-
-.price-period {
-  font-size: 0.875rem;
-  color: #666;
-}
-
-.pricing-features {
-  list-style: none;
-  padding: 0;
-  margin: 0 0 32px 0;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.pricing-features li {
-  color: #666;
-  line-height: 1.6;
-}
-
-.pricing-button {
-  display: block;
-  width: 100%;
-  padding: 16px;
-  background: #111;
-  color: white;
-  border-radius: 12px;
-  text-align: center;
-  font-weight: 700;
-  text-decoration: none;
-  transition: all 0.3s;
-}
-
-.pricing-button:hover {
-  background: #000;
-  transform: translateY(-2px);
-}
-
-/* Shops Section */
-.shops-section {
-  padding: 80px 0;
-  background: white;
-}
-
-.shops-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 24px;
-}
-
-.shop-card {
-  background: white;
-  border: 2px solid #f0f0f0;
-  border-radius: 20px;
-  padding: 32px;
-  text-align: center;
-  transition: all 0.3s;
-  text-decoration: none;
-  color: #111;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-}
-
-.shop-card:hover {
-  border-color: #111;
-  transform: translateY(-4px);
-  box-shadow: 0 12px 30px rgba(0,0,0,0.08);
-}
-
-.shop-logo-wrapper {
-  width: 100px;
-  height: 100px;
-  background: #f9f9f9;
-  border-radius: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-
-.shop-logo-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.shop-logo-placeholder {
-  font-size: 2.5rem;
-  font-weight: 900;
-  color: #111;
-}
-
-.shop-name {
-  font-size: 1.25rem;
-  font-weight: 800;
-  margin: 0;
-}
-
-.shop-description {
-  font-size: 0.875rem;
-  color: #666;
-  margin: 0;
-  line-height: 1.5;
-}
-
-.shop-status {
-  margin-top: auto;
-}
-
-.status-badge {
-  display: inline-block;
-  padding: 6px 16px;
-  border-radius: 20px;
-  font-size: 0.75rem;
-  font-weight: 600;
-}
-
-.status-trial {
-  background: #FEF3C7;
-  color: #92400E;
-}
-
-.status-active {
-  background: #D1FAE5;
-  color: #065F46;
-}
-
-.status-expired {
-  background: #FEE2E2;
-  color: #991B1B;
-}
-
-.status-cancelled {
-  background: #F3F4F6;
-  color: #4B5563;
-}
-
-/* CTA Section */
-.cta-section {
-  padding: 100px 0;
-  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-  color: white;
-}
-
-.cta-content {
-  text-align: center;
-}
-
-.cta-title {
-  font-size: 3rem;
-  font-weight: 900;
-  margin-bottom: 16px;
-}
-
-.cta-subtitle {
-  font-size: 1.25rem;
-  opacity: 0.9;
-  margin-bottom: 40px;
-}
-
-.loading-spinner {
-  width: 40px;
-  height: 40px;
-  border: 4px solid #f3f3f3;
-  border-top: 4px solid #111;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin: 0 auto;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-@media (max-width: 1024px) {
-  .hero-section .container {
-    grid-template-columns: 1fr;
-  }
-  
-  .features-grid,
-  .pricing-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  
-  .pricing-card.featured {
-    transform: scale(1);
-  }
-}
-
-@media (max-width: 768px) {
-  .hero-title {
-    font-size: 2rem;
-  }
-  
-  .section-title {
-    font-size: 2rem;
-  }
-  
-  .features-grid,
-  .pricing-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .hero-actions {
-    flex-direction: column;
-  }
-  
-  .btn-primary,
-  .btn-secondary {
-    width: 100%;
-    text-align: center;
-  }
+/* Glow effects */
+.glow-hover:hover {
+  box-shadow: 0 0 40px -10px rgba(0, 0, 0, 0.1);
 }
 </style>

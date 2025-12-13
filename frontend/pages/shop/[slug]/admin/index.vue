@@ -100,27 +100,28 @@
     <!-- Main Content -->
     <main class="admin-main">
       <div class="dashboard-page">
-        <div class="dashboard-header">
-      <div class="header-left">
-        <h1 class="page-title">{{ shop?.name }} - Админка</h1>
-        <p class="page-subtitle">Добро пожаловать! Статус вашего магазина.</p>
-      </div>
-      <div class="header-right">
-        <span :class="['status-badge', getStatusClass(shop?.subscription_status)]">
-          {{ getStatusText(shop?.subscription_status) }}
-        </span>
-        <NuxtLink v-if="shop?.subscription_status === 'trial' || shop?.subscription_status === 'expired'" :to="`/shop/${shopSlug}/subscription`" class="upgrade-btn">
-          Выбрать подписку
-        </NuxtLink>
-      </div>
-    </div>
+        <ClientOnly>
+          <div class="dashboard-header">
+            <div class="header-left">
+              <h1 class="page-title">{{ shop?.name || 'Загрузка...' }} - Админка</h1>
+              <p class="page-subtitle">Добро пожаловать! Статус вашего магазина.</p>
+            </div>
+            <div class="header-right">
+              <span v-if="shop" :class="['status-badge', getStatusClass(shop?.subscription_status)]">
+                {{ getStatusText(shop?.subscription_status) }}
+              </span>
+              <NuxtLink v-if="shop && (shop?.subscription_status === 'trial' || shop?.subscription_status === 'expired')" :to="`/shop/${shopSlug}/subscription`" class="upgrade-btn">
+                Выбрать подписку
+              </NuxtLink>
+            </div>
+          </div>
 
-    <div v-if="pending" class="loading-state">
-      <div class="spinner"></div>
-      <p>Загрузка...</p>
-    </div>
+          <div v-if="pending" class="loading-state">
+            <div class="spinner"></div>
+            <p>Загрузка...</p>
+          </div>
 
-    <div v-else class="dashboard-content">
+          <div v-else class="dashboard-content">
       <!-- Period Selector -->
       <div class="period-selector">
         <button 
@@ -360,9 +361,16 @@
               </div>
             </div>
           </div>
+          </div>
         </div>
       </div>
-    </div>
+          <template #fallback>
+            <div class="loading-state">
+              <div class="spinner"></div>
+              <p>Загрузка...</p>
+            </div>
+          </template>
+        </ClientOnly>
       </div>
     </main>
   </div>
@@ -403,15 +411,34 @@ const periods = [
 
 const { data: shop } = await useFetch(`http://localhost:8000/platform/shops/${shopSlug}`, {
   server: false,
-  headers: {
-    'Authorization': `Bearer ${token.value}`
+  lazy: true,
+  headers: computed(() => ({
+    'Authorization': token.value ? `Bearer ${token.value}` : ''
+  }))
+})
+
+const { data: stats, pending, refresh, error } = await useFetch(`http://localhost:8000/shop/${shopSlug}/admin/stats`, {
+  server: false,
+  lazy: true,
+  headers: computed(() => ({
+    'Authorization': token.value ? `Bearer ${token.value}` : ''
+  })),
+  watch: [token]
+})
+
+watch(stats, (newStats) => {
+  if (newStats) {
+    console.log('[Shop Admin Dashboard] Статистика загружена:', newStats)
   }
 })
 
-const { data: stats, pending, refresh } = await useFetch(`http://localhost:8000/shop/${shopSlug}/admin/stats`, {
-  server: false,
-  headers: {
-    'Authorization': `Bearer ${token.value}`
+watch(error, (newError) => {
+  if (newError) {
+    console.error('[Shop Admin Dashboard] Ошибка загрузки статистики:', newError.message)
+    console.error('[Shop Admin Dashboard] Детали ошибки:', {
+      statusCode: newError.statusCode,
+      data: newError.data
+    })
   }
 })
 

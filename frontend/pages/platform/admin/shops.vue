@@ -14,7 +14,7 @@
       </div>
       
       <nav class="sidebar-nav">
-        <NuxtLink to="/platform/admin" class="nav-item">
+        <NuxtLink to="/platform/admin" class="nav-item" :class="{ active: $route.path === '/platform/admin' }">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="3" y="3" width="7" height="7"></rect>
             <rect x="14" y="3" width="7" height="7"></rect>
@@ -24,14 +24,14 @@
           <span>Главная</span>
         </NuxtLink>
         
-        <NuxtLink to="/platform/admin/shops" class="nav-item active">
+        <NuxtLink to="/platform/admin/shops" class="nav-item" :class="{ active: $route.path === '/platform/admin/shops' }">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M20 7h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v3H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2z"></path>
           </svg>
           <span>Магазины</span>
         </NuxtLink>
         
-        <NuxtLink to="/platform/admin/users" class="nav-item">
+        <NuxtLink to="/platform/admin/users" class="nav-item" :class="{ active: $route.path === '/platform/admin/users' }">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
             <circle cx="9" cy="7" r="4"></circle>
@@ -41,7 +41,7 @@
           <span>Пользователи</span>
         </NuxtLink>
         
-        <NuxtLink to="/platform/admin/orders" class="nav-item">
+        <NuxtLink to="/platform/admin/orders" class="nav-item" :class="{ active: $route.path === '/platform/admin/orders' }">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
             <polyline points="14 2 14 8 20 8"></polyline>
@@ -73,7 +73,11 @@
       </div>
 
       <div class="admin-content">
-        <div v-if="pending" class="text-center py-12 text-gray-400">
+        <div v-if="error" class="text-center py-12 text-red-500">
+          <p class="mt-4">Ошибка загрузки данных: {{ error.message || 'Неизвестная ошибка' }}</p>
+          <button @click="refresh" class="mt-4 px-4 py-2 bg-black text-white rounded-lg">Повторить</button>
+        </div>
+        <div v-else-if="pending" class="text-center py-12 text-gray-400">
           <div class="loading-spinner"></div>
           <p class="mt-4">Магазины загружаются...</p>
         </div>
@@ -191,13 +195,48 @@ definePageMeta({
   middleware: 'platform-admin'
 })
 
+console.log('[Admin Shops] Страница загружается...')
+console.log('[Admin Shops] Текущий путь:', useRoute().path)
+
 const { token } = useAuth()
 const toast = useToast()
 
-const { data: shops, pending, refresh } = await useFetch('http://localhost:8000/platform/admin/shops', {
+onMounted(() => {
+  console.log('[Admin Shops] Компонент смонтирован')
+})
+
+const { data: shops, pending, refresh, error } = await useFetch('http://localhost:8000/platform/admin/shops', {
   server: false,
-  headers: {
-    'Authorization': `Bearer ${token.value}`
+  lazy: true,
+  watch: [token],
+  headers: computed(() => ({
+    'Authorization': token.value ? `Bearer ${token.value}` : ''
+  }))
+})
+
+// Watch for errors and log them
+watch(error, (newError) => {
+  if (newError) {
+    console.error('[Admin Shops] Ошибка загрузки магазинов:', newError)
+    console.error('[Admin Shops] Детали ошибки:', {
+      message: newError.message,
+      statusCode: newError.statusCode,
+      statusMessage: newError.statusMessage,
+      data: newError.data
+    })
+  }
+}, { immediate: true })
+
+watch(token, () => {
+  if (token.value) {
+    console.log('[Admin Shops] Токен обновлен, обновляю данные...')
+    refresh()
+  }
+}, { immediate: true })
+
+watch(shops, (newShops) => {
+  if (newShops) {
+    console.log('[Admin Shops] Магазины загружены:', newShops)
   }
 })
 

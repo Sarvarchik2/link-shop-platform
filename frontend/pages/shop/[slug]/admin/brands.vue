@@ -154,21 +154,46 @@ const handleLogout = () => {
   useToast().success('Вы вышли из аккаунта')
 }
 
-const { data: brands, refresh } = await useFetch(`http://localhost:8000/brands?shop_slug=${shopSlug}`, {
-  server: false
+const { data: brands, error, refresh } = await useFetch(`http://localhost:8000/brands?shop_slug=${shopSlug}`, {
+  server: false,
+  lazy: true
+})
+
+watch(brands, (newBrands) => {
+  if (newBrands) {
+    console.log('[Brands List] Бренды загружены:', newBrands.length)
+  }
+})
+
+watch(error, (newError) => {
+  if (newError) {
+    console.error('[Brands List] Ошибка загрузки брендов:', newError.message)
+    console.error('[Brands List] Детали ошибки:', {
+      statusCode: newError.statusCode,
+      data: newError.data
+    })
+  }
 })
 
 const deleteBrand = async (id) => {
   if (!confirm('Вы уверены, что хотите удалить этот бренд?')) return
   try {
+    console.log('[Brands List] Удаление бренда:', id)
     await $fetch(`http://localhost:8000/brands/${id}`, {
       method: 'DELETE',
       headers: { Authorization: `Bearer ${token.value}` }
     })
+    console.log('[Brands List] Бренд удален успешно')
     refresh()
     useToast().success('Бренд удален')
   } catch (e) {
-    useToast().error('Ошибка при удалении бренда')
+    console.error('[Brands List] Ошибка при удалении бренда:', e)
+    console.error('[Brands List] Детали ошибки:', {
+      message: e.message,
+      statusCode: e.statusCode,
+      data: e.data
+    })
+    useToast().error(e.data?.detail || e.message || 'Ошибка при удалении бренда')
   }
 }
 </script>

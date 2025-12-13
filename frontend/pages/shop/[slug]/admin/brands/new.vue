@@ -1,24 +1,24 @@
 <template>
   <div class="add-brand-page">
     <div class="page-header">
-      <NuxtLink to="/admin/brands" class="back-link">
+      <NuxtLink :to="`/shop/${shopSlug}/admin/brands`" class="back-link">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M19 12H5M12 19l-7-7 7-7"/>
         </svg>
-        Orqaga
+        Назад
       </NuxtLink>
-      <h1 class="page-title">Yangi brend qo'shish</h1>
+      <h1 class="page-title">Добавить бренд</h1>
     </div>
     
     <div class="form-card">
       <form @submit.prevent="handleSubmit">
         <div class="form-group">
-          <label class="label">Brend nomi</label>
-          <input v-model="form.name" required class="input" placeholder="masalan, Ray-Ban" />
+          <label class="label">Название бренда</label>
+          <input v-model="form.name" required class="input" placeholder="например, Ray-Ban" />
         </div>
 
         <div class="form-group">
-          <label class="label">Brend logosi</label>
+          <label class="label">Логотип бренда</label>
           
           <!-- Image Preview -->
           <div v-if="logoUrl" class="image-preview">
@@ -46,8 +46,8 @@
                 <polyline points="17 8 12 3 7 8"></polyline>
                 <line x1="12" y1="3" x2="12" y2="15"></line>
               </svg>
-              <p>Rasmni sudrab tashlang yoki yuklash uchun bosing</p>
-              <span class="upload-hint">PNG, JPG 5MB gacha</span>
+              <p>Перетащите изображение или нажмите для загрузки</p>
+              <span class="upload-hint">PNG, JPG до 5MB</span>
             </div>
             <input 
               ref="fileInput" 
@@ -58,7 +58,7 @@
             />
             
             <div class="url-input">
-              <span class="or-divider">yoki URL kiriting</span>
+              <span class="or-divider">или введите URL</span>
               <input 
                 v-model="logoUrl" 
                 class="input" 
@@ -69,9 +69,9 @@
         </div>
 
         <div class="form-actions">
-          <NuxtLink to="/admin/brands" class="btn btn-outline">Bekor qilish</NuxtLink>
+          <NuxtLink :to="`/shop/${shopSlug}/admin/brands`" class="btn btn-outline">Отмена</NuxtLink>
           <button type="submit" class="btn btn-primary" :disabled="loading || !form.name || !logoUrl">
-            {{ loading ? 'Yaratilmoqda...' : 'Brend yaratish' }}
+            {{ loading ? 'Создание...' : 'Создать бренд' }}
           </button>
         </div>
       </form>
@@ -81,16 +81,28 @@
 
 <script setup>
 definePageMeta({
-  layout: 'admin',
-  middleware: 'admin'
+  middleware: ['auth', 'shop-owner'],
+  ssr: false
 })
 
+console.log('[Add Brand] Страница загружается...')
+
+const route = useRoute()
+const shopSlug = route.params.slug
+console.log('[Add Brand] Shop slug:', shopSlug)
+
 const { token } = useAuth()
+console.log('[Add Brand] Token:', token.value ? 'есть' : 'нет')
+
 const toast = useToast()
 const loading = ref(false)
 const isDragging = ref(false)
 const logoUrl = ref('')
 const fileInput = ref(null)
+
+onMounted(() => {
+  console.log('[Add Brand] Компонент смонтирован')
+})
 
 const form = reactive({
   name: ''
@@ -109,7 +121,7 @@ const handleDrop = async (event) => {
   if (file && file.type.startsWith('image/')) {
     await uploadFile(file)
   } else {
-    toast.error('Iltimos, rasm faylini yuklang')
+    toast.error('Пожалуйста, загрузите изображение')
   }
 }
 
@@ -118,27 +130,36 @@ const uploadFile = async (file) => {
   formData.append('file', file)
   
   try {
+    console.log('[Add Brand] Загрузка изображения:', file.name)
     const response = await $fetch('http://localhost:8000/upload', {
       method: 'POST',
       body: formData
     })
+    console.log('[Add Brand] Изображение загружено:', response.url)
     logoUrl.value = response.url
-    toast.success('Rasm yuklandi!')
+    toast.success('Изображение загружено!')
   } catch (e) {
-    console.error(e)
-    toast.error('Rasmni yuklashda xatolik')
+    console.error('[Add Brand] Ошибка загрузки изображения:', e)
+    console.error('[Add Brand] Детали ошибки:', {
+      message: e.message,
+      statusCode: e.statusCode,
+      data: e.data
+    })
+    toast.error('Ошибка при загрузке изображения')
   }
 }
 
 const handleSubmit = async () => {
   if (!form.name || !logoUrl.value) {
-    toast.warning('Iltimos, barcha maydonlarni to\'ldiring')
+    toast.warning('Пожалуйста, заполните все поля')
     return
   }
   
   loading.value = true
   try {
-    await $fetch('http://localhost:8000/brands', {
+    console.log('[Add Brand] Отправка данных:', { name: form.name, logo_url: logoUrl.value, shop_slug: shopSlug })
+    
+    const response = await $fetch(`http://localhost:8000/brands?shop_slug=${shopSlug}`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${token.value}` },
       body: {
@@ -146,10 +167,19 @@ const handleSubmit = async () => {
         logo_url: logoUrl.value
       }
     })
-    toast.success('Brend muvaffaqiyatli yaratildi!')
-    navigateTo('/admin/brands')
+    
+    console.log('[Add Brand] Бренд создан успешно:', response)
+    toast.success('Бренд успешно создан!')
+    navigateTo(`/shop/${shopSlug}/admin/brands`)
   } catch (e) {
-    toast.error('Brendni yaratishda xatolik')
+    console.error('[Add Brand] Ошибка при создании бренда:', e)
+    console.error('[Add Brand] Детали ошибки:', {
+      message: e.message,
+      statusCode: e.statusCode,
+      statusMessage: e.statusMessage,
+      data: e.data
+    })
+    toast.error(e.data?.detail || e.message || 'Ошибка при создании бренда')
   } finally {
     loading.value = false
   }
@@ -159,6 +189,9 @@ const handleSubmit = async () => {
 <style scoped>
 .add-brand-page {
   width: 100%;
+  padding: 40px;
+  background: #FAFAFA;
+  min-height: 100vh;
 }
 
 .page-header {
@@ -363,6 +396,10 @@ const handleSubmit = async () => {
 }
 
 @media (max-width: 640px) {
+  .add-brand-page {
+    padding: 20px;
+  }
+  
   .form-card {
     padding: 20px;
   }
@@ -377,4 +414,5 @@ const handleSubmit = async () => {
     justify-content: center;
   }
 }
+
 </style>

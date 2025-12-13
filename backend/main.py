@@ -296,7 +296,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
         return user
 
 async def get_current_admin(current_user: User = Depends(get_current_user)):
-    if current_user.role != "admin":
+    if current_user.role not in ["admin", "platform_admin"]:
         raise HTTPException(status_code=403, detail="Not authorized")
     return current_user
 
@@ -307,21 +307,31 @@ async def get_current_platform_admin(current_user: User = Depends(get_current_us
 
 def get_shop_owner_or_admin(shop_slug: str, current_user: User):
     """Check if user is shop owner or platform admin"""
-    shop = get_shop_by_slug(shop_slug)
-    if current_user.role == "platform_admin" or shop.owner_id == current_user.id:
+    # Don't check subscription here -> owners need access to manage/renew even if expired
+    shop = get_shop_by_slug(shop_slug, check_subscription=False)
+    
+    if current_user.role == "platform_admin":
         return shop
+        
+    if shop.owner_id == current_user.id:
+        return shop
+        
     raise HTTPException(status_code=403, detail="Not authorized to manage this shop")
 
-def get_shop_by_slug(slug: str):
+def get_shop_by_slug(slug: str, check_subscription: bool = True):
     with Session(engine) as session:
         shop = session.exec(select(Shop).where(Shop.slug == slug)).first()
         if not shop:
             raise HTTPException(status_code=404, detail="Shop not found")
-        if not shop.is_active:
-            raise HTTPException(status_code=403, detail="Shop is not active")
-        # Check subscription
-        if shop.subscription_status == "expired" or (shop.subscription_expires_at and shop.subscription_expires_at < datetime.utcnow()):
-            raise HTTPException(status_code=403, detail="Shop subscription expired")
+        
+        # Admin/Owners usually don't need these checks when managing settings
+        if check_subscription:
+            if not shop.is_active:
+                raise HTTPException(status_code=403, detail="Shop is not active")
+            # Check subscription
+            if shop.subscription_status == "expired" or (shop.subscription_expires_at and shop.subscription_expires_at < datetime.utcnow()):
+                raise HTTPException(status_code=403, detail="Shop subscription expired")
+        
         return shop
 
 # --- App ---
@@ -657,26 +667,26 @@ def toggle_shop_active(shop_id: int, is_active: bool, current_user: User = Depen
 @app.post("/register", response_model=Token)
 def register(user: UserCreate):
     try:
-    with Session(engine) as session:
-        existing_user = session.exec(select(User).where(User.phone == user.phone)).first()
-        if existing_user:
-            raise HTTPException(status_code=400, detail="Phone number already registered")
-            
+        with Session(engine) as session:
+            existing_user = session.exec(select(User).where(User.phone == user.phone)).first()
+            if existing_user:
+                raise HTTPException(status_code=400, detail="Phone number already registered")
+
             if not user.phone or not user.password:
                 raise HTTPException(status_code=400, detail="Phone and password are required")
-            
-        hashed_password = get_password_hash(user.password)
-        db_user = User(
-            phone=user.phone, 
-            password_hash=hashed_password,
+
+            hashed_password = get_password_hash(user.password)
+            db_user = User(
+                phone=user.phone,
+                password_hash=hashed_password,
                 first_name=user.first_name or "",
                 last_name=user.last_name or ""
-        )
-        session.add(db_user)
-        session.commit()
-        session.refresh(db_user)
-        access_token = create_access_token(data={"sub": db_user.phone})
-        return {"access_token": access_token, "token_type": "bearer"}
+            )
+            session.add(db_user)
+            session.commit()
+            session.refresh(db_user)
+            access_token = create_access_token(data={"sub": db_user.phone})
+            return {"access_token": access_token, "token_type": "bearer"}
     except HTTPException:
         raise
     except Exception as e:
@@ -686,30 +696,30 @@ def register(user: UserCreate):
 @app.post("/token", response_model=Token)
 def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
     try:
-    with Session(engine) as session:
+        with Session(engine) as session:
             if not form_data.username or not form_data.password:
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
                     detail="Phone and password are required"
                 )
-            
-        user = session.exec(select(User).where(User.phone == form_data.username)).first()
+
+            user = session.exec(select(User).where(User.phone == form_data.username)).first()
             if not user:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Incorrect phone or password",
-                headers={"WWW-Authenticate": "Bearer"},
-            )
-            
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Incorrect phone or password",
+                    headers={"WWW-Authenticate": "Bearer"},
+                )
+
             if not verify_password(form_data.password, user.password_hash):
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
                     detail="Incorrect phone or password",
                     headers={"WWW-Authenticate": "Bearer"},
                 )
-            
-        access_token = create_access_token(data={"sub": user.phone})
-        return {"access_token": access_token, "token_type": "bearer"}
+
+            access_token = create_access_token(data={"sub": user.phone})
+            return {"access_token": access_token, "token_type": "bearer"}
     except HTTPException:
         raise
     except Exception as e:
@@ -746,7 +756,8 @@ def get_product(product_id: int):
         return product
 
 @app.post("/products", response_model=Product)
-def create_product(product: ProductCreate, shop_slug: Optional[str] = None, current_user: User = Depends(get_current_user)):
+def create_product(product: ProductCreate, shop_slug: Optional[str] = Query(None), current_user: User = Depends(get_current_user)):
+    print(f"[Backend] Creating product: name={product.name}, shop_slug={shop_slug}, user_id={current_user.id}")
     # If variants are provided, use them; otherwise validate sizes/colors
     if product.variants and product.variants.strip():
         # Variants format: [{"size": "M", "color": "Black", "colorHex": "#000000", "stock": 5}, ...]
@@ -777,11 +788,12 @@ def create_product(product: ProductCreate, shop_slug: Optional[str] = None, curr
     with Session(engine) as session:
         shop_id = None
         if shop_slug:
-            shop = get_shop_by_slug(shop_slug)
+            shop = get_shop_by_slug(shop_slug, check_subscription=False)
             # Verify user owns the shop
             if shop.owner_id != current_user.id and current_user.role != "platform_admin":
                 raise HTTPException(status_code=403, detail="Not authorized to add products to this shop")
             shop_id = shop.id
+            print(f"[Backend] Product shop_id set to: {shop_id}")
         
         db_product = Product.from_orm(product)
         db_product.shop_id = shop_id
@@ -791,17 +803,25 @@ def create_product(product: ProductCreate, shop_slug: Optional[str] = None, curr
         return db_product
 
 @app.delete("/products/{product_id}")
-def delete_product(product_id: int, current_user: User = Depends(get_current_admin)):
+def delete_product(product_id: int, current_user: User = Depends(get_current_user)):
     with Session(engine) as session:
         product = session.get(Product, product_id)
         if not product:
             raise HTTPException(status_code=404, detail="Product not found")
+            
+        # Check authorization
+        if current_user.role != "platform_admin":
+            # Check if user owns the shop this product belongs to
+            shop = session.get(Shop, product.shop_id)
+            if not shop or shop.owner_id != current_user.id:
+                raise HTTPException(status_code=403, detail="Not authorized to delete this product")
+                
         session.delete(product)
         session.commit()
         return {"ok": True}
 
 @app.put("/products/{product_id}", response_model=Product)
-def update_product(product_id: int, product_update: ProductCreate, current_user: User = Depends(get_current_admin)):
+def update_product(product_id: int, product_update: ProductCreate, current_user: User = Depends(get_current_user)):
     # If variants are provided, use them; otherwise validate sizes/colors
     if product_update.variants and product_update.variants.strip():
         # Variants format: [{"size": "M", "color": "Black", "colorHex": "#000000", "stock": 5}, ...]
@@ -834,6 +854,13 @@ def update_product(product_id: int, product_update: ProductCreate, current_user:
         if not product:
             raise HTTPException(status_code=404, detail="Product not found")
         
+        # Check authorization
+        if current_user.role != "platform_admin":
+            # Check if user owns the shop this product belongs to
+            shop = session.get(Shop, product.shop_id)
+            if not shop or shop.owner_id != current_user.id:
+                raise HTTPException(status_code=403, detail="Not authorized to update this product")
+
         product.name = product_update.name
         product.description = product_update.description
         product.price = product_update.price
@@ -876,19 +903,40 @@ def get_brands(shop_slug: Optional[str] = None):
         return session.exec(statement).all()
 
 @app.post("/brands", response_model=Brand)
-def create_brand(brand: Brand):
+def create_brand(brand: Brand, shop_slug: Optional[str] = Query(None), current_user: User = Depends(get_current_user)):
+    print(f"[Backend] Creating brand: name={brand.name}, shop_slug={shop_slug}, user_id={current_user.id}")
     with Session(engine) as session:
+        shop_id = None
+        if shop_slug:
+            shop = get_shop_by_slug(shop_slug, check_subscription=False)
+            # Verify user owns the shop
+            if shop.owner_id != current_user.id and current_user.role != "platform_admin":
+                raise HTTPException(status_code=403, detail="Not authorized to add brands to this shop")
+            shop_id = shop.id
+        
+        brand.shop_id = shop_id
         session.add(brand)
         session.commit()
         session.refresh(brand)
         return brand
 
 @app.delete("/brands/{brand_id}")
-def delete_brand(brand_id: int, current_user: User = Depends(get_current_admin)):
+def delete_brand(brand_id: int, current_user: User = Depends(get_current_user)):
     with Session(engine) as session:
         brand = session.get(Brand, brand_id)
         if not brand:
             raise HTTPException(status_code=404, detail="Brand not found")
+            
+        # Check authorization
+        if current_user.role != "platform_admin":
+            # Check if brand belongs to a shop owned by user
+            if not brand.shop_id:
+                raise HTTPException(status_code=403, detail="Not authorized to delete global brands")
+                
+            shop = session.get(Shop, brand.shop_id)
+            if not shop or shop.owner_id != current_user.id:
+                raise HTTPException(status_code=403, detail="Not authorized to delete this brand")
+        
         session.delete(brand)
         session.commit()
         return {"ok": True}
@@ -903,19 +951,40 @@ def get_categories(shop_slug: Optional[str] = None):
         return session.exec(statement).all()
 
 @app.post("/categories", response_model=Category)
-def create_category(category: Category):
+def create_category(category: Category, shop_slug: Optional[str] = Query(None), current_user: User = Depends(get_current_user)):
+    print(f"[Backend] Creating category: name={category.name}, shop_slug={shop_slug}, user_id={current_user.id}")
     with Session(engine) as session:
+        shop_id = None
+        if shop_slug:
+            shop = get_shop_by_slug(shop_slug, check_subscription=False)
+            # Verify user owns the shop
+            if shop.owner_id != current_user.id and current_user.role != "platform_admin":
+                raise HTTPException(status_code=403, detail="Not authorized to add categories to this shop")
+            shop_id = shop.id
+        
+        category.shop_id = shop_id
         session.add(category)
         session.commit()
         session.refresh(category)
         return category
 
 @app.delete("/categories/{category_id}")
-def delete_category(category_id: int, current_user: User = Depends(get_current_admin)):
+def delete_category(category_id: int, current_user: User = Depends(get_current_user)):
     with Session(engine) as session:
         category = session.get(Category, category_id)
         if not category:
             raise HTTPException(status_code=404, detail="Category not found")
+            
+        # Check authorization
+        if current_user.role != "platform_admin":
+            # Check if category belongs to a shop owned by user
+            if not category.shop_id:
+                raise HTTPException(status_code=403, detail="Not authorized to delete global categories")
+                
+            shop = session.get(Shop, category.shop_id)
+            if not shop or shop.owner_id != current_user.id:
+                raise HTTPException(status_code=403, detail="Not authorized to delete this category")
+        
         session.delete(category)
         session.commit()
         return {"ok": True}
@@ -1066,7 +1135,7 @@ def get_all_orders_platform(current_user: User = Depends(get_current_platform_ad
             ))
         return result
 
-@app.get("/admin/orders", response_model=List[OrderReadWithUser])
+@app.get("/platform/admin/orders", response_model=List[OrderReadWithUser])
 def get_all_orders(current_user: User = Depends(get_current_admin)):
     """Get all orders - only admin"""
     with Session(engine) as session:
@@ -1239,12 +1308,13 @@ def get_platform_admin_stats(current_user: User = Depends(get_current_platform_a
             week_sales=week_sales,
             week_orders=week_orders_count,
             month_sales=month_sales,
+
             month_orders=month_orders_count,
             total_shops=total_shops,
             active_shops=active_shops
         )
 
-@app.get("/admin/stats", response_model=DashboardStats)
+@app.get("/platform/admin/stats", response_model=DashboardStats)
 def get_admin_stats(current_user: User = Depends(get_current_admin)):
     with Session(engine) as session:
         total_users = len(session.exec(select(User)).all())
@@ -1303,7 +1373,7 @@ def get_all_users_platform(current_user: User = Depends(get_current_platform_adm
     with Session(engine) as session:
         return session.exec(select(User)).all()
 
-@app.get("/admin/users", response_model=List[UserRead])
+@app.get("/platform/admin/users", response_model=List[UserRead])
 def get_all_users(current_user: User = Depends(get_current_admin)):
     with Session(engine) as session:
         return session.exec(select(User)).all()
@@ -1390,101 +1460,53 @@ def update_order_status(order_id: int, status_update: OrderStatusUpdate, current
 @app.get("/banner", response_model=Banner)
 def get_banner(shop_slug: Optional[str] = None):
     with Session(engine) as session:
-        statement = select(Banner).where(Banner.is_active == True)
+        # Default banner data
+        default_banner = Banner(
+            id=0,
+            badge_text="NEW ARRIVAL",
+            title="Ray-Ban Meta Smart Glasses",
+            subtitle="Starting from $299",
+            button_text="Shop Now",
+            button_link="/products",
+            image_url="https://images.unsplash.com/photo-1572635196237-14b3f281503f?q=80&w=800&auto=format&fit=crop",
+            is_active=True,
+            shop_id=None
+        )
+
         if shop_slug:
-            shop = get_shop_by_slug(shop_slug)
-            statement = statement.where(Banner.shop_id == shop.id)
+            shop = session.exec(select(Shop).where(Shop.slug == shop_slug)).first()
+            if not shop:
+                # If shop not found, return default (or could raise 404)
+                return default_banner
+                
+            banner = session.exec(select(Banner).where(Banner.shop_id == shop.id)).first()
+            if not banner:
+                # Return default but don't save it yet
+                return default_banner
+            return banner
         else:
-            statement = statement.where(Banner.shop_id == None)
-        banner = session.exec(statement).first()
-        if not banner:
-            # Return default banner if none exists
-            return Banner(
-                id=0,
-                badge_text="NEW ARRIVAL",
-                title="Ray-Ban Meta Smart Glasses",
-                subtitle="Starting from $299",
-                button_text="Shop Now",
-                button_link="/products",
-                image_url="https://images.unsplash.com/photo-1572635196237-14b3f281503f?q=80&w=800&auto=format&fit=crop",
-                is_active=True,
-                shop_id=None
-            )
-        return banner
-
-@app.get("/admin/banner", response_model=Banner)
-def get_admin_banner(current_user: User = Depends(get_current_admin)):
-    with Session(engine) as session:
-        banner = session.exec(select(Banner)).first()
-        if not banner:
-            # Create default banner
-            banner = Banner(
-                badge_text="NEW ARRIVAL",
-                title="Ray-Ban Meta Smart Glasses",
-                subtitle="Starting from $299",
-                button_text="Shop Now",
-                button_link="/products",
-                image_url="https://images.unsplash.com/photo-1572635196237-14b3f281503f?q=80&w=800&auto=format&fit=crop",
-                is_active=True
-            )
-            session.add(banner)
-            session.commit()
-            session.refresh(banner)
-        return banner
-
-@app.put("/admin/banner", response_model=Banner)
-def update_banner(banner_update: BannerUpdate, current_user: User = Depends(get_current_admin)):
-    with Session(engine) as session:
-        banner = session.exec(select(Banner)).first()
-        if not banner:
-            # Create new banner
-            banner = Banner()
-            session.add(banner)
-            session.commit()
-            session.refresh(banner)
-        
-        # Update fields
-        if banner_update.badge_text is not None:
-            banner.badge_text = banner_update.badge_text
-        if banner_update.title is not None:
-            banner.title = banner_update.title
-        if banner_update.subtitle is not None:
-            banner.subtitle = banner_update.subtitle
-        if banner_update.button_text is not None:
-            banner.button_text = banner_update.button_text
-        if banner_update.button_link is not None:
-            banner.button_link = banner_update.button_link
-        if banner_update.image_url is not None:
-            banner.image_url = banner_update.image_url
-        if banner_update.is_active is not None:
-            banner.is_active = banner_update.is_active
-        
-        session.add(banner)
-        session.commit()
-        session.refresh(banner)
-        return banner
+            # Global banner? Current logic uses shop_id=None for global
+            banner = session.exec(select(Banner).where(Banner.shop_id == None)).first()
+            return banner or default_banner
 
 @app.put("/banner", response_model=Banner)
-def update_shop_banner(banner_update: BannerUpdate, shop_slug: Optional[str] = None, current_user: User = Depends(get_current_user)):
-    """Update banner for a specific shop - only owner or platform admin can access"""
+def update_banner(banner_update: BannerUpdate, shop_slug: Optional[str] = None, current_user: User = Depends(get_current_user)):
     with Session(engine) as session:
         shop_id = None
         if shop_slug:
-            shop = get_shop_owner_or_admin(shop_slug, current_user)
+            shop = get_shop_owner_or_admin(shop_slug, current_user, check_subscription=False)
             shop_id = shop.id
-        
-        # Find existing banner for this shop
-        if shop_id:
-            banner = session.exec(select(Banner).where(Banner.shop_id == shop_id)).first()
         else:
-            banner = session.exec(select(Banner).where(Banner.shop_id == None)).first()
+            # Only platform admin can update global banner
+            if current_user.role not in ["admin", "platform_admin"]:
+                raise HTTPException(status_code=403, detail="Not authorized")
+        
+        statement = select(Banner).where(Banner.shop_id == shop_id)
+        banner = session.exec(statement).first()
         
         if not banner:
-            # Create new banner
             banner = Banner(shop_id=shop_id)
             session.add(banner)
-            session.commit()
-            session.refresh(banner)
         
         # Update fields
         if banner_update.badge_text is not None:
@@ -1501,8 +1523,12 @@ def update_shop_banner(banner_update: BannerUpdate, shop_slug: Optional[str] = N
             banner.image_url = banner_update.image_url
         if banner_update.is_active is not None:
             banner.is_active = banner_update.is_active
-        
+            
         session.add(banner)
         session.commit()
         session.refresh(banner)
         return banner
+
+
+
+

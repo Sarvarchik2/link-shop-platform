@@ -1,24 +1,24 @@
 <template>
   <div class="add-category-page">
     <div class="page-header">
-      <NuxtLink to="/admin/categories" class="back-link">
+      <NuxtLink :to="`/shop/${shopSlug}/admin/categories`" class="back-link">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M19 12H5M12 19l-7-7 7-7"/>
         </svg>
-        Orqaga
+        Назад
       </NuxtLink>
-      <h1 class="page-title">Yangi kategoriya qo'shish</h1>
+      <h1 class="page-title">Добавить категорию</h1>
     </div>
     
     <div class="form-card">
       <form @submit.prevent="handleSubmit">
         <div class="form-group">
-          <label class="label">Kategoriya nomi</label>
-          <input v-model="form.name" required class="input" placeholder="masalan, Quyoshdan himoya ko'zoynaklari" />
+          <label class="label">Название категории</label>
+          <input v-model="form.name" required class="input" placeholder="например, Солнцезащитные очки" />
         </div>
 
         <div class="form-group">
-          <label class="label">Kategoriya rasmi</label>
+          <label class="label">Изображение категории</label>
           
           <!-- Image Preview -->
           <div v-if="imageUrl" class="image-preview">
@@ -46,8 +46,8 @@
                 <polyline points="17 8 12 3 7 8"></polyline>
                 <line x1="12" y1="3" x2="12" y2="15"></line>
               </svg>
-              <p>Rasmni sudrab tashlang yoki yuklash uchun bosing</p>
-              <span class="upload-hint">PNG, JPG 5MB gacha</span>
+              <p>Перетащите изображение или нажмите для загрузки</p>
+              <span class="upload-hint">PNG, JPG до 5MB</span>
             </div>
             <input 
               ref="fileInput" 
@@ -58,7 +58,7 @@
             />
             
             <div class="url-input">
-              <span class="or-divider">yoki URL kiriting</span>
+              <span class="or-divider">или введите URL</span>
               <input 
                 v-model="imageUrl" 
                 class="input" 
@@ -69,9 +69,9 @@
         </div>
 
         <div class="form-actions">
-          <NuxtLink to="/admin/categories" class="btn btn-outline">Bekor qilish</NuxtLink>
+          <NuxtLink :to="`/shop/${shopSlug}/admin/categories`" class="btn btn-outline">Отмена</NuxtLink>
           <button type="submit" class="btn btn-primary" :disabled="loading || !form.name || !imageUrl">
-            {{ loading ? 'Yaratilmoqda...' : 'Kategoriya yaratish' }}
+            {{ loading ? 'Создание...' : 'Создать категорию' }}
           </button>
         </div>
       </form>
@@ -81,16 +81,28 @@
 
 <script setup>
 definePageMeta({
-  layout: 'admin',
-  middleware: 'admin'
+  middleware: ['auth', 'shop-owner'],
+  ssr: false
 })
 
+console.log('[Add Category] Страница загружается...')
+
+const route = useRoute()
+const shopSlug = route.params.slug
+console.log('[Add Category] Shop slug:', shopSlug)
+
 const { token } = useAuth()
+console.log('[Add Category] Token:', token.value ? 'есть' : 'нет')
+
 const toast = useToast()
 const loading = ref(false)
 const isDragging = ref(false)
 const imageUrl = ref('')
 const fileInput = ref(null)
+
+onMounted(() => {
+  console.log('[Add Category] Компонент смонтирован')
+})
 
 const form = reactive({
   name: ''
@@ -109,7 +121,7 @@ const handleDrop = async (event) => {
   if (file && file.type.startsWith('image/')) {
     await uploadFile(file)
   } else {
-    toast.error('Iltimos, rasm faylini yuklang')
+    toast.error('Пожалуйста, загрузите изображение')
   }
 }
 
@@ -118,27 +130,36 @@ const uploadFile = async (file) => {
   formData.append('file', file)
   
   try {
+    console.log('[Add Category] Загрузка изображения:', file.name)
     const response = await $fetch('http://localhost:8000/upload', {
       method: 'POST',
       body: formData
     })
+    console.log('[Add Category] Изображение загружено:', response.url)
     imageUrl.value = response.url
-    toast.success('Rasm yuklandi!')
+    toast.success('Изображение загружено!')
   } catch (e) {
-    console.error(e)
-    toast.error('Rasmni yuklashda xatolik')
+    console.error('[Add Category] Ошибка загрузки изображения:', e)
+    console.error('[Add Category] Детали ошибки:', {
+      message: e.message,
+      statusCode: e.statusCode,
+      data: e.data
+    })
+    toast.error('Ошибка при загрузке изображения')
   }
 }
 
 const handleSubmit = async () => {
   if (!form.name || !imageUrl.value) {
-    toast.warning('Iltimos, barcha maydonlarni to\'ldiring')
+    toast.warning('Пожалуйста, заполните все поля')
     return
   }
   
   loading.value = true
   try {
-    await $fetch('http://localhost:8000/categories', {
+    console.log('[Add Category] Отправка данных:', { name: form.name, image_url: imageUrl.value, shop_slug: shopSlug })
+    
+    const response = await $fetch(`http://localhost:8000/categories?shop_slug=${shopSlug}`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${token.value}` },
       body: {
@@ -146,10 +167,19 @@ const handleSubmit = async () => {
         image_url: imageUrl.value
       }
     })
-    toast.success('Kategoriya muvaffaqiyatli yaratildi!')
-    navigateTo('/admin/categories')
+    
+    console.log('[Add Category] Категория создана успешно:', response)
+    toast.success('Категория успешно создана!')
+    navigateTo(`/shop/${shopSlug}/admin/categories`)
   } catch (e) {
-    toast.error('Kategoriyani yaratishda xatolik')
+    console.error('[Add Category] Ошибка при создании категории:', e)
+    console.error('[Add Category] Детали ошибки:', {
+      message: e.message,
+      statusCode: e.statusCode,
+      statusMessage: e.statusMessage,
+      data: e.data
+    })
+    toast.error(e.data?.detail || e.message || 'Ошибка при создании категории')
   } finally {
     loading.value = false
   }
@@ -159,6 +189,9 @@ const handleSubmit = async () => {
 <style scoped>
 .add-category-page {
   width: 100%;
+  padding: 40px;
+  background: #FAFAFA;
+  min-height: 100vh;
 }
 
 .page-header {
@@ -362,6 +395,10 @@ const handleSubmit = async () => {
 }
 
 @media (max-width: 640px) {
+  .add-category-page {
+    padding: 20px;
+  }
+  
   .form-card {
     padding: 20px;
   }
@@ -376,4 +413,5 @@ const handleSubmit = async () => {
     justify-content: center;
   }
 }
+
 </style>

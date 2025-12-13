@@ -1,58 +1,60 @@
 <template>
   <div class="add-product-page">
     <div class="page-header">
-      <NuxtLink to="/admin/products" class="back-btn">
+      <NuxtLink :to="`/shop/${shopSlug}/admin/products`" class="back-btn">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <line x1="19" y1="12" x2="5" y2="12"></line>
           <polyline points="12 19 5 12 12 5"></polyline>
         </svg>
       </NuxtLink>
-      <h1 class="page-title">Yangi mahsulot qo'shish</h1>
+      <h1 class="page-title">Добавить товар</h1>
     </div>
     
     <div class="form-card">
       <form @submit.prevent="handleSubmit">
         <div class="form-section">
-          <h2 class="section-title">Asosiy ma'lumotlar</h2>
+          <h2 class="section-title">Основная информация</h2>
           
           <div class="form-row">
             <div class="form-group">
-              <label class="label">Mahsulot nomi</label>
-              <input v-model="form.name" required class="input" placeholder="masalan, Ray-Ban Wayfarer" />
+              <label class="label">Название товара</label>
+              <input v-model="form.name" required class="input" placeholder="например, Ray-Ban Wayfarer" />
             </div>
             
             <div class="form-group">
-              <label class="label">Narx ($)</label>
+              <label class="label">Цена ($)</label>
               <input v-model.number="form.price" type="number" step="0.01" required class="input" placeholder="0.00" />
             </div>
           </div>
 
           <div class="form-row">
             <div class="form-group">
-              <label class="label">Brend</label>
-              <select v-model="form.brand" required class="input">
-                <option value="">Brendni tanlang</option>
+              <label class="label">Бренд</label>
+              <select v-model="form.brand" required class="input" :disabled="!brands || brands.length === 0">
+                <option value="">{{ brands && brands.length > 0 ? 'Выберите бренд' : 'Загрузка брендов...' }}</option>
                 <option v-for="brand in brands" :key="brand.id" :value="brand.name">{{ brand.name }}</option>
               </select>
+              <p v-if="brandsError" class="error-text">Ошибка загрузки брендов. Попробуйте обновить страницу.</p>
             </div>
             
             <div class="form-group">
-              <label class="label">Kategoriya</label>
-              <select v-model="form.category" required class="input">
-                <option value="">Kategoriyani tanlang</option>
+              <label class="label">Категория</label>
+              <select v-model="form.category" required class="input" :disabled="!categories || categories.length === 0">
+                <option value="">{{ categories && categories.length > 0 ? 'Выберите категорию' : 'Загрузка категорий...' }}</option>
                 <option v-for="category in categories" :key="category.id" :value="category.name">{{ category.name }}</option>
               </select>
+              <p v-if="categoriesError" class="error-text">Ошибка загрузки категорий. Попробуйте обновить страницу.</p>
             </div>
           </div>
 
           <div class="form-group">
-            <label class="label">Tavsif</label>
-            <textarea v-model="form.description" rows="4" required class="input" placeholder="Mahsulot tavsifi..."></textarea>
+            <label class="label">Описание</label>
+            <textarea v-model="form.description" rows="4" required class="input" placeholder="Описание товара..."></textarea>
           </div>
         </div>
 
         <div class="form-section">
-          <h2 class="section-title">Rasmlar</h2>
+          <h2 class="section-title">Изображения</h2>
           
           <!-- Image Upload Area -->
           <div class="images-upload-area">
@@ -66,14 +68,14 @@
               >
                 <img :src="img" alt="Product image" />
                 <div class="image-actions">
-                  <button v-if="index !== 0" type="button" @click="setMainImage(index)" class="btn-set-main" title="Set as main">
+                  <button v-if="index !== 0" type="button" @click="setMainImage(index)" class="btn-set-main" title="Сделать главным">
                     ⭐
                   </button>
-                  <button type="button" @click="removeImage(index)" class="btn-remove-image" title="Remove">
+                  <button type="button" @click="removeImage(index)" class="btn-remove-image" title="Удалить">
                     ✕
                   </button>
                 </div>
-                <span v-if="index === 0" class="main-badge">Asosiy</span>
+                <span v-if="index === 0" class="main-badge">Главное</span>
               </div>
             </div>
             
@@ -93,17 +95,17 @@
                   <polyline points="17 8 12 3 7 8"></polyline>
                   <line x1="12" y1="3" x2="12" y2="15"></line>
                 </svg>
-                <span class="upload-text">Rasmlarni yuklash uchun bosing yoki sudrab tashlang</span>
-                <span class="upload-hint">PNG, JPG 5MB gacha</span>
+                <span class="upload-text">Нажмите или перетащите изображения</span>
+                <span class="upload-hint">PNG, JPG до 5MB</span>
               </div>
-          </div>
+            </div>
 
             <!-- OR URL Input -->
             <div class="url-input-section">
-              <span class="divider-text">yoki URL orqali qo'shing</span>
+              <span class="divider-text">или добавьте по URL</span>
               <div class="url-input-row">
                 <input v-model="imageUrl" class="input" placeholder="https://example.com/image.jpg" />
-                <button type="button" @click="addImageUrl" class="btn-add-url" :disabled="!imageUrl">Qo'shish</button>
+                <button type="button" @click="addImageUrl" class="btn-add-url" :disabled="!imageUrl">Добавить</button>
               </div>
             </div>
           </div>
@@ -113,34 +115,34 @@
               <circle cx="12" cy="12" r="10"></circle>
               <polyline points="12 6 12 12 16 14"></polyline>
             </svg>
-            Rasmlar yuklanmoqda...
+            Загрузка изображений...
           </p>
         </div>
 
         <div class="form-section">
-          <h2 class="section-title">Mahsulot variantlari</h2>
-          <p class="help-text">O'lcham va rang kombinatsiyalarini zaxira miqdori bilan qo'shing</p>
+          <h2 class="section-title">Варианты товара</h2>
+          <p class="help-text">Добавьте комбинации размера и цвета с количеством на складе</p>
           
           <div class="variants-list">
             <div v-for="(variant, index) in variants" :key="index" class="variant-row">
-              <input v-model="variant.size" class="input variant-size-input" placeholder="O'lcham (masalan, M, L)" />
-              <input v-model="variant.color" class="input variant-color-input" placeholder="Rang (masalan, Qora)" />
-              <input v-model="variant.colorHex" type="color" class="color-picker" title="Rang tanlash" />
-              <input v-model.number="variant.stock" type="number" min="0" class="input stock-input" placeholder="Zaxira" />
+              <input v-model="variant.size" class="input variant-size-input" placeholder="Размер (например, M, L)" />
+              <input v-model="variant.color" class="input variant-color-input" placeholder="Цвет (например, Черный)" />
+              <input v-model="variant.colorHex" type="color" class="color-picker" title="Выбрать цвет" />
+              <input v-model.number="variant.stock" type="number" min="0" class="input stock-input" placeholder="Склад" />
               <button type="button" @click="removeVariant(index)" class="btn-remove">✕</button>
             </div>
           </div>
           
           <button type="button" @click="addVariant" class="btn-add">
-            + Variant qo'shish
+            + Добавить вариант
           </button>
-          <p class="help-text">Har bir variant = o'lcham + rang + zaxira miqdori</p>
+          <p class="help-text">Каждый вариант = размер + цвет + количество на складе</p>
         </div>
 
         <div class="form-actions">
-          <NuxtLink to="/admin/products" class="btn btn-secondary">Bekor qilish</NuxtLink>
+          <NuxtLink :to="`/shop/${shopSlug}/admin/products`" class="btn btn-secondary">Отмена</NuxtLink>
           <button type="submit" class="btn btn-primary" :disabled="loading || uploadedImages.length === 0">
-            {{ loading ? 'Yaratilmoqda...' : 'Mahsulot yaratish' }}
+            {{ loading ? 'Создание...' : 'Создать товар' }}
           </button>
         </div>
       </form>
@@ -150,15 +152,54 @@
 
 <script setup>
 definePageMeta({
-  layout: 'admin',
-  middleware: 'admin'
+  middleware: ['auth', 'shop-owner'],
+  ssr: false
 })
 
+console.log('[Add Product] Страница загружается...')
+
+const route = useRoute()
+const shopSlug = route.params.slug
+console.log('[Add Product] Shop slug:', shopSlug)
+
 const { token } = useAuth()
+console.log('[Add Product] Token:', token.value ? 'есть' : 'нет')
+
 const loading = ref(false)
 const uploadingImages = ref(false)
-const { data: brands } = await useFetch('http://localhost:8000/brands', { server: false })
-const { data: categories } = await useFetch('http://localhost:8000/categories', { server: false })
+const brands = ref([])
+const categories = ref([])
+const brandsError = ref(null)
+const categoriesError = ref(null)
+
+onMounted(async () => {
+  console.log('[Add Product] Компонент смонтирован')
+  
+  // Загружаем данные после монтирования
+  try {
+    console.log('[Add Product] Загрузка брендов и категорий...')
+    const [brandsData, categoriesData] = await Promise.all([
+      $fetch(`http://localhost:8000/brands?shop_slug=${shopSlug}`).catch(e => {
+        console.error('[Add Product] Ошибка загрузки брендов:', e)
+        brandsError.value = e
+        return []
+      }),
+      $fetch(`http://localhost:8000/categories?shop_slug=${shopSlug}`).catch(e => {
+        console.error('[Add Product] Ошибка загрузки категорий:', e)
+        categoriesError.value = e
+        return []
+      })
+    ])
+    
+    brands.value = brandsData || []
+    categories.value = categoriesData || []
+    console.log('[Add Product] Бренды загружены:', brands.value.length)
+    console.log('[Add Product] Категории загружены:', categories.value.length)
+  } catch (e) {
+    console.error('[Add Product] Ошибка при загрузке данных:', e)
+  }
+})
+
 
 const fileInput = ref(null)
 const uploadedImages = ref([])
@@ -200,6 +241,7 @@ const uploadFiles = async (files) => {
   for (const file of files) {
     if (file.type.startsWith('image/')) {
       try {
+        console.log('[Add Product] Загрузка изображения:', file.name)
         const formData = new FormData()
         formData.append('file', file)
         
@@ -208,9 +250,17 @@ const uploadFiles = async (files) => {
           body: formData
         })
         
+        console.log('[Add Product] Изображение загружено:', response.url)
         uploadedImages.value.push(response.url)
+        toast.success(`Изображение "${file.name}" загружено`)
       } catch (e) {
-        console.error('Failed to upload image:', e)
+        console.error('[Add Product] Ошибка загрузки изображения:', e)
+        console.error('[Add Product] Детали ошибки:', {
+          message: e.message,
+          statusCode: e.statusCode,
+          data: e.data
+        })
+        toast.error(`Ошибка при загрузке "${file.name}"`)
       }
     }
   }
@@ -246,7 +296,7 @@ const toast = useToast()
 
 const handleSubmit = async () => {
   if (uploadedImages.value.length === 0) {
-    toast.warning('Iltimos, kamida bitta rasm qo\'shing')
+    toast.warning('Пожалуйста, добавьте хотя бы одно изображение')
     return
   }
   
@@ -268,17 +318,27 @@ const handleSubmit = async () => {
       stock: totalStock || 0
     }
     
-    await $fetch('http://localhost:8000/products', {
+    console.log('[Add Product] Отправка данных:', productData)
+    console.log('[Add Product] Shop slug:', shopSlug)
+    
+    const response = await $fetch(`http://localhost:8000/products?shop_slug=${shopSlug}`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${token.value}` },
       body: productData
     })
     
-    toast.success('Mahsulot muvaffaqiyatli yaratildi!')
-    navigateTo('/admin/products')
+    console.log('[Add Product] Товар создан успешно:', response)
+    toast.success('Товар успешно создан!')
+    navigateTo(`/shop/${shopSlug}/admin/products`)
   } catch (e) {
-    console.error(e)
-    toast.error('Mahsulot yaratishda xatolik')
+    console.error('[Add Product] Ошибка при создании товара:', e)
+    console.error('[Add Product] Детали ошибки:', {
+      message: e.message,
+      statusCode: e.statusCode,
+      statusMessage: e.statusMessage,
+      data: e.data
+    })
+    toast.error(e.data?.detail || e.message || 'Ошибка при создании товара')
   } finally {
     loading.value = false
   }
@@ -288,6 +348,9 @@ const handleSubmit = async () => {
 <style scoped>
 .add-product-page {
   width: 100%;
+  padding: 40px;
+  background: #FAFAFA;
+  min-height: 100vh;
 }
 
 .page-header {
@@ -359,6 +422,12 @@ const handleSubmit = async () => {
 
 .form-group {
   margin-bottom: 20px;
+}
+
+.error-text {
+  color: #EF4444;
+  font-size: 0.875rem;
+  margin-top: 8px;
 }
 
 .label {
@@ -677,4 +746,5 @@ const handleSubmit = async () => {
     grid-template-columns: repeat(3, 1fr);
   }
 }
+
 </style>

@@ -285,8 +285,10 @@ const { data: myShops, refresh: refreshShops, pending: shopsPending } = await us
     'Authorization': `Bearer ${token.value}`
   } : {},
   watch: [token],
-  immediate: !!token.value
+  immediate: !!token.value,
+  lazy: true
 })
+
 
 // Обновляем список магазинов при загрузке страницы и при изменении токена
 watch(token, async (newToken) => {

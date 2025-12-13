@@ -81,12 +81,17 @@
       </div>
 
       <div class="admin-content">
-        <div v-if="pending" class="text-center py-12 text-gray-400">
-          <div class="loading-spinner"></div>
-          <p class="mt-4">Загрузка...</p>
-        </div>
+        <ClientOnly>
+          <div v-if="error" class="text-center py-12 text-red-500">
+            <p class="mt-4">Ошибка загрузки данных: {{ error.message || 'Неизвестная ошибка' }}</p>
+            <button @click="refresh" class="mt-4 px-4 py-2 bg-black text-white rounded-lg">Повторить</button>
+          </div>
+          <div v-else-if="pending" class="text-center py-12 text-gray-400">
+            <div class="loading-spinner"></div>
+            <p class="mt-4">Загрузка...</p>
+          </div>
 
-        <div v-else>
+          <div v-else>
           <!-- Time Period Selector -->
           <div class="period-selector">
             <button 
@@ -237,7 +242,8 @@
               </div>
             </div>
           </div>
-        </div>
+          </div>
+        </ClientOnly>
       </div>
     </main>
   </div>
@@ -271,10 +277,40 @@ const periods = [
   { key: 'all', label: 'Все время' }
 ]
 
-const { data: stats, pending, refresh } = await useFetch('http://localhost:8000/platform/admin/stats', {
+const { data: stats, pending, refresh, error } = await useFetch('http://localhost:8000/platform/admin/stats', {
   server: false,
-  headers: {
-    'Authorization': `Bearer ${token.value}`
+  lazy: true,
+  watch: [token],
+  headers: computed(() => ({
+    'Authorization': token.value ? `Bearer ${token.value}` : ''
+  }))
+})
+
+// Watch for errors and log them
+watch(error, (newError) => {
+  if (newError) {
+    console.error('[Admin Dashboard] Ошибка загрузки статистики:', newError)
+    console.error('[Admin Dashboard] Детали ошибки:', {
+      message: newError.message,
+      statusCode: newError.statusCode,
+      statusMessage: newError.statusMessage,
+      data: newError.data
+    })
+  }
+}, { immediate: true })
+
+// Watch for token changes and refresh data
+watch(token, () => {
+  if (token.value) {
+    console.log('[Admin Dashboard] Токен обновлен, обновляю данные...')
+    refresh()
+  }
+}, { immediate: true })
+
+// Log when data is loaded
+watch(stats, (newStats) => {
+  if (newStats) {
+    console.log('[Admin Dashboard] Данные загружены:', newStats)
   }
 })
 

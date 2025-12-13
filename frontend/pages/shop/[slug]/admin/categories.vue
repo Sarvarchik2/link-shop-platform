@@ -154,21 +154,46 @@ const handleLogout = () => {
   useToast().success('Вы вышли из аккаунта')
 }
 
-const { data: categories, refresh } = await useFetch(`http://localhost:8000/categories?shop_slug=${shopSlug}`, {
-  server: false
+const { data: categories, error, refresh } = await useFetch(`http://localhost:8000/categories?shop_slug=${shopSlug}`, {
+  server: false,
+  lazy: true
+})
+
+watch(categories, (newCategories) => {
+  if (newCategories) {
+    console.log('[Categories List] Категории загружены:', newCategories.length)
+  }
+})
+
+watch(error, (newError) => {
+  if (newError) {
+    console.error('[Categories List] Ошибка загрузки категорий:', newError.message)
+    console.error('[Categories List] Детали ошибки:', {
+      statusCode: newError.statusCode,
+      data: newError.data
+    })
+  }
 })
 
 const deleteCategory = async (id) => {
   if (!confirm('Вы уверены, что хотите удалить эту категорию?')) return
   try {
+    console.log('[Categories List] Удаление категории:', id)
     await $fetch(`http://localhost:8000/categories/${id}`, {
       method: 'DELETE',
       headers: { Authorization: `Bearer ${token.value}` }
     })
+    console.log('[Categories List] Категория удалена успешно')
     refresh()
     useToast().success('Категория удалена')
   } catch (e) {
-    useToast().error('Ошибка при удалении категории')
+    console.error('[Categories List] Ошибка при удалении категории:', e)
+    console.error('[Categories List] Детали ошибки:', {
+      message: e.message,
+      statusCode: e.statusCode,
+      data: e.data
+    })
+    useToast().error(e.data?.detail || e.message || 'Ошибка при удалении категории')
   }
 }
 </script>
