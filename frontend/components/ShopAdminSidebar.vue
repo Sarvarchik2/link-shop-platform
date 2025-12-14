@@ -1,5 +1,12 @@
 <template>
-  <aside class="admin-sidebar">
+  <!-- Sidebar Overlay -->
+  <div 
+    v-if="isOpen" 
+    class="sidebar-overlay" 
+    @click="closeSidebar"
+  ></div>
+
+  <aside class="admin-sidebar" :class="{ open: isOpen }">
     <div class="sidebar-header">
       <div class="sidebar-logo">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -7,10 +14,16 @@
         </svg>
       </div>
       <h2 class="sidebar-title">Панель управления</h2>
+      <button class="close-btn" @click="closeSidebar">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
     </div>
     
     <nav class="sidebar-nav">
-      <NuxtLink :to="`/shop/${shopSlug}/admin`" class="nav-item" :class="{ active: currentRoute === 'dashboard' }">
+      <NuxtLink :to="`/shop/${shopSlug}/admin`" class="nav-item" :class="{ active: currentRoute === 'dashboard' }" @click="closeSidebar">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <rect x="3" y="3" width="7" height="7"></rect>
           <rect x="14" y="3" width="7" height="7"></rect>
@@ -20,7 +33,7 @@
         <span>Главная</span>
       </NuxtLink>
       
-      <NuxtLink :to="`/shop/${shopSlug}/admin/products`" class="nav-item" :class="{ active: currentRoute === 'products' }">
+      <NuxtLink :to="`/shop/${shopSlug}/admin/products`" class="nav-item" :class="{ active: currentRoute === 'products' }" @click="closeSidebar">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
           <line x1="1" y1="10" x2="23" y2="10"></line>
@@ -28,7 +41,7 @@
         <span>Товары</span>
       </NuxtLink>
       
-      <NuxtLink :to="`/shop/${shopSlug}/admin/orders`" class="nav-item" :class="{ active: currentRoute === 'orders' }">
+      <NuxtLink :to="`/shop/${shopSlug}/admin/orders`" class="nav-item" :class="{ active: currentRoute === 'orders' }" @click="closeSidebar">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
           <polyline points="14 2 14 8 20 8"></polyline>
@@ -38,7 +51,7 @@
         <span>Заказы</span>
       </NuxtLink>
       
-      <NuxtLink :to="`/shop/${shopSlug}/admin/categories`" class="nav-item" :class="{ active: currentRoute === 'categories' }">
+      <NuxtLink :to="`/shop/${shopSlug}/admin/categories`" class="nav-item" :class="{ active: currentRoute === 'categories' }" @click="closeSidebar">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <line x1="8" y1="6" x2="21" y2="6"></line>
           <line x1="8" y1="12" x2="21" y2="12"></line>
@@ -50,7 +63,7 @@
         <span>Категории</span>
       </NuxtLink>
       
-      <NuxtLink :to="`/shop/${shopSlug}/admin/brands`" class="nav-item" :class="{ active: currentRoute === 'brands' }">
+      <NuxtLink :to="`/shop/${shopSlug}/admin/brands`" class="nav-item" :class="{ active: currentRoute === 'brands' }" @click="closeSidebar">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
           <line x1="7" y1="7" x2="7.01" y2="7"></line>
@@ -58,7 +71,7 @@
         <span>Бренды</span>
       </NuxtLink>
       
-      <NuxtLink :to="`/shop/${shopSlug}/admin/banner`" class="nav-item" :class="{ active: currentRoute === 'banner' }">
+      <NuxtLink :to="`/shop/${shopSlug}/admin/banner`" class="nav-item" :class="{ active: currentRoute === 'banner' }" @click="closeSidebar">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
           <circle cx="8.5" cy="8.5" r="1.5"></circle>
@@ -67,7 +80,7 @@
         <span>Баннер</span>
       </NuxtLink>
       
-      <NuxtLink :to="`/shop/${shopSlug}/subscription`" class="nav-item" :class="{ active: currentRoute === 'subscription' }">
+      <NuxtLink :to="`/shop/${shopSlug}/subscription`" class="nav-item" :class="{ active: currentRoute === 'subscription' }" @click="closeSidebar">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <line x1="12" y1="1" x2="12" y2="23"></line>
           <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
@@ -77,7 +90,7 @@
     </nav>
     
     <div class="sidebar-footer">
-      <NuxtLink :to="`/${shopSlug}`" class="back-link">
+      <NuxtLink :to="`/${shopSlug}`" class="back-link" @click="closeSidebar">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <line x1="19" y1="12" x2="5" y2="12"></line>
           <polyline points="12 19 5 12 12 5"></polyline>
@@ -105,8 +118,23 @@ const props = defineProps({
   currentRoute: {
     type: String,
     default: 'dashboard'
+  },
+  modelValue: {
+    type: Boolean,
+    default: false
   }
 })
+
+const emit = defineEmits(['update:modelValue'])
+
+const isOpen = computed({
+  get: () => props.modelValue,
+  set: (value) => emit('update:modelValue', value)
+})
+
+const closeSidebar = () => {
+  isOpen.value = false
+}
 
 const { logout } = useAuth()
 
@@ -114,6 +142,12 @@ const handleLogout = () => {
   logout()
   useToast().success('Вы вышли из аккаунта')
 }
+
+// Close sidebar on route change
+const route = useRoute()
+watch(() => route.path, () => {
+  closeSidebar()
+})
 </script>
 
 <style scoped>
@@ -220,16 +254,69 @@ const handleLogout = () => {
   color: #DC2626;
 }
 
+/* Sidebar Overlay */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1001;
+}
+
+/* Close Button */
+.close-btn {
+  display: none;
+  width: 40px;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  background: #F3F4F6;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  color: #111;
+  transition: all 0.2s;
+  margin-left: auto;
+}
+
+.close-btn:hover {
+  background: #E5E7EB;
+}
+
 @media (max-width: 1024px) {
+  .sidebar-overlay {
+    display: block;
+  }
+  
   .admin-sidebar {
-    width: 240px;
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 1002;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
+  }
+  
+  .admin-sidebar.open {
+    transform: translateX(0);
+  }
+  
+  .close-btn {
+    display: flex;
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 640px) {
   .admin-sidebar {
-    transform: translateX(-100%);
-    transition: transform 0.3s;
+    width: 100%;
+    max-width: 320px;
+  }
+  
+  .nav-item {
+    padding: 16px;
+    font-size: 1rem;
   }
 }
 </style>

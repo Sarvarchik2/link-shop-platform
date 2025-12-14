@@ -235,6 +235,9 @@
         </div>
       </div>
     </main>
+
+    <!-- Mobile Bottom Navigation -->
+    <MobileBottomNav />
   </div>
 </template>
 
@@ -382,6 +385,13 @@ const isStatusCompleted = (currentStatus, checkStatus) => {
   max-width: 600px;
   margin: 0 auto;
   width: 100%;
+}
+
+/* Add padding for mobile bottom nav */
+@media (max-width: 767px) {
+  .orders-content {
+    padding-bottom: calc(40px + 80px); /* Base padding + bottom nav height */
+  }
 }
 
 .search-box {

@@ -98,6 +98,9 @@
       </div>
       <button @click="handleCheckout" class="btn-checkout">BUYURTMA BERISH</button>
     </footer>
+
+    <!-- Mobile Bottom Navigation -->
+    <MobileBottomNav />
   </div>
 </template>
 
@@ -178,7 +181,11 @@ const toast = useToast()
 const handleCheckout = () => {
   if (!token.value) {
     toast.warning('Buyurtma berish uchun tizimga kiring')
-    navigateTo('/login')
+    // Save returnUrl - check if we have shop context
+    const { getShopSlug } = useShopContext()
+    const shopSlug = getShopSlug()
+    const returnUrl = shopSlug ? `/${shopSlug}/checkout` : '/checkout'
+    navigateTo(`/login?returnUrl=${encodeURIComponent(returnUrl)}`)
     return
   }
 
@@ -255,6 +262,17 @@ const handleCheckout = () => {
   max-width: 800px;
   margin: 0 auto;
   width: 100%;
+}
+
+/* Add padding for mobile bottom nav */
+@media (max-width: 767px) {
+  .cart-content {
+    padding-bottom: calc(100px + 80px); /* Footer height + bottom nav height */
+  }
+  
+  .cart-footer {
+    bottom: 80px; /* Height of mobile bottom nav */
+  }
 }
 
 .empty-cart {
@@ -470,7 +488,16 @@ const handleCheckout = () => {
   align-items: center;
   justify-content: space-between;
   gap: 20px;
-  z-index: 100;
+  z-index: 99;
+}
+
+/* Adjust footer position on mobile to be above bottom nav */
+@media (max-width: 767px) {
+  .cart-footer {
+    bottom: 80px; /* Height of mobile bottom nav */
+    border-radius: 20px 20px 0 0;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+  }
 }
 
 .total-section {
@@ -535,6 +562,7 @@ const handleCheckout = () => {
     transform: translateX(-50%);
     border-radius: 20px 20px 0 0;
     box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+    bottom: 0; /* Reset bottom position on desktop */
   }
   
   .item-content {

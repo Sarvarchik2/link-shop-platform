@@ -12,11 +12,7 @@
                 <span class="avatar-text">{{ getInitials }}</span>
               </div>
               <h1 class="profile-name">{{ fullName || 'User' }}</h1>
-              <p class="profile-role">
-                <span v-if="user?.role === 'platform_admin'">👑 Админ платформы</span>
-                <span v-else-if="myShops && myShops.length > 0">🏪 Владелец магазина</span>
-                <span v-else>🏪 Владелец магазина</span>
-              </p>
+          
               
               <!-- Links based on role -->
               <div class="profile-role-links">
@@ -32,17 +28,29 @@
                   </svg>
                   Открыть админку платформы
                 </NuxtLink>
-                <NuxtLink 
-                  v-else-if="myShops && myShops.length > 0" 
-                  :to="`/shop/${myShops[0].slug}/admin`" 
-                  class="role-link shop-link"
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                  </svg>
-                  Мой магазин
-                </NuxtLink>
+                <template v-else-if="user?.role === 'shop_owner' && myShops && myShops.length > 0">
+                  <NuxtLink 
+                    :to="`/${myShops[0].slug}`" 
+                    class="role-link shop-link"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                      <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                    </svg>
+                    Мой магазин
+                  </NuxtLink>
+                  <NuxtLink 
+                    :to="`/shop/${myShops[0].slug}/admin`" 
+                    class="role-link shop-admin-link"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                      <path d="M2 17l10 5 10-5"></path>
+                      <path d="M2 12l10 5 10-5"></path>
+                    </svg>
+                    Админка магазина
+                  </NuxtLink>
+                </template>
               </div>
               
               <!-- Desktop Quick Stats -->
@@ -53,7 +61,9 @@
                 </div>
                 <div class="stat-divider"></div>
                 <div class="stat-item">
-                  <span class="stat-value role-indicator" :class="user?.role">{{ user?.role === 'admin' ? 'Admin' : 'Foydalanuvchi' }}</span>
+                  <span class="stat-value role-indicator" :class="user?.role">
+                    {{ user?.role === 'platform_admin' ? 'Admin' : user?.role === 'shop_owner' ? 'Владелец магазина' : 'Foydalanuvchi' }}
+                  </span>
                   <span class="stat-label">Rol</span>
                 </div>
               </div>
@@ -229,16 +239,6 @@
             </div>
           </div>
 
-          <!-- Create Shop Button (only if user has shops) -->
-          <div v-if="myShops && myShops.length > 0" class="create-shop-section">
-            <NuxtLink to="/register-shop" class="create-shop-btn">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="12" y1="5" x2="12" y2="19"></line>
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-              </svg>
-              Создать еще один магазин
-            </NuxtLink>
-          </div>
 
           <!-- Platform Admin Section -->
           <div v-if="user?.role === 'platform_admin'" class="platform-admin-section">
@@ -324,12 +324,25 @@ const refreshShops = async () => {
     const shops = await $fetch('http://localhost:8000/platform/shops/me', {
       headers: {
         'Authorization': `Bearer ${token.value}`
+      },
+      // Не выводить ошибки в консоль для 404 - это нормально, если у пользователя нет магазинов
+      onResponseError({ response }) {
+        if (response.status === 404) {
+          // 404 означает, что у пользователя нет магазинов - это нормально
+          return
+        }
       }
     })
     myShops.value = shops || []
   } catch (e) {
-    // Ignore 404 errors silently - user might not have shops yet
-    if (e?.statusCode !== 404) {
+    // Ignore 404 and 401 errors silently - user might not have shops or not authenticated yet
+    if (e?.statusCode === 404 || e?.statusCode === 401) {
+      myShops.value = []
+      shopsPending.value = false
+      return
+    }
+    // Log other errors
+    if (e?.statusCode !== 404 && e?.statusCode !== 401) {
       shopsError.value = e
       console.error('[Profile] Ошибка загрузки магазинов:', e)
     }
@@ -370,11 +383,19 @@ onMounted(async () => {
     }
   }
   
+  // Небольшая задержка, чтобы убедиться, что все загружено
+  await nextTick()
+  
   // Делаем запрос только если пользователь загружен и имеет нужную роль
   if (token.value && user.value?.role) {
     const userRole = user.value.role
     if (userRole === 'shop_owner' || userRole === 'platform_admin') {
-      await refreshShops()
+      // Добавляем небольшую задержку, чтобы избежать гонки условий
+      setTimeout(() => {
+        if (token.value && user.value?.role) {
+          refreshShops()
+        }
+      }, 100)
     }
   }
 })
@@ -513,6 +534,9 @@ const handleLogout = () => {
 
 .profile-role-links {
   margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .role-link {
@@ -550,6 +574,17 @@ const handleLogout = () => {
   background: #000;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.role-link.shop-admin-link {
+  background: linear-gradient(135deg, #6366F1 0%, #4F46E5 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+}
+
+.role-link.shop-admin-link:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
 }
 
 .role-link svg {
@@ -620,11 +655,12 @@ const handleLogout = () => {
 }
 
 .section-title {
-  font-size: 0.875rem;
-  font-weight: 700;
-  color: #9CA3AF;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #111;
+  text-transform: none;
+  letter-spacing: -0.02em;
+  margin-bottom: 24px;
   margin-bottom: 12px;
   padding-left: 4px;
 }
@@ -713,50 +749,55 @@ const handleLogout = () => {
 
 /* Shops Section */
 .shops-section {
-  margin-top: 24px;
+  margin-top: 32px;
 }
 
 .shops-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
 }
 
 .shop-item {
   background: white;
-  border: 2px solid #E5E7EB;
-  border-radius: 16px;
-  padding: 20px;
+  border: 1px solid #E5E7EB;
+  border-radius: 20px;
+  padding: 24px;
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  transition: all 0.2s;
+  align-items: flex-start;
+  gap: 24px;
+  transition: all 0.3s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
 }
 
 .shop-item:hover {
-  border-color: #111;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  border-color: #D1D5DB;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  transform: translateY(-2px);
 }
 
 .shop-info {
   display: flex;
-  align-items: center;
-  gap: 16px;
+  align-items: flex-start;
+  gap: 20px;
   flex: 1;
 }
 
 .shop-logo-small {
-  width: 50px;
-  height: 50px;
-  border-radius: 12px;
-  background: #F3F4F6;
+  width: 72px;
+  height: 72px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #F3F4F6 0%, #E5E7EB 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
   font-weight: 700;
-  font-size: 1.25rem;
+  font-size: 1.5rem;
   color: #111;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
 
 .shop-logo-small img {
@@ -770,24 +811,27 @@ const handleLogout = () => {
 }
 
 .shop-name-small {
-  font-size: 1rem;
-  font-weight: 700;
-  margin: 0 0 4px 0;
+  font-size: 1.125rem;
+  font-weight: 800;
+  margin: 0 0 6px 0;
   color: #111;
+  letter-spacing: -0.01em;
 }
 
 .shop-url {
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   color: #6B7280;
-  margin: 0 0 8px 0;
+  margin: 0 0 12px 0;
+  font-weight: 500;
 }
 
 .shop-status-badge {
   display: inline-block;
-  padding: 4px 12px;
-  border-radius: 12px;
-  font-size: 0.75rem;
-  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 16px;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
 }
 
 .shop-status-badge.status-trial {
@@ -812,65 +856,92 @@ const handleLogout = () => {
 
 .shop-actions {
   display: flex;
-  gap: 8px;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 160px;
 }
 
 .shop-action-btn {
-  padding: 8px 16px;
-  border-radius: 8px;
+  padding: 12px 18px;
+  border-radius: 12px;
   font-size: 0.875rem;
   font-weight: 600;
   text-decoration: none;
   transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  white-space: nowrap;
 }
 
 .shop-action-btn.view {
-  background: #F3F4F6;
+  background: #F9FAFB;
   color: #111;
-  border: 1px solid #E5E7EB;
+  border: 2px solid #E5E7EB;
 }
 
 .shop-action-btn.view:hover {
-  background: #E5E7EB;
+  background: #F3F4F6;
+  border-color: #D1D5DB;
+  transform: translateY(-1px);
 }
 
 .shop-action-btn.admin {
-  background: #111;
+  background: linear-gradient(135deg, #6366F1 0%, #4F46E5 100%);
   color: white;
+  border: none;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
 }
 
 .shop-action-btn.admin:hover {
-  background: #000;
+  background: linear-gradient(135deg, #4F46E5 0%, #4338CA 100%);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+  transform: translateY(-1px);
 }
 
 .shop-action-btn.subscription {
-  background: #FEF3C7;
+  background: linear-gradient(135deg, #FCD34D 0%, #FBBF24 100%);
   color: #92400E;
+  border: none;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
+  box-shadow: 0 2px 8px rgba(251, 191, 36, 0.3);
+  font-weight: 700;
 }
 
 .shop-action-btn.subscription:hover {
-  background: #FDE68A;
+  background: linear-gradient(135deg, #FBBF24 0%, #F59E0B 100%);
+  box-shadow: 0 4px 12px rgba(251, 191, 36, 0.4);
   transform: translateY(-2px);
 }
 
 .shop-action-btn svg {
   flex-shrink: 0;
+  width: 16px;
+  height: 16px;
 }
 
 .subscription-info {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  margin-top: 8px;
+  gap: 8px;
+  margin-top: 12px;
 }
 
 .subscription-expires {
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   color: #6B7280;
   font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.subscription-expires::before {
+  content: '⏰';
+  font-size: 0.875rem;
 }
 
 .create-shop-section {
@@ -1194,6 +1265,26 @@ const handleLogout = () => {
   .app-version {
     text-align: left;
     margin-top: 8px;
+  }
+  
+  /* Shop items on mobile */
+  .shop-item {
+    flex-direction: column;
+    gap: 16px;
+    padding: 20px;
+  }
+  
+  .shop-info {
+    width: 100%;
+  }
+  
+  .shop-actions {
+    width: 100%;
+    min-width: auto;
+  }
+  
+  .shop-action-btn {
+    width: 100%;
   }
 }
 

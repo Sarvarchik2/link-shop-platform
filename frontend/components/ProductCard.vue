@@ -82,7 +82,9 @@ const toggleFav = async () => {
   // Check if user is logged in
   if (!user.value) {
     useToast().warning('Please login to add items to favorites')
-    navigateTo('/login')
+    // Save returnUrl - preserve current product page
+    const returnUrl = productUrl.value
+    navigateTo(`/login?returnUrl=${encodeURIComponent(returnUrl)}`)
     return
   }
   

@@ -43,7 +43,7 @@
           
           <div class="form-footer">
             <span class="footer-text">Нет аккаунта?</span>
-            <NuxtLink to="/register" class="footer-link">Зарегистрироваться</NuxtLink>
+            <NuxtLink :to="registerLink" class="footer-link">Зарегистрироваться</NuxtLink>
           </div>
         </form>
       </div>
@@ -51,15 +51,60 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 definePageMeta({
   layout: false
 })
 
+const route = useRoute()
 const phone = ref('')
 const password = ref('')
 const loading = ref(false)
 const { login } = useAuth()
+
+// Save returnUrl when page loads
+onMounted(() => {
+  let returnUrl: string | null = null;
+  
+  if (Array.isArray(route.query.returnUrl)) {
+    returnUrl = route.query.returnUrl[0] || null
+  } else if (typeof route.query.returnUrl === 'string') {
+    returnUrl = route.query.returnUrl
+  }
+  
+  if (returnUrl) {
+    localStorage.setItem('returnUrl', returnUrl)
+  } else {
+    // If no returnUrl in query, check if we came from a shop page
+    // by checking saved shop context
+    const { getShopSlug } = useShopContext()
+    const shopSlug = getShopSlug()
+    if (shopSlug) {
+      // User came from a shop, save shop home as returnUrl
+      localStorage.setItem('returnUrl', `/${shopSlug}`)
+    } else {
+      // User came from platform, save platform home
+      localStorage.setItem('returnUrl', '/')
+    }
+  }
+})
+
+// Preserve returnUrl when linking to register
+const registerLink = computed(() => {
+  let queryReturnUrl: string | null = null;
+  
+  if (Array.isArray(route.query.returnUrl)) {
+    queryReturnUrl = route.query.returnUrl[0] || null
+  } else if (typeof route.query.returnUrl === 'string') {
+    queryReturnUrl = route.query.returnUrl
+  }
+  
+  const returnUrl = queryReturnUrl || (process.client ? localStorage.getItem('returnUrl') : null)
+  if (returnUrl) {
+    return `/register?returnUrl=${encodeURIComponent(returnUrl)}`
+  }
+  return '/register'
+})
 
 const handleLogin = async () => {
   if (loading.value) return

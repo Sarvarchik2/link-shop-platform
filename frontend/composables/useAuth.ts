@@ -18,8 +18,29 @@ export const useAuth = () => {
             token.value = data.access_token
             await fetchUser()
             useToast().success('Добро пожаловать!')
-        if (redirect) {
-                await navigateTo('/')
+            
+            if (redirect) {
+                // Get return URL from query params or localStorage
+                const route = useRoute()
+                let queryReturnUrl: string | null = null
+                
+                if (Array.isArray(route.query.returnUrl)) {
+                    queryReturnUrl = route.query.returnUrl[0] || null
+                } else if (typeof route.query.returnUrl === 'string') {
+                    queryReturnUrl = route.query.returnUrl
+                }
+                
+                const returnUrl = queryReturnUrl || (process.client ? localStorage.getItem('returnUrl') : null)
+                
+                if (returnUrl) {
+                    // Clear returnUrl from localStorage
+                    if (process.client) {
+                        localStorage.removeItem('returnUrl')
+                    }
+                    await navigateTo(returnUrl)
+                } else {
+                    await navigateTo('/')
+                }
             }
         } catch (error) {
             console.error('Login error:', error)
@@ -39,7 +60,28 @@ export const useAuth = () => {
             token.value = data.access_token
             await fetchUser()
             useToast().success('Аккаунт успешно создан!')
-            await navigateTo('/')
+            
+            // Get return URL from query params or localStorage
+            const route = useRoute()
+            let queryReturnUrl: string | null = null
+            
+            if (Array.isArray(route.query.returnUrl)) {
+                queryReturnUrl = route.query.returnUrl[0] || null
+            } else if (typeof route.query.returnUrl === 'string') {
+                queryReturnUrl = route.query.returnUrl
+            }
+            
+            const returnUrl = queryReturnUrl || (process.client ? localStorage.getItem('returnUrl') : null)
+            
+            if (returnUrl) {
+                // Clear returnUrl from localStorage
+                if (process.client) {
+                    localStorage.removeItem('returnUrl')
+                }
+                await navigateTo(returnUrl)
+            } else {
+                await navigateTo('/')
+            }
         } catch (error) {
             console.error('Register error:', error)
             throw error

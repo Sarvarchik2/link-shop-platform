@@ -15,8 +15,14 @@
 
         <!-- Navigation (Desktop only) -->
         <nav class="nav-links">
-          <NuxtLink :to="homeLink" class="nav-link">Главная</NuxtLink>
-          <NuxtLink :to="shopProductsLink" class="nav-link">Магазин</NuxtLink>
+          <ClientOnly>
+            <NuxtLink :to="homeLink" class="nav-link">Главная</NuxtLink>
+            <NuxtLink :to="shopProductsLink" class="nav-link">Магазин</NuxtLink>
+            <template #fallback>
+              <NuxtLink to="/" class="nav-link">Главная</NuxtLink>
+              <NuxtLink to="/products" class="nav-link">Магазин</NuxtLink>
+            </template>
+          </ClientOnly>
           <NuxtLink v-if="user" to="/orders" class="nav-link">Заказы</NuxtLink>
         </nav>
 
@@ -60,21 +66,40 @@
 
   <!-- Mobile Bottom Navigation -->
   <nav class="mobile-nav">
-    <NuxtLink to="/" class="mobile-nav-item">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-        <polyline points="9 22 9 12 15 12 15 22"></polyline>
-      </svg>
-      <span>Bosh sahifa</span>
-    </NuxtLink>
-    
-    <NuxtLink to="/products" class="mobile-nav-item">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
-        <line x1="1" y1="10" x2="23" y2="10"></line>
-      </svg>
-      <span>Mahsulotlar</span>
-    </NuxtLink>
+    <ClientOnly>
+      <NuxtLink :to="homeLink" class="mobile-nav-item">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+        <span>Bosh sahifa</span>
+      </NuxtLink>
+      
+      <NuxtLink :to="shopProductsLink" class="mobile-nav-item">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+          <line x1="1" y1="10" x2="23" y2="10"></line>
+        </svg>
+        <span>Mahsulotlar</span>
+      </NuxtLink>
+      <template #fallback>
+        <NuxtLink to="/" class="mobile-nav-item">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+          <span>Bosh sahifa</span>
+        </NuxtLink>
+        
+        <NuxtLink to="/products" class="mobile-nav-item">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+            <line x1="1" y1="10" x2="23" y2="10"></line>
+          </svg>
+          <span>Mahsulotlar</span>
+        </NuxtLink>
+      </template>
+    </ClientOnly>
     
     <NuxtLink to="/cart" class="mobile-nav-item cart-nav-item">
       <div class="cart-icon-wrapper">
@@ -140,12 +165,24 @@ const refreshShops = async () => {
     const shops = await $fetch('http://localhost:8000/platform/shops/me', {
       headers: {
         'Authorization': `Bearer ${token.value}`
+      },
+      // Не выводить ошибки в консоль для 404 - это нормально, если у пользователя нет магазинов
+      onResponseError({ response }) {
+        if (response.status === 404) {
+          // 404 означает, что у пользователя нет магазинов - это нормально
+          return
+        }
       }
     })
     myShops.value = shops || []
   } catch (e) {
-    // Ignore 404 errors silently - user might not have shops
-    if (e?.statusCode !== 404) {
+    // Ignore 404 and 401 errors silently - user might not have shops or not authenticated yet
+    if (e?.statusCode === 404 || e?.statusCode === 401) {
+      myShops.value = []
+      return
+    }
+    // Log other errors
+    if (e?.statusCode !== 404 && e?.statusCode !== 401) {
       shopsError.value = e
       console.error('[AppHeader] Ошибка загрузки магазинов:', e)
     }
@@ -183,37 +220,63 @@ onMounted(async () => {
     }
   }
   
+  // Небольшая задержка, чтобы убедиться, что все загружено
+  await nextTick()
+  
   // Делаем запрос только если пользователь загружен и имеет нужную роль
   if (token.value && user.value?.role) {
     const userRole = user.value.role
     if (userRole === 'shop_owner' || userRole === 'platform_admin') {
-      await refreshShops()
+      // Добавляем небольшую задержку, чтобы избежать гонки условий
+      setTimeout(() => {
+        if (token.value && user.value?.role) {
+          refreshShops()
+        }
+      }, 100)
     }
   }
 })
 
 const route = useRoute()
+const { getCurrentShopSlug, clearShopContext } = useShopContext()
 
-// Determine home link - if on shop page, link to shop home, otherwise to platform home
+// Get shop slug from route or saved context
+const shopSlug = computed(() => getCurrentShopSlug(route))
+
+// Clear shop context when explicitly navigating to platform pages (not user pages)
+watch(() => route.path, (newPath) => {
+  // Don't clear context on user-specific pages (cart, profile, favorites, orders, checkout)
+  const userPages = ['/cart', '/profile', '/favorites', '/orders', '/checkout', '/login', '/register']
+  if (userPages.some(page => newPath === page || newPath.startsWith(page + '/'))) {
+    return
+  }
+  
+  // Clear context if user navigates to platform pages (not shop pages)
+  if (newPath === '/' || newPath === '/products' || newPath.startsWith('/platform')) {
+    // Only clear if we're not on a shop page
+    const routeSlug = route.params?.shop || route.params?.slug
+    if (!routeSlug) {
+      clearShopContext()
+    }
+  }
+}, { immediate: false })
+
+// Determine home link - if on shop page or have saved shop context, link to shop home, otherwise to platform home
 const homeLink = computed(() => {
-  // Check if we're on a shop page
-  const shopSlug = route.params.shop
-  if (shopSlug) {
-    return `/${shopSlug}`
+  if (shopSlug.value) {
+    return `/${shopSlug.value}`
   }
   // Otherwise link to platform home
   return '/'
 })
 
-// Determine shop products link - if on shop page, link to its products, otherwise to platform
+// Determine shop products link - if on shop page or have saved shop context, link to its products, otherwise to platform
 const shopProductsLink = computed(() => {
-  // Check if we're on a shop page
-  const shopSlug = route.params.shop
-  if (shopSlug) {
-    return `/${shopSlug}/products`
+  if (shopSlug.value) {
+    return `/${shopSlug.value}/products`
   }
-  // Otherwise link to platform (list of all shops)
-  return '/platform'
+  // Otherwise link to platform products (all shops)
+  return '/products'
 })
 
 const getProfileLink = computed(() => {

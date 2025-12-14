@@ -2,6 +2,7 @@ from typing import Optional, List
 import os
 import uuid
 import base64
+import json
 from fastapi import FastAPI, HTTPException, Query, Depends, status, UploadFile, File
 from fastapi.staticfiles import StaticFiles
 from sqlmodel import Field, Session, SQLModel, create_engine, select
@@ -134,6 +135,31 @@ class SubscriptionPlanRead(SQLModel):
     is_trial: bool
     display_order: int
     created_at: datetime
+
+class SubscriptionRequest(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    shop_id: int = Field(foreign_key="shop.id", index=True)
+    plan_id: int = Field(foreign_key="subscriptionplan.id")
+    duration_months: int = 1  # 1, 3, 6, 12 месяцев
+    status: str = "pending"  # pending, approved, rejected
+    requested_at: datetime = Field(default_factory=datetime.utcnow)
+    approved_at: Optional[datetime] = None
+    notes: Optional[str] = None  # Заметки от администратора
+
+class SubscriptionRequestCreate(SQLModel):
+    plan_id: int
+    duration_months: int = 1
+
+class SubscriptionRequestRead(SQLModel):
+    id: int
+    shop_id: int
+    plan_id: int
+    plan_name: Optional[str] = None
+    duration_months: int
+    status: str
+    requested_at: datetime
+    approved_at: Optional[datetime] = None
+    notes: Optional[str] = None
 
 class Brand(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -599,6 +625,11 @@ def on_startup():
 @app.post("/platform/shops/register", response_model=ShopRead)
 def register_shop(shop: ShopCreate, current_user: User = Depends(get_current_user)):
     with Session(engine) as session:
+        # Check if user already has a shop (one shop per account limit)
+        existing_user_shop = session.exec(select(Shop).where(Shop.owner_id == current_user.id)).first()
+        if existing_user_shop:
+            raise HTTPException(status_code=400, detail="Вы уже создали магазин. На один аккаунт можно создать только один магазин.")
+        
         # Check if slug is already taken
         existing_shop = session.exec(select(Shop).where(Shop.slug == shop.slug)).first()
         if existing_shop:
@@ -632,16 +663,16 @@ def get_all_shops():
         shops = session.exec(select(Shop).where(Shop.is_active == True)).all()
         return shops
 
-@app.get("/platform/shops/{shop_slug}", response_model=ShopRead)
-def get_shop_by_slug_endpoint(shop_slug: str):
-    shop = get_shop_by_slug(shop_slug)
-    return shop
-
 @app.get("/platform/shops/me", response_model=List[ShopRead])
 def get_my_shops(current_user: User = Depends(get_current_user)):
     with Session(engine) as session:
         shops = session.exec(select(Shop).where(Shop.owner_id == current_user.id)).all()
         return shops
+
+@app.get("/platform/shops/{shop_slug}", response_model=ShopRead)
+def get_shop_by_slug_endpoint(shop_slug: str):
+    shop = get_shop_by_slug(shop_slug)
+    return shop
 
 @app.get("/platform/admin/shops", response_model=List[ShopReadWithOwner])
 def get_all_shops_admin(current_user: User = Depends(get_current_platform_admin)):
@@ -1615,6 +1646,86 @@ def delete_subscription_plan(plan_id: int, current_user: User = Depends(get_curr
         session.delete(plan)
         session.commit()
         return {"message": "Subscription plan deleted successfully"}
+
+# --- Subscription Requests Endpoints ---
+
+@app.post("/shop/{shop_slug}/subscription/request", response_model=SubscriptionRequestRead)
+def create_subscription_request(shop_slug: str, request_data: SubscriptionRequestCreate, current_user: User = Depends(get_current_user)):
+    """Create a subscription request - only shop owner"""
+    shop = get_shop_owner_or_admin(shop_slug, current_user)
+    
+    with Session(engine) as session:
+        # Проверяем, что план существует
+        plan = session.get(SubscriptionPlan, request_data.plan_id)
+        if not plan:
+            raise HTTPException(status_code=404, detail="Subscription plan not found")
+        
+        # Проверяем, что длительность валидна
+        if request_data.duration_months not in [1, 3, 6, 12]:
+            raise HTTPException(status_code=400, detail="Duration must be 1, 3, 6, or 12 months")
+        
+        # Проверяем, нет ли уже активного запроса
+        existing_request = session.exec(
+            select(SubscriptionRequest)
+            .where(SubscriptionRequest.shop_id == shop.id)
+            .where(SubscriptionRequest.status == "pending")
+        ).first()
+        
+        if existing_request:
+            raise HTTPException(status_code=400, detail="У вас уже есть активный запрос на подписку. Дождитесь ответа администратора.")
+        
+        # Создаем запрос
+        subscription_request = SubscriptionRequest(
+            shop_id=shop.id,
+            plan_id=request_data.plan_id,
+            duration_months=request_data.duration_months,
+            status="pending"
+        )
+        session.add(subscription_request)
+        session.commit()
+        session.refresh(subscription_request)
+        
+        return SubscriptionRequestRead(
+            id=subscription_request.id,
+            shop_id=subscription_request.shop_id,
+            plan_id=subscription_request.plan_id,
+            plan_name=plan.name,
+            duration_months=subscription_request.duration_months,
+            status=subscription_request.status,
+            requested_at=subscription_request.requested_at,
+            approved_at=subscription_request.approved_at,
+            notes=subscription_request.notes
+        )
+
+@app.get("/shop/{shop_slug}/subscription/request", response_model=Optional[SubscriptionRequestRead])
+def get_subscription_request(shop_slug: str, current_user: User = Depends(get_current_user)):
+    """Get current subscription request for shop - only shop owner"""
+    shop = get_shop_owner_or_admin(shop_slug, current_user)
+    
+    with Session(engine) as session:
+        # Получаем последний запрос (pending или недавно обработанный)
+        request = session.exec(
+            select(SubscriptionRequest)
+            .where(SubscriptionRequest.shop_id == shop.id)
+            .order_by(SubscriptionRequest.requested_at.desc())
+        ).first()
+        
+        if not request:
+            return None
+        
+        plan = session.get(SubscriptionPlan, request.plan_id)
+        
+        return SubscriptionRequestRead(
+            id=request.id,
+            shop_id=request.shop_id,
+            plan_id=request.plan_id,
+            plan_name=plan.name if plan else None,
+            duration_months=request.duration_months,
+            status=request.status,
+            requested_at=request.requested_at,
+            approved_at=request.approved_at,
+            notes=request.notes
+        )
 
 @app.get("/shop/{shop_slug}/admin/orders", response_model=List[OrderReadWithUser])
 def get_shop_orders(shop_slug: str, current_user: User = Depends(get_current_user)):

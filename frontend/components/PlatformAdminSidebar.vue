@@ -1,5 +1,12 @@
 <template>
-  <aside class="admin-sidebar">
+  <!-- Sidebar Overlay -->
+  <div 
+    v-if="isOpen" 
+    class="sidebar-overlay" 
+    @click="closeSidebar"
+  ></div>
+
+  <aside class="admin-sidebar" :class="{ open: isOpen }">
     <div class="sidebar-header">
       <div class="sidebar-logo">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -9,10 +16,16 @@
         </svg>
       </div>
       <h2 class="sidebar-title">Панель управления</h2>
+      <button class="close-btn" @click="closeSidebar">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
     </div>
     
     <nav class="sidebar-nav">
-      <NuxtLink to="/platform/admin" class="nav-item" :class="{ active: currentRoute === 'dashboard' }">
+      <NuxtLink to="/platform/admin" class="nav-item" :class="{ active: currentRoute === 'dashboard' }" @click="closeSidebar">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <rect x="3" y="3" width="7" height="7"></rect>
           <rect x="14" y="3" width="7" height="7"></rect>
@@ -22,14 +35,14 @@
         <span>Главная</span>
       </NuxtLink>
       
-      <NuxtLink to="/platform/admin/shops" class="nav-item" :class="{ active: currentRoute === 'shops' }">
+      <NuxtLink to="/platform/admin/shops" class="nav-item" :class="{ active: currentRoute === 'shops' }" @click="closeSidebar">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M20 7h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v3H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2z"></path>
         </svg>
         <span>Магазины</span>
       </NuxtLink>
       
-      <NuxtLink to="/platform/admin/users" class="nav-item" :class="{ active: currentRoute === 'users' }">
+      <NuxtLink to="/platform/admin/users" class="nav-item" :class="{ active: currentRoute === 'users' }" @click="closeSidebar">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
           <circle cx="9" cy="7" r="4"></circle>
@@ -39,7 +52,7 @@
         <span>Пользователи</span>
       </NuxtLink>
       
-      <NuxtLink to="/platform/admin/subscription-plans" class="nav-item" :class="{ active: currentRoute === 'subscription-plans' }">
+      <NuxtLink to="/platform/admin/subscription-plans" class="nav-item" :class="{ active: currentRoute === 'subscription-plans' }" @click="closeSidebar">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
           <line x1="16" y1="2" x2="16" y2="6"></line>
@@ -52,7 +65,7 @@
     </nav>
     
     <div class="sidebar-footer">
-      <NuxtLink to="/" class="back-link">
+      <NuxtLink to="/" class="back-link" @click="closeSidebar">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <line x1="19" y1="12" x2="5" y2="12"></line>
           <polyline points="12 19 5 12 12 5"></polyline>
@@ -72,14 +85,33 @@
 </template>
 
 <script setup>
-defineProps({
+const props = defineProps({
   currentRoute: {
     type: String,
     default: 'dashboard'
+  },
+  modelValue: {
+    type: Boolean,
+    default: false
   }
 })
 
-defineEmits(['logout'])
+const emit = defineEmits(['logout', 'update:modelValue'])
+
+const isOpen = computed({
+  get: () => props.modelValue,
+  set: (value) => emit('update:modelValue', value)
+})
+
+const closeSidebar = () => {
+  isOpen.value = false
+}
+
+// Close sidebar on route change
+const route = useRoute()
+watch(() => route.path, () => {
+  closeSidebar()
+})
 </script>
 
 <style scoped>
@@ -190,10 +222,69 @@ defineEmits(['logout'])
   color: #DC2626;
 }
 
-@media (max-width: 768px) {
+/* Sidebar Overlay */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1001;
+}
+
+/* Close Button */
+.close-btn {
+  display: none;
+  width: 40px;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  background: #F3F4F6;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  color: #111;
+  transition: all 0.2s;
+  margin-left: auto;
+}
+
+.close-btn:hover {
+  background: #E5E7EB;
+}
+
+@media (max-width: 1024px) {
+  .sidebar-overlay {
+    display: block;
+  }
+  
   .admin-sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 1002;
     transform: translateX(-100%);
-    transition: transform 0.3s;
+    transition: transform 0.3s ease;
+    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
+  }
+  
+  .admin-sidebar.open {
+    transform: translateX(0);
+  }
+  
+  .close-btn {
+    display: flex;
+  }
+}
+
+@media (max-width: 640px) {
+  .admin-sidebar {
+    width: 100%;
+    max-width: 320px;
+  }
+  
+  .nav-item {
+    padding: 16px;
+    font-size: 1rem;
   }
 }
 </style>

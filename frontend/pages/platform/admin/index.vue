@@ -1,6 +1,33 @@
 <template>
   <div class="platform-admin-page">
-    <PlatformAdminSidebar :current-route="currentRoute" @logout="handleLogout" />
+    <!-- Mobile Header -->
+    <header class="mobile-header">
+      <button class="menu-btn" @click="sidebarOpen = !sidebarOpen">
+        <svg v-if="!sidebarOpen" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+        <svg v-else width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+      <span class="mobile-title">Панель управления</span>
+      <NuxtLink to="/" class="home-btn">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+      </NuxtLink>
+    </header>
+
+    <PlatformAdminSidebar 
+      :current-route="currentRoute" 
+      :model-value="sidebarOpen"
+      @update:model-value="sidebarOpen = $event"
+      @logout="handleLogout" 
+    />
 
     <!-- Main Content -->
     <main class="admin-main">
@@ -421,6 +448,8 @@ const route = useRoute()
 const { token, logout } = useAuth()
 const router = useRouter()
 
+const sidebarOpen = ref(false)
+
 const handleLogout = () => {
   logout()
   useToast().success('Вы вышли из аккаунта')
@@ -769,6 +798,49 @@ const getSubscriptionOffset = (status, stats) => {
   min-height: 100vh;
   display: flex;
   background: #F5F7FA;
+}
+
+/* Mobile Header */
+.mobile-header {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: white;
+  border-bottom: 1px solid #E5E7EB;
+  padding: 0 16px;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 1000;
+}
+
+.menu-btn,
+.home-btn {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #F3F4F6;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  color: #111;
+  transition: all 0.2s;
+}
+
+.menu-btn:hover,
+.home-btn:hover {
+  background: #111;
+  color: white;
+}
+
+.mobile-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #111;
 }
 
 /* Main Content */
@@ -1524,8 +1596,13 @@ const getSubscriptionOffset = (status, stats) => {
 }
 
 @media (max-width: 1024px) {
+  .mobile-header {
+    display: flex;
+  }
+  
   .admin-main {
-    margin-left: 240px;
+    margin-left: 0;
+    padding-top: 60px;
   }
   
   .chart-container {
@@ -1555,13 +1632,9 @@ const getSubscriptionOffset = (status, stats) => {
 }
 
 @media (max-width: 768px) {
-  .admin-sidebar {
-    transform: translateX(-100%);
-    transition: transform 0.3s;
-  }
-  
   .admin-main {
     margin-left: 0;
+    padding-top: 60px;
   }
   
   .stats-grid,

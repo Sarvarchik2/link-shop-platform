@@ -304,6 +304,9 @@ const selectSize = (size) => {
 }
 
 const canAddToCart = computed(() => {
+  // User must be logged in to add to cart
+  if (!user.value) return false
+  
   if (!product.value) return false
   
   // If product has variants (sizes + colors)
@@ -325,6 +328,11 @@ const canAddToCart = computed(() => {
 const buttonText = computed(() => {
   if (!product.value) return 'Yuklanmoqda...'
   
+  // Check if user is logged in
+  if (!user.value) {
+    return 'TIZIMGA KIRING'
+  }
+  
   // If product has variants
   if (productVariants.value.length > 0) {
     if (!selectedColor.value) return 'Rangni tanlang'
@@ -343,6 +351,15 @@ const buttonText = computed(() => {
 const toast = useToast()
 
 const addToCart = () => {
+  // Check if user is logged in
+  if (!user.value) {
+    toast.warning('Savatga qo\'shish uchun tizimga kiring')
+    // Save returnUrl - if we're in a shop, return to shop, otherwise to current page
+    const returnUrl = shopSlug ? `/${shopSlug}/products/${route.params.id}` : `/products/${route.params.id}`
+    navigateTo(`/login?returnUrl=${encodeURIComponent(returnUrl)}`)
+    return
+  }
+  
   if (!canAddToCart.value) {
     // If product has sizes, color is required
     if (productSizes.value.length > 0) {
@@ -394,7 +411,9 @@ const addToCart = () => {
 const toggleFavorite = async () => {
   if (!user.value) {
     toast.warning('Sevimlilar ro\'yxatiga qo\'shish uchun tizimga kiring')
-    navigateTo('/login')
+    // Save returnUrl - if we're in a shop, return to shop, otherwise to current page
+    const returnUrl = shopSlug ? `/${shopSlug}/products/${route.params.id}` : `/products/${route.params.id}`
+    navigateTo(`/login?returnUrl=${encodeURIComponent(returnUrl)}`)
     return
   }
   

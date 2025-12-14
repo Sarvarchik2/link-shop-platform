@@ -5,7 +5,21 @@
         <h1 class="page-title">Создать магазин</h1>
         <p class="page-subtitle">Зарегистрируйте свой магазин на платформе</p>
 
-        <form @submit.prevent="registerShop" class="register-form">
+        <div v-if="checkingShops" class="auth-notice">
+          <p>Проверка...</p>
+        </div>
+
+        <div v-else-if="myShops && myShops.length > 0" class="auth-notice already-has-shop">
+          <div class="notice-icon">⚠️</div>
+          <h3>У вас уже есть магазин</h3>
+          <p>На один аккаунт можно создать только один магазин.</p>
+          <div class="auth-actions">
+            <NuxtLink :to="`/shop/${myShops[0].slug}/admin`" class="btn-primary">Перейти в админку магазина</NuxtLink>
+            <NuxtLink to="/profile" class="btn-secondary">Вернуться в профиль</NuxtLink>
+          </div>
+        </div>
+
+        <form v-else @submit.prevent="registerShop" class="register-form">
           <div class="form-group">
             <label for="name">Название магазина *</label>
             <input 
@@ -86,7 +100,7 @@ definePageMeta({
   middleware: 'auth'
 })
 
-const { token, fetchUser } = useAuth()
+const { token, fetchUser, user } = useAuth()
 const router = useRouter()
 const toast = useToast()
 
@@ -99,6 +113,8 @@ const form = reactive({
 
 const loading = ref(false)
 const error = ref('')
+const myShops = ref([])
+const checkingShops = ref(true)
 
 const formatSlug = () => {
   form.slug = form.slug
@@ -107,6 +123,51 @@ const formatSlug = () => {
     .replace(/-+/g, '-')
     .replace(/^-|-$/g, '')
 }
+
+// Проверяем, есть ли у пользователя уже магазин
+const checkExistingShop = async () => {
+  if (!token.value || !user.value) {
+    checkingShops.value = false
+    return
+  }
+
+  // Проверяем роль пользователя
+  const userRole = user.value?.role
+  if (userRole === 'shop_owner' || userRole === 'platform_admin') {
+    try {
+      const shops = await $fetch('http://localhost:8000/platform/shops/me', {
+        headers: {
+          'Authorization': `Bearer ${token.value}`
+        }
+      })
+      myShops.value = shops || []
+    } catch (e) {
+      // Если 404 или 401 - значит магазинов нет, это нормально
+      if (e?.statusCode !== 404 && e?.statusCode !== 401) {
+        console.error('[Platform Register Shop] Ошибка проверки магазинов:', e)
+      }
+      myShops.value = []
+    }
+  }
+  checkingShops.value = false
+}
+
+// Проверяем при монтировании
+onMounted(async () => {
+  if (user.value) {
+    await checkExistingShop()
+  }
+})
+
+// Проверяем при изменении пользователя
+watch(user, async (newUser) => {
+  if (newUser) {
+    await checkExistingShop()
+  } else {
+    checkingShops.value = false
+    myShops.value = []
+  }
+})
 
 const registerShop = async () => {
   if (!token.value) {
@@ -308,6 +369,79 @@ const registerShop = async () => {
 .info-box strong {
   color: #111;
   font-weight: 700;
+}
+
+.auth-notice {
+  text-align: center;
+  padding: 40px 20px;
+  background: #F9FAFB;
+  border-radius: 16px;
+  margin-bottom: 32px;
+  border: 2px solid #E5E7EB;
+}
+
+.auth-notice p {
+  font-size: 1.125rem;
+  margin-bottom: 24px;
+  color: #111;
+}
+
+.already-has-shop {
+  background: #FEF3C7;
+  border-color: #FCD34D;
+}
+
+.already-has-shop h3 {
+  color: #92400E;
+  margin-bottom: 12px;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.already-has-shop p {
+  color: #78350F;
+  margin-bottom: 24px;
+}
+
+.notice-icon {
+  font-size: 3rem;
+  margin-bottom: 16px;
+}
+
+.auth-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn-primary,
+.btn-secondary {
+  display: inline-block;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.btn-primary {
+  background: #111;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #000;
+}
+
+.btn-secondary {
+  background: white;
+  color: #111;
+  border: 2px solid #E5E7EB;
+}
+
+.btn-secondary:hover {
+  border-color: #111;
 }
 
 @media (max-width: 768px) {
