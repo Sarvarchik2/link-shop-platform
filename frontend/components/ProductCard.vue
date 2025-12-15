@@ -13,7 +13,14 @@
       <div class="product-category">{{ product.category }}</div>
       <h3 class="product-name">{{ product.name }}</h3>
       <div class="product-footer">
-        <div class="product-price">${{ product.price.toFixed(2) }}</div>
+        <div class="price-container">
+          <div v-if="product.discount > 0" class="price-with-discount">
+            <div class="product-price-discounted">${{ finalPrice.toFixed(2) }}</div>
+            <div class="product-price-original">${{ product.price.toFixed(2) }}</div>
+            <div class="discount-badge-small">-{{ product.discount }}%</div>
+          </div>
+          <div v-else class="product-price">${{ product.price.toFixed(2) }}</div>
+        </div>
       </div>
       <div v-if="totalStock > 0 && totalStock <= 5" class="stock-warning">
         Only {{ totalStock }} left!
@@ -36,6 +43,14 @@ const productUrl = computed(() => {
 })
 
 const { user } = useAuth()
+
+// Calculate final price with discount
+const finalPrice = computed(() => {
+  if (props.product.discount > 0) {
+    return props.product.price * (1 - props.product.discount / 100)
+  }
+  return props.product.price
+})
 
 // Calculate total stock from colors if available, otherwise use product stock
 const totalStock = computed(() => {
@@ -231,10 +246,47 @@ const toggleFav = async () => {
   align-items: center;
 }
 
+.price-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
 .product-price {
   font-size: 1.125rem;
   font-weight: 800;
   color: #111;
+}
+
+.price-with-discount {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.product-price-discounted {
+  font-size: 1.125rem;
+  font-weight: 800;
+  color: #EF4444;
+}
+
+.product-price-original {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #9CA3AF;
+  text-decoration: line-through;
+}
+
+.discount-badge-small {
+  padding: 4px 8px;
+  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+  color: white;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.75rem;
+  box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3);
 }
 
 .stock-warning {

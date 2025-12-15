@@ -120,6 +120,19 @@
               <div v-else class="no-features">Функции не указаны</div>
             </div>
 
+            <div class="plan-limits">
+              <div class="limit-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                  <line x1="1" y1="10" x2="23" y2="10"></line>
+                </svg>
+                <span class="limit-label">Товаров:</span>
+                <span class="limit-value">
+                  {{ plan.max_products === null ? 'Неограниченно' : plan.max_products }}
+                </span>
+              </div>
+            </div>
+
             <div class="plan-footer">
               <div class="plan-meta">
                 <span>Порядок: {{ plan.display_order }}</span>
@@ -173,6 +186,19 @@
                 <div class="form-group">
                   <label>Период (дней) *</label>
                   <input v-model.number="planForm.period_days" type="number" min="1" class="form-input" required />
+                </div>
+
+                <div class="form-group">
+                  <label>Максимум товаров</label>
+                  <input 
+                    :value="planForm.max_products === null ? '' : planForm.max_products"
+                    @input="planForm.max_products = $event.target.value === '' ? null : Number($event.target.value)"
+                    type="number" 
+                    min="0" 
+                    class="form-input" 
+                    placeholder="Оставьте пустым для неограниченно" 
+                  />
+                  <small class="form-hint">Оставьте пустым для неограниченного количества товаров</small>
                 </div>
 
                 <div class="form-group full-width">
@@ -293,7 +319,8 @@ const planForm = reactive({
   features: [],
   is_active: true,
   is_trial: false,
-  display_order: 0
+  display_order: 0,
+  max_products: null
 })
 
 const openCreateModal = () => {
@@ -313,6 +340,7 @@ const editPlan = (plan) => {
   planForm.is_active = plan.is_active
   planForm.is_trial = plan.is_trial
   planForm.display_order = plan.display_order
+  planForm.max_products = plan.max_products ?? null
   showModal.value = true
 }
 
@@ -332,6 +360,7 @@ const resetForm = () => {
   planForm.is_active = true
   planForm.is_trial = false
   planForm.display_order = 0
+  planForm.max_products = null
 }
 
 const addFeature = () => {
@@ -357,7 +386,8 @@ const savePlan = async () => {
   try {
     const payload = {
       ...planForm,
-      features: planForm.features.filter(f => f.trim() !== '')
+      features: planForm.features.filter(f => f.trim() !== ''),
+      max_products: planForm.max_products === null || planForm.max_products === '' ? null : Number(planForm.max_products)
     }
 
     if (editingPlan.value) {
@@ -724,6 +754,37 @@ const deletePlan = async (plan) => {
   color: #9CA3AF;
   font-size: 0.875rem;
   font-style: italic;
+}
+
+.plan-limits {
+  margin-top: 16px;
+  padding: 16px;
+  background: #F9FAFB;
+  border-radius: 12px;
+  border: 1px solid #E5E7EB;
+}
+
+.limit-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #6B7280;
+  font-size: 0.875rem;
+}
+
+.limit-item svg {
+  color: #9CA3AF;
+  flex-shrink: 0;
+}
+
+.limit-label {
+  font-weight: 500;
+}
+
+.limit-value {
+  font-weight: 700;
+  color: #111;
+  margin-left: auto;
 }
 
 .plan-footer {

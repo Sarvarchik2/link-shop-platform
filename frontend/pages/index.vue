@@ -364,119 +364,103 @@
         <h2 class="text-3xl md:text-5xl font-semibold tracking-tight text-center mb-6 reveal" :class="{ active: pricingRevealed }">Тарифные планы</h2>
         <p class="text-center text-zinc-500 mb-20 reveal" :class="{ active: pricingRevealed }">Прозрачное ценообразование. Без скрытых комиссий.</p>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
-          <!-- Starter -->
-          <div class="bg-white rounded-2xl p-8 border border-zinc-200 shadow-sm hover:shadow-lg transition-all reveal" :class="{ active: pricingRevealed }">
-            <h3 class="text-xl font-medium mb-2">Starter</h3>
-            <div class="text-4xl font-bold mb-6">$0<span class="text-base font-normal text-zinc-500">/мес</span>
-            </div>
-            <p class="text-sm text-zinc-500 mb-8 border-b border-zinc-100 pb-8">Идеально для теста ниши и первых
-              продаж.</p>
+        <div v-if="plansPending" class="text-center py-12">
+          <div class="loading-spinner"></div>
+          <p class="mt-4 text-zinc-400">Загрузка тарифов...</p>
+        </div>
 
-            <ul class="space-y-4 mb-8">
-              <li class="flex items-center gap-3 text-sm">
-                <iconify-icon icon="lucide:check" class="text-green-500"></iconify-icon> 10 Товаров
-              </li>
-              <li class="flex items-center gap-3 text-sm">
-                <iconify-icon icon="lucide:check" class="text-green-500"></iconify-icon> Базовая аналитика
-              </li>
-              <li class="flex items-center gap-3 text-sm">
-                <iconify-icon icon="lucide:check" class="text-green-500"></iconify-icon> Субдомен linkshop
-              </li>
-              <li class="flex items-center gap-3 text-sm">
-                <iconify-icon icon="lucide:check" class="text-green-500"></iconify-icon> Техподдержка Email
-              </li>
-              <li class="flex items-center gap-3 text-sm opacity-50">
-                <iconify-icon icon="lucide:x" class="text-zinc-300"></iconify-icon> Свой домен
-              </li>
-              <li class="flex items-center gap-3 text-sm opacity-50">
-                <iconify-icon icon="lucide:x" class="text-zinc-300"></iconify-icon> API Access
-              </li>
-              <li class="flex items-center gap-3 text-sm opacity-50">
-                <iconify-icon icon="lucide:x" class="text-zinc-300"></iconify-icon> 0% Комиссия
-              </li>
-            </ul>
-            <NuxtLink to="/register-shop" class="w-full py-3 border border-zinc-200 rounded-lg text-sm font-semibold hover:border-black hover:bg-zinc-50 transition-colors block text-center">
-              Выбрать Starter
-            </NuxtLink>
-          </div>
-
-          <!-- Pro -->
-          <div class="bg-white rounded-2xl p-8 border border-zinc-900 shadow-2xl relative md:-mt-8 md:mb-8 reveal" :class="{ active: pricingRevealed }">
-            <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black text-white px-3 py-1 rounded-full text-xs font-medium tracking-wide">
+        <div v-else-if="plans && plans.length > 0" class="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+          <div 
+            v-for="(plan, index) in plans" 
+            :key="plan.id"
+            class="bg-white rounded-2xl p-8 border shadow-sm hover:shadow-lg transition-all reveal relative"
+            :class="{ 
+              'active': pricingRevealed,
+              'border-zinc-900 shadow-2xl md:-mt-8 md:mb-8': plan.slug === 'basic' || index === Math.floor(plans.length / 2)
+            }"
+          >
+            <div v-if="plan.slug === 'basic' || index === Math.floor(plans.length / 2)" class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black text-white px-3 py-1 rounded-full text-xs font-medium tracking-wide">
               POPULAR
             </div>
-            <h3 class="text-xl font-medium mb-2">Pro</h3>
-            <div class="text-4xl font-bold mb-6">$29<span class="text-base font-normal text-zinc-500">/мес</span></div>
-            <p class="text-sm text-zinc-500 mb-8 border-b border-zinc-100 pb-8">Для растущих брендов с активными
-              продажами.</p>
+            
+            <h3 class="text-xl font-medium mb-2">{{ plan.name }}</h3>
+            <div class="text-4xl font-bold mb-6">
+              <span v-if="plan.price === 0 || plan.is_trial">$0</span>
+              <span v-else>${{ plan.price }}</span>
+              <span class="text-base font-normal text-zinc-500">/мес</span>
+            </div>
+            <p v-if="plan.description" class="text-sm text-zinc-500 mb-8 border-b border-zinc-100 pb-8">{{ plan.description }}</p>
 
-            <ul class="space-y-4 mb-8">
-              <li class="flex items-center gap-3 text-sm">
-                <iconify-icon icon="lucide:check" class="text-black"></iconify-icon> 
-                <span class="font-semibold">Безлимит товаров</span>
-              </li>
-              <li class="flex items-center gap-3 text-sm">
-                <iconify-icon icon="lucide:check" class="text-black"></iconify-icon> 
-                <span class="font-semibold">0% Комиссия</span>
-              </li>
-              <li class="flex items-center gap-3 text-sm">
-                <iconify-icon icon="lucide:check" class="text-black"></iconify-icon> Подключение своего домена
-              </li>
-              <li class="flex items-center gap-3 text-sm">
-                <iconify-icon icon="lucide:check" class="text-black"></iconify-icon> Расширенная аналитика
-              </li>
-              <li class="flex items-center gap-3 text-sm">
-                <iconify-icon icon="lucide:check" class="text-black"></iconify-icon> Интеграция с Instagram
-              </li>
-              <li class="flex items-center gap-3 text-sm">
-                <iconify-icon icon="lucide:check" class="text-black"></iconify-icon> Приоритетная поддержка
-              </li>
-              <li class="flex items-center gap-3 text-sm">
-                <iconify-icon icon="lucide:check" class="text-black"></iconify-icon> Управление SEO
+            <ul v-if="plan.features_list && plan.features_list.length > 0" class="space-y-4 mb-6">
+              <li v-for="(feature, idx) in plan.features_list" :key="idx" class="flex items-center gap-3 text-sm">
+                <template v-if="feature.startsWith('✗') || feature.startsWith('-') || feature.startsWith('×')">
+                  <iconify-icon icon="lucide:x" class="text-zinc-300"></iconify-icon>
+                  <span class="text-zinc-400">{{ feature.replace(/^[✗\-×]\s*/, '') }}</span>
+                </template>
+                <template v-else>
+                  <iconify-icon icon="lucide:check" :class="plan.slug === 'basic' || index === Math.floor(plans.length / 2) ? 'text-black' : 'text-green-500'"></iconify-icon>
+                  <span :class="{ 'font-semibold': plan.slug === 'basic' || index === Math.floor(plans.length / 2) }">{{ feature.replace(/^[✓√]\s*/, '') }}</span>
+                </template>
               </li>
             </ul>
-            <NuxtLink to="/register-shop" class="w-full py-3 bg-black text-white rounded-lg text-sm font-semibold hover:bg-zinc-800 transition-colors shadow-lg block text-center">
-              Начать Pro
-          </NuxtLink>
-        </div>
 
-          <!-- Business -->
-          <div class="bg-white rounded-2xl p-8 border border-zinc-200 shadow-sm hover:shadow-lg transition-all reveal" :class="{ active: pricingRevealed }">
-            <h3 class="text-xl font-medium mb-2">Business</h3>
-            <div class="text-4xl font-bold mb-6">$99<span class="text-base font-normal text-zinc-500">/мес</span></div>
-            <p class="text-sm text-zinc-500 mb-8 border-b border-zinc-100 pb-8">Масштабирование и автоматизация
-              процессов.</p>
+            <!-- Product Limit -->
+            <div class="mb-6 p-3 bg-zinc-50 rounded-lg border border-zinc-200">
+              <div class="flex items-center gap-2 text-sm text-zinc-600">
+                <iconify-icon icon="lucide:package" width="16"></iconify-icon>
+                <span>
+                  <strong>{{ plan.max_products === null ? 'Неограниченно' : plan.max_products }}</strong> товаров
+                </span>
+              </div>
+            </div>
 
-            <ul class="space-y-4 mb-8">
-              <li class="flex items-center gap-3 text-sm">
-                <iconify-icon icon="lucide:check" class="text-green-500"></iconify-icon> Всё из Pro
-              </li>
-              <li class="flex items-center gap-3 text-sm">
-                <iconify-icon icon="lucide:check" class="text-green-500"></iconify-icon> Multi-Warehouse (Склады)
-              </li>
-              <li class="flex items-center gap-3 text-sm">
-                <iconify-icon icon="lucide:check" class="text-green-500"></iconify-icon> 10 Сотрудников
-              </li>
-              <li class="flex items-center gap-3 text-sm">
-                <iconify-icon icon="lucide:check" class="text-green-500"></iconify-icon> API Access
-              </li>
-              <li class="flex items-center gap-3 text-sm">
-                <iconify-icon icon="lucide:check" class="text-green-500"></iconify-icon> Персональный менеджер
-              </li>
-              <li class="flex items-center gap-3 text-sm">
-                <iconify-icon icon="lucide:check" class="text-green-500"></iconify-icon> B2B функции
-              </li>
-              <li class="flex items-center gap-3 text-sm">
-                <iconify-icon icon="lucide:check" class="text-green-500"></iconify-icon> Whitelabel Admin
-              </li>
-            </ul>
-            <NuxtLink to="/register-shop" class="w-full py-3 border border-zinc-200 rounded-lg text-sm font-semibold hover:border-black hover:bg-zinc-50 transition-colors block text-center">
-              Связаться с нами
-          </NuxtLink>
+            <NuxtLink 
+              :to="plan.slug === 'business' ? '/register-shop?plan=business' : '/register-shop'"
+              class="w-full py-3 rounded-lg text-sm font-semibold transition-colors block text-center"
+              :class="plan.slug === 'basic' || index === Math.floor(plans.length / 2) 
+                ? 'bg-black text-white hover:bg-zinc-800 shadow-lg' 
+                : 'border border-zinc-200 hover:border-black hover:bg-zinc-50'"
+            >
+              <span v-if="plan.slug === 'business'">Связаться с нами</span>
+              <span v-else>Выбрать {{ plan.name }}</span>
+            </NuxtLink>
           </div>
         </div>
+
+        <div v-else class="text-center py-12 text-zinc-400">
+          <p>Тарифные планы временно недоступны</p>
         </div>
+
+        <!-- Offers Section -->
+        <div v-if="offers && offers.length > 0" class="mt-20">
+          <h2 class="text-2xl md:text-4xl font-semibold tracking-tight text-center mb-6">Специальные предложения</h2>
+          <p class="text-center text-zinc-500 mb-12">Дополнительные услуги и решения</p>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div v-for="offer in offers" :key="offer.id" class="bg-white rounded-2xl p-8 border-2 border-zinc-900 shadow-lg hover:shadow-xl transition-all">
+              <div class="flex justify-between items-start mb-4">
+                <h3 class="text-xl font-semibold">{{ offer.title }}</h3>
+                <div v-if="offer.price || offer.price_text" class="text-right">
+                  <div v-if="offer.price" class="text-2xl font-bold">${{ offer.price.toFixed(2) }}</div>
+                  <div v-else class="text-sm font-medium text-zinc-600">{{ offer.price_text }}</div>
+                </div>
+              </div>
+              <p class="text-sm text-zinc-600 mb-6">{{ offer.description }}</p>
+              <div class="pt-6 border-t border-zinc-200">
+                <p class="text-xs text-zinc-500 mb-4">{{ offer.contact_text }}</p>
+                <div class="flex gap-3">
+                  <a v-if="offer.contact_email" :href="`mailto:${offer.contact_email}`" class="flex-1 py-2.5 px-4 bg-zinc-100 hover:bg-zinc-900 hover:text-white rounded-lg text-sm font-semibold transition-colors text-center">
+                    Email
+                  </a>
+                  <a v-if="offer.contact_phone" :href="`tel:${offer.contact_phone}`" class="flex-1 py-2.5 px-4 bg-zinc-100 hover:bg-zinc-900 hover:text-white rounded-lg text-sm font-semibold transition-colors text-center">
+                    Телефон
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
         
     <!-- Footer -->
@@ -544,6 +528,34 @@
 
 <script setup>
 const { user, token } = useAuth()
+
+// Fetch subscription plans from API
+const { data: plans, pending: plansPending } = await useFetch('http://localhost:8000/subscription-plans', {
+  server: false,
+  transform: (data) => {
+    // Sort by display_order and filter active plans
+    const filteredPlans = data
+      ?.filter(plan => plan.is_active)
+      ?.sort((a, b) => (a.display_order || 0) - (b.display_order || 0)) || []
+    
+    // Ensure features_list is parsed if features exists
+    return filteredPlans.map(plan => {
+      if (plan.features && !plan.features_list) {
+        try {
+          plan.features_list = JSON.parse(plan.features)
+        } catch (e) {
+          plan.features_list = []
+        }
+      }
+      return plan
+    })
+  }
+})
+
+// Fetch active offers from API
+const { data: offers } = await useFetch('http://localhost:8000/offers', {
+  server: false
+})
 
 // Get user's shops to determine profile link
 const { data: myShops } = await useFetch('http://localhost:8000/platform/shops/me', {
@@ -718,5 +730,21 @@ body {
 /* Glow effects */
 .glow-hover:hover {
   box-shadow: 0 0 40px -10px rgba(0, 0, 0, 0.1);
+}
+
+/* Loading Spinner */
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #111;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 </style>

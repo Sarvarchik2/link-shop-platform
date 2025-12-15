@@ -80,6 +80,14 @@
         <span>Баннер</span>
       </NuxtLink>
       
+      <NuxtLink :to="`/shop/${shopSlug}/admin/info`" class="nav-item" :class="{ active: currentRoute === 'info' }" @click="closeSidebar">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+        <span>О магазине</span>
+      </NuxtLink>
+      
       <NuxtLink :to="`/shop/${shopSlug}/subscription`" class="nav-item" :class="{ active: currentRoute === 'subscription' }" @click="closeSidebar">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <line x1="12" y1="1" x2="12" y2="23"></line>

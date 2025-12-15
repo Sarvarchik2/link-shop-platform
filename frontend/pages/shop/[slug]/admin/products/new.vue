@@ -125,6 +125,12 @@
               <label class="label">Цена ($)</label>
               <input v-model.number="form.price" type="number" step="0.01" required class="input" placeholder="0.00" />
             </div>
+            
+            <div class="form-group">
+              <label class="label">Скидка (%)</label>
+              <input v-model.number="form.discount" type="number" step="0.1" min="0" max="100" class="input" placeholder="0" />
+              <p class="help-text-small">Введите процент скидки (0-100)</p>
+            </div>
           </div>
 
           <div class="form-row">
@@ -429,6 +435,7 @@ const form = reactive({
   brand: '',
   category: '',
   price: 0,
+  discount: 0,
   description: ''
 })
 
@@ -718,6 +725,12 @@ const handleSubmit = async () => {
   font-size: 0.75rem;
   color: #9CA3AF;
   margin-top: 8px;
+}
+
+.help-text-small {
+  font-size: 0.7rem;
+  color: #9CA3AF;
+  margin-top: 4px;
 }
 
 /* Images Upload */

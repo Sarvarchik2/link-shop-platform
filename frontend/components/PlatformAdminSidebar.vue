@@ -62,6 +62,24 @@
         </svg>
         <span>Планы подписки</span>
       </NuxtLink>
+      
+      <NuxtLink to="/platform/admin/offers" class="nav-item" :class="{ active: currentRoute === 'offers' }" @click="closeSidebar">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+          <path d="M2 17l10 5 10-5"></path>
+          <path d="M2 12l10 5 10-5"></path>
+        </svg>
+        <span>Офферы</span>
+      </NuxtLink>
+      
+      <NuxtLink to="/platform/admin/offers" class="nav-item" :class="{ active: currentRoute === 'offers' }" @click="closeSidebar">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+          <path d="M2 17l10 5 10-5"></path>
+          <path d="M2 12l10 5 10-5"></path>
+        </svg>
+        <span>Офферы</span>
+      </NuxtLink>
     </nav>
     
     <div class="sidebar-footer">

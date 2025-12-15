@@ -4,13 +4,21 @@
   <header class="header desktop-header">
     <div class="container">
       <div class="header-content">
-        <!-- Logo -->
-        <NuxtLink to="/" class="logo">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
-            <line x1="1" y1="10" x2="23" y2="10"></line>
-          </svg>
-          <span>EYEWEAR</span>
+        <!-- Logo / Shop Logo or Name -->
+        <NuxtLink :to="homeLink" class="logo">
+          <template v-if="currentShop?.logo_url">
+            <img :src="currentShop.logo_url" :alt="currentShop.name || 'Shop'" class="shop-logo" />
+          </template>
+          <template v-else-if="currentShop?.name">
+            <span class="shop-name-text">{{ currentShop.name }}</span>
+          </template>
+          <template v-else>
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+              <line x1="1" y1="10" x2="23" y2="10"></line>
+            </svg>
+            <span>LinkShop</span>
+          </template>
         </NuxtLink>
 
         <!-- Navigation (Desktop only) -->
@@ -243,6 +251,15 @@ const { getCurrentShopSlug, clearShopContext } = useShopContext()
 // Get shop slug from route or saved context
 const shopSlug = computed(() => getCurrentShopSlug(route))
 
+// Fetch current shop data if on shop page
+const { data: currentShop } = await useFetch(() => {
+  if (!shopSlug.value) return null
+  return `http://localhost:8000/platform/shops/${shopSlug.value}`
+}, {
+  server: false,
+  watch: [shopSlug]
+})
+
 // Clear shop context when explicitly navigating to platform pages (not user pages)
 watch(() => route.path, (newPath) => {
   // Don't clear context on user-specific pages (cart, profile, favorites, orders, checkout)
@@ -324,6 +341,25 @@ const getProfileLink = computed(() => {
   font-size: 1.25rem;
   color: #111;
   letter-spacing: 1px;
+}
+
+.shop-logo {
+  height: 40px;
+  width: auto;
+  max-width: 150px;
+  object-fit: contain;
+  border-radius: 4px;
+}
+
+.shop-name-text {
+  font-weight: 900;
+  font-size: 1.25rem;
+  color: #111;
+  letter-spacing: 1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
 }
 
 .nav-links {
@@ -491,6 +527,15 @@ const getProfileLink = computed(() => {
   
   .logo span {
     font-size: 1.1rem;
+  }
+  
+  .shop-name-text {
+    font-size: 1.1rem;
+  }
+  
+  .shop-logo {
+    height: 32px;
+    max-width: 120px;
   }
   
   .logo svg {

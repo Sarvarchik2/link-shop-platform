@@ -60,6 +60,16 @@ class Shop(SQLModel, table=True):
     subscription_expires_at: Optional[datetime] = None
     created_at: datetime = Field(default_factory=datetime.utcnow)
     is_active: bool = True
+    # Contact information
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    address: Optional[str] = None
+    # Social media links
+    telegram: Optional[str] = None
+    instagram: Optional[str] = None
+    facebook: Optional[str] = None
+    twitter: Optional[str] = None
+    whatsapp: Optional[str] = None
 
 class ShopCreate(SQLModel):
     name: str
@@ -78,6 +88,14 @@ class ShopRead(SQLModel):
     created_at: datetime
     is_active: bool
     owner_id: Optional[int] = None
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    address: Optional[str] = None
+    telegram: Optional[str] = None
+    instagram: Optional[str] = None
+    facebook: Optional[str] = None
+    twitter: Optional[str] = None
+    whatsapp: Optional[str] = None
 
 class ShopReadWithOwner(ShopRead):
     owner_name: Optional[str] = None
@@ -86,6 +104,19 @@ class ShopReadWithOwner(ShopRead):
 class SubscriptionUpdate(SQLModel):
     subscription_status: str
     expires_at: Optional[datetime] = None
+
+class ShopUpdate(SQLModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    logo_url: Optional[str] = None
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    address: Optional[str] = None
+    telegram: Optional[str] = None
+    instagram: Optional[str] = None
+    facebook: Optional[str] = None
+    twitter: Optional[str] = None
+    whatsapp: Optional[str] = None
 
 class SubscriptionPlan(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -98,6 +129,7 @@ class SubscriptionPlan(SQLModel, table=True):
     is_active: bool = True  # Активен ли план для покупки
     is_trial: bool = False  # Является ли пробным периодом
     display_order: int = 0  # Порядок отображения
+    max_products: Optional[int] = None  # Максимальное количество товаров (None = неограниченно)
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
 class SubscriptionPlanCreate(SQLModel):
@@ -110,6 +142,7 @@ class SubscriptionPlanCreate(SQLModel):
     is_active: bool = True
     is_trial: bool = False
     display_order: int = 0
+    max_products: Optional[int] = None  # None = неограниченно
 
 class SubscriptionPlanUpdate(SQLModel):
     name: Optional[str] = None
@@ -121,6 +154,7 @@ class SubscriptionPlanUpdate(SQLModel):
     is_active: Optional[bool] = None
     is_trial: Optional[bool] = None
     display_order: Optional[int] = None
+    max_products: Optional[int] = None  # None = неограниченно
 
 class SubscriptionPlanRead(SQLModel):
     id: int
@@ -134,6 +168,7 @@ class SubscriptionPlanRead(SQLModel):
     is_active: bool
     is_trial: bool
     display_order: int
+    max_products: Optional[int] = None
     created_at: datetime
 
 class SubscriptionRequest(SQLModel, table=True):
@@ -178,6 +213,7 @@ class Product(SQLModel, table=True):
     name: str
     description: str
     price: float
+    discount: float = 0.0  # Discount percentage (0-100)
     image_url: str
     images: Optional[str] = None  # JSON string of image URLs
     category: str
@@ -190,11 +226,13 @@ class Product(SQLModel, table=True):
     colors: Optional[str] = None  # JSON string of available colors with stock (deprecated, use variants)
     variants: Optional[str] = None  # JSON string of variants: [{"size": "M", "color": "Black", "colorHex": "#000000", "stock": 5}, ...]
     shop_id: Optional[int] = Field(default=None, foreign_key="shop.id")
+    is_preorder_enabled: bool = False  # Enable pre-order for out of stock items
 
 class ProductCreate(SQLModel):
     name: str
     description: str
     price: float
+    discount: float = 0.0  # Discount percentage (0-100)
     image_url: str
     images: Optional[str] = None
     category: str
@@ -203,6 +241,7 @@ class ProductCreate(SQLModel):
     sizes: Optional[str] = None
     colors: Optional[str] = None
     variants: Optional[str] = None  # JSON string of variants: [{"size": "M", "color": "Black", "colorHex": "#000000", "stock": 5}, ...]
+    is_preorder_enabled: bool = False
 
 class OrderItem(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -303,6 +342,86 @@ class DashboardStats(SQLModel):
 
 class OrderStatusUpdate(SQLModel):
     status: str
+
+class PreOrder(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    product_id: int = Field(foreign_key="product.id", index=True)
+    user_id: int = Field(foreign_key="user.id", index=True)
+    selected_color: Optional[str] = None  # Color name
+    selected_size: Optional[str] = None   # Size
+    phone: str  # Contact phone
+    name: Optional[str] = None  # Customer name
+    status: str = "pending"  # pending, notified, cancelled
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    notified_at: Optional[datetime] = None  # When product became available and customer was notified
+
+class PreOrderCreate(SQLModel):
+    product_id: int
+    selected_color: Optional[str] = None
+    selected_size: Optional[str] = None
+    phone: str
+    name: Optional[str] = None
+
+class PreOrderRead(SQLModel):
+    id: int
+    product_id: int
+    product_name: Optional[str] = None
+    user_id: int
+    selected_color: Optional[str] = None
+    selected_size: Optional[str] = None
+    phone: str
+    name: Optional[str] = None
+    status: str
+    created_at: datetime
+    notified_at: Optional[datetime] = None
+
+class Offer(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    title: str  # Заголовок оффера (например, "WhiteLabel решение")
+    description: str  # Описание оффера
+    price: Optional[float] = None  # Примерная цена (может быть None если "по запросу")
+    price_text: Optional[str] = None  # Альтернативный текст цены (например, "По запросу")
+    contact_text: str = "Свяжитесь с нами для покупки"  # Текст для связи
+    contact_email: Optional[str] = None  # Email для связи
+    contact_phone: Optional[str] = None  # Телефон для связи
+    is_active: bool = True
+    display_order: int = 0
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+class OfferCreate(SQLModel):
+    title: str
+    description: str
+    price: Optional[float] = None
+    price_text: Optional[str] = None
+    contact_text: str = "Свяжитесь с нами для покупки"
+    contact_email: Optional[str] = None
+    contact_phone: Optional[str] = None
+    is_active: bool = True
+    display_order: int = 0
+
+class OfferUpdate(SQLModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    price: Optional[float] = None
+    price_text: Optional[str] = None
+    contact_text: Optional[str] = None
+    contact_email: Optional[str] = None
+    contact_phone: Optional[str] = None
+    is_active: Optional[bool] = None
+    display_order: Optional[int] = None
+
+class OfferRead(SQLModel):
+    id: int
+    title: str
+    description: str
+    price: Optional[float] = None
+    price_text: Optional[str] = None
+    contact_text: str
+    contact_email: Optional[str] = None
+    contact_phone: Optional[str] = None
+    is_active: bool
+    display_order: int
+    created_at: datetime
 
 class Banner(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -408,6 +527,38 @@ def get_shop_by_slug(slug: str, check_subscription: bool = True):
                 raise HTTPException(status_code=403, detail="Shop subscription expired")
         
         return shop
+
+def check_product_limit(session: Session, shop_id: int) -> tuple[bool, Optional[int], int]:
+    """Check if shop can add more products. Returns (can_add, max_products, current_count)"""
+    # Get current product count
+    existing_products = session.exec(select(Product).where(Product.shop_id == shop_id)).all()
+    current_count = len(existing_products)
+    
+    # Get shop
+    shop = session.get(Shop, shop_id)
+    if not shop:
+        return (False, None, current_count)
+    
+    # Get the latest approved subscription request to get plan
+    latest_request = session.exec(
+        select(SubscriptionRequest)
+        .where(SubscriptionRequest.shop_id == shop_id)
+        .where(SubscriptionRequest.status == "approved")
+        .order_by(SubscriptionRequest.approved_at.desc())
+    ).first()
+    
+    if latest_request:
+        plan = session.get(SubscriptionPlan, latest_request.plan_id)
+        if plan and plan.max_products is not None:
+            # Check if current count is less than max
+            can_add = current_count < plan.max_products
+            return (can_add, plan.max_products, current_count)
+    
+    # For trial subscription, check if there's a default trial plan with limit
+    # For now, trial = unlimited, but we can add logic here later
+    
+    # If no plan limit or unlimited, allow
+    return (True, None, current_count)
 
 # --- App ---
 app = FastAPI()
@@ -693,7 +844,15 @@ def get_all_shops_admin(current_user: User = Depends(get_current_platform_admin)
                 is_active=shop.is_active,
                 owner_id=shop.owner_id,
                 owner_name=f"{owner.first_name} {owner.last_name}".strip() if owner else None,
-                owner_phone=owner.phone if owner else None
+                owner_phone=owner.phone if owner else None,
+                email=shop.email,
+                phone=shop.phone,
+                address=shop.address,
+                telegram=shop.telegram,
+                instagram=shop.instagram,
+                facebook=shop.facebook,
+                twitter=shop.twitter,
+                whatsapp=shop.whatsapp
             )
             result.append(shop_data)
         return result
@@ -711,6 +870,44 @@ def update_my_shop_subscription(shop_slug: str, subscription_update: Subscriptio
         db_shop.subscription_status = subscription_update.subscription_status
         if subscription_update.expires_at:
             db_shop.subscription_expires_at = subscription_update.expires_at
+        session.add(db_shop)
+        session.commit()
+        session.refresh(db_shop)
+        return db_shop
+
+@app.put("/shop/{shop_slug}/admin/info", response_model=ShopRead)
+def update_shop_info(shop_slug: str, shop_update: ShopUpdate, current_user: User = Depends(get_current_user)):
+    """Update shop information - only owner or platform admin can access"""
+    shop = get_shop_owner_or_admin(shop_slug, current_user, check_subscription=False)
+    
+    with Session(engine) as session:
+        db_shop = session.get(Shop, shop.id)
+        if not db_shop:
+            raise HTTPException(status_code=404, detail="Shop not found")
+        
+        if shop_update.name is not None:
+            db_shop.name = shop_update.name
+        if shop_update.description is not None:
+            db_shop.description = shop_update.description
+        if shop_update.logo_url is not None:
+            db_shop.logo_url = shop_update.logo_url
+        if shop_update.email is not None:
+            db_shop.email = shop_update.email
+        if shop_update.phone is not None:
+            db_shop.phone = shop_update.phone
+        if shop_update.address is not None:
+            db_shop.address = shop_update.address
+        if shop_update.telegram is not None:
+            db_shop.telegram = shop_update.telegram
+        if shop_update.instagram is not None:
+            db_shop.instagram = shop_update.instagram
+        if shop_update.facebook is not None:
+            db_shop.facebook = shop_update.facebook
+        if shop_update.twitter is not None:
+            db_shop.twitter = shop_update.twitter
+        if shop_update.whatsapp is not None:
+            db_shop.whatsapp = shop_update.whatsapp
+        
         session.add(db_shop)
         session.commit()
         session.refresh(db_shop)
@@ -874,8 +1071,31 @@ def create_product(product: ProductCreate, shop_slug: Optional[str] = Query(None
                 raise HTTPException(status_code=403, detail="Not authorized to add products to this shop")
             shop_id = shop.id
             print(f"[Backend] Product shop_id set to: {shop_id}")
+            
+            # Check product limit if shop has subscription
+            if current_user.role != "platform_admin":
+                can_add, max_products, current_count = check_product_limit(session, shop_id)
+                if not can_add and max_products is not None:
+                    raise HTTPException(
+                        status_code=403, 
+                        detail=f"Лимит товаров достигнут. Ваш тариф позволяет добавить максимум {max_products} товаров. Текущее количество: {current_count}. Обновите тариф для добавления большего количества товаров."
+                    )
         
-        db_product = Product.from_orm(product)
+        db_product = Product(
+            name=product.name,
+            description=product.description,
+            price=product.price,
+            discount=product.discount,
+            image_url=product.image_url,
+            images=product.images,
+            category=product.category,
+            brand=product.brand,
+            stock=product.stock,
+            sizes=product.sizes,
+            colors=product.colors,
+            variants=product.variants,
+            is_preorder_enabled=product.is_preorder_enabled
+        )
         db_product.shop_id = shop_id
         session.add(db_product)
         session.commit()
@@ -940,10 +1160,14 @@ def update_product(product_id: int, product_update: ProductCreate, current_user:
             shop = session.get(Shop, product.shop_id)
             if not shop or shop.owner_id != current_user.id:
                 raise HTTPException(status_code=403, detail="Not authorized to update this product")
+            
+            # No need to check product limit when updating existing product in same shop
+            # Limit is only checked when creating new products
 
         product.name = product_update.name
         product.description = product_update.description
         product.price = product_update.price
+        product.discount = product_update.discount
         product.image_url = product_update.image_url
         product.category = product_update.category
         product.brand = product_update.brand
@@ -952,6 +1176,7 @@ def update_product(product_id: int, product_update: ProductCreate, current_user:
         product.colors = product_update.colors
         product.variants = product_update.variants
         product.images = product_update.images
+        product.is_preorder_enabled = product_update.is_preorder_enabled
         
         session.add(product)
         session.commit()
@@ -970,6 +1195,138 @@ def toggle_favorite(product_id: int):
         session.commit()
         session.refresh(product)
         return product
+
+@app.post("/products/{product_id}/preorder", response_model=PreOrderRead)
+def create_preorder(product_id: int, preorder: PreOrderCreate, current_user: User = Depends(get_current_user)):
+    """Create a pre-order for out of stock product"""
+    with Session(engine) as session:
+        product = session.get(Product, product_id)
+        if not product:
+            raise HTTPException(status_code=404, detail="Product not found")
+        
+        if not product.is_preorder_enabled:
+            raise HTTPException(status_code=400, detail="Pre-order is not enabled for this product")
+        
+        # Check if product is actually out of stock
+        is_out_of_stock = False
+        if product.variants:
+            try:
+                import json
+                variants = json.loads(product.variants)
+                # Check if all variants are out of stock
+                total_stock = sum(v.get('stock', 0) for v in variants)
+                is_out_of_stock = total_stock == 0
+            except:
+                is_out_of_stock = product.stock == 0
+        else:
+            is_out_of_stock = product.stock == 0
+        
+        if not is_out_of_stock:
+            raise HTTPException(status_code=400, detail="Product is in stock. Cannot create pre-order for available products")
+        
+        # Check if user already has a pending pre-order for this product/variant
+        existing_preorder = session.exec(
+            select(PreOrder)
+            .where(PreOrder.product_id == product_id)
+            .where(PreOrder.user_id == current_user.id)
+            .where(PreOrder.status == "pending")
+            .where(PreOrder.selected_color == preorder.selected_color)
+            .where(PreOrder.selected_size == preorder.selected_size)
+        ).first()
+        
+        if existing_preorder:
+            raise HTTPException(status_code=400, detail="You already have a pending pre-order for this product variant")
+        
+        db_preorder = PreOrder(
+            product_id=product_id,
+            user_id=current_user.id,
+            selected_color=preorder.selected_color,
+            selected_size=preorder.selected_size,
+            phone=preorder.phone,
+            name=preorder.name
+        )
+        session.add(db_preorder)
+        session.commit()
+        session.refresh(db_preorder)
+        
+        return PreOrderRead(
+            id=db_preorder.id,
+            product_id=db_preorder.product_id,
+            product_name=product.name,
+            user_id=db_preorder.user_id,
+            selected_color=db_preorder.selected_color,
+            selected_size=db_preorder.selected_size,
+            phone=db_preorder.phone,
+            name=db_preorder.name,
+            status=db_preorder.status,
+            created_at=db_preorder.created_at,
+            notified_at=db_preorder.notified_at
+        )
+
+@app.get("/products/{product_id}/preorders", response_model=List[PreOrderRead])
+def get_product_preorders(product_id: int, current_user: User = Depends(get_current_user)):
+    """Get pre-orders for a product - only shop owner or platform admin"""
+    with Session(engine) as session:
+        product = session.get(Product, product_id)
+        if not product:
+            raise HTTPException(status_code=404, detail="Product not found")
+        
+        # Check if user owns the shop or is platform admin
+        if current_user.role != "platform_admin":
+            if not product.shop_id:
+                raise HTTPException(status_code=403, detail="Not authorized")
+            shop = session.get(Shop, product.shop_id)
+            if not shop or shop.owner_id != current_user.id:
+                raise HTTPException(status_code=403, detail="Not authorized to view pre-orders for this product")
+        
+        preorders = session.exec(
+            select(PreOrder).where(PreOrder.product_id == product_id).order_by(PreOrder.created_at.desc())
+        ).all()
+        
+        result = []
+        for preorder in preorders:
+            result.append(PreOrderRead(
+                id=preorder.id,
+                product_id=preorder.product_id,
+                product_name=product.name,
+                user_id=preorder.user_id,
+                selected_color=preorder.selected_color,
+                selected_size=preorder.selected_size,
+                phone=preorder.phone,
+                name=preorder.name,
+                status=preorder.status,
+                created_at=preorder.created_at,
+                notified_at=preorder.notified_at
+            ))
+        return result
+
+@app.get("/preorders/me", response_model=List[PreOrderRead])
+def get_my_preorders(current_user: User = Depends(get_current_user)):
+    """Get user's pre-orders"""
+    with Session(engine) as session:
+        preorders = session.exec(
+            select(PreOrder)
+            .where(PreOrder.user_id == current_user.id)
+            .order_by(PreOrder.created_at.desc())
+        ).all()
+        
+        result = []
+        for preorder in preorders:
+            product = session.get(Product, preorder.product_id)
+            result.append(PreOrderRead(
+                id=preorder.id,
+                product_id=preorder.product_id,
+                product_name=product.name if product else None,
+                user_id=preorder.user_id,
+                selected_color=preorder.selected_color,
+                selected_size=preorder.selected_size,
+                phone=preorder.phone,
+                name=preorder.name,
+                status=preorder.status,
+                created_at=preorder.created_at,
+                notified_at=preorder.notified_at
+            ))
+        return result
 
 # --- Brand & Category Endpoints ---
 
@@ -1091,13 +1448,17 @@ def create_order(order_create: OrderCreate, shop_slug: Optional[str] = None, cur
             if shop_slug and product.shop_id != shop_id:
                 raise HTTPException(status_code=400, detail=f"Product {item.product_id} does not belong to this shop")
             
-            item_total = product.price * item.quantity
+            # Calculate price with discount
+            discount_amount = (product.price * product.discount / 100) if product.discount > 0 else 0
+            final_price = product.price - discount_amount
+            item_total = final_price * item.quantity
             total_price += item_total
             
+            # Store final price (with discount) in order item
             order_items.append(OrderItem(
                 product_id=item.product_id, 
                 quantity=item.quantity, 
-                price=product.price,
+                price=final_price,  # Store price with discount applied
                 selected_color=item.selected_color,
                 selected_size=item.selected_size
             ))
@@ -1486,6 +1847,7 @@ def get_all_subscription_plans(current_user: User = Depends(get_current_platform
                 is_active=plan.is_active,
                 is_trial=plan.is_trial,
                 display_order=plan.display_order,
+                max_products=plan.max_products,
                 created_at=plan.created_at
             ))
         return result
@@ -1520,6 +1882,7 @@ def get_active_subscription_plans():
                 is_active=plan.is_active,
                 is_trial=plan.is_trial,
                 display_order=plan.display_order,
+                max_products=plan.max_products,
                 created_at=plan.created_at
             ))
         return result
@@ -1547,7 +1910,8 @@ def create_subscription_plan(plan_data: SubscriptionPlanCreate, current_user: Us
             features=features_json,
             is_active=plan_data.is_active,
             is_trial=plan_data.is_trial,
-            display_order=plan_data.display_order
+            display_order=plan_data.display_order,
+            max_products=plan_data.max_products
         )
         session.add(plan)
         session.commit()
@@ -1572,6 +1936,7 @@ def create_subscription_plan(plan_data: SubscriptionPlanCreate, current_user: Us
             is_active=plan.is_active,
             is_trial=plan.is_trial,
             display_order=plan.display_order,
+            max_products=plan.max_products,
             created_at=plan.created_at
         )
 
@@ -1608,6 +1973,8 @@ def update_subscription_plan(plan_id: int, plan_data: SubscriptionPlanUpdate, cu
             plan.is_trial = plan_data.is_trial
         if plan_data.display_order is not None:
             plan.display_order = plan_data.display_order
+        if plan_data.max_products is not None:
+            plan.max_products = plan_data.max_products
         
         session.add(plan)
         session.commit()
@@ -1632,6 +1999,7 @@ def update_subscription_plan(plan_id: int, plan_data: SubscriptionPlanUpdate, cu
             is_active=plan.is_active,
             is_trial=plan.is_trial,
             display_order=plan.display_order,
+            max_products=plan.max_products,
             created_at=plan.created_at
         )
 
@@ -1646,6 +2014,83 @@ def delete_subscription_plan(plan_id: int, current_user: User = Depends(get_curr
         session.delete(plan)
         session.commit()
         return {"message": "Subscription plan deleted successfully"}
+
+# --- Offer Endpoints ---
+
+@app.get("/offers", response_model=List[OfferRead])
+def get_active_offers():
+    """Get active offers - public endpoint"""
+    with Session(engine) as session:
+        offers = session.exec(
+            select(Offer)
+            .where(Offer.is_active == True)
+            .order_by(Offer.display_order, Offer.id)
+        ).all()
+        return offers
+
+@app.get("/platform/admin/offers", response_model=List[OfferRead])
+def get_all_offers(current_user: User = Depends(get_current_platform_admin)):
+    """Get all offers - only platform admin"""
+    with Session(engine) as session:
+        offers = session.exec(
+            select(Offer)
+            .order_by(Offer.display_order, Offer.id)
+        ).all()
+        return offers
+
+@app.post("/platform/admin/offers", response_model=OfferRead)
+def create_offer(offer_data: OfferCreate, current_user: User = Depends(get_current_platform_admin)):
+    """Create a new offer - only platform admin"""
+    with Session(engine) as session:
+        offer = Offer(**offer_data.dict())
+        session.add(offer)
+        session.commit()
+        session.refresh(offer)
+        return offer
+
+@app.put("/platform/admin/offers/{offer_id}", response_model=OfferRead)
+def update_offer(offer_id: int, offer_data: OfferUpdate, current_user: User = Depends(get_current_platform_admin)):
+    """Update an offer - only platform admin"""
+    with Session(engine) as session:
+        offer = session.get(Offer, offer_id)
+        if not offer:
+            raise HTTPException(status_code=404, detail="Offer not found")
+        
+        if offer_data.title is not None:
+            offer.title = offer_data.title
+        if offer_data.description is not None:
+            offer.description = offer_data.description
+        if offer_data.price is not None:
+            offer.price = offer_data.price
+        if offer_data.price_text is not None:
+            offer.price_text = offer_data.price_text
+        if offer_data.contact_text is not None:
+            offer.contact_text = offer_data.contact_text
+        if offer_data.contact_email is not None:
+            offer.contact_email = offer_data.contact_email
+        if offer_data.contact_phone is not None:
+            offer.contact_phone = offer_data.contact_phone
+        if offer_data.is_active is not None:
+            offer.is_active = offer_data.is_active
+        if offer_data.display_order is not None:
+            offer.display_order = offer_data.display_order
+        
+        session.add(offer)
+        session.commit()
+        session.refresh(offer)
+        return offer
+
+@app.delete("/platform/admin/offers/{offer_id}")
+def delete_offer(offer_id: int, current_user: User = Depends(get_current_platform_admin)):
+    """Delete an offer - only platform admin"""
+    with Session(engine) as session:
+        offer = session.get(Offer, offer_id)
+        if not offer:
+            raise HTTPException(status_code=404, detail="Offer not found")
+        
+        session.delete(offer)
+        session.commit()
+        return {"message": "Offer deleted successfully"}
 
 # --- Subscription Requests Endpoints ---
 

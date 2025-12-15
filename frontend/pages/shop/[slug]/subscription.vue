@@ -156,6 +156,15 @@
                 </li>
               </ul>
               <div v-else class="no-features-text">Функции не указаны</div>
+              
+              <div class="pricing-limit">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                  <line x1="1" y1="10" x2="23" y2="10"></line>
+                </svg>
+                <span>Максимум товаров: <strong>{{ plan.max_products === null ? 'Неограниченно' : plan.max_products }}</strong></span>
+              </div>
+              
               <button 
                 @click="requestPlan(plan)" 
                 class="pricing-button"
@@ -171,6 +180,42 @@
                 <span v-else-if="plan.is_trial">Выбрать</span>
                 <span v-else>Запросить план</span>
               </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Offers Section -->
+        <div v-if="offers && offers.length > 0" class="offers-section">
+          <h2 class="section-title">Специальные предложения</h2>
+          <p class="section-description">Дополнительные услуги и решения</p>
+          <div class="offers-grid">
+            <div v-for="offer in offers" :key="offer.id" class="offer-card">
+              <div class="offer-header">
+                <h3 class="offer-title">{{ offer.title }}</h3>
+                <div v-if="offer.price || offer.price_text" class="offer-price">
+                  <span v-if="offer.price" class="price-amount">${{ offer.price.toFixed(2) }}</span>
+                  <span v-else class="price-text">{{ offer.price_text }}</span>
+                </div>
+              </div>
+              <p class="offer-description">{{ offer.description }}</p>
+              <div class="offer-contact">
+                <p class="contact-text">{{ offer.contact_text }}</p>
+                <div class="contact-buttons">
+                  <a v-if="offer.contact_email" :href="`mailto:${offer.contact_email}`" class="contact-btn email">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                      <polyline points="22,6 12,13 2,6"></polyline>
+                    </svg>
+                    Написать
+                  </a>
+                  <a v-if="offer.contact_phone" :href="`tel:${offer.contact_phone}`" class="contact-btn phone">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                    </svg>
+                    Позвонить
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -229,6 +274,11 @@ const { data: availablePlans } = await useFetch('http://localhost:8000/subscript
   headers: {
     'Authorization': `Bearer ${token.value}`
   }
+})
+
+// Fetch active offers
+const { data: offers } = await useFetch('http://localhost:8000/offers', {
+  server: false
 })
 
 // Fetch subscription request status
@@ -493,7 +543,7 @@ const requestPlan = async (plan) => {
   background: white;
   border-radius: 24px;
   padding: 32px;
-  margin-bottom: 32px;
+  margin-bottom: 48px;
   box-shadow: 0 2px 10px rgba(0,0,0,0.04);
   border: 1px solid #E5E7EB;
 }
@@ -633,18 +683,21 @@ const requestPlan = async (plan) => {
 .subscription-header {
   text-align: center;
   margin-bottom: 48px;
+  padding: 32px 24px;
 }
 
 .page-title {
   font-size: 2.5rem;
-  font-weight: 900;
+  font-weight: 800;
   margin-bottom: 12px;
   color: #111;
+  letter-spacing: -0.02em;
 }
 
 .page-subtitle {
   font-size: 1.125rem;
-  color: #666;
+  color: #6B7280;
+  font-weight: 400;
 }
 
 .pricing-grid {
@@ -662,11 +715,13 @@ const requestPlan = async (plan) => {
   box-shadow: 0 4px 20px rgba(0,0,0,0.08);
   position: relative;
   transition: all 0.3s;
+  border: 2px solid #E5E7EB;
 }
 
 .pricing-card:hover {
   transform: translateY(-8px);
   box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+  border-color: #111;
 }
 
 .pricing-card.featured {
@@ -716,6 +771,7 @@ const requestPlan = async (plan) => {
   font-size: 3rem;
   font-weight: 900;
   color: #111;
+  line-height: 1;
 }
 
 .price-period {
@@ -820,7 +876,7 @@ const requestPlan = async (plan) => {
 
 .info-box {
   max-width: 800px;
-  margin: 0 auto;
+  margin: 48px auto 0;
   background: #F9FAFB;
   border-radius: 16px;
   padding: 24px;
@@ -855,6 +911,114 @@ const requestPlan = async (plan) => {
   left: 0;
   color: #3B82F6;
   font-weight: 700;
+}
+
+/* Offers Section */
+.offers-section {
+  margin-top: 60px;
+}
+
+.offers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+  margin-top: 24px;
+}
+
+.offer-card {
+  background: white;
+  border-radius: 24px;
+  padding: 32px;
+  border: 2px solid #111;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  transition: all 0.3s;
+}
+
+.offer-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+}
+
+.offer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.offer-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #111;
+  margin: 0;
+}
+
+.offer-price {
+  padding: 8px 16px;
+  background: #F9FAFB;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 1.125rem;
+  color: #111;
+}
+
+.offer-price .price-amount {
+  color: #111;
+}
+
+.offer-price .price-text {
+  color: #6B7280;
+  font-size: 0.875rem;
+}
+
+.offer-description {
+  color: #6B7280;
+  line-height: 1.6;
+  margin-bottom: 24px;
+  font-size: 0.95rem;
+}
+
+.offer-contact {
+  padding-top: 20px;
+  border-top: 1px solid #E5E7EB;
+}
+
+.contact-text {
+  color: #6B7280;
+  font-size: 0.875rem;
+  margin-bottom: 16px;
+}
+
+.contact-buttons {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.contact-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: #111;
+  color: white;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.875rem;
+  transition: all 0.2s;
+  min-width: 120px;
+}
+
+.contact-btn:hover {
+  background: #000;
+  transform: translateY(-2px);
+}
+
+.contact-btn svg {
+  flex-shrink: 0;
 }
 
 /* Subscription Request Status */
@@ -1084,19 +1248,96 @@ const requestPlan = async (plan) => {
   }
 }
 
+.pricing-limit {
+  margin-top: 16px;
+  padding: 12px 16px;
+  background: #F9FAFB;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.875rem;
+  color: #6B7280;
+  border: 1px solid #E5E7EB;
+}
+
+.pricing-limit svg {
+  color: #9CA3AF;
+  flex-shrink: 0;
+}
+
+.pricing-limit strong {
+  color: #111;
+  font-weight: 700;
+}
+
+@media (max-width: 1024px) {
+  .pricing-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+  
+  .pricing-card.featured {
+    transform: scale(1);
+  }
+}
+
 @media (max-width: 768px) {
   .admin-main {
     margin-left: 0;
   }
   
-  .duration-options {
+  .subscription-header {
+    padding: 32px 20px;
+    margin-bottom: 40px;
+  }
+  
+  .page-title {
+    font-size: 2rem;
+  }
+  
+  .page-subtitle {
+    font-size: 1rem;
+  }
+  
+  .pricing-grid {
     grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  
+  .pricing-card {
+    padding: 32px 24px;
+  }
+  
+  .pricing-card.featured {
+    transform: scale(1);
+  }
+  
+  .duration-options {
+    grid-template-columns: repeat(2, 1fr);
   }
   
   .request-status-header {
     flex-direction: column;
     align-items: center;
     text-align: center;
+  }
+  
+  .offers-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .current-subscription-card {
+    padding: 24px;
+  }
+  
+  .info-box {
+    padding: 24px;
+    margin-top: 40px;
+  }
+  
+  .price-amount {
+    font-size: 2.5rem;
   }
 }
 </style>

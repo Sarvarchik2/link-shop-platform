@@ -31,7 +31,14 @@
           <h1 class="product-title">{{ product.name }}</h1>
 
           <div class="product-price-section">
-            <div class="product-price">${{ product.price.toFixed(2) }}</div>
+            <div class="price-container">
+              <div v-if="product.discount > 0" class="price-with-discount">
+                <div class="product-price-discounted">${{ finalPrice.toFixed(2) }}</div>
+                <div class="product-price-original">${{ product.price.toFixed(2) }}</div>
+                <div class="discount-badge">-{{ product.discount }}%</div>
+              </div>
+              <div v-else class="product-price">${{ product.price.toFixed(2) }}</div>
+            </div>
             <!-- Stock badge based on selected variant -->
             <template v-if="productVariants.length > 0">
               <div v-if="totalColorStock === 0" class="stock-badge out-of-stock">TUGADI</div>
@@ -114,6 +121,7 @@
 
           <div class="product-actions">
             <button 
+              v-if="canAddToCart"
               @click="addToCart" 
               class="btn-add-cart"
               :disabled="!canAddToCart"
@@ -125,11 +133,60 @@
               </svg>
               {{ buttonText }}
             </button>
+            <button 
+              v-else-if="showPreorderButton"
+              @click="openPreorderModal" 
+              class="btn-preorder"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                <path d="M2 17l10 5 10-5"></path>
+                <path d="M2 12l10 5 10-5"></path>
+              </svg>
+              Предзаказ
+            </button>
             <button @click="toggleFavorite" class="btn-favorite" :class="{ active: product.is_favorite }">
               <svg width="20" height="20" viewBox="0 0 24 24" :fill="product.is_favorite ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2">
                 <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
               </svg>
             </button>
+          </div>
+          
+          <!-- Pre-order Modal -->
+          <div v-if="showPreorderModal" class="modal-overlay" @click="closePreorderModal">
+            <div class="modal-content" @click.stop>
+              <div class="modal-header">
+                <h2>Предзаказ</h2>
+                <button @click="closePreorderModal" class="modal-close">×</button>
+              </div>
+              <div class="modal-body">
+                <p class="preorder-description">
+                  Товар временно отсутствует в наличии. Оставьте предзаказ, и мы уведомим вас, когда товар поступит.
+                </p>
+                <div class="form-group">
+                  <label>Имя</label>
+                  <input v-model="preorderForm.name" type="text" placeholder="Ваше имя" />
+                </div>
+                <div class="form-group">
+                  <label>Телефон *</label>
+                  <input v-model="preorderForm.phone" type="tel" placeholder="+998901234567" required />
+                </div>
+                <div v-if="productVariants.length > 0" class="form-group">
+                  <p class="form-info">
+                    <strong>Выбранная конфигурация:</strong><br>
+                    <span v-if="selectedColor">Цвет: {{ selectedColor.name }}</span>
+                    <span v-if="selectedColor && selectedSize">, </span>
+                    <span v-if="selectedSize">Размер: {{ selectedSize }}</span>
+                  </p>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button @click="closePreorderModal" class="btn-cancel">Отмена</button>
+                <button @click="submitPreorder" class="btn-submit" :disabled="!preorderForm.phone || isSubmittingPreorder">
+                  {{ isSubmittingPreorder ? 'Отправка...' : 'Оставить предзаказ' }}
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -150,6 +207,15 @@ const selectedImage = ref(null)
 const selectedSize = ref(null)
 const selectedColor = ref(null)
 
+// Calculate final price with discount
+const finalPrice = computed(() => {
+  if (!product.value) return 0
+  if (product.value.discount > 0) {
+    return product.value.price * (1 - product.value.discount / 100)
+  }
+  return product.value.price
+})
+
 const productImages = computed(() => {
   if (!product.value) return []
   try {
@@ -169,7 +235,11 @@ const productVariants = computed(() => {
       return JSON.parse(product.value.variants)
     }
     // Legacy format: sizes + colors
-    if (product.value.sizes && product.value.colors) {
+    const hasSizes = product.value.sizes && product.value.sizes.trim()
+    const hasColors = product.value.colors && product.value.colors.trim()
+    
+    if (hasSizes && hasColors) {
+      // Both sizes and colors
       const sizes = JSON.parse(product.value.sizes)
       const colors = JSON.parse(product.value.colors)
       const variants = []
@@ -186,6 +256,31 @@ const productVariants = computed(() => {
         })
       })
       return variants
+    } else if (hasColors && !hasSizes) {
+      // Only colors, no sizes
+      const colors = JSON.parse(product.value.colors)
+      return colors.map(color => {
+        const colorObj = typeof color === 'string' ? { name: color, hex: '#000000', stock: 0 } : color
+        return {
+          size: null,
+          color: colorObj.name || color,
+          colorHex: colorObj.hex || '#000000',
+          stock: colorObj.stock || 0
+        }
+      })
+    } else if (hasSizes && !hasColors) {
+      // Only sizes, no colors
+      const sizes = JSON.parse(product.value.sizes)
+      return sizes.map(size => {
+        const sizeName = typeof size === 'string' ? size : (size.name || size)
+        const sizeStock = typeof size === 'object' ? (size.stock || 0) : 0
+        return {
+          size: sizeName,
+          color: null,
+          colorHex: null,
+          stock: sizeStock
+        }
+      })
     }
     return []
   } catch {
@@ -264,10 +359,29 @@ const availableSizes = computed(() => {
 
 // Get selected variant (based on selected size and color)
 const selectedVariant = computed(() => {
-  if (!selectedColor.value || !selectedSize.value) return null
-  return productVariants.value.find(v => 
-    v.color === selectedColor.value.name && v.size === selectedSize.value
-  )
+  if (productVariants.value.length === 0) return null
+  
+  // If product has both sizes and colors, both must be selected
+  if (productSizes.value.length > 0 && productColors.value.length > 0) {
+    if (!selectedColor.value || !selectedSize.value) return null
+    return productVariants.value.find(v => 
+      v.color === selectedColor.value.name && v.size === selectedSize.value
+    )
+  }
+  // If product has only colors (no sizes)
+  else if (productColors.value.length > 0 && productSizes.value.length === 0) {
+    if (!selectedColor.value) return null
+    // Find variant with this color (size can be null or any)
+    return productVariants.value.find(v => v.color === selectedColor.value.name)
+  }
+  // If product has only sizes (no colors)
+  else if (productSizes.value.length > 0 && productColors.value.length === 0) {
+    if (!selectedSize.value) return null
+    // Find variant with this size (color can be null or any)
+    return productVariants.value.find(v => v.size === selectedSize.value)
+  }
+  
+  return null
 })
 
 // Total available stock (sum of all variant stocks)
@@ -279,7 +393,7 @@ const totalColorStock = computed(() => {
 // Auto-select first available color and size on load
 watch(product, (newProduct) => {
   if (newProduct) {
-    // If product has sizes, color is required
+    // If product has both sizes and colors
     if (productSizes.value.length > 0 && productColors.value.length > 0) {
       const firstAvailable = productColors.value.find(c => c.stock > 0)
       if (firstAvailable) {
@@ -289,17 +403,26 @@ watch(product, (newProduct) => {
       const firstSize = productSizes.value[0]
       selectedSize.value = typeof firstSize === 'object' ? firstSize.name : firstSize
     }
-    // If product has colors but no sizes, auto-select color
+    // If product has only colors (no sizes), auto-select color
     else if (productColors.value.length > 0 && productSizes.value.length === 0) {
       const firstAvailable = productColors.value.find(c => c.stock > 0)
       if (firstAvailable) {
         selectedColor.value = firstAvailable
       }
+      // Clear size selection
+      selectedSize.value = null
     }
-    // If product has sizes but no colors, auto-select size
+    // If product has only sizes (no colors), auto-select size
     else if (productSizes.value.length > 0 && productColors.value.length === 0) {
       const firstSize = productSizes.value[0]
       selectedSize.value = typeof firstSize === 'object' ? firstSize.name : firstSize
+      // Clear color selection
+      selectedColor.value = null
+    }
+    // If product has no variants, clear selections
+    else {
+      selectedColor.value = null
+      selectedSize.value = null
     }
   }
 }, { immediate: true })
@@ -325,13 +448,29 @@ const canAddToCart = computed(() => {
   
   if (!product.value) return false
   
-  // If product has variants (sizes + colors)
+  // If product has variants
   if (productVariants.value.length > 0) {
-    // Both size and color must be selected
-    if (!selectedColor.value || !selectedSize.value) return false
+    // If product has both sizes and colors, both must be selected
+    if (productSizes.value.length > 0 && productColors.value.length > 0) {
+      if (!selectedColor.value || !selectedSize.value) return false
+    }
+    // If product has only colors (no sizes), only color must be selected
+    else if (productColors.value.length > 0 && productSizes.value.length === 0) {
+      if (!selectedColor.value) return false
+    }
+    // If product has only sizes (no colors), only size must be selected
+    else if (productSizes.value.length > 0 && productColors.value.length === 0) {
+      if (!selectedSize.value) return false
+    }
+    // If product has variants but no sizes and no colors, check variant stock
+    // This case is rare but handle it
+    
     // Check if selected variant has stock
     const variant = selectedVariant.value
-    if (!variant || (variant.stock || 0) === 0) return false
+    if (variant && (variant.stock || 0) === 0) return false
+    
+    // If we have colors/sizes but no variant found, can't add
+    if ((productSizes.value.length > 0 || productColors.value.length > 0) && !variant) return false
   }
   // No variants - check general stock
   else {
@@ -351,10 +490,22 @@ const buttonText = computed(() => {
   
   // If product has variants
   if (productVariants.value.length > 0) {
-    if (!selectedColor.value) return 'Rangni tanlang'
-    if (!selectedSize.value) return 'O\'lchamni tanlang'
+    // If product has both sizes and colors
+    if (productSizes.value.length > 0 && productColors.value.length > 0) {
+      if (!selectedColor.value) return 'Rangni tanlang'
+      if (!selectedSize.value) return 'O\'lchamni tanlang'
+    }
+    // If product has only colors (no sizes)
+    else if (productColors.value.length > 0 && productSizes.value.length === 0) {
+      if (!selectedColor.value) return 'Rangni tanlang'
+    }
+    // If product has only sizes (no colors)
+    else if (productSizes.value.length > 0 && productColors.value.length === 0) {
+      if (!selectedSize.value) return 'O\'lchamni tanlang'
+    }
+    
     const variant = selectedVariant.value
-    if (!variant || (variant.stock || 0) === 0) return 'Tugagan'
+    if (variant && (variant.stock || 0) === 0) return 'Tugagan'
   }
   // No variants - check general stock
   else if (product.value.stock === 0) {
@@ -365,6 +516,112 @@ const buttonText = computed(() => {
 })
 
 const toast = useToast()
+
+// Pre-order state
+const showPreorderModal = ref(false)
+const isSubmittingPreorder = ref(false)
+const preorderForm = ref({
+  name: '',
+  phone: ''
+})
+
+// Check if pre-order button should be shown
+const showPreorderButton = computed(() => {
+  if (!product.value || !user.value) return false
+  if (!product.value.is_preorder_enabled) return false
+  
+  // Check if product is out of stock
+  if (productVariants.value.length > 0) {
+    // Check if we need to select variants
+    const needsColor = productColors.value.length > 0
+    const needsSize = productSizes.value.length > 0
+    
+    // If we need both but haven't selected them, don't show pre-order button yet
+    if (needsColor && needsSize && (!selectedColor.value || !selectedSize.value)) {
+      return false
+    }
+    // If we need only color but haven't selected it
+    if (needsColor && !needsSize && !selectedColor.value) {
+      return false
+    }
+    // If we need only size but haven't selected it
+    if (!needsColor && needsSize && !selectedSize.value) {
+      return false
+    }
+    
+    const variant = selectedVariant.value
+    if (variant && (variant.stock || 0) > 0) return false
+    // If variant selected but out of stock, or no variant selected but all out of stock
+    return totalColorStock.value === 0 || (!variant || (variant.stock || 0) === 0)
+  } else {
+    return product.value.stock === 0
+  }
+})
+
+const openPreorderModal = () => {
+  if (!user.value) {
+    toast.warning('Для предзаказа необходимо войти в систему')
+    const returnUrl = `/products/${route.params.id}`
+    navigateTo(`/login?returnUrl=${encodeURIComponent(returnUrl)}`)
+    return
+  }
+  
+  // Pre-fill user data if available
+  if (user.value) {
+    preorderForm.value.name = `${user.value.first_name || ''} ${user.value.last_name || ''}`.trim()
+    preorderForm.value.phone = user.value.phone || ''
+  }
+  
+  showPreorderModal.value = true
+}
+
+const closePreorderModal = () => {
+  showPreorderModal.value = false
+  preorderForm.value = { name: '', phone: '' }
+}
+
+const submitPreorder = async () => {
+  if (!preorderForm.value.phone) {
+    toast.error('Пожалуйста, укажите номер телефона')
+    return
+  }
+  
+  if (!user.value) {
+    toast.warning('Для предзаказа необходимо войти в систему')
+    return
+  }
+  
+  isSubmittingPreorder.value = true
+  
+  try {
+    const { token } = useAuth()
+    await $fetch(`http://localhost:8000/products/${route.params.id}/preorder`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token.value}`
+      },
+      body: {
+        product_id: parseInt(route.params.id),
+        selected_color: selectedColor.value?.name || null,
+        selected_size: selectedSize.value || null,
+        phone: preorderForm.value.phone,
+        name: preorderForm.value.name || null
+      }
+    })
+    
+    toast.success('Предзаказ успешно оформлен! Мы уведомим вас, когда товар поступит в продажу.')
+    closePreorderModal()
+  } catch (e) {
+    console.error('Preorder error:', e)
+    if (e?.data?.detail) {
+      toast.error(e.data.detail)
+    } else {
+      toast.error('Ошибка при оформлении предзаказа. Попробуйте еще раз.')
+    }
+  } finally {
+    isSubmittingPreorder.value = false
+  }
+}
 
 const addToCart = () => {
   // Check if user is logged in
@@ -377,32 +634,30 @@ const addToCart = () => {
   }
   
   if (!canAddToCart.value) {
-    // If product has sizes, color is required
-    if (productSizes.value.length > 0) {
-      if (productColors.value.length > 0) {
-        // Has both sizes and colors
-        if (!selectedColor.value) {
-          toast.warning('Iltimos, rangni tanlang')
-          return
-        }
-        if (selectedColor.value.stock === 0) {
-          toast.error('Bu rang tugagan')
-          return
-        }
-        if (!selectedSize.value) {
-          toast.warning('Iltimos, o\'lchamni tanlang')
-          return
-        }
-      } else {
-        // Has sizes but no colors
-        if (!selectedSize.value) {
-          toast.warning('Iltimos, o\'lchamni tanlang')
-          return
-        }
+    // If product has both sizes and colors
+    if (productSizes.value.length > 0 && productColors.value.length > 0) {
+      if (!selectedColor.value) {
+        toast.warning('Iltimos, rangni tanlang')
+        return
+      }
+      if (selectedColor.value.stock === 0) {
+        toast.error('Bu rang tugagan')
+        return
+      }
+      if (!selectedSize.value) {
+        toast.warning('Iltimos, o\'lchamni tanlang')
+        return
       }
     }
-    // If product has colors but no sizes, color is required
-    else if (productColors.value.length > 0) {
+    // If product has only sizes (no colors)
+    else if (productSizes.value.length > 0 && productColors.value.length === 0) {
+      if (!selectedSize.value) {
+        toast.warning('Iltimos, o\'lchamni tanlang')
+        return
+      }
+    }
+    // If product has only colors (no sizes)
+    else if (productColors.value.length > 0 && productSizes.value.length === 0) {
       if (!selectedColor.value) {
         toast.warning('Iltimos, rangni tanlang')
         return
@@ -417,6 +672,9 @@ const addToCart = () => {
   
   addItem({
     ...product.value,
+    price: finalPrice.value,  // Add discounted price
+    originalPrice: product.value.price,  // Keep original price
+    discount: product.value.discount,
     selectedColor: selectedColor.value || null,
     selectedSize: selectedSize.value || null
   })
@@ -539,10 +797,46 @@ const toggleFavorite = async () => {
   flex-wrap: wrap;
 }
 
+.price-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .product-price {
   font-size: 2.5rem;
   font-weight: 800;
   color: #111;
+}
+
+.price-with-discount {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.product-price-discounted {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #EF4444;
+}
+
+.product-price-original {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #9CA3AF;
+  text-decoration: line-through;
+}
+
+.discount-badge {
+  padding: 6px 12px;
+  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+  color: white;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.875rem;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
 }
 
 .stock-badge {
@@ -807,6 +1101,183 @@ const toggleFavorite = async () => {
   }
 }
 
+.btn-preorder {
+  flex: 1;
+  padding: 16px 32px;
+  background: linear-gradient(135deg, #6366F1 0%, #4F46E5 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  transition: all 0.2s;
+}
+
+.btn-preorder:hover {
+  background: linear-gradient(135deg, #4F46E5 0%, #4338CA 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 24px;
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px;
+  border-bottom: 1px solid #E5E7EB;
+}
+
+.modal-header h2 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #111;
+  margin: 0;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: #6B7280;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.modal-close:hover {
+  background: #F3F4F6;
+  color: #111;
+}
+
+.modal-body {
+  padding: 24px;
+}
+
+.preorder-description {
+  color: #6B7280;
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  color: #111;
+  margin-bottom: 8px;
+  font-size: 0.875rem;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #E5E7EB;
+  border-radius: 12px;
+  font-size: 1rem;
+  transition: all 0.2s;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #6366F1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.form-info {
+  padding: 12px;
+  background: #F9FAFB;
+  border-radius: 12px;
+  color: #6B7280;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.modal-footer {
+  display: flex;
+  gap: 12px;
+  padding: 24px;
+  border-top: 1px solid #E5E7EB;
+}
+
+.btn-cancel {
+  flex: 1;
+  padding: 12px 24px;
+  background: white;
+  border: 2px solid #E5E7EB;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: #6B7280;
+}
+
+.btn-cancel:hover {
+  border-color: #D1D5DB;
+  background: #F9FAFB;
+}
+
+.btn-submit {
+  flex: 1;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #6366F1 0%, #4F46E5 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-submit:hover:not(:disabled) {
+  background: linear-gradient(135deg, #4F46E5 0%, #4338CA 100%);
+  transform: translateY(-1px);
+}
+
+.btn-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 @media (max-width: 767px) {
   .main-image {
     padding: 24px;
@@ -820,8 +1291,13 @@ const toggleFavorite = async () => {
     font-size: 2rem;
   }
   
-  .btn-add-cart {
+  .btn-add-cart,
+  .btn-preorder {
     padding: 14px 24px;
+  }
+  
+  .modal-content {
+    margin: 20px;
   }
 }
 </style>
