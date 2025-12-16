@@ -195,6 +195,12 @@ class SubscriptionRequestRead(SQLModel):
     requested_at: datetime
     approved_at: Optional[datetime] = None
     notes: Optional[str] = None
+    shop_name: Optional[str] = None
+    shop_slug: Optional[str] = None
+
+class SubscriptionRequestUpdate(SQLModel):
+    status: str  # approved, rejected
+    notes: Optional[str] = None
 
 class Brand(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -2160,6 +2166,7 @@ def get_subscription_request(shop_slug: str, current_user: User = Depends(get_cu
         
         plan = session.get(SubscriptionPlan, request.plan_id)
         
+        shop = session.get(Shop, request.shop_id)
         return SubscriptionRequestRead(
             id=request.id,
             shop_id=request.shop_id,
@@ -2169,7 +2176,9 @@ def get_subscription_request(shop_slug: str, current_user: User = Depends(get_cu
             status=request.status,
             requested_at=request.requested_at,
             approved_at=request.approved_at,
-            notes=request.notes
+            notes=request.notes,
+            shop_name=shop.name if shop else None,
+            shop_slug=shop.slug if shop else None
         )
 
 @app.get("/shop/{shop_slug}/admin/orders", response_model=List[OrderReadWithUser])
@@ -2235,6 +2244,90 @@ def update_shop_order_status(shop_slug: str, order_id: int, status_update: Order
         session.commit()
         session.refresh(order)
         return order
+
+# --- Subscription Requests Management for Platform Admin ---
+@app.get("/platform/admin/subscription-requests", response_model=List[SubscriptionRequestRead])
+def get_all_subscription_requests(
+    status: Optional[str] = None,
+    current_user: User = Depends(get_current_platform_admin)
+):
+    """Get all subscription requests - platform admin only"""
+    with Session(engine) as session:
+        query = select(SubscriptionRequest)
+        if status:
+            query = query.where(SubscriptionRequest.status == status)
+        requests = session.exec(query.order_by(SubscriptionRequest.requested_at.desc())).all()
+        
+        result = []
+        for req in requests:
+            plan = session.get(SubscriptionPlan, req.plan_id)
+            shop = session.get(Shop, req.shop_id)
+            result.append(SubscriptionRequestRead(
+                id=req.id,
+                shop_id=req.shop_id,
+                plan_id=req.plan_id,
+                plan_name=plan.name if plan else None,
+                duration_months=req.duration_months,
+                status=req.status,
+                requested_at=req.requested_at,
+                approved_at=req.approved_at,
+                notes=req.notes,
+                shop_name=shop.name if shop else None,
+                shop_slug=shop.slug if shop else None
+            ))
+        return result
+
+@app.put("/platform/admin/subscription-requests/{request_id}", response_model=SubscriptionRequestRead)
+def update_subscription_request(
+    request_id: int,
+    update_data: SubscriptionRequestUpdate,
+    current_user: User = Depends(get_current_platform_admin)
+):
+    """Approve or reject subscription request - platform admin only"""
+    with Session(engine) as session:
+        request = session.get(SubscriptionRequest, request_id)
+        if not request:
+            raise HTTPException(status_code=404, detail="Subscription request not found")
+        
+        if update_data.status not in ["approved", "rejected"]:
+            raise HTTPException(status_code=400, detail="Status must be 'approved' or 'rejected'")
+        
+        request.status = update_data.status
+        request.approved_at = datetime.utcnow() if update_data.status == "approved" else None
+        if update_data.notes:
+            request.notes = update_data.notes
+        
+        # If approved, update shop subscription
+        if update_data.status == "approved":
+            shop = session.get(Shop, request.shop_id)
+            plan = session.get(SubscriptionPlan, request.plan_id)
+            if shop and plan:
+                shop.subscription_status = "active"
+                # Calculate expiration date
+                from datetime import timedelta
+                expires_at = datetime.utcnow() + timedelta(days=30 * request.duration_months)
+                shop.subscription_expires_at = expires_at
+                session.add(shop)
+        
+        session.add(request)
+        session.commit()
+        session.refresh(request)
+        
+        plan = session.get(SubscriptionPlan, request.plan_id)
+        shop = session.get(Shop, request.shop_id)
+        return SubscriptionRequestRead(
+            id=request.id,
+            shop_id=request.shop_id,
+            plan_id=request.plan_id,
+            plan_name=plan.name if plan else None,
+            duration_months=request.duration_months,
+            status=request.status,
+            requested_at=request.requested_at,
+            approved_at=request.approved_at,
+            notes=request.notes,
+            shop_name=shop.name if shop else None,
+            shop_slug=shop.slug if shop else None
+        )
 
 @app.put("/admin/orders/{order_id}", response_model=OrderRead)
 def update_order_status(order_id: int, status_update: OrderStatusUpdate, current_user: User = Depends(get_current_admin)):

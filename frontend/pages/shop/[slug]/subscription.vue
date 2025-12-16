@@ -3,9 +3,9 @@
     <ShopAdminSidebar :shop-slug="shopSlug" current-route="subscription" />
     
     <main class="admin-main">
-      <div class="container py-8">
+      <div class="container">
       <div class="subscription-header">
-        <h1 class="page-title">Выберите подписку для {{ shop?.name }}</h1>
+        <h1 class="page-title">Выберите подписку</h1>
         <p class="page-subtitle">Выберите план, который подходит вашему бизнесу</p>
       </div>
 
@@ -103,10 +103,8 @@
                   <span class="price-amount">Бесплатно</span>
                 </div>
                 <div v-else class="pricing-price">
-                  <div class="price-main">
-                    <span class="price-amount">${{ plan.price }}</span>
-                    <span class="price-period">в месяц</span>
-                  </div>
+                  <span class="price-amount">${{ plan.price }}</span>
+                  <span class="price-period">/мес</span>
                 </div>
               </div>
               <div v-if="plan.description" class="pricing-description">
@@ -120,9 +118,9 @@
                   <button
                     v-for="duration in durations"
                     :key="duration.months"
-                    @click="selectedDuration = duration.months"
+                    @click="setPlanDuration(plan.id, duration.months)"
                     class="duration-option"
-                    :class="{ active: selectedDuration === duration.months }"
+                    :class="{ active: getPlanDuration(plan.id) === duration.months }"
                   >
                     <span class="duration-months">{{ duration.label }}</span>
                     <span v-if="duration.discount > 0" class="duration-discount">-{{ duration.discount }}%</span>
@@ -130,19 +128,19 @@
                 </div>
                 <div class="price-calculation">
                   <div class="calc-row">
-                    <span>Цена за {{ selectedDuration }} {{ getMonthsLabel(selectedDuration) }}:</span>
-                    <span class="calc-value">${{ calculatePrice(plan, selectedDuration).total.toFixed(2) }}</span>
+                    <span>Цена за {{ getPlanDuration(plan.id) }} {{ getMonthsLabel(getPlanDuration(plan.id)) }}:</span>
+                    <span class="calc-value">${{ calculatePrice(plan, getPlanDuration(plan.id)).total.toFixed(2) }}</span>
                   </div>
-                  <div v-if="calculatePrice(plan, selectedDuration).discount > 0" class="calc-row discount-row">
-                    <span>Скидка {{ calculatePrice(plan, selectedDuration).discount }}%:</span>
-                    <span class="calc-value discount">-${{ calculatePrice(plan, selectedDuration).discountAmount.toFixed(2) }}</span>
+                  <div v-if="calculatePrice(plan, getPlanDuration(plan.id)).discount > 0" class="calc-row discount-row">
+                    <span>Скидка {{ calculatePrice(plan, getPlanDuration(plan.id)).discount }}%:</span>
+                    <span class="calc-value discount">-${{ calculatePrice(plan, getPlanDuration(plan.id)).discountAmount.toFixed(2) }}</span>
                   </div>
                   <div class="calc-row total-row">
                     <span><strong>Итого:</strong></span>
-                    <span class="calc-value total"><strong>${{ calculatePrice(plan, selectedDuration).final.toFixed(2) }}</strong></span>
+                    <span class="calc-value total"><strong>${{ calculatePrice(plan, getPlanDuration(plan.id)).final.toFixed(2) }}</strong></span>
                   </div>
-                  <div v-if="calculatePrice(plan, selectedDuration).savings > 0" class="savings-badge">
-                    💰 Экономия ${{ calculatePrice(plan, selectedDuration).savings.toFixed(2) }}
+                  <div v-if="calculatePrice(plan, getPlanDuration(plan.id)).savings > 0" class="savings-badge">
+                    💰 Экономия ${{ calculatePrice(plan, getPlanDuration(plan.id)).savings.toFixed(2) }}
                   </div>
                 </div>
               </div>
@@ -257,7 +255,7 @@ const router = useRouter()
 const toast = useToast()
 
 const selectedPlan = ref(null)
-const selectedDuration = ref(1) // 1, 3, 6, 12 месяцев
+const planDurations = ref({}) // Объект для хранения выбранной длительности для каждого плана: { planId: duration }
 const loading = ref(false)
 const subscriptionRequest = ref(null)
 
@@ -323,6 +321,15 @@ const durations = [
   { months: 6, label: '6 месяцев', discount: 10 },
   { months: 12, label: '12 месяцев', discount: 15 }
 ]
+
+// Функции для работы с длительностью каждого плана
+const getPlanDuration = (planId) => {
+  return planDurations.value[planId] || 1 // По умолчанию 1 месяц
+}
+
+const setPlanDuration = (planId, duration) => {
+  planDurations.value[planId] = duration
+}
 
 // Расчет цены с учетом скидки
 const calculatePrice = (plan, durationMonths) => {
@@ -489,11 +496,13 @@ const requestPlan = async (plan) => {
   loading.value = true
   selectedPlan.value = plan
 
+  const selectedDuration = getPlanDuration(plan.id)
+
   try {
     // Отправляем запрос на активацию подписки
     const requestData = {
       plan_id: plan.id,
-      duration_months: selectedDuration.value
+      duration_months: selectedDuration
     }
     
     const request = await $fetch(`http://localhost:8000/shop/${shopSlug}/subscription/request`, {
@@ -504,15 +513,15 @@ const requestPlan = async (plan) => {
     
     subscriptionRequest.value = request
     
-    const priceInfo = calculatePrice(plan, selectedDuration.value)
+    const priceInfo = calculatePrice(plan, selectedDuration)
     const planPrice = plan.price === 0 || plan.is_trial 
       ? 'Бесплатно' 
       : priceInfo.discount > 0
-        ? `$${priceInfo.final.toFixed(2)} за ${selectedDuration.value} ${getMonthsLabel(selectedDuration.value)} (скидка ${priceInfo.discount}%)`
-        : `$${priceInfo.final.toFixed(2)} за ${selectedDuration.value} ${getMonthsLabel(selectedDuration.value)}`
+        ? `$${priceInfo.final.toFixed(2)} за ${selectedDuration} ${getMonthsLabel(selectedDuration)} (скидка ${priceInfo.discount}%)`
+        : `$${priceInfo.final.toFixed(2)} за ${selectedDuration} ${getMonthsLabel(selectedDuration)}`
     
     toast.success(`Запрос на план "${plan.name}" (${planPrice}) отправлен! Администратор платформы свяжется с вами для активации после получения оплаты.`)
-    console.log('[Subscription] Запрос на план:', plan.slug, 'для магазина:', shopSlug, 'длительность:', selectedDuration.value)
+    console.log('[Subscription] Запрос на план:', plan.slug, 'для магазина:', shopSlug, 'длительность:', selectedDuration)
     
     // Обновляем информацию о запросе
     await fetchSubscriptionRequest()
@@ -530,22 +539,32 @@ const requestPlan = async (plan) => {
 .subscription-page {
   min-height: 100vh;
   display: flex;
-  background: #FAFAFA;
+  background: #FFFFFF;
+  overflow-x: hidden;
 }
 
 .admin-main {
   flex: 1;
   margin-left: 280px;
   min-height: 100vh;
+  overflow-x: hidden;
+  width: calc(100% - 280px);
 }
 
 .current-subscription-card {
   background: white;
-  border-radius: 24px;
+  border-radius: 16px;
   padding: 32px;
   margin-bottom: 48px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.04);
-  border: 1px solid #E5E7EB;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  border: 1px solid #E4E4E7;
+  transition: all 0.2s;
+  max-width: 100%;
+}
+
+.current-subscription-card:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  border-color: #09090B;
 }
 
 .subscription-header-section {
@@ -554,20 +573,25 @@ const requestPlan = async (plan) => {
   align-items: center;
   margin-bottom: 24px;
   padding-bottom: 24px;
-  border-bottom: 2px solid #F3F4F6;
+  border-bottom: 1px solid #E4E4E7;
 }
 
 .section-title {
-  font-size: 1.5rem;
-  font-weight: 800;
-  color: #111;
+  font-size: 1.875rem;
+  font-weight: 600;
+  color: #09090B;
+  letter-spacing: -0.01em;
+  margin-bottom: 8px;
 }
 
 .subscription-status {
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-size: 0.875rem;
-  font-weight: 700;
+  padding: 10px 24px;
+  border-radius: 24px;
+  font-size: 0.9375rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
 .subscription-status.status-trial {
@@ -593,26 +617,39 @@ const requestPlan = async (plan) => {
 .subscription-info-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 24px;
-  margin-bottom: 24px;
+  gap: 32px;
+  margin-bottom: 32px;
 }
 
 .info-item {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
+  padding: 20px;
+  background: #FAFAFA;
+  border-radius: 12px;
+  border: 1px solid #E4E4E7;
+  transition: all 0.2s;
+}
+
+.info-item:hover {
+  background: #F4F4F5;
+  border-color: #09090B;
 }
 
 .info-label {
   font-size: 0.875rem;
   color: #6B7280;
-  font-weight: 500;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .info-value {
-  font-size: 1.25rem;
-  font-weight: 700;
+  font-size: 1.5rem;
+  font-weight: 800;
   color: #111;
+  line-height: 1.2;
 }
 
 .info-value.days-warning {
@@ -655,22 +692,24 @@ const requestPlan = async (plan) => {
 }
 
 .available-plans-section {
-  margin-top: 48px;
+  margin-top: 64px;
 }
 
 .available-plans-section .section-title {
   text-align: center;
   margin-bottom: 16px;
+  font-size: 2.25rem;
 }
 
 .section-description {
   text-align: center;
   color: #6B7280;
-  margin-bottom: 32px;
-  font-size: 0.875rem;
-  max-width: 600px;
+  margin-bottom: 48px;
+  font-size: 1rem;
+  max-width: 700px;
   margin-left: auto;
   margin-right: auto;
+  line-height: 1.6;
 }
 
 .renew-note {
@@ -681,52 +720,60 @@ const requestPlan = async (plan) => {
 }
 
 .subscription-header {
-  text-align: center;
   margin-bottom: 48px;
-  padding: 32px 24px;
+  padding: 32px 0;
 }
 
 .page-title {
-  font-size: 2.5rem;
-  font-weight: 800;
-  margin-bottom: 12px;
-  color: #111;
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #09090B;
   letter-spacing: -0.02em;
+  line-height: 1.2;
 }
 
 .page-subtitle {
-  font-size: 1.125rem;
-  color: #6B7280;
+  font-size: 0.9375rem;
+  color: #71717A;
   font-weight: 400;
 }
 
 .pricing-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 32px;
-  max-width: 1100px;
-  margin: 0 auto 48px;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+  margin-bottom: 48px;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .pricing-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 .pricing-card {
   background: white;
-  border-radius: 24px;
-  padding: 40px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
   position: relative;
-  transition: all 0.3s;
-  border: 2px solid #E5E7EB;
+  transition: all 0.2s;
+  border: 1px solid #E4E4E7;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .pricing-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 12px 40px rgba(0,0,0,0.15);
-  border-color: #111;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  border-color: #09090B;
 }
 
 .pricing-card.featured {
-  border: 3px solid #111;
-  transform: scale(1.05);
+  border: 2px solid #09090B;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
 .pricing-card.selected {
@@ -735,71 +782,83 @@ const requestPlan = async (plan) => {
 
 .pricing-badge {
   position: absolute;
-  top: -12px;
+  top: -16px;
   left: 50%;
   transform: translateX(-50%);
   background: #111;
   color: white;
-  padding: 6px 20px;
-  border-radius: 20px;
-  font-size: 0.75rem;
-  font-weight: 700;
+  padding: 8px 24px;
+  border-radius: 24px;
+  font-size: 0.8125rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
 
 .pricing-header {
-  text-align: center;
-  margin-bottom: 32px;
-  padding-bottom: 32px;
-  border-bottom: 2px solid #F3F4F6;
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #E4E4E7;
 }
 
 .pricing-name {
-  font-size: 1.5rem;
-  font-weight: 800;
-  margin-bottom: 16px;
-  color: #111;
+  font-size: 1.125rem;
+  font-weight: 500;
+  margin-bottom: 12px;
+  color: #09090B;
+  letter-spacing: -0.01em;
+  line-height: 1.4;
 }
 
 .pricing-price {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 8px;
 }
 
 .price-amount {
-  font-size: 3rem;
-  font-weight: 900;
-  color: #111;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #09090B;
   line-height: 1;
+  letter-spacing: -0.02em;
 }
 
 .price-period {
   font-size: 0.875rem;
-  color: #666;
+  color: #71717A;
+  font-weight: 400;
 }
 
 .pricing-features {
   list-style: none;
   padding: 0;
-  margin: 0 0 32px 0;
+  margin: 0 0 24px 0;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
+  flex: 1;
 }
 
 .pricing-features li {
-  color: #666;
-  line-height: 1.6;
+  color: #09090B;
+  line-height: 1.5;
   display: flex;
   align-items: flex-start;
-  gap: 10px;
+  gap: 12px;
+  font-size: 0.875rem;
+  font-weight: 400;
+  padding: 2px 0;
 }
 
 .pricing-features li svg {
-  color: #10B981;
+  color: #09090B;
   flex-shrink: 0;
   margin-top: 2px;
+  width: 16px;
+  height: 16px;
 }
 
 .pricing-description {
@@ -849,45 +908,51 @@ const requestPlan = async (plan) => {
 .pricing-button {
   display: block;
   width: 100%;
-  padding: 16px;
-  background: #111;
+  padding: 12px 24px;
+  background: #09090B;
   color: white;
-  border-radius: 12px;
+  border-radius: 8px;
   text-align: center;
-  font-weight: 700;
+  font-weight: 600;
+  font-size: 0.9375rem;
   border: none;
   cursor: pointer;
-  transition: all 0.3s;
+  transition: all 0.2s;
+  margin-top: auto;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
 .pricing-button:hover:not(:disabled) {
-  background: #000;
-  transform: translateY(-2px);
+  background: #18181B;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
 
 .pricing-button:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
+  transform: none;
 }
 
 .pricing-button.active {
-  background: #10B981;
+  background: #09090B;
 }
 
 .info-box {
-  max-width: 800px;
-  margin: 48px auto 0;
+  max-width: 900px;
+  margin: 64px auto 0;
   background: #F9FAFB;
-  border-radius: 16px;
-  padding: 24px;
+  border-radius: 24px;
+  padding: 40px;
   border: 2px solid #E5E7EB;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.04);
 }
 
 .info-box h3 {
-  font-size: 1.125rem;
-  font-weight: 700;
-  margin-bottom: 12px;
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin-bottom: 20px;
   color: #111;
+  letter-spacing: -0.02em;
 }
 
 .info-box ul {
@@ -897,20 +962,30 @@ const requestPlan = async (plan) => {
 }
 
 .info-box li {
-  padding: 8px 0;
-  padding-left: 24px;
+  padding: 12px 0;
+  padding-left: 32px;
   position: relative;
-  color: #666;
-  font-size: 0.875rem;
-  line-height: 1.6;
+  color: #4B5563;
+  font-size: 0.9375rem;
+  line-height: 1.7;
+  font-weight: 500;
 }
 
 .info-box li:before {
   content: 'ℹ';
   position: absolute;
   left: 0;
+  top: 12px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #DBEAFE;
   color: #3B82F6;
-  font-weight: 700;
+  font-weight: 800;
+  border-radius: 50%;
+  font-size: 0.875rem;
 }
 
 /* Offers Section */
@@ -927,16 +1002,17 @@ const requestPlan = async (plan) => {
 
 .offer-card {
   background: white;
-  border-radius: 24px;
-  padding: 32px;
-  border: 2px solid #111;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-  transition: all 0.3s;
+  border-radius: 32px;
+  padding: 40px;
+  border: 3px solid #111;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .offer-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+  transform: translateY(-8px);
+  box-shadow: 0 16px 48px rgba(0,0,0,0.15);
+  border-color: #000;
 }
 
 .offer-header {
@@ -947,35 +1023,37 @@ const requestPlan = async (plan) => {
 }
 
 .offer-title {
-  font-size: 1.5rem;
-  font-weight: 800;
+  font-size: 1.75rem;
+  font-weight: 900;
   color: #111;
   margin: 0;
+  letter-spacing: -0.02em;
 }
 
 .offer-price {
-  padding: 8px 16px;
-  background: #F9FAFB;
-  border-radius: 12px;
-  font-weight: 700;
-  font-size: 1.125rem;
-  color: #111;
+  padding: 12px 24px;
+  background: #111;
+  color: white;
+  border-radius: 16px;
+  font-weight: 800;
+  font-size: 1.25rem;
 }
 
 .offer-price .price-amount {
-  color: #111;
+  color: white;
 }
 
 .offer-price .price-text {
-  color: #6B7280;
-  font-size: 0.875rem;
+  color: white;
+  font-size: 1rem;
 }
 
 .offer-description {
-  color: #6B7280;
-  line-height: 1.6;
-  margin-bottom: 24px;
-  font-size: 0.95rem;
+  color: #4B5563;
+  line-height: 1.7;
+  margin-bottom: 28px;
+  font-size: 1rem;
+  font-weight: 500;
 }
 
 .offer-contact {
@@ -1023,10 +1101,11 @@ const requestPlan = async (plan) => {
 
 /* Subscription Request Status */
 .request-status-card {
-  margin-bottom: 24px;
-  padding: 20px;
-  border-radius: 16px;
+  margin-bottom: 32px;
+  padding: 24px;
+  border-radius: 20px;
   border: 2px solid;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
 }
 
 .request-status-card.request-pending {
@@ -1089,18 +1168,18 @@ const requestPlan = async (plan) => {
 
 /* Duration Selector */
 .duration-selector {
-  margin: 24px 0;
-  padding: 20px;
-  background: #F9FAFB;
-  border-radius: 16px;
-  border: 1px solid #E5E7EB;
+  margin: 20px 0;
+  padding: 16px;
+  background: #FAFAFA;
+  border-radius: 8px;
+  border: 1px solid #E4E4E7;
 }
 
 .duration-label {
   display: block;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: #111;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #09090B;
   margin-bottom: 12px;
 }
 
@@ -1112,10 +1191,10 @@ const requestPlan = async (plan) => {
 }
 
 .duration-option {
-  padding: 12px 8px;
+  padding: 10px 8px;
   background: white;
-  border: 2px solid #E5E7EB;
-  border-radius: 12px;
+  border: 1px solid #E4E4E7;
+  border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s;
   display: flex;
@@ -1125,13 +1204,12 @@ const requestPlan = async (plan) => {
 }
 
 .duration-option:hover {
-  border-color: #111;
-  transform: translateY(-2px);
+  border-color: #09090B;
 }
 
 .duration-option.active {
-  background: #111;
-  border-color: #111;
+  background: #09090B;
+  border-color: #09090B;
   color: white;
 }
 
@@ -1155,52 +1233,59 @@ const requestPlan = async (plan) => {
 
 .price-calculation {
   background: white;
-  padding: 16px;
-  border-radius: 12px;
-  border: 1px solid #E5E7EB;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #E4E4E7;
 }
 
 .calc-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 0;
-  font-size: 0.875rem;
-  color: #666;
+  padding: 6px 0;
+  font-size: 0.8125rem;
+  color: #71717A;
+  font-weight: 400;
 }
 
 .calc-row.discount-row {
-  color: #10B981;
+  color: #09090B;
+  font-weight: 500;
 }
 
 .calc-row.total-row {
   margin-top: 8px;
   padding-top: 12px;
-  border-top: 2px solid #E5E7EB;
-  color: #111;
+  border-top: 1px solid #E4E4E7;
+  color: #09090B;
+  font-size: 0.875rem;
+  font-weight: 600;
 }
 
 .calc-value {
   font-weight: 600;
-  color: #111;
+  color: #09090B;
+  font-size: 0.8125rem;
 }
 
 .calc-value.discount {
-  color: #10B981;
+  color: #09090B;
+  font-weight: 600;
 }
 
 .calc-value.total {
-  font-size: 1.125rem;
+  font-size: 1rem;
+  font-weight: 700;
 }
 
 .savings-badge {
   margin-top: 12px;
   padding: 8px 12px;
-  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  background: #09090B;
   color: white;
-  border-radius: 8px;
-  font-size: 0.875rem;
-  font-weight: 700;
+  border-radius: 6px;
+  font-size: 0.8125rem;
+  font-weight: 600;
   text-align: center;
 }
 
@@ -1249,16 +1334,31 @@ const requestPlan = async (plan) => {
 }
 
 .pricing-limit {
-  margin-top: 16px;
+  margin-top: 20px;
+  margin-bottom: 24px;
   padding: 12px 16px;
-  background: #F9FAFB;
-  border-radius: 12px;
+  background: #FAFAFA;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   gap: 8px;
   font-size: 0.875rem;
-  color: #6B7280;
-  border: 1px solid #E5E7EB;
+  color: #71717A;
+  border: 1px solid #E4E4E7;
+  font-weight: 400;
+}
+
+.pricing-limit svg {
+  color: #71717A;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+}
+
+.pricing-limit strong {
+  color: #09090B;
+  font-weight: 600;
+  font-size: 0.875rem;
 }
 
 .pricing-limit svg {
@@ -1274,47 +1374,77 @@ const requestPlan = async (plan) => {
 @media (max-width: 1024px) {
   .pricing-grid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 24px;
+    gap: 20px;
   }
   
-  .pricing-card.featured {
-    transform: scale(1);
+  .subscription-info-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
   }
 }
 
 @media (max-width: 768px) {
   .admin-main {
     margin-left: 0;
+    padding: 24px 16px;
+  }
+  
+  .container {
+    padding: 0 16px;
   }
   
   .subscription-header {
-    padding: 32px 20px;
-    margin-bottom: 40px;
+    padding: 0;
+    margin-bottom: 32px;
   }
   
   .page-title {
-    font-size: 2rem;
+    font-size: 1.5rem;
   }
   
   .page-subtitle {
-    font-size: 1rem;
+    font-size: 0.875rem;
   }
   
   .pricing-grid {
     grid-template-columns: 1fr;
-    gap: 24px;
+    gap: 20px;
   }
   
   .pricing-card {
-    padding: 32px 24px;
+    padding: 24px;
   }
   
   .pricing-card.featured {
-    transform: scale(1);
+    transform: none;
+  }
+  
+  .pricing-card:hover,
+  .pricing-card.featured:hover {
+    transform: translateY(-4px);
+  }
+  
+  .price-amount {
+    font-size: 2.5rem;
+  }
+  
+  .pricing-name {
+    font-size: 1.25rem;
   }
   
   .duration-options {
     grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+  
+  .duration-selector {
+    padding: 16px;
+    margin: 20px 0;
+  }
+  
+  .duration-label {
+    font-size: 0.875rem;
+    margin-bottom: 12px;
   }
   
   .request-status-header {
@@ -1325,19 +1455,58 @@ const requestPlan = async (plan) => {
   
   .offers-grid {
     grid-template-columns: 1fr;
+    padding: 0 16px;
   }
   
   .current-subscription-card {
-    padding: 24px;
+    padding: 24px 20px;
+    border-radius: 16px;
+    margin-bottom: 32px;
+  }
+  
+  .subscription-info-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .info-item {
+    padding: 16px;
+  }
+  
+  .info-value {
+    font-size: 1.125rem;
+  }
+  
+  .section-title {
+    font-size: 1.5rem;
+  }
+  
+  .available-plans-section .section-title {
+    font-size: 1.5rem;
+  }
+  
+  .available-plans-section {
+    margin-top: 48px;
   }
   
   .info-box {
-    padding: 24px;
-    margin-top: 40px;
+    padding: 24px 20px;
+    margin-top: 32px;
+    border-radius: 16px;
   }
   
-  .price-amount {
-    font-size: 2.5rem;
+  .section-description {
+    font-size: 0.875rem;
+    margin-bottom: 24px;
+  }
+  
+  .price-calculation {
+    padding: 12px;
+  }
+  
+  .calc-row {
+    font-size: 0.875rem;
+    padding: 8px 0;
   }
 }
 </style>
