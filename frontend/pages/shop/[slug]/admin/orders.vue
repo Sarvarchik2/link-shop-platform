@@ -144,7 +144,7 @@
                   Товары ({{ order.items?.length || 0 }})
                 </h3>
                 <div class="items-list">
-                  <div v-for="(item, idx) in order.items" :key="idx" class="order-item">
+                  <NuxtLink v-for="(item, idx) in order.items" :key="idx" :to="`/${shopSlug}/products/${item.product_id}`" class="order-item">
                     <img :src="item.product_image" :alt="item.product_name" class="item-image" />
                     <div class="item-info">
                       <span class="item-name">{{ item.product_name }}</span>
@@ -155,7 +155,7 @@
                       <span class="item-meta">Кол-во: {{ item.quantity }} × ${{ item.price.toFixed(2) }}</span>
                     </div>
                     <span class="item-total">${{ (item.quantity * item.price).toFixed(2) }}</span>
-                  </div>
+                  </NuxtLink>
                 </div>
               </div>
               

@@ -233,6 +233,7 @@ class Product(SQLModel, table=True):
     variants: Optional[str] = None  # JSON string of variants: [{"size": "M", "color": "Black", "colorHex": "#000000", "stock": 5}, ...]
     shop_id: Optional[int] = Field(default=None, foreign_key="shop.id")
     is_preorder_enabled: bool = False  # Enable pre-order for out of stock items
+    sold_count: int = 0  # Number of items sold
 
 class ProductCreate(SQLModel):
     name: str
@@ -310,6 +311,7 @@ class OrderItemDetail(SQLModel):
     product_image: str
     selected_color: Optional[str] = None
     selected_size: Optional[str] = None
+    shop_slug: Optional[str] = None
 
 class OrderReadWithItems(OrderRead):
     items: List[OrderItemDetail]
@@ -1506,6 +1508,48 @@ def create_order(order_create: OrderCreate, shop_slug: Optional[str] = None, cur
             notes=db_order.notes
         )
 
+def process_order_delivery(session: Session, order: Order):
+    """Update stock and sold_count when order is delivered"""
+    items = session.exec(select(OrderItem).where(OrderItem.order_id == order.id)).all()
+    for item in items:
+        product = session.get(Product, item.product_id)
+        if not product:
+            continue
+            
+        # Update sold count
+        product.sold_count += item.quantity
+        
+        # Update stock
+        if product.variants:
+            try:
+                import json
+                variants = json.loads(product.variants)
+                updated = False
+                for variant in variants:
+                    # Check if variant matches selected size and color
+                    size_match = variant.get('size') == item.selected_size
+                    color_match = variant.get('color') == item.selected_color
+                    
+                    if size_match and color_match:
+                        current_stock = variant.get('stock', 0)
+                        variant['stock'] = max(0, current_stock - item.quantity)
+                        updated = True
+                        break
+                
+                if updated:
+                    product.variants = json.dumps(variants)
+                    # Recalculate total stock from variants
+                    product.stock = sum(v.get('stock', 0) for v in variants)
+            except Exception as e:
+                print(f"Error updating product variants stock: {str(e)}")
+                # Fallback to main stock if variant update fails
+                product.stock = max(0, product.stock - item.quantity)
+        else:
+            # Simple stock update
+            product.stock = max(0, product.stock - item.quantity)
+            
+        session.add(product)
+
 @app.get("/orders/me", response_model=List[OrderReadWithItems])
 def get_my_orders(current_user: User = Depends(get_current_user)):
     with Session(engine) as session:
@@ -1515,6 +1559,13 @@ def get_my_orders(current_user: User = Depends(get_current_user)):
             # Fetch items for this order
             items = session.exec(select(OrderItem).where(OrderItem.order_id == order.id)).all()
             item_details = []
+            # Fetch shop slug for the items. Since current design binds 1 shop per order:
+            shop_slug = None
+            if order.shop_id:
+                shop = session.get(Shop, order.shop_id)
+                if shop:
+                    shop_slug = shop.slug
+
             for item in items:
                 product = session.get(Product, item.product_id)
                 item_details.append(OrderItemDetail(
@@ -1524,7 +1575,8 @@ def get_my_orders(current_user: User = Depends(get_current_user)):
                     product_name=product.name if product else "Unknown Product",
                     product_image=product.image_url if product else "",
                     selected_color=item.selected_color,
-                    selected_size=item.selected_size
+                    selected_size=item.selected_size,
+                    shop_slug=shop_slug
                 ))
             
             result.append(OrderReadWithItems(
@@ -1602,7 +1654,8 @@ def get_all_orders(current_user: User = Depends(get_current_admin)):
                     product_name=product.name if product else "Unknown",
                     product_image=product.image_url if product else "",
                     selected_color=item.selected_color,
-                    selected_size=item.selected_size
+                    selected_size=item.selected_size,
+                    shop_slug=shop_slug
                 ))
             
             result.append(OrderReadWithUser(
@@ -2239,7 +2292,14 @@ def update_shop_order_status(shop_slug: str, order_id: int, status_update: Order
             raise HTTPException(status_code=404, detail="Order not found")
         if order.shop_id != shop.id:
             raise HTTPException(status_code=403, detail="Order does not belong to this shop")
+        
+        old_status = order.status
         order.status = status_update.status
+        
+        # If status changed to delivered, update stock and sold_count
+        if order.status == "delivered" and old_status != "delivered":
+            process_order_delivery(session, order)
+            
         session.add(order)
         session.commit()
         session.refresh(order)
@@ -2336,7 +2396,14 @@ def update_order_status(order_id: int, status_update: OrderStatusUpdate, current
         order = session.get(Order, order_id)
         if not order:
             raise HTTPException(status_code=404, detail="Order not found")
+            
+        old_status = order.status
         order.status = status_update.status
+        
+        # If status changed to delivered, update stock and sold_count
+        if order.status == "delivered" and old_status != "delivered":
+            process_order_delivery(session, order)
+            
         session.add(order)
         session.commit()
         session.refresh(order)

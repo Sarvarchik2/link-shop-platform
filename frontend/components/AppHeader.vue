@@ -31,39 +31,38 @@
               <NuxtLink to="/products" class="nav-link">Магазин</NuxtLink>
             </template>
           </ClientOnly>
-          <NuxtLink v-if="user" to="/orders" class="nav-link">Заказы</NuxtLink>
+          <a @click.prevent="navigateToAuth('/orders')" href="/orders" class="nav-link">Заказы</a>
         </nav>
 
         <!-- Actions -->
         <div class="header-actions">
-          <template v-if="user">
-          <!-- Desktop only icons -->
-          <NuxtLink to="/favorites" class="icon-btn desktop-only">
+          <!-- Favorites -->
+          <a @click.prevent="navigateToAuth('/favorites')" href="/favorites" class="icon-btn desktop-only">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
             </svg>
-          </NuxtLink>
+          </a>
           
-          <NuxtLink to="/cart" class="icon-btn desktop-only cart-btn">
+          <!-- Cart -->
+          <a @click.prevent="navigateToAuth('/cart')" href="/cart" class="icon-btn desktop-only cart-btn">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="9" cy="21" r="1"></circle>
               <circle cx="20" cy="21" r="1"></circle>
               <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
             </svg>
             <span v-if="totalItems > 0" class="cart-badge">{{ totalItems }}</span>
-          </NuxtLink>
+          </a>
           
-          <!-- Profile - visible on all screens -->
-            <NuxtLink :to="getProfileLink" class="icon-btn profile-btn">
+          <!-- Profile icon - always visible, goes to login if not authenticated -->
+          <a @click.prevent="navigateToAuth(getProfileLink)" :href="getProfileLink" class="icon-btn profile-btn">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
               <circle cx="12" cy="7" r="4"></circle>
             </svg>
-          </NuxtLink>
-          </template>
-          
-          <template v-else>
-            <!-- Login and Register buttons -->
+          </a>
+
+          <!-- Login/Register buttons (only for guests) -->
+          <template v-if="!user">
             <NuxtLink to="/login" class="btn-login">Войти</NuxtLink>
             <NuxtLink to="/register" class="btn-register">Зарегистрироваться</NuxtLink>
           </template>
@@ -98,7 +97,6 @@
           </svg>
           <span>Bosh sahifa</span>
         </NuxtLink>
-        
         <NuxtLink to="/products" class="mobile-nav-item">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
@@ -109,7 +107,7 @@
       </template>
     </ClientOnly>
     
-    <NuxtLink to="/cart" class="mobile-nav-item cart-nav-item">
+    <a @click.prevent="navigateToAuth('/cart')" href="/cart" class="mobile-nav-item cart-nav-item">
       <div class="cart-icon-wrapper">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="9" cy="21" r="1"></circle>
@@ -119,9 +117,9 @@
         <span v-if="totalItems > 0" class="cart-badge-mobile">{{ totalItems }}</span>
       </div>
       <span>Savatcha</span>
-    </NuxtLink>
+    </a>
     
-    <NuxtLink to="/orders" class="mobile-nav-item">
+    <a @click.prevent="navigateToAuth('/orders')" href="/orders" class="mobile-nav-item">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
         <polyline points="14 2 14 8 20 8"></polyline>
@@ -129,21 +127,57 @@
         <line x1="16" y1="17" x2="8" y2="17"></line>
       </svg>
       <span>Buyurtmalar</span>
-    </NuxtLink>
+    </a>
     
-    <NuxtLink to="/favorites" class="mobile-nav-item">
+    <a @click.prevent="navigateToAuth('/favorites')" href="/favorites" class="mobile-nav-item">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
       </svg>
       <span>Sevimlilar</span>
-    </NuxtLink>
+    </a>
   </nav>
+
+  <!-- Auth Prompt Modal -->
+  <Transition name="fade">
+    <div v-if="showAuthModal" class="modal-overlay" @click="showAuthModal = false">
+      <div class="modal-content" @click.stop>
+        <div class="modal-icon">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+        </div>
+        <h3>Kirish zarur</h3>
+        <p>Ushbu bo'limdan foydalanish uchun hisobingizga kiring yoki ro'yxatdan o'ting.</p>
+        <div class="modal-buttons">
+          <NuxtLink to="/login" class="modal-btn login" @click="showAuthModal = false">Kirish</NuxtLink>
+          <NuxtLink to="/register" class="modal-btn register" @click="showAuthModal = false">Ro'yxatdan o'tish</NuxtLink>
+        </div>
+        <button class="modal-close" @click="showAuthModal = false">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </Transition>
   </div>
 </template>
 
 <script setup>
 const { totalItems } = useCart()
 const { user, token } = useAuth()
+const router = useRouter()
+const { showAuthModal, openModal, closeModal } = useAuthModal()
+
+const navigateToAuth = (path) => {
+  if (!user.value) {
+    openModal()
+    return
+  }
+  router.push(path)
+}
 
 // Only fetch shops if user is shop_owner or platform_admin
 const shouldFetchShops = computed(() => {
@@ -592,5 +626,128 @@ const getProfileLink = computed(() => {
     padding: 8px 16px;
     font-size: 0.75rem;
   }
+}
+
+/* Auth Modal Styles */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal-content {
+  background: white;
+  width: 100%;
+  max-width: 400px;
+  border-radius: 32px;
+  padding: 40px 32px;
+  text-align: center;
+  position: relative;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  animation: modalIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes modalIn {
+  from { transform: scale(0.9) translateY(20px); opacity: 0; }
+  to { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+.modal-icon {
+  width: 80px;
+  height: 80px;
+  background: #F3F4F6;
+  border-radius: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+  color: #111;
+}
+
+.modal-content h3 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #111;
+  margin-bottom: 12px;
+}
+
+.modal-content p {
+  color: #6B7280;
+  line-height: 1.6;
+  margin-bottom: 32px;
+}
+
+.modal-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.modal-btn {
+  padding: 16px;
+  border-radius: 16px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.modal-btn.login {
+  background: #111;
+  color: white;
+}
+
+.modal-btn.login:hover {
+  background: #000;
+  transform: translateY(-2px);
+}
+
+.modal-btn.register {
+  background: white;
+  color: #111;
+  border: 2px solid #E5E7EB;
+}
+
+.modal-btn.register:hover {
+  border-color: #111;
+  background: #F9FAFB;
+}
+
+.modal-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #F3F4F6;
+  border: none;
+  cursor: pointer;
+  color: #6B7280;
+  transition: all 0.2s;
+}
+
+.modal-close:hover {
+  background: #E5E7EB;
+  color: #111;
+}
+
+/* Transitions */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

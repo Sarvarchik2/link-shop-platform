@@ -71,14 +71,38 @@
           </div>
 
           <div class="form-group">
-            <label for="logo_url">URL логотипа (необязательно)</label>
-            <input 
-              id="logo_url"
-              v-model="form.logo_url" 
-              type="url" 
-              placeholder="https://example.com/logo.png"
-              class="form-input"
-            />
+            <label>Логотип магазина</label>
+            <div class="logo-upload-container">
+              <div class="logo-input-wrapper">
+                <input v-model="form.logo_url" type="url" class="form-input" placeholder="https://example.com/logo.png" />
+                <span class="input-divider">или</span>
+                <button type="button" class="btn-upload" @click="$refs.logoInput.click()" :disabled="uploading">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="17 8 12 3 7 8"></polyline>
+                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                  </svg>
+                  {{ uploading ? '...' : 'Загрузить' }}
+                </button>
+                <input 
+                  type="file" 
+                  ref="logoInput" 
+                  style="display: none" 
+                  accept="image/*"
+                  @change="handleLogoUpload"
+                />
+              </div>
+              <small class="form-hint">Рекомендуемый размер: до 200px по ширине, высота автоматическая.</small>
+              
+              <div v-if="form.logo_url" class="logo-preview">
+                <div class="preview-header">
+                  <span class="preview-label">Предпросмотр:</span>
+                  <button type="button" class="btn-remove-logo" @click="form.logo_url = ''">Удалить</button>
+                </div>
+                <img :src="form.logo_url" alt="Логотип" class="preview-image" @error="logoError = true" />
+                <p v-if="logoError" class="preview-error">Ошибка загрузки изображения.</p>
+              </div>
+            </div>
           </div>
 
           <div v-if="error" class="error-message">
@@ -118,7 +142,45 @@ const form = reactive({
 })
 
 const loading = ref(false)
+const uploading = ref(false)
+const logoError = ref(false)
 const error = ref('')
+
+const handleLogoUpload = async (event) => {
+  const file = event.target.files[0]
+  if (!file) return
+  
+  if (!file.type.startsWith('image/')) {
+    toast.error('Пожалуйста, выберите изображение')
+    return
+  }
+  
+  if (file.size > 2 * 1024 * 1024) {
+    toast.error('Размер файла не должен превышать 2МБ')
+    return
+  }
+  
+  uploading.value = true
+  const formData = new FormData()
+  formData.append('file', file)
+  
+  try {
+    const response = await $fetch('http://localhost:8000/upload', {
+      method: 'POST',
+      body: formData
+    })
+    
+    form.logo_url = response.url
+    logoError.value = false
+    toast.success('Логотип успешно загружен')
+  } catch (e) {
+    console.error('Upload error:', e)
+    toast.error('Ошибка при загрузке логотипа')
+  } finally {
+    uploading.value = false
+    event.target.value = ''
+  }
+}
 const myShops = ref([])
 const checkingShops = ref(true)
 
@@ -346,6 +408,108 @@ const registerShop = async () => {
   font-size: 0.75rem;
   color: #666;
   margin-top: 4px;
+}
+
+.logo-upload-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.logo-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.input-divider {
+  color: #666;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.btn-upload {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: white;
+  border: 2px solid #E5E7EB;
+  border-radius: 12px;
+  color: #111;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  font-size: 0.875rem;
+}
+
+.btn-upload:hover:not(:disabled) {
+  border-color: #111;
+  background: #F9FAFB;
+}
+
+.btn-upload:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.logo-preview {
+  margin-top: 12px;
+  padding: 16px;
+  background: #F9FAFB;
+  border-radius: 16px;
+  border: 2px dashed #E5E7EB;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.preview-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.preview-label {
+  font-size: 0.75rem;
+  color: #666;
+  font-weight: 600;
+}
+
+.btn-remove-logo {
+  background: none;
+  border: none;
+  color: #DC2626;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.btn-remove-logo:hover {
+  background: #FEE2E2;
+}
+
+.preview-image {
+  max-height: 60px;
+  max-width: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  background: white;
+  padding: 8px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.preview-error {
+  font-size: 0.75rem;
+  color: #DC2626;
+  margin-top: 0;
 }
 
 .error-message {

@@ -118,9 +118,8 @@
             </div>
         </div>
 
-          <!-- Order Items Preview -->
           <div class="order-items-preview">
-            <div v-for="(item, idx) in order.items?.slice(0, 2)" :key="idx" class="item-preview">
+            <NuxtLink v-for="(item, idx) in order.items?.slice(0, 2)" :key="idx" :to="item.shop_slug ? `/${item.shop_slug}/products/${item.product_id}` : `/products/${item.product_id}`" class="item-preview">
               <img :src="item.product_image" :alt="item.product_name" class="item-img" />
               <div class="item-details">
                 <span class="item-name">{{ item.product_name }}</span>
@@ -131,7 +130,7 @@
                 <span class="item-qty">Soni: {{ item.quantity }}</span>
               </div>
               <span class="item-price">${{ (item.price * item.quantity).toFixed(2) }}</span>
-            </div>
+            </NuxtLink>
             <div v-if="order.items?.length > 2" class="more-items">
               +{{ order.items.length - 2 }} ta mahsulot
             </div>
@@ -217,7 +216,7 @@
                 Mahsulotlar ({{ order.items?.length || 0 }})
               </h3>
               <div class="items-list">
-                <div v-for="(item, idx) in order.items" :key="idx" class="item-full">
+                <NuxtLink v-for="(item, idx) in order.items" :key="idx" :to="item.shop_slug ? `/${item.shop_slug}/products/${item.product_id}` : `/products/${item.product_id}`" class="item-full">
                   <img :src="item.product_image" :alt="item.product_name" class="item-img-full" />
                   <div class="item-info">
                     <span class="item-name-full">{{ item.product_name }}</span>
@@ -228,7 +227,7 @@
                     <span class="item-meta">Soni: {{ item.quantity }} × ${{ item.price.toFixed(2) }}</span>
                   </div>
                   <span class="item-total">${{ (item.price * item.quantity).toFixed(2) }}</span>
-                </div>
+                </NuxtLink>
               </div>
             </div>
           </div>

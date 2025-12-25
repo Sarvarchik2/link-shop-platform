@@ -93,13 +93,12 @@ watch(() => user.value, (newUser) => {
   }
 })
 
+const { openModal } = useAuthModal()
+
 const toggleFav = async () => {
   // Check if user is logged in
   if (!user.value) {
-    useToast().warning('Please login to add items to favorites')
-    // Save returnUrl - preserve current product page
-    const returnUrl = productUrl.value
-    navigateTo(`/login?returnUrl=${encodeURIComponent(returnUrl)}`)
+    openModal()
     return
   }
   
@@ -236,6 +235,7 @@ const toggleFav = async () => {
   line-height: 1.3;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }

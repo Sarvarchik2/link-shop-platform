@@ -3,11 +3,14 @@
     <AppHeader />
     
     <main class="container py-8">
-      <!-- Shop Name -->
-      <div v-if="shop" class="shop-header mb-8">
-        <h1 class="shop-name">{{ shop.name }}</h1>
+      <!-- Shop Name / Profile Header -->
+      <!-- <div v-if="shop" class="shop-header mb-8">
+        <div class="shop-title-group">
+          <img v-if="shop.logo_url" :src="shop.logo_url" :alt="shop.name" class="shop-main-logo" />
+          <h1 class="shop-name">{{ shop.name }}</h1>
+        </div>
         <p v-if="shop.description" class="shop-description">{{ shop.description }}</p>
-      </div>
+      </div> -->
       
       <!-- Hero Section -->
       <div v-if="banner" class="hero-card mb-8">
@@ -88,9 +91,12 @@
         <div class="footer-content">
           <!-- Shop Info -->
           <div class="footer-section">
-            <h3 class="footer-title">{{ shop.name }}</h3>
-            <p v-if="shop.description" class="footer-description">{{ shop.description }}</p>
-            <div v-if="shop.address" class="footer-contact-item">
+            <div class="footer-brand">
+              <img v-if="shop.logo_url" :src="shop.logo_url" :alt="shop.name" class="footer-logo" />
+              <h3 class="footer-title">{{ shop.name }}</h3>
+            </div>
+            <!-- Removed description to avoid duplicate phone number issue -->
+            <div v-if="shop.address" class="footer-contact-item address">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
                 <circle cx="12" cy="10" r="3"></circle>
@@ -106,14 +112,14 @@
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
               </svg>
-              <a :href="`tel:${shop.phone}`">{{ shop.phone }}</a>
+              <a :href="`tel:${shop.phone}`" class="contact-link">{{ shop.phone }}</a>
             </div>
             <div v-if="shop.email" class="footer-contact-item">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
                 <polyline points="22,6 12,13 2,6"></polyline>
               </svg>
-              <a :href="`mailto:${shop.email}`">{{ shop.email }}</a>
+              <a :href="`mailto:${shop.email}`" class="contact-link">{{ shop.email }}</a>
             </div>
           </div>
           
@@ -141,12 +147,6 @@
                 </svg>
                 <span>Facebook</span>
               </a>
-              <a v-if="shop.twitter" :href="shop.twitter" target="_blank" rel="noopener noreferrer" class="social-link twitter">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
-                </svg>
-                <span>Twitter</span>
-              </a>
               <a v-if="shop.whatsapp" :href="shop.whatsapp" target="_blank" rel="noopener noreferrer" class="social-link whatsapp">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
@@ -158,7 +158,7 @@
         </div>
         
         <div class="footer-bottom">
-          <p>&copy; {{ new Date().getFullYear() }} {{ shop.name }}. Все права защищены.</p>
+          <p>&copy; {{ new Date().getFullYear() }} {{ shop.name }}. Barcha huquqlar himoyalangan.</p>
         </div>
       </div>
     </footer>
@@ -187,24 +187,47 @@ const featuredProducts = computed(() => {
 .shop-page {
   min-height: 100vh;
   background: #FAFAFA;
-  padding-bottom: 100px;
+  /* Removed large padding-bottom to close the gap at the very bottom */
 }
 
 .shop-header {
   text-align: center;
-  padding: 32px 20px;
+  padding: 48px 20px;
   background: white;
-  border-radius: 24px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+  border-radius: 32px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.06);
   border: 1px solid #E5E7EB;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.shop-title-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.shop-main-logo {
+  height: 100px;
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+  background: white;
+  padding: 8px;
+  border-radius: 16px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.05);
+  border: 1px solid #f0f0f0;
 }
 
 .shop-name {
-  font-size: 2.5rem;
-  font-weight: 900;
+  font-size: 2.75rem;
+  font-weight: 950;
   color: #111;
-  margin-bottom: 12px;
-  letter-spacing: -0.5px;
+  margin: 0;
+  letter-spacing: -1px;
 }
 
 .shop-description {
@@ -212,6 +235,7 @@ const featuredProducts = computed(() => {
   color: #6B7280;
   margin: 0;
   line-height: 1.6;
+  max-width: 600px;
 }
 
 .hero-card {
@@ -527,8 +551,8 @@ const featuredProducts = computed(() => {
 .shop-footer {
   background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
   color: white;
-  margin-top: 80px;
-  padding: 60px 20px 30px;
+  margin-top: 60px;
+  padding: 60px 20px 40px;
 }
 
 .footer-container {
@@ -543,6 +567,22 @@ const featuredProducts = computed(() => {
   margin-bottom: 40px;
 }
 
+.footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.footer-logo {
+  height: 40px;
+  width: auto;
+  object-fit: contain;
+  background: white;
+  padding: 4px;
+  border-radius: 8px;
+}
+
 .footer-section {
   display: flex;
   flex-direction: column;
@@ -553,17 +593,11 @@ const featuredProducts = computed(() => {
   font-size: 1.5rem;
   font-weight: 800;
   color: white;
-  margin: 0 0 8px 0;
-}
-
-.footer-description {
-  color: rgba(255, 255, 255, 0.7);
-  line-height: 1.6;
   margin: 0;
 }
 
 .footer-subtitle {
-  font-size: 1rem;
+  font-size: 1.125rem;
   font-weight: 700;
   color: white;
   margin: 0 0 12px 0;
@@ -582,14 +616,15 @@ const featuredProducts = computed(() => {
   color: rgba(255, 255, 255, 0.6);
 }
 
-.footer-contact-item a {
+.contact-link {
   color: rgba(255, 255, 255, 0.8);
   text-decoration: none;
-  transition: color 0.2s;
+  transition: all 0.2s;
 }
 
-.footer-contact-item a:hover {
+.contact-link:hover {
   color: white;
+  text-decoration: underline;
 }
 
 .social-links {
@@ -634,12 +669,6 @@ const featuredProducts = computed(() => {
   background: rgba(24, 119, 242, 0.2);
   border-color: rgba(24, 119, 242, 0.4);
   color: #1877F2;
-}
-
-.social-link.twitter:hover {
-  background: rgba(29, 161, 242, 0.2);
-  border-color: rgba(29, 161, 242, 0.4);
-  color: #1DA1F2;
 }
 
 .social-link.whatsapp:hover {

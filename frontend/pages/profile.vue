@@ -277,7 +277,6 @@
             </div>
 
           <!-- App Version -->
-          <p class="app-version">EYEWEAR Shop v1.0</p>
         </div>
       </div>
     </main>
@@ -577,9 +576,9 @@ const handleLogout = () => {
 }
 
 .role-link.shop-admin-link {
-  background: linear-gradient(135deg, #6366F1 0%, #4F46E5 100%);
+  background: linear-gradient(135deg, #000000 0%, #000000 100%);
   color: white;
-  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .role-link.shop-admin-link:hover {
@@ -762,11 +761,10 @@ const handleLogout = () => {
   background: white;
   border: 1px solid #E5E7EB;
   border-radius: 20px;
-  padding: 24px;
+  padding: 20px;
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 24px;
+  flex-direction: column; /* Mobile first: stack vertically */
+  gap: 20px;
   transition: all 0.3s;
   box-shadow: 0 2px 8px rgba(0,0,0,0.04);
 }
@@ -858,7 +856,7 @@ const handleLogout = () => {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  min-width: 160px;
+  width: 100%; /* Mobile first: full width buttons */
 }
 
 .shop-action-btn {
@@ -888,15 +886,15 @@ const handleLogout = () => {
 }
 
 .shop-action-btn.admin {
-  background: linear-gradient(135deg, #6366F1 0%, #4F46E5 100%);
+  background: linear-gradient(135deg, #000000 0%, #000000 100%);
   color: white;
   border: none;
-  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .shop-action-btn.admin:hover {
-  background: linear-gradient(135deg, #4F46E5 0%, #4338CA 100%);
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+  background: linear-gradient(135deg, #000000 0%, #000000 100%);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
   transform: translateY(-1px);
 }
 
@@ -1124,6 +1122,39 @@ const handleLogout = () => {
   .action-card span {
     font-size: 0.65rem;
   }
+
+  .shop-item {
+    padding: 16px;
+    gap: 16px;
+  }
+
+  .shop-info {
+    gap: 12px;
+  }
+
+  .shop-logo-small {
+    width: 60px;
+    height: 60px;
+  }
+
+  .shop-details {
+    overflow: hidden;
+  }
+
+  .shop-url {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .shop-actions {
+    gap: 8px;
+  }
+
+  .shop-action-btn {
+    padding: 10px 14px;
+    font-size: 0.8125rem;
+  }
 }
 
 /* Desktop Styles */
@@ -1267,24 +1298,25 @@ const handleLogout = () => {
     margin-top: 8px;
   }
   
-  /* Shop items on mobile */
+  /* Shop items on desktop */
   .shop-item {
-    flex-direction: column;
-    gap: 16px;
-    padding: 20px;
+    flex-direction: row; /* Desktop: horizontal layout */
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px;
   }
   
   .shop-info {
-    width: 100%;
+    width: auto;
   }
   
   .shop-actions {
-    width: 100%;
-    min-width: auto;
+    width: auto;
+    min-width: 180px;
   }
   
   .shop-action-btn {
-    width: 100%;
+    width: auto;
   }
 }
 

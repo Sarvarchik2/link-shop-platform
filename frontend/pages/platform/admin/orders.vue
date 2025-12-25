@@ -115,7 +115,7 @@
             
             <div v-if="order.items && order.items.length > 0" class="order-items">
               <div class="items-title">Товары:</div>
-              <div v-for="item in order.items" :key="item.product_id" class="order-item">
+              <NuxtLink v-for="item in order.items" :key="item.product_id" :to="item.shop_slug ? `/${item.shop_slug}/products/${item.product_id}` : `/products/${item.product_id}`" class="order-item">
                 <img v-if="item.product_image" :src="item.product_image" :alt="item.product_name" class="item-image" />
                 <div class="item-info">
                   <div class="item-name">{{ item.product_name }}</div>
@@ -123,7 +123,7 @@
                     Количество: {{ item.quantity }} × ${{ item.price.toFixed(2) }}
                   </div>
                 </div>
-              </div>
+              </NuxtLink>
             </div>
           </div>
         </div>

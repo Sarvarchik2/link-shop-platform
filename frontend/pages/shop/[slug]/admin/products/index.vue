@@ -84,8 +84,13 @@
               <div class="product-brand">{{ product.brand }}</div>
               <div class="product-footer">
                 <div class="product-price">${{ product.price.toFixed(2) }}</div>
-                <div class="product-stock" :class="{ 'out-of-stock': product.stock === 0 }">
-                  {{ product.stock > 0 ? `${product.stock} в наличии` : 'Нет в наличии' }}
+                <div class="product-meta">
+                  <div class="product-sold" v-if="product.sold_count > 0">
+                    🔥 {{ product.sold_count }} продано
+                  </div>
+                  <div class="product-stock" :class="{ 'out-of-stock': product.stock === 0 }">
+                    {{ product.stock > 0 ? `${product.stock} в наличии` : 'Нет в наличии' }}
+                  </div>
                 </div>
               </div>
             </div>
@@ -489,6 +494,7 @@ const deleteProduct = async (id) => {
   margin-bottom: 2px;
   line-height: 1.3;
   display: -webkit-box;
+  line-clamp: 2;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
@@ -506,6 +512,22 @@ const deleteProduct = async (id) => {
   align-items: center;
   padding-top: 12px;
   border-top: 1px solid #f0f0f0;
+}
+
+.product-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.product-sold {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #F59E0B;
+  background: #FFFBEB;
+  padding: 2px 6px;
+  border-radius: 4px;
 }
 
 .product-price {

@@ -121,10 +121,10 @@
 
           <div class="product-actions">
             <button 
-              v-if="canAddToCart"
+              v-if="canAddToCart || !user"
               @click="addToCart" 
               class="btn-add-cart"
-              :disabled="!canAddToCart"
+              :disabled="user && !canAddToCart"
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="9" cy="21" r="1"></circle>
@@ -134,7 +134,7 @@
               {{ buttonText }}
             </button>
             <button 
-              v-else-if="showPreorderButton"
+              v-else-if="showPreorderButton || (!user && product?.is_preorder_enabled && totalColorStock === 0)"
               @click="openPreorderModal" 
               class="btn-preorder"
             >
@@ -199,6 +199,7 @@ const route = useRoute()
 const shopSlug = route.params.shop
 const { addItem } = useCart()
 const { user } = useAuth()
+const { openModal } = useAuthModal()
 
 const { data: product, pending, refresh } = await useFetch(`http://localhost:8000/products/${route.params.id}`, {
   server: false
@@ -427,8 +428,7 @@ const selectSize = (size) => {
 }
 
 const canAddToCart = computed(() => {
-  // User must be logged in to add to cart
-  if (!user.value) return false
+  // Removed mandatory login check for button visibility
   
   if (!product.value) return false
   
@@ -469,7 +469,7 @@ const buttonText = computed(() => {
   
   // Check if user is logged in
   if (!user.value) {
-    return 'TIZIMGA KIRING'
+    return 'SAVATGA QO\'SHISH' // Show the normal text even if not logged in
   }
   
   // If product has variants
@@ -511,7 +511,7 @@ const preorderForm = ref({
 
 // Check if pre-order button should be shown
 const showPreorderButton = computed(() => {
-  if (!product.value || !user.value) return false
+  if (!product.value) return false
   if (!product.value.is_preorder_enabled) return false
   
   // Check if product is out of stock
@@ -544,9 +544,7 @@ const showPreorderButton = computed(() => {
 
 const openPreorderModal = () => {
   if (!user.value) {
-    toast.warning('Для предзаказа необходимо войти в систему')
-    const returnUrl = shopSlug ? `/${shopSlug}/products/${route.params.id}` : `/products/${route.params.id}`
-    navigateTo(`/login?returnUrl=${encodeURIComponent(returnUrl)}`)
+    openModal()
     return
   }
   
@@ -610,10 +608,7 @@ const submitPreorder = async () => {
 const addToCart = () => {
   // Check if user is logged in
   if (!user.value) {
-    toast.warning('Savatga qo\'shish uchun tizimga kiring')
-    // Save returnUrl - if we're in a shop, return to shop, otherwise to current page
-    const returnUrl = shopSlug ? `/${shopSlug}/products/${route.params.id}` : `/products/${route.params.id}`
-    navigateTo(`/login?returnUrl=${encodeURIComponent(returnUrl)}`)
+    openModal()
     return
   }
   
@@ -668,10 +663,7 @@ const addToCart = () => {
 
 const toggleFavorite = async () => {
   if (!user.value) {
-    toast.warning('Sevimlilar ro\'yxatiga qo\'shish uchun tizimga kiring')
-    // Save returnUrl - if we're in a shop, return to shop, otherwise to current page
-    const returnUrl = shopSlug ? `/${shopSlug}/products/${route.params.id}` : `/products/${route.params.id}`
-    navigateTo(`/login?returnUrl=${encodeURIComponent(returnUrl)}`)
+    openModal()
     return
   }
   

@@ -148,11 +148,10 @@
     </section>
 
     <!-- Trusted By Section -->
-    <section id="clients" class="py-12 border-b border-zinc-100">
+    <!-- <section id="clients" class="py-12 border-b border-zinc-100">
       <div class="max-w-7xl mx-auto px-6 text-center">
         <p class="text-sm font-medium text-zinc-500 mb-8">ВЫБОР СОВРЕМЕННЫХ БРЕНДОВ</p>
         <div class="flex flex-wrap justify-center items-center gap-12 md:gap-20 opacity-40 grayscale hover:grayscale-0 transition-all duration-500">
-          <!-- Simple Geometric Logo Placeholders -->
           <div class="h-8 w-24 bg-zinc-800 rounded mask-logo flex items-center justify-center font-bold text-white text-xs tracking-widest">
             ACME
           </div>
@@ -170,7 +169,7 @@
           </div>
         </div>
       </div>
-    </section>
+    </section> -->
 
     <!-- Bento Grid Section -->
     <section id="features" class="py-32 bg-zinc-50/50">

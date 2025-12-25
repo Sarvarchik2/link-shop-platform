@@ -9,7 +9,8 @@
   <aside class="admin-sidebar" :class="{ open: isOpen }">
     <div class="sidebar-header">
       <div class="sidebar-logo">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <img v-if="shop?.logo_url" :src="shop.logo_url" :alt="shop.name" class="shop-logo-img" />
+        <svg v-else width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M20 7h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v3H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2z"></path>
         </svg>
       </div>
@@ -144,6 +145,11 @@ const closeSidebar = () => {
   isOpen.value = false
 }
 
+const { data: shop } = await useFetch(() => `http://localhost:8000/platform/shops/${props.shopSlug}`, {
+  server: false,
+  watch: [() => props.shopSlug]
+})
+
 const { logout } = useAuth()
 
 const handleLogout = () => {
@@ -181,12 +187,21 @@ watch(() => route.path, () => {
 .sidebar-logo {
   width: 40px;
   height: 40px;
-  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+  background: white;
+  border: 1px solid #E5E7EB;
   border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
+  color: #111;
+  overflow: hidden;
+}
+
+.shop-logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 4px;
 }
 
 .sidebar-title {
