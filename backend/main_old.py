@@ -1,0 +1,2488 @@
+from typing import Optional, List
+import os
+import uuid
+import base64
+import json
+from fastapi import FastAPI, HTTPException, Query, Depends, status, UploadFile, File
+from fastapi.staticfiles import StaticFiles
+from sqlmodel import Field, Session, SQLModel, create_engine, select
+from fastapi.middleware.cors import CORSMiddleware
+from passlib.context import CryptContext
+from jose import JWTError, jwt
+from datetime import datetime, timedelta
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+
+# --- Configuration ---
+SECRET_KEY = "your-secret-key-here"
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
+
+pwd_context = CryptContext(schemes=["pbkdf2_sha256"], deprecated="auto")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+# --- Models ---
+
+class User(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    phone: str = Field(index=True, unique=True)
+    password_hash: str
+    first_name: str = ""
+    last_name: str = ""
+    role: str = "user" # user, admin, platform_admin
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+class UserCreate(SQLModel):
+    phone: str
+    password: str
+    first_name: str
+    last_name: str
+
+class UserRead(SQLModel):
+    id: int
+    phone: str
+    first_name: str
+    last_name: str
+    role: str
+    created_at: Optional[datetime] = None
+
+class Token(SQLModel):
+    access_token: str
+    token_type: str
+
+class Shop(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    name: str
+    slug: str = Field(index=True, unique=True)  # nike, adidas, etc.
+    owner_id: int = Field(foreign_key="user.id")
+    description: Optional[str] = None
+    logo_url: Optional[str] = None
+    subscription_status: str = "trial"  # trial, active, expired, cancelled
+    subscription_expires_at: Optional[datetime] = None
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    is_active: bool = True
+    # Contact information
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    address: Optional[str] = None
+    # Social media links
+    telegram: Optional[str] = None
+    instagram: Optional[str] = None
+    facebook: Optional[str] = None
+    twitter: Optional[str] = None
+    whatsapp: Optional[str] = None
+
+class ShopCreate(SQLModel):
+    name: str
+    slug: str
+    description: Optional[str] = None
+    logo_url: Optional[str] = None
+
+class ShopRead(SQLModel):
+    id: int
+    name: str
+    slug: str
+    description: Optional[str] = None
+    logo_url: Optional[str] = None
+    subscription_status: str
+    subscription_expires_at: Optional[datetime] = None
+    created_at: datetime
+    is_active: bool
+    owner_id: Optional[int] = None
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    address: Optional[str] = None
+    telegram: Optional[str] = None
+    instagram: Optional[str] = None
+    facebook: Optional[str] = None
+    twitter: Optional[str] = None
+    whatsapp: Optional[str] = None
+
+class ShopReadWithOwner(ShopRead):
+    owner_name: Optional[str] = None
+    owner_phone: Optional[str] = None
+
+class SubscriptionUpdate(SQLModel):
+    subscription_status: str
+    expires_at: Optional[datetime] = None
+
+class ShopUpdate(SQLModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    logo_url: Optional[str] = None
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    address: Optional[str] = None
+    telegram: Optional[str] = None
+    instagram: Optional[str] = None
+    facebook: Optional[str] = None
+    twitter: Optional[str] = None
+    whatsapp: Optional[str] = None
+
+class SubscriptionPlan(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    name: str  # Название плана (Базовый, Профессиональный и т.д.)
+    slug: str = Field(index=True, unique=True)  # Уникальный идентификатор (basic, pro и т.д.)
+    price: float  # Цена в долларах
+    period_days: int = 30  # Период подписки в днях
+    description: Optional[str] = None  # Описание плана
+    features: Optional[str] = None  # JSON строка с списком функций ["Функция 1", "Функция 2"]
+    is_active: bool = True  # Активен ли план для покупки
+    is_trial: bool = False  # Является ли пробным периодом
+    display_order: int = 0  # Порядок отображения
+    max_products: Optional[int] = None  # Максимальное количество товаров (None = неограниченно)
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+class SubscriptionPlanCreate(SQLModel):
+    name: str
+    slug: str
+    price: float
+    period_days: int = 30
+    description: Optional[str] = None
+    features: Optional[List[str]] = None
+    is_active: bool = True
+    is_trial: bool = False
+    display_order: int = 0
+    max_products: Optional[int] = None  # None = неограниченно
+
+class SubscriptionPlanUpdate(SQLModel):
+    name: Optional[str] = None
+    slug: Optional[str] = None
+    price: Optional[float] = None
+    period_days: Optional[int] = None
+    description: Optional[str] = None
+    features: Optional[List[str]] = None
+    is_active: Optional[bool] = None
+    is_trial: Optional[bool] = None
+    display_order: Optional[int] = None
+    max_products: Optional[int] = None  # None = неограниченно
+
+class SubscriptionPlanRead(SQLModel):
+    id: int
+    name: str
+    slug: str
+    price: float
+    period_days: int
+    description: Optional[str] = None
+    features: Optional[str] = None  # JSON string
+    features_list: Optional[List[str]] = None  # Parsed features list
+    is_active: bool
+    is_trial: bool
+    display_order: int
+    max_products: Optional[int] = None
+    created_at: datetime
+
+class SubscriptionRequest(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    shop_id: int = Field(foreign_key="shop.id", index=True)
+    plan_id: int = Field(foreign_key="subscriptionplan.id")
+    duration_months: int = 1  # 1, 3, 6, 12 месяцев
+    status: str = "pending"  # pending, approved, rejected
+    requested_at: datetime = Field(default_factory=datetime.utcnow)
+    approved_at: Optional[datetime] = None
+    notes: Optional[str] = None  # Заметки от администратора
+
+class SubscriptionRequestCreate(SQLModel):
+    plan_id: int
+    duration_months: int = 1
+
+class SubscriptionRequestRead(SQLModel):
+    id: int
+    shop_id: int
+    plan_id: int
+    plan_name: Optional[str] = None
+    duration_months: int
+    status: str
+    requested_at: datetime
+    approved_at: Optional[datetime] = None
+    notes: Optional[str] = None
+    shop_name: Optional[str] = None
+    shop_slug: Optional[str] = None
+
+class SubscriptionRequestUpdate(SQLModel):
+    status: str  # approved, rejected
+    notes: Optional[str] = None
+
+class Brand(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    name: str
+    logo_url: str
+    shop_id: Optional[int] = Field(default=None, foreign_key="shop.id")
+
+class Category(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    name: str
+    image_url: Optional[str] = None
+    shop_id: Optional[int] = Field(default=None, foreign_key="shop.id")
+
+class Product(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    name: str
+    description: str
+    price: float
+    discount: float = 0.0  # Discount percentage (0-100)
+    image_url: str
+    images: Optional[str] = None  # JSON string of image URLs
+    category: str
+    brand: str
+    rating: float = 0.0
+    reviews_count: int = 0
+    is_favorite: bool = False
+    stock: int = 0  # Quantity in stock (for products without variants)
+    sizes: Optional[str] = None  # JSON string of available sizes (deprecated, use variants)
+    colors: Optional[str] = None  # JSON string of available colors with stock (deprecated, use variants)
+    variants: Optional[str] = None  # JSON string of variants: [{"size": "M", "color": "Black", "colorHex": "#000000", "stock": 5}, ...]
+    shop_id: Optional[int] = Field(default=None, foreign_key="shop.id")
+    is_preorder_enabled: bool = False  # Enable pre-order for out of stock items
+    sold_count: int = 0  # Number of items sold
+
+class ProductCreate(SQLModel):
+    name: str
+    description: str
+    price: float
+    discount: float = 0.0  # Discount percentage (0-100)
+    image_url: str
+    images: Optional[str] = None
+    category: str
+    brand: str
+    stock: int = 0
+    sizes: Optional[str] = None
+    colors: Optional[str] = None
+    variants: Optional[str] = None  # JSON string of variants: [{"size": "M", "color": "Black", "colorHex": "#000000", "stock": 5}, ...]
+    is_preorder_enabled: bool = False
+
+class OrderItem(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    order_id: Optional[int] = Field(default=None, foreign_key="order.id")
+    product_id: int = Field(foreign_key="product.id")
+    quantity: int
+    price: float
+    selected_color: Optional[str] = None  # Color name
+    selected_size: Optional[str] = None   # Size
+
+class Order(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    user_id: int = Field(foreign_key="user.id")
+    shop_id: Optional[int] = Field(default=None, foreign_key="shop.id")
+    status: str = "pending"
+    total_price: float
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    # Delivery info
+    delivery_address: Optional[str] = None
+    delivery_city: Optional[str] = None
+    delivery_phone: Optional[str] = None
+    recipient_name: Optional[str] = None
+    # Payment
+    payment_method: str = "cash"  # cash, card
+    notes: Optional[str] = None
+
+class OrderRead(SQLModel):
+    id: int
+    user_id: int
+    status: str
+    total_price: float
+    created_at: datetime
+    delivery_address: Optional[str] = None
+    delivery_city: Optional[str] = None
+    delivery_phone: Optional[str] = None
+    recipient_name: Optional[str] = None
+    payment_method: str = "cash"
+    notes: Optional[str] = None
+
+class OrderItemCreate(SQLModel):
+    product_id: int
+    quantity: int
+    selected_color: Optional[str] = None
+    selected_size: Optional[str] = None
+
+class OrderCreate(SQLModel):
+    items: List[OrderItemCreate]
+    delivery_address: str
+    delivery_city: str
+    delivery_phone: str
+    recipient_name: str
+    payment_method: str = "cash"
+    notes: Optional[str] = None
+
+class OrderItemDetail(SQLModel):
+    product_id: int
+    quantity: int
+    price: float
+    product_name: str
+    product_image: str
+    selected_color: Optional[str] = None
+    selected_size: Optional[str] = None
+    shop_slug: Optional[str] = None
+
+class OrderReadWithItems(OrderRead):
+    items: List[OrderItemDetail]
+
+class UserInfo(SQLModel):
+    id: int
+    phone: str
+    first_name: str
+    last_name: str
+
+class OrderReadWithUser(OrderRead):
+    user: Optional[UserInfo] = None
+    items: Optional[List[OrderItemDetail]] = None
+
+class OrdersByStatus(SQLModel):
+    pending: int = 0
+    processing: int = 0
+    shipping: int = 0
+    delivered: int = 0
+    cancelled: int = 0
+
+class DashboardStats(SQLModel):
+    total_sales: float  # Only from non-cancelled orders
+    total_orders: int
+    total_users: int
+    total_products: int
+    orders_by_status: OrdersByStatus
+    today_sales: float = 0.0
+    today_orders: int = 0
+    week_sales: float = 0.0
+    week_orders: int = 0
+    month_sales: float = 0.0
+    month_orders: int = 0
+    total_shops: Optional[int] = None  # For platform admin
+    active_shops: Optional[int] = None  # For platform admin
+
+class OrderStatusUpdate(SQLModel):
+    status: str
+
+class PreOrder(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    product_id: int = Field(foreign_key="product.id", index=True)
+    user_id: int = Field(foreign_key="user.id", index=True)
+    selected_color: Optional[str] = None  # Color name
+    selected_size: Optional[str] = None   # Size
+    phone: str  # Contact phone
+    name: Optional[str] = None  # Customer name
+    status: str = "pending"  # pending, notified, cancelled
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    notified_at: Optional[datetime] = None  # When product became available and customer was notified
+
+class PreOrderCreate(SQLModel):
+    product_id: int
+    selected_color: Optional[str] = None
+    selected_size: Optional[str] = None
+    phone: str
+    name: Optional[str] = None
+
+class PreOrderRead(SQLModel):
+    id: int
+    product_id: int
+    product_name: Optional[str] = None
+    user_id: int
+    selected_color: Optional[str] = None
+    selected_size: Optional[str] = None
+    phone: str
+    name: Optional[str] = None
+    status: str
+    created_at: datetime
+    notified_at: Optional[datetime] = None
+
+class Offer(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    title: str  # Заголовок оффера (например, "WhiteLabel решение")
+    description: str  # Описание оффера
+    price: Optional[float] = None  # Примерная цена (может быть None если "по запросу")
+    price_text: Optional[str] = None  # Альтернативный текст цены (например, "По запросу")
+    contact_text: str = "Свяжитесь с нами для покупки"  # Текст для связи
+    contact_email: Optional[str] = None  # Email для связи
+    contact_phone: Optional[str] = None  # Телефон для связи
+    is_active: bool = True
+    display_order: int = 0
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+class OfferCreate(SQLModel):
+    title: str
+    description: str
+    price: Optional[float] = None
+    price_text: Optional[str] = None
+    contact_text: str = "Свяжитесь с нами для покупки"
+    contact_email: Optional[str] = None
+    contact_phone: Optional[str] = None
+    is_active: bool = True
+    display_order: int = 0
+
+class OfferUpdate(SQLModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    price: Optional[float] = None
+    price_text: Optional[str] = None
+    contact_text: Optional[str] = None
+    contact_email: Optional[str] = None
+    contact_phone: Optional[str] = None
+    is_active: Optional[bool] = None
+    display_order: Optional[int] = None
+
+class OfferRead(SQLModel):
+    id: int
+    title: str
+    description: str
+    price: Optional[float] = None
+    price_text: Optional[str] = None
+    contact_text: str
+    contact_email: Optional[str] = None
+    contact_phone: Optional[str] = None
+    is_active: bool
+    display_order: int
+    created_at: datetime
+
+class Banner(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    badge_text: str = "NEW ARRIVAL"
+    title: str = "Ray-Ban Meta Smart Glasses"
+    subtitle: str = "Starting from $299"
+    button_text: str = "Shop Now"
+    button_link: str = "/products"
+    image_url: str = "https://images.unsplash.com/photo-1572635196237-14b3f281503f?q=80&w=800&auto=format&fit=crop"
+    is_active: bool = True
+    shop_id: Optional[int] = Field(default=None, foreign_key="shop.id")
+
+class BannerUpdate(SQLModel):
+    badge_text: Optional[str] = None
+    title: Optional[str] = None
+    subtitle: Optional[str] = None
+    button_text: Optional[str] = None
+    button_link: Optional[str] = None
+    image_url: Optional[str] = None
+    is_active: Optional[bool] = None
+
+# --- Database ---
+sqlite_file_name = "database.db"
+sqlite_url = f"sqlite:///{sqlite_file_name}"
+connect_args = {"check_same_thread": False}
+engine = create_engine(sqlite_url, echo=True, connect_args=connect_args)
+
+def create_db_and_tables():
+    SQLModel.metadata.create_all(engine)
+
+# --- Auth Helper Functions ---
+def verify_password(plain_password, hashed_password):
+    return pwd_context.verify(plain_password, hashed_password)
+
+def get_password_hash(password):
+    return pwd_context.hash(password)
+
+def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
+    to_encode = data.copy()
+    if expires_delta:
+        expire = datetime.utcnow() + expires_delta
+    else:
+        expire = datetime.utcnow() + timedelta(minutes=15)
+    to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
+
+async def get_current_user(token: str = Depends(oauth2_scheme)):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        phone: str = payload.get("sub")
+        if phone is None:
+            raise credentials_exception
+    except JWTError:
+        raise credentials_exception
+    with Session(engine) as session:
+        statement = select(User).where(User.phone == phone)
+        user = session.exec(statement).first()
+        if user is None:
+            raise credentials_exception
+        return user
+
+async def get_current_admin(current_user: User = Depends(get_current_user)):
+    if current_user.role not in ["admin", "platform_admin"]:
+        raise HTTPException(status_code=403, detail="Not authorized")
+    return current_user
+
+async def get_current_platform_admin(current_user: User = Depends(get_current_user)):
+    if current_user.role != "platform_admin":
+        raise HTTPException(status_code=403, detail="Not authorized")
+    return current_user
+
+def get_shop_owner_or_admin(shop_slug: str, current_user: User, check_subscription: bool = False):
+    """Check if user is shop owner or platform admin"""
+    # Don't check subscription here -> owners need access to manage/renew even if expired
+    shop = get_shop_by_slug(shop_slug, check_subscription=check_subscription)
+    
+    if current_user.role == "platform_admin":
+        return shop
+        
+    if shop.owner_id == current_user.id:
+        return shop
+        
+    raise HTTPException(status_code=403, detail="Not authorized to manage this shop")
+
+def get_shop_by_slug(slug: str, check_subscription: bool = True):
+    with Session(engine) as session:
+        shop = session.exec(select(Shop).where(Shop.slug == slug)).first()
+        if not shop:
+            raise HTTPException(status_code=404, detail="Shop not found")
+        
+        # Admin/Owners usually don't need these checks when managing settings
+        if check_subscription:
+            if not shop.is_active:
+                raise HTTPException(status_code=403, detail="Shop is not active")
+            # Check subscription
+            if shop.subscription_status == "expired" or (shop.subscription_expires_at and shop.subscription_expires_at < datetime.utcnow()):
+                raise HTTPException(status_code=403, detail="Shop subscription expired")
+        
+        return shop
+
+def check_product_limit(session: Session, shop_id: int) -> tuple[bool, Optional[int], int]:
+    """Check if shop can add more products. Returns (can_add, max_products, current_count)"""
+    # Get current product count
+    existing_products = session.exec(select(Product).where(Product.shop_id == shop_id)).all()
+    current_count = len(existing_products)
+    
+    # Get shop
+    shop = session.get(Shop, shop_id)
+    if not shop:
+        return (False, None, current_count)
+    
+    # Get the latest approved subscription request to get plan
+    latest_request = session.exec(
+        select(SubscriptionRequest)
+        .where(SubscriptionRequest.shop_id == shop_id)
+        .where(SubscriptionRequest.status == "approved")
+        .order_by(SubscriptionRequest.approved_at.desc())
+    ).first()
+    
+    if latest_request:
+        plan = session.get(SubscriptionPlan, latest_request.plan_id)
+        if plan and plan.max_products is not None:
+            # Check if current count is less than max
+            can_add = current_count < plan.max_products
+            return (can_add, plan.max_products, current_count)
+    
+    # For trial subscription, check if there's a default trial plan with limit
+    # For now, trial = unlimited, but we can add logic here later
+    
+    # If no plan limit or unlimited, allow
+    return (True, None, current_count)
+
+# --- App ---
+app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Create uploads directory
+UPLOAD_DIR = "uploads"
+os.makedirs(UPLOAD_DIR, exist_ok=True)
+
+# Mount static files
+app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
+
+# Image upload endpoint
+@app.post("/upload")
+async def upload_image(file: UploadFile = File(...)):
+    # Generate unique filename
+    ext = file.filename.split(".")[-1] if "." in file.filename else "jpg"
+    filename = f"{uuid.uuid4()}.{ext}"
+    filepath = os.path.join(UPLOAD_DIR, filename)
+    
+    # Save file
+    content = await file.read()
+    with open(filepath, "wb") as f:
+        f.write(content)
+    
+    # Return URL
+    return {"url": f"http://localhost:8000/uploads/{filename}"}
+
+@app.on_event("startup")
+def on_startup():
+    create_db_and_tables()
+    with Session(engine) as session:
+        # Seed Brands
+        if not session.exec(select(Brand)).first():
+            brands = [
+                Brand(name="Ray-Ban", logo_url="https://upload.wikimedia.org/wikipedia/commons/thumb/0/03/Ray-Ban_logo.svg/2560px-Ray-Ban_logo.svg.png"),
+                Brand(name="Oakley", logo_url="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Oakley_logo.svg/2560px-Oakley_logo.svg.png"),
+                Brand(name="Prada", logo_url="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/Prada-Logo.svg/2560px-Prada-Logo.svg.png"),
+                Brand(name="Gucci", logo_url="https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/Gucci_Logo.svg/2560px-Gucci_Logo.svg.png"),
+            ]
+            for b in brands: session.add(b)
+            session.commit()
+
+        # Seed Categories
+        if not session.exec(select(Category)).first():
+            categories = [
+                Category(name="Sunglasses", image_url="https://images.unsplash.com/photo-1511499767150-a48a237f0083?q=80&w=2080&auto=format&fit=crop"),
+                Category(name="Smart Glasses", image_url="https://images.unsplash.com/photo-1572635196237-14b3f281503f?q=80&w=2080&auto=format&fit=crop"),
+                Category(name="Eyeglasses", image_url="https://images.unsplash.com/photo-1577803645773-f96470509666?q=80&w=2080&auto=format&fit=crop"),
+                Category(name="Luxury", image_url="https://images.unsplash.com/photo-1511499767150-a48a237f0083?q=80&w=2080&auto=format&fit=crop"),
+            ]
+            for c in categories: session.add(c)
+            session.commit()
+
+        # Seed Products
+        if not session.exec(select(Product)).first():
+            import json
+            seed_products = [
+                Product(
+                    name="Ray-Ban Meta Wayfarer", 
+                    description="Classic Wayfarer style with smart features. Built-in camera and speakers for the ultimate smart glasses experience.", 
+                    price=299.00, 
+                    image_url="https://images.unsplash.com/photo-1572635196237-14b3f281503f?q=80&w=2080&auto=format&fit=crop",
+                    images=json.dumps([
+                        "https://images.unsplash.com/photo-1572635196237-14b3f281503f?q=80&w=2080&auto=format&fit=crop",
+                        "https://images.unsplash.com/photo-1511499767150-a48a237f0083?q=80&w=2080&auto=format&fit=crop",
+                        "https://images.unsplash.com/photo-1577803645773-f96470509666?q=80&w=2080&auto=format&fit=crop"
+                    ]),
+                    category="Smart Glasses", 
+                    brand="Ray-Ban", 
+                    rating=4.5, 
+                    reviews_count=120,
+                    stock=15,
+                    sizes=json.dumps(["S", "M", "L"]),
+                    colors=json.dumps([
+                        {"name": "Black", "hex": "#000000", "stock": 8},
+                        {"name": "Tortoise", "hex": "#8B4513", "stock": 5},
+                        {"name": "Blue", "hex": "#1E40AF", "stock": 2}
+                    ])
+                ),
+                Product(
+                    name="Ray-Ban Meta Headliner", 
+                    description="Round shape for a retro look. Perfect for everyday wear with advanced audio technology.", 
+                    price=329.00, 
+                    image_url="https://images.unsplash.com/photo-1511499767150-a48a237f0083?q=80&w=2080&auto=format&fit=crop",
+                    images=json.dumps([
+                        "https://images.unsplash.com/photo-1511499767150-a48a237f0083?q=80&w=2080&auto=format&fit=crop",
+                        "https://images.unsplash.com/photo-1572635196237-14b3f281503f?q=80&w=2080&auto=format&fit=crop"
+                    ]),
+                    category="Smart Glasses", 
+                    brand="Ray-Ban", 
+                    rating=4.7, 
+                    reviews_count=85,
+                    stock=8,
+                    sizes=json.dumps(["M", "L"]),
+                    colors=json.dumps([
+                        {"name": "Matte Black", "hex": "#1a1a1a", "stock": 5},
+                        {"name": "Shiny Black", "hex": "#000000", "stock": 3}
+                    ])
+                ),
+                Product(
+                    name="Oakley Holbrook", 
+                    description="Timeless, classic design fused with modern Oakley technology. Durable and stylish.", 
+                    price=150.00, 
+                    image_url="https://images.unsplash.com/photo-1577803645773-f96470509666?q=80&w=2080&auto=format&fit=crop",
+                    images=json.dumps([
+                        "https://images.unsplash.com/photo-1577803645773-f96470509666?q=80&w=2080&auto=format&fit=crop"
+                    ]),
+                    category="Sunglasses", 
+                    brand="Oakley", 
+                    rating=4.8, 
+                    reviews_count=210,
+                    stock=25,
+                    sizes=json.dumps(["S", "M", "L", "XL"]),
+                    colors=json.dumps([
+                        {"name": "Matte Black", "hex": "#1a1a1a", "stock": 10},
+                        {"name": "Polished Black", "hex": "#000000", "stock": 8},
+                        {"name": "Brown Tortoise", "hex": "#654321", "stock": 7}
+                    ])
+                ),
+                Product(
+                    name="Prada Symbole", 
+                    description="Geometric design with a bold look. Luxury eyewear at its finest.", 
+                    price=450.00, 
+                    image_url="https://images.unsplash.com/photo-1572635196237-14b3f281503f?q=80&w=2080&auto=format&fit=crop",
+                    images=json.dumps([
+                        "https://images.unsplash.com/photo-1572635196237-14b3f281503f?q=80&w=2080&auto=format&fit=crop",
+                        "https://images.unsplash.com/photo-1511499767150-a48a237f0083?q=80&w=2080&auto=format&fit=crop"
+                    ]),
+                    category="Luxury", 
+                    brand="Prada", 
+                    rating=4.9, 
+                    reviews_count=45,
+                    stock=0,
+                    sizes=json.dumps(["M", "L"]),
+                    colors=json.dumps([
+                        {"name": "Black", "hex": "#000000", "stock": 0},
+                        {"name": "Gold", "hex": "#FFD700", "stock": 0}
+                    ])
+                ),
+                Product(
+                    name="Gucci GG0061S", 
+                    description="Round metal sunglasses with a vintage feel. Iconic Gucci style.", 
+                    price=380.00, 
+                    image_url="https://images.unsplash.com/photo-1511499767150-a48a237f0083?q=80&w=2080&auto=format&fit=crop",
+                    images=json.dumps([
+                        "https://images.unsplash.com/photo-1511499767150-a48a237f0083?q=80&w=2080&auto=format&fit=crop"
+                    ]),
+                    category="Luxury", 
+                    brand="Gucci", 
+                    rating=4.6, 
+                    reviews_count=60,
+                    stock=12,
+                    sizes=json.dumps(["S", "M"]),
+                    colors=json.dumps([
+                        {"name": "Gold", "hex": "#FFD700", "stock": 6},
+                        {"name": "Silver", "hex": "#C0C0C0", "stock": 6}
+                    ])
+                ),
+                Product(
+                    name="Ray-Ban Aviator", 
+                    description="The timeless style that started it all. Classic aviator design.", 
+                    price=163.00, 
+                    image_url="https://images.unsplash.com/photo-1572635196237-14b3f281503f?q=80&w=2080&auto=format&fit=crop",
+                    images=json.dumps([
+                        "https://images.unsplash.com/photo-1572635196237-14b3f281503f?q=80&w=2080&auto=format&fit=crop",
+                        "https://images.unsplash.com/photo-1577803645773-f96470509666?q=80&w=2080&auto=format&fit=crop"
+                    ]),
+                    category="Sunglasses", 
+                    brand="Ray-Ban", 
+                    rating=4.6, 
+                    reviews_count=200,
+                    stock=30,
+                    sizes=json.dumps(["S", "M", "L"]),
+                    colors=json.dumps([
+                        {"name": "Gold/Green", "hex": "#FFD700", "stock": 15},
+                        {"name": "Silver/Blue", "hex": "#C0C0C0", "stock": 10},
+                        {"name": "Black", "hex": "#000000", "stock": 5}
+                    ])
+                ),
+            ]
+            for p in seed_products: session.add(p)
+            session.commit()
+        
+        # Seed Platform Admin
+        admin = session.exec(select(User).where(User.phone == "admin")).first()
+        if not admin:
+            admin_user = User(phone="admin", password_hash=get_password_hash("admin123"), role="platform_admin")
+            session.add(admin_user)
+            session.commit()
+        
+        # Seed Banner
+        if not session.exec(select(Banner)).first():
+            default_banner = Banner(
+                badge_text="NEW ARRIVAL",
+                title="Ray-Ban Meta Smart Glasses",
+                subtitle="Starting from $299",
+                button_text="Shop Now",
+                button_link="/products",
+                image_url="https://images.unsplash.com/photo-1572635196237-14b3f281503f?q=80&w=800&auto=format&fit=crop",
+                is_active=True
+            )
+            session.add(default_banner)
+            session.commit()
+
+# --- Shop Endpoints ---
+
+@app.post("/platform/shops/register", response_model=ShopRead)
+def register_shop(shop: ShopCreate, current_user: User = Depends(get_current_user)):
+    with Session(engine) as session:
+        # Check if user already has a shop (one shop per account limit)
+        existing_user_shop = session.exec(select(Shop).where(Shop.owner_id == current_user.id)).first()
+        if existing_user_shop:
+            raise HTTPException(status_code=400, detail="Вы уже создали магазин. На один аккаунт можно создать только один магазин.")
+        
+        # Check if slug is already taken
+        existing_shop = session.exec(select(Shop).where(Shop.slug == shop.slug)).first()
+        if existing_shop:
+            raise HTTPException(status_code=400, detail="Shop slug already taken")
+        
+        # Update user role to shop_owner if not already
+        if current_user.role != "shop_owner" and current_user.role != "platform_admin":
+            current_user.role = "shop_owner"
+            session.add(current_user)
+        
+        # Create shop with trial subscription (30 days)
+        subscription_expires = datetime.utcnow() + timedelta(days=30)
+        db_shop = Shop(
+            name=shop.name,
+            slug=shop.slug,
+            owner_id=current_user.id,
+            description=shop.description,
+            logo_url=shop.logo_url,
+            subscription_status="trial",
+            subscription_expires_at=subscription_expires,
+            is_active=True
+        )
+        session.add(db_shop)
+        session.commit()
+        session.refresh(db_shop)
+        return db_shop
+
+@app.get("/platform/shops", response_model=List[ShopRead])
+def get_all_shops():
+    with Session(engine) as session:
+        shops = session.exec(select(Shop).where(Shop.is_active == True)).all()
+        return shops
+
+@app.get("/platform/shops/me", response_model=List[ShopRead])
+def get_my_shops(current_user: User = Depends(get_current_user)):
+    with Session(engine) as session:
+        shops = session.exec(select(Shop).where(Shop.owner_id == current_user.id)).all()
+        return shops
+
+@app.get("/platform/shops/{shop_slug}", response_model=ShopRead)
+def get_shop_by_slug_endpoint(shop_slug: str):
+    shop = get_shop_by_slug(shop_slug)
+    return shop
+
+@app.get("/platform/admin/shops", response_model=List[ShopReadWithOwner])
+def get_all_shops_admin(current_user: User = Depends(get_current_platform_admin)):
+    with Session(engine) as session:
+        shops = session.exec(select(Shop)).all()
+        result = []
+        for shop in shops:
+            owner = session.get(User, shop.owner_id) if shop.owner_id else None
+            shop_data = ShopReadWithOwner(
+                id=shop.id,
+                name=shop.name,
+                slug=shop.slug,
+                description=shop.description,
+                logo_url=shop.logo_url,
+                subscription_status=shop.subscription_status,
+                subscription_expires_at=shop.subscription_expires_at,
+                created_at=shop.created_at,
+                is_active=shop.is_active,
+                owner_id=shop.owner_id,
+                owner_name=f"{owner.first_name} {owner.last_name}".strip() if owner else None,
+                owner_phone=owner.phone if owner else None,
+                email=shop.email,
+                phone=shop.phone,
+                address=shop.address,
+                telegram=shop.telegram,
+                instagram=shop.instagram,
+                facebook=shop.facebook,
+                twitter=shop.twitter,
+                whatsapp=shop.whatsapp
+            )
+            result.append(shop_data)
+        return result
+
+@app.put("/shop/{shop_slug}/subscription", response_model=ShopRead)
+def update_my_shop_subscription(shop_slug: str, subscription_update: SubscriptionUpdate, current_user: User = Depends(get_current_user)):
+    """Update subscription for own shop - only owner can access"""
+    shop = get_shop_owner_or_admin(shop_slug, current_user)
+    
+    with Session(engine) as session:
+        db_shop = session.get(Shop, shop.id)
+        if not db_shop:
+            raise HTTPException(status_code=404, detail="Shop not found")
+        
+        db_shop.subscription_status = subscription_update.subscription_status
+        if subscription_update.expires_at:
+            db_shop.subscription_expires_at = subscription_update.expires_at
+        session.add(db_shop)
+        session.commit()
+        session.refresh(db_shop)
+        return db_shop
+
+@app.put("/shop/{shop_slug}/admin/info", response_model=ShopRead)
+def update_shop_info(shop_slug: str, shop_update: ShopUpdate, current_user: User = Depends(get_current_user)):
+    """Update shop information - only owner or platform admin can access"""
+    shop = get_shop_owner_or_admin(shop_slug, current_user, check_subscription=False)
+    
+    with Session(engine) as session:
+        db_shop = session.get(Shop, shop.id)
+        if not db_shop:
+            raise HTTPException(status_code=404, detail="Shop not found")
+        
+        if shop_update.name is not None:
+            db_shop.name = shop_update.name
+        if shop_update.description is not None:
+            db_shop.description = shop_update.description
+        if shop_update.logo_url is not None:
+            db_shop.logo_url = shop_update.logo_url
+        if shop_update.email is not None:
+            db_shop.email = shop_update.email
+        if shop_update.phone is not None:
+            db_shop.phone = shop_update.phone
+        if shop_update.address is not None:
+            db_shop.address = shop_update.address
+        if shop_update.telegram is not None:
+            db_shop.telegram = shop_update.telegram
+        if shop_update.instagram is not None:
+            db_shop.instagram = shop_update.instagram
+        if shop_update.facebook is not None:
+            db_shop.facebook = shop_update.facebook
+        if shop_update.twitter is not None:
+            db_shop.twitter = shop_update.twitter
+        if shop_update.whatsapp is not None:
+            db_shop.whatsapp = shop_update.whatsapp
+        
+        session.add(db_shop)
+        session.commit()
+        session.refresh(db_shop)
+        return db_shop
+
+@app.put("/platform/admin/shops/{shop_id}/subscription")
+def update_shop_subscription(shop_id: int, subscription_update: SubscriptionUpdate, current_user: User = Depends(get_current_platform_admin)):
+    with Session(engine) as session:
+        shop = session.get(Shop, shop_id)
+        if not shop:
+            raise HTTPException(status_code=404, detail="Shop not found")
+        shop.subscription_status = subscription_update.subscription_status
+        if subscription_update.expires_at:
+            shop.subscription_expires_at = subscription_update.expires_at
+        session.add(shop)
+        session.commit()
+        session.refresh(shop)
+        return shop
+
+@app.put("/platform/admin/shops/{shop_id}/activate")
+def toggle_shop_active(shop_id: int, is_active: bool, current_user: User = Depends(get_current_platform_admin)):
+    with Session(engine) as session:
+        shop = session.get(Shop, shop_id)
+        if not shop:
+            raise HTTPException(status_code=404, detail="Shop not found")
+        shop.is_active = is_active
+        session.add(shop)
+        session.commit()
+        session.refresh(shop)
+        return shop
+
+# --- Endpoints ---
+
+@app.post("/register", response_model=Token)
+def register(user: UserCreate):
+    try:
+        with Session(engine) as session:
+            existing_user = session.exec(select(User).where(User.phone == user.phone)).first()
+            if existing_user:
+                raise HTTPException(status_code=400, detail="Phone number already registered")
+
+            if not user.phone or not user.password:
+                raise HTTPException(status_code=400, detail="Phone and password are required")
+
+            hashed_password = get_password_hash(user.password)
+            db_user = User(
+                phone=user.phone,
+                password_hash=hashed_password,
+                first_name=user.first_name or "",
+                last_name=user.last_name or ""
+            )
+            session.add(db_user)
+            session.commit()
+            session.refresh(db_user)
+            access_token = create_access_token(data={"sub": db_user.phone})
+            return {"access_token": access_token, "token_type": "bearer"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Registration error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Registration failed: {str(e)}")
+
+@app.post("/token", response_model=Token)
+def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
+    try:
+        with Session(engine) as session:
+            if not form_data.username or not form_data.password:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Phone and password are required"
+                )
+
+            user = session.exec(select(User).where(User.phone == form_data.username)).first()
+            if not user:
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Incorrect phone or password",
+                    headers={"WWW-Authenticate": "Bearer"},
+                )
+
+            if not verify_password(form_data.password, user.password_hash):
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Incorrect phone or password",
+                    headers={"WWW-Authenticate": "Bearer"},
+                )
+
+            access_token = create_access_token(data={"sub": user.phone})
+            return {"access_token": access_token, "token_type": "bearer"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Login error: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Login failed: {str(e)}"
+        )
+
+@app.get("/users/me", response_model=UserRead)
+def read_users_me(current_user: User = Depends(get_current_user)):
+    return current_user
+
+@app.get("/products", response_model=List[Product])
+def get_products(category: Optional[str] = Query(None), brand: Optional[str] = Query(None), shop_slug: Optional[str] = Query(None)):
+    with Session(engine) as session:
+        statement = select(Product)
+        if shop_slug:
+            shop = get_shop_by_slug(shop_slug, check_subscription=False)
+            statement = statement.where(Product.shop_id == shop.id)
+        if category:
+            statement = statement.where(Product.category == category)
+        if brand:
+            statement = statement.where(Product.brand == brand)
+        results = session.exec(statement).all()
+        return results
+
+@app.get("/products/{product_id}", response_model=Product)
+def get_product(product_id: int):
+    with Session(engine) as session:
+        product = session.get(Product, product_id)
+        if not product:
+            raise HTTPException(status_code=404, detail="Product not found")
+        return product
+
+@app.post("/products", response_model=Product)
+def create_product(product: ProductCreate, shop_slug: Optional[str] = Query(None), current_user: User = Depends(get_current_user)):
+    print(f"[Backend] Creating product: name={product.name}, shop_slug={shop_slug}, user_id={current_user.id}")
+    # If variants are provided, use them; otherwise validate sizes/colors
+    if product.variants and product.variants.strip():
+        # Variants format: [{"size": "M", "color": "Black", "colorHex": "#000000", "stock": 5}, ...]
+        try:
+            import json
+            variants = json.loads(product.variants)
+            if not isinstance(variants, list):
+                raise HTTPException(status_code=400, detail="Variants must be a JSON array")
+        except json.JSONDecodeError:
+            raise HTTPException(status_code=400, detail="Invalid variants JSON format")
+    else:
+        # Legacy validation: if sizes exist, colors must exist and vice versa
+        has_sizes = product.sizes and product.sizes.strip()
+        has_colors = product.colors and product.colors.strip()
+        
+        if has_sizes and not has_colors:
+            raise HTTPException(
+                status_code=400, 
+                detail="If product has sizes, colors must also be specified"
+            )
+        
+        if has_colors and not has_sizes:
+            raise HTTPException(
+                status_code=400, 
+                detail="If product has colors, sizes must also be specified"
+            )
+    
+    with Session(engine) as session:
+        shop_id = None
+        if shop_slug:
+            shop = get_shop_by_slug(shop_slug, check_subscription=False)
+            # Verify user owns the shop
+            if shop.owner_id != current_user.id and current_user.role != "platform_admin":
+                raise HTTPException(status_code=403, detail="Not authorized to add products to this shop")
+            shop_id = shop.id
+            print(f"[Backend] Product shop_id set to: {shop_id}")
+            
+            # Check product limit if shop has subscription
+            if current_user.role != "platform_admin":
+                can_add, max_products, current_count = check_product_limit(session, shop_id)
+                if not can_add and max_products is not None:
+                    raise HTTPException(
+                        status_code=403, 
+                        detail=f"Лимит товаров достигнут. Ваш тариф позволяет добавить максимум {max_products} товаров. Текущее количество: {current_count}. Обновите тариф для добавления большего количества товаров."
+                    )
+        
+        db_product = Product(
+            name=product.name,
+            description=product.description,
+            price=product.price,
+            discount=product.discount,
+            image_url=product.image_url,
+            images=product.images,
+            category=product.category,
+            brand=product.brand,
+            stock=product.stock,
+            sizes=product.sizes,
+            colors=product.colors,
+            variants=product.variants,
+            is_preorder_enabled=product.is_preorder_enabled
+        )
+        db_product.shop_id = shop_id
+        session.add(db_product)
+        session.commit()
+        session.refresh(db_product)
+        return db_product
+
+@app.delete("/products/{product_id}")
+def delete_product(product_id: int, current_user: User = Depends(get_current_user)):
+    with Session(engine) as session:
+        product = session.get(Product, product_id)
+        if not product:
+            raise HTTPException(status_code=404, detail="Product not found")
+            
+        # Check authorization
+        if current_user.role != "platform_admin":
+            # Check if user owns the shop this product belongs to
+            shop = session.get(Shop, product.shop_id)
+            if not shop or shop.owner_id != current_user.id:
+                raise HTTPException(status_code=403, detail="Not authorized to delete this product")
+                
+        session.delete(product)
+        session.commit()
+        return {"ok": True}
+
+@app.put("/products/{product_id}", response_model=Product)
+def update_product(product_id: int, product_update: ProductCreate, current_user: User = Depends(get_current_user)):
+    # If variants are provided, use them; otherwise validate sizes/colors
+    if product_update.variants and product_update.variants.strip():
+        # Variants format: [{"size": "M", "color": "Black", "colorHex": "#000000", "stock": 5}, ...]
+        try:
+            import json
+            variants = json.loads(product_update.variants)
+            if not isinstance(variants, list):
+                raise HTTPException(status_code=400, detail="Variants must be a JSON array")
+        except json.JSONDecodeError:
+            raise HTTPException(status_code=400, detail="Invalid variants JSON format")
+    else:
+        # Legacy validation: if sizes exist, colors must exist and vice versa
+        has_sizes = product_update.sizes and product_update.sizes.strip()
+        has_colors = product_update.colors and product_update.colors.strip()
+        
+        if has_sizes and not has_colors:
+            raise HTTPException(
+                status_code=400, 
+                detail="If product has sizes, colors must also be specified"
+            )
+        
+        if has_colors and not has_sizes:
+            raise HTTPException(
+                status_code=400, 
+                detail="If product has colors, sizes must also be specified"
+            )
+    
+    with Session(engine) as session:
+        product = session.get(Product, product_id)
+        if not product:
+            raise HTTPException(status_code=404, detail="Product not found")
+        
+        # Check authorization
+        if current_user.role != "platform_admin":
+            # Check if user owns the shop this product belongs to
+            shop = session.get(Shop, product.shop_id)
+            if not shop or shop.owner_id != current_user.id:
+                raise HTTPException(status_code=403, detail="Not authorized to update this product")
+            
+            # No need to check product limit when updating existing product in same shop
+            # Limit is only checked when creating new products
+
+        product.name = product_update.name
+        product.description = product_update.description
+        product.price = product_update.price
+        product.discount = product_update.discount
+        product.image_url = product_update.image_url
+        product.category = product_update.category
+        product.brand = product_update.brand
+        product.stock = product_update.stock
+        product.sizes = product_update.sizes
+        product.colors = product_update.colors
+        product.variants = product_update.variants
+        product.images = product_update.images
+        product.is_preorder_enabled = product_update.is_preorder_enabled
+        
+        session.add(product)
+        session.commit()
+        session.refresh(product)
+        return product
+
+
+@app.post("/products/{product_id}/favorite", response_model=Product)
+def toggle_favorite(product_id: int):
+    with Session(engine) as session:
+        product = session.get(Product, product_id)
+        if not product:
+            raise HTTPException(status_code=404, detail="Product not found")
+        product.is_favorite = not product.is_favorite
+        session.add(product)
+        session.commit()
+        session.refresh(product)
+        return product
+
+@app.post("/products/{product_id}/preorder", response_model=PreOrderRead)
+def create_preorder(product_id: int, preorder: PreOrderCreate, current_user: User = Depends(get_current_user)):
+    """Create a pre-order for out of stock product"""
+    with Session(engine) as session:
+        product = session.get(Product, product_id)
+        if not product:
+            raise HTTPException(status_code=404, detail="Product not found")
+        
+        if not product.is_preorder_enabled:
+            raise HTTPException(status_code=400, detail="Pre-order is not enabled for this product")
+        
+        # Check if product is actually out of stock
+        is_out_of_stock = False
+        if product.variants:
+            try:
+                import json
+                variants = json.loads(product.variants)
+                # Check if all variants are out of stock
+                total_stock = sum(v.get('stock', 0) for v in variants)
+                is_out_of_stock = total_stock == 0
+            except:
+                is_out_of_stock = product.stock == 0
+        else:
+            is_out_of_stock = product.stock == 0
+        
+        if not is_out_of_stock:
+            raise HTTPException(status_code=400, detail="Product is in stock. Cannot create pre-order for available products")
+        
+        # Check if user already has a pending pre-order for this product/variant
+        existing_preorder = session.exec(
+            select(PreOrder)
+            .where(PreOrder.product_id == product_id)
+            .where(PreOrder.user_id == current_user.id)
+            .where(PreOrder.status == "pending")
+            .where(PreOrder.selected_color == preorder.selected_color)
+            .where(PreOrder.selected_size == preorder.selected_size)
+        ).first()
+        
+        if existing_preorder:
+            raise HTTPException(status_code=400, detail="You already have a pending pre-order for this product variant")
+        
+        db_preorder = PreOrder(
+            product_id=product_id,
+            user_id=current_user.id,
+            selected_color=preorder.selected_color,
+            selected_size=preorder.selected_size,
+            phone=preorder.phone,
+            name=preorder.name
+        )
+        session.add(db_preorder)
+        session.commit()
+        session.refresh(db_preorder)
+        
+        return PreOrderRead(
+            id=db_preorder.id,
+            product_id=db_preorder.product_id,
+            product_name=product.name,
+            user_id=db_preorder.user_id,
+            selected_color=db_preorder.selected_color,
+            selected_size=db_preorder.selected_size,
+            phone=db_preorder.phone,
+            name=db_preorder.name,
+            status=db_preorder.status,
+            created_at=db_preorder.created_at,
+            notified_at=db_preorder.notified_at
+        )
+
+@app.get("/products/{product_id}/preorders", response_model=List[PreOrderRead])
+def get_product_preorders(product_id: int, current_user: User = Depends(get_current_user)):
+    """Get pre-orders for a product - only shop owner or platform admin"""
+    with Session(engine) as session:
+        product = session.get(Product, product_id)
+        if not product:
+            raise HTTPException(status_code=404, detail="Product not found")
+        
+        # Check if user owns the shop or is platform admin
+        if current_user.role != "platform_admin":
+            if not product.shop_id:
+                raise HTTPException(status_code=403, detail="Not authorized")
+            shop = session.get(Shop, product.shop_id)
+            if not shop or shop.owner_id != current_user.id:
+                raise HTTPException(status_code=403, detail="Not authorized to view pre-orders for this product")
+        
+        preorders = session.exec(
+            select(PreOrder).where(PreOrder.product_id == product_id).order_by(PreOrder.created_at.desc())
+        ).all()
+        
+        result = []
+        for preorder in preorders:
+            result.append(PreOrderRead(
+                id=preorder.id,
+                product_id=preorder.product_id,
+                product_name=product.name,
+                user_id=preorder.user_id,
+                selected_color=preorder.selected_color,
+                selected_size=preorder.selected_size,
+                phone=preorder.phone,
+                name=preorder.name,
+                status=preorder.status,
+                created_at=preorder.created_at,
+                notified_at=preorder.notified_at
+            ))
+        return result
+
+@app.get("/preorders/me", response_model=List[PreOrderRead])
+def get_my_preorders(current_user: User = Depends(get_current_user)):
+    """Get user's pre-orders"""
+    with Session(engine) as session:
+        preorders = session.exec(
+            select(PreOrder)
+            .where(PreOrder.user_id == current_user.id)
+            .order_by(PreOrder.created_at.desc())
+        ).all()
+        
+        result = []
+        for preorder in preorders:
+            product = session.get(Product, preorder.product_id)
+            result.append(PreOrderRead(
+                id=preorder.id,
+                product_id=preorder.product_id,
+                product_name=product.name if product else None,
+                user_id=preorder.user_id,
+                selected_color=preorder.selected_color,
+                selected_size=preorder.selected_size,
+                phone=preorder.phone,
+                name=preorder.name,
+                status=preorder.status,
+                created_at=preorder.created_at,
+                notified_at=preorder.notified_at
+            ))
+        return result
+
+# --- Brand & Category Endpoints ---
+
+@app.get("/brands", response_model=List[Brand])
+def get_brands(shop_slug: Optional[str] = Query(None)):
+    with Session(engine) as session:
+        statement = select(Brand)
+        if shop_slug:
+            shop = get_shop_by_slug(shop_slug, check_subscription=False)
+            statement = statement.where(Brand.shop_id == shop.id)
+        return session.exec(statement).all()
+
+@app.post("/brands", response_model=Brand)
+def create_brand(brand: Brand, shop_slug: Optional[str] = Query(None), current_user: User = Depends(get_current_user)):
+    print(f"[Backend] Creating brand: name={brand.name}, shop_slug={shop_slug}, user_id={current_user.id}")
+    with Session(engine) as session:
+        shop_id = None
+        if shop_slug:
+            shop = get_shop_by_slug(shop_slug, check_subscription=False)
+            # Verify user owns the shop
+            if shop.owner_id != current_user.id and current_user.role != "platform_admin":
+                raise HTTPException(status_code=403, detail="Not authorized to add brands to this shop")
+            shop_id = shop.id
+        
+        brand.shop_id = shop_id
+        session.add(brand)
+        session.commit()
+        session.refresh(brand)
+        return brand
+
+@app.delete("/brands/{brand_id}")
+def delete_brand(brand_id: int, current_user: User = Depends(get_current_user)):
+    with Session(engine) as session:
+        brand = session.get(Brand, brand_id)
+        if not brand:
+            raise HTTPException(status_code=404, detail="Brand not found")
+            
+        # Check authorization
+        if current_user.role != "platform_admin":
+            # Check if brand belongs to a shop owned by user
+            if not brand.shop_id:
+                raise HTTPException(status_code=403, detail="Not authorized to delete global brands")
+                
+            shop = session.get(Shop, brand.shop_id)
+            if not shop or shop.owner_id != current_user.id:
+                raise HTTPException(status_code=403, detail="Not authorized to delete this brand")
+        
+        session.delete(brand)
+        session.commit()
+        return {"ok": True}
+
+@app.get("/categories", response_model=List[Category])
+def get_categories(shop_slug: Optional[str] = Query(None)):
+    with Session(engine) as session:
+        statement = select(Category)
+        if shop_slug:
+            shop = get_shop_by_slug(shop_slug, check_subscription=False)
+            statement = statement.where(Category.shop_id == shop.id)
+        return session.exec(statement).all()
+
+@app.post("/categories", response_model=Category)
+def create_category(category: Category, shop_slug: Optional[str] = Query(None), current_user: User = Depends(get_current_user)):
+    print(f"[Backend] Creating category: name={category.name}, shop_slug={shop_slug}, user_id={current_user.id}")
+    with Session(engine) as session:
+        shop_id = None
+        if shop_slug:
+            shop = get_shop_by_slug(shop_slug, check_subscription=False)
+            # Verify user owns the shop
+            if shop.owner_id != current_user.id and current_user.role != "platform_admin":
+                raise HTTPException(status_code=403, detail="Not authorized to add categories to this shop")
+            shop_id = shop.id
+        
+        category.shop_id = shop_id
+        session.add(category)
+        session.commit()
+        session.refresh(category)
+        return category
+
+@app.delete("/categories/{category_id}")
+def delete_category(category_id: int, current_user: User = Depends(get_current_user)):
+    with Session(engine) as session:
+        category = session.get(Category, category_id)
+        if not category:
+            raise HTTPException(status_code=404, detail="Category not found")
+            
+        # Check authorization
+        if current_user.role != "platform_admin":
+            # Check if category belongs to a shop owned by user
+            if not category.shop_id:
+                raise HTTPException(status_code=403, detail="Not authorized to delete global categories")
+                
+            shop = session.get(Shop, category.shop_id)
+            if not shop or shop.owner_id != current_user.id:
+                raise HTTPException(status_code=403, detail="Not authorized to delete this category")
+        
+        session.delete(category)
+        session.commit()
+        return {"ok": True}
+
+# --- Order Endpoints ---
+
+@app.post("/orders", response_model=OrderRead)
+def create_order(order_create: OrderCreate, shop_slug: Optional[str] = None, current_user: User = Depends(get_current_user)):
+    with Session(engine) as session:
+        total_price = 0.0
+        order_items = []
+        shop_id = None
+        
+        if shop_slug:
+            shop = get_shop_by_slug(shop_slug)
+            shop_id = shop.id
+        
+        for item in order_create.items:
+            product = session.get(Product, item.product_id)
+            if not product:
+                raise HTTPException(status_code=404, detail=f"Product {item.product_id} not found")
+            
+            # Verify product belongs to shop if shop_slug provided
+            if shop_slug and product.shop_id != shop_id:
+                raise HTTPException(status_code=400, detail=f"Product {item.product_id} does not belong to this shop")
+            
+            # Calculate price with discount
+            discount_amount = (product.price * product.discount / 100) if product.discount > 0 else 0
+            final_price = product.price - discount_amount
+            item_total = final_price * item.quantity
+            total_price += item_total
+            
+            # Store final price (with discount) in order item
+            order_items.append(OrderItem(
+                product_id=item.product_id, 
+                quantity=item.quantity, 
+                price=final_price,  # Store price with discount applied
+                selected_color=item.selected_color,
+                selected_size=item.selected_size
+            ))
+
+        db_order = Order(
+            user_id=current_user.id, 
+            shop_id=shop_id,
+            total_price=total_price, 
+            status="pending",
+            delivery_address=order_create.delivery_address,
+            delivery_city=order_create.delivery_city,
+            delivery_phone=order_create.delivery_phone,
+            recipient_name=order_create.recipient_name,
+            payment_method=order_create.payment_method,
+            notes=order_create.notes
+        )
+        session.add(db_order)
+        session.commit()
+        session.refresh(db_order)
+
+        for order_item in order_items:
+            order_item.order_id = db_order.id
+            session.add(order_item)
+        
+        session.commit()
+        session.refresh(db_order)
+        
+        return OrderRead(
+            id=db_order.id,
+            user_id=db_order.user_id,
+            status=db_order.status,
+            total_price=db_order.total_price,
+            created_at=db_order.created_at,
+            delivery_address=db_order.delivery_address,
+            delivery_city=db_order.delivery_city,
+            delivery_phone=db_order.delivery_phone,
+            recipient_name=db_order.recipient_name,
+            payment_method=db_order.payment_method,
+            notes=db_order.notes
+        )
+
+def process_order_delivery(session: Session, order: Order):
+    """Update stock and sold_count when order is delivered"""
+    items = session.exec(select(OrderItem).where(OrderItem.order_id == order.id)).all()
+    for item in items:
+        product = session.get(Product, item.product_id)
+        if not product:
+            continue
+            
+        # Update sold count
+        product.sold_count += item.quantity
+        
+        # Update stock
+        if product.variants:
+            try:
+                import json
+                variants = json.loads(product.variants)
+                updated = False
+                for variant in variants:
+                    # Check if variant matches selected size and color
+                    size_match = variant.get('size') == item.selected_size
+                    color_match = variant.get('color') == item.selected_color
+                    
+                    if size_match and color_match:
+                        current_stock = variant.get('stock', 0)
+                        variant['stock'] = max(0, current_stock - item.quantity)
+                        updated = True
+                        break
+                
+                if updated:
+                    product.variants = json.dumps(variants)
+                    # Recalculate total stock from variants
+                    product.stock = sum(v.get('stock', 0) for v in variants)
+            except Exception as e:
+                print(f"Error updating product variants stock: {str(e)}")
+                # Fallback to main stock if variant update fails
+                product.stock = max(0, product.stock - item.quantity)
+        else:
+            # Simple stock update
+            product.stock = max(0, product.stock - item.quantity)
+            
+        session.add(product)
+
+@app.get("/orders/me", response_model=List[OrderReadWithItems])
+def get_my_orders(current_user: User = Depends(get_current_user)):
+    with Session(engine) as session:
+        orders = session.exec(select(Order).where(Order.user_id == current_user.id).order_by(Order.created_at.desc())).all()
+        result = []
+        for order in orders:
+            # Fetch items for this order
+            items = session.exec(select(OrderItem).where(OrderItem.order_id == order.id)).all()
+            item_details = []
+            # Fetch shop slug for the items. Since current design binds 1 shop per order:
+            shop_slug = None
+            if order.shop_id:
+                shop = session.get(Shop, order.shop_id)
+                if shop:
+                    shop_slug = shop.slug
+
+            for item in items:
+                product = session.get(Product, item.product_id)
+                item_details.append(OrderItemDetail(
+                    product_id=item.product_id,
+                    quantity=item.quantity,
+                    price=item.price,
+                    product_name=product.name if product else "Unknown Product",
+                    product_image=product.image_url if product else "",
+                    selected_color=item.selected_color,
+                    selected_size=item.selected_size,
+                    shop_slug=shop_slug
+                ))
+            
+            result.append(OrderReadWithItems(
+                id=order.id,
+                user_id=order.user_id,
+                status=order.status,
+                total_price=order.total_price,
+                created_at=order.created_at,
+                items=item_details
+            ))
+        return result
+
+@app.get("/platform/admin/orders", response_model=List[OrderReadWithUser])
+def get_all_orders_platform(current_user: User = Depends(get_current_platform_admin)):
+    """Get all orders - only platform admin"""
+    with Session(engine) as session:
+        orders = session.exec(select(Order).order_by(Order.created_at.desc())).all()
+        result = []
+        for order in orders:
+            user = session.get(User, order.user_id)
+            # Get order items
+            items = session.exec(select(OrderItem).where(OrderItem.order_id == order.id)).all()
+            item_details = []
+            for item in items:
+                product = session.get(Product, item.product_id)
+                item_details.append(OrderItemDetail(
+                    product_id=item.product_id,
+                    quantity=item.quantity,
+                    price=item.price,
+                    product_name=product.name if product else "Unknown",
+                    product_image=product.image_url if product else "",
+                    selected_color=item.selected_color,
+                    selected_size=item.selected_size
+                ))
+            
+            result.append(OrderReadWithUser(
+                id=order.id,
+                user_id=order.user_id,
+                status=order.status,
+                total_price=order.total_price,
+                created_at=order.created_at,
+                delivery_address=order.delivery_address,
+                delivery_city=order.delivery_city,
+                delivery_phone=order.delivery_phone,
+                recipient_name=order.recipient_name,
+                payment_method=order.payment_method,
+                notes=order.notes,
+                user=UserInfo(
+                    id=user.id,
+                    phone=user.phone,
+                    first_name=user.first_name,
+                    last_name=user.last_name
+                ) if user else None,
+                items=item_details
+            ))
+        return result
+
+@app.get("/platform/admin/orders", response_model=List[OrderReadWithUser])
+def get_all_orders(current_user: User = Depends(get_current_admin)):
+    """Get all orders - only admin"""
+    with Session(engine) as session:
+        orders = session.exec(select(Order).order_by(Order.created_at.desc())).all()
+        result = []
+        for order in orders:
+            user = session.get(User, order.user_id)
+            # Get order items
+            items = session.exec(select(OrderItem).where(OrderItem.order_id == order.id)).all()
+            item_details = []
+            for item in items:
+                product = session.get(Product, item.product_id)
+                item_details.append(OrderItemDetail(
+                    product_id=item.product_id,
+                    quantity=item.quantity,
+                    price=item.price,
+                    product_name=product.name if product else "Unknown",
+                    product_image=product.image_url if product else "",
+                    selected_color=item.selected_color,
+                    selected_size=item.selected_size,
+                    shop_slug=shop_slug
+                ))
+            
+            result.append(OrderReadWithUser(
+                id=order.id,
+                user_id=order.user_id,
+                status=order.status,
+                total_price=order.total_price,
+                created_at=order.created_at,
+                delivery_address=order.delivery_address,
+                delivery_city=order.delivery_city,
+                delivery_phone=order.delivery_phone,
+                recipient_name=order.recipient_name,
+                payment_method=order.payment_method,
+                notes=order.notes,
+                user=UserInfo(
+                    id=user.id,
+                    phone=user.phone,
+                    first_name=user.first_name,
+                    last_name=user.last_name
+                ) if user else None,
+                items=item_details
+            ))
+        return result
+
+# --- Admin Endpoints ---
+
+@app.get("/shop/{shop_slug}/admin/stats", response_model=DashboardStats)
+def get_shop_admin_stats(shop_slug: str, current_user: User = Depends(get_current_user)):
+    """Get stats for a specific shop - only owner or platform admin can access"""
+    shop = get_shop_owner_or_admin(shop_slug, current_user)
+    
+    with Session(engine) as session:
+        # Get shop products
+        shop_products = session.exec(select(Product).where(Product.shop_id == shop.id)).all()
+        total_products = len(shop_products)
+        
+        # Get shop orders
+        shop_orders = session.exec(select(Order).where(Order.shop_id == shop.id)).all()
+        total_orders = len(shop_orders)
+        
+        # Get users who made orders in this shop
+        user_ids = set(order.user_id for order in shop_orders)
+        total_users = len(user_ids)
+        
+        # Calculate revenue excluding cancelled orders
+        total_sales = sum(order.total_price for order in shop_orders if order.status != 'cancelled')
+        
+        # Orders by status
+        orders_by_status = OrdersByStatus(
+            pending=sum(1 for o in shop_orders if o.status == 'pending'),
+            processing=sum(1 for o in shop_orders if o.status == 'processing'),
+            shipping=sum(1 for o in shop_orders if o.status == 'shipping'),
+            delivered=sum(1 for o in shop_orders if o.status == 'delivered'),
+            cancelled=sum(1 for o in shop_orders if o.status == 'cancelled')
+        )
+        
+        # Time-based stats
+        now = datetime.utcnow()
+        today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+        week_start = today_start - timedelta(days=now.weekday())
+        month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        
+        today_orders_list = [o for o in shop_orders if o.created_at >= today_start and o.status != 'cancelled']
+        week_orders_list = [o for o in shop_orders if o.created_at >= week_start and o.status != 'cancelled']
+        month_orders_list = [o for o in shop_orders if o.created_at >= month_start and o.status != 'cancelled']
+        
+        today_sales = sum(o.total_price for o in today_orders_list)
+        today_orders_count = len(today_orders_list)
+        
+        week_sales = sum(o.total_price for o in week_orders_list)
+        week_orders_count = len(week_orders_list)
+        
+        month_sales = sum(o.total_price for o in month_orders_list)
+        month_orders_count = len(month_orders_list)
+        
+        return DashboardStats(
+            total_sales=total_sales, 
+            total_orders=total_orders, 
+            total_users=total_users, 
+            total_products=total_products,
+            orders_by_status=orders_by_status,
+            today_sales=today_sales,
+            today_orders=today_orders_count,
+            week_sales=week_sales,
+            week_orders=week_orders_count,
+            month_sales=month_sales,
+            month_orders=month_orders_count
+        )
+
+@app.get("/platform/admin/stats", response_model=DashboardStats)
+def get_platform_admin_stats(current_user: User = Depends(get_current_platform_admin)):
+    """Get platform-wide stats - only platform admin"""
+    with Session(engine) as session:
+        # Get all shops
+        shops = session.exec(select(Shop)).all()
+        total_shops = len(shops)
+        active_shops = len([s for s in shops if s.is_active])
+        
+        # Get all users
+        users = session.exec(select(User)).all()
+        total_users = len(users)
+        
+        # Get all products
+        products = session.exec(select(Product)).all()
+        total_products = len(products)
+        
+        # Get all orders
+        orders = session.exec(select(Order)).all()
+        total_orders = len(orders)
+        
+        # Calculate revenue excluding cancelled orders
+        total_sales = sum(order.total_price for order in orders if order.status != 'cancelled')
+        
+        # Orders by status
+        orders_by_status = OrdersByStatus(
+            pending=sum(1 for o in orders if o.status == 'pending'),
+            processing=sum(1 for o in orders if o.status == 'processing'),
+            shipping=sum(1 for o in orders if o.status == 'shipping'),
+            delivered=sum(1 for o in orders if o.status == 'delivered'),
+            cancelled=sum(1 for o in orders if o.status == 'cancelled')
+        )
+        
+        # Time-based stats
+        now = datetime.utcnow()
+        today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+        week_start = today_start - timedelta(days=now.weekday())
+        month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        
+        today_orders_list = [o for o in orders if o.created_at >= today_start and o.status != 'cancelled']
+        week_orders_list = [o for o in orders if o.created_at >= week_start and o.status != 'cancelled']
+        month_orders_list = [o for o in orders if o.created_at >= month_start and o.status != 'cancelled']
+        
+        today_sales = sum(o.total_price for o in today_orders_list)
+        today_orders_count = len(today_orders_list)
+        
+        week_sales = sum(o.total_price for o in week_orders_list)
+        week_orders_count = len(week_orders_list)
+        
+        month_sales = sum(o.total_price for o in month_orders_list)
+        month_orders_count = len(month_orders_list)
+        
+        return DashboardStats(
+            total_sales=total_sales,
+            total_orders=total_orders, 
+            total_users=total_users, 
+            total_products=total_products,
+            orders_by_status=orders_by_status,
+            today_sales=today_sales,
+            today_orders=today_orders_count,
+            week_sales=week_sales,
+            week_orders=week_orders_count,
+            month_sales=month_sales,
+
+            month_orders=month_orders_count,
+            total_shops=total_shops,
+            active_shops=active_shops
+        )
+
+@app.get("/platform/admin/stats", response_model=DashboardStats)
+def get_admin_stats(current_user: User = Depends(get_current_admin)):
+    with Session(engine) as session:
+        total_users = len(session.exec(select(User)).all())
+        total_products = len(session.exec(select(Product)).all())
+        orders = session.exec(select(Order)).all()
+        total_orders = len(orders)
+        
+        # Calculate revenue excluding cancelled orders
+        total_sales = sum(order.total_price for order in orders if order.status != 'cancelled')
+        
+        # Orders by status
+        orders_by_status = OrdersByStatus(
+            pending=sum(1 for o in orders if o.status == 'pending'),
+            processing=sum(1 for o in orders if o.status == 'processing'),
+            shipping=sum(1 for o in orders if o.status == 'shipping'),
+            delivered=sum(1 for o in orders if o.status == 'delivered'),
+            cancelled=sum(1 for o in orders if o.status == 'cancelled')
+        )
+        
+        # Time-based stats
+        now = datetime.utcnow()
+        today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+        week_start = today_start - timedelta(days=now.weekday())
+        month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        
+        today_orders_list = [o for o in orders if o.created_at >= today_start and o.status != 'cancelled']
+        week_orders_list = [o for o in orders if o.created_at >= week_start and o.status != 'cancelled']
+        month_orders_list = [o for o in orders if o.created_at >= month_start and o.status != 'cancelled']
+        
+        today_sales = sum(o.total_price for o in today_orders_list)
+        today_orders_count = len(today_orders_list)
+        
+        week_sales = sum(o.total_price for o in week_orders_list)
+        week_orders_count = len(week_orders_list)
+        
+        month_sales = sum(o.total_price for o in month_orders_list)
+        month_orders_count = len(month_orders_list)
+        
+        return DashboardStats(
+            total_sales=total_sales, 
+            total_orders=total_orders, 
+            total_users=total_users, 
+            total_products=total_products,
+            orders_by_status=orders_by_status,
+            today_sales=today_sales,
+            today_orders=today_orders_count,
+            week_sales=week_sales,
+            week_orders=week_orders_count,
+            month_sales=month_sales,
+            month_orders=month_orders_count
+        )
+
+@app.get("/platform/admin/users", response_model=List[UserRead])
+def get_all_users_platform(current_user: User = Depends(get_current_platform_admin)):
+    """Get all users - only platform admin"""
+    with Session(engine) as session:
+        return session.exec(select(User)).all()
+
+@app.get("/platform/admin/users", response_model=List[UserRead])
+def get_all_users(current_user: User = Depends(get_current_admin)):
+    with Session(engine) as session:
+        return session.exec(select(User)).all()
+
+# --- Subscription Plans Endpoints ---
+
+@app.get("/platform/admin/subscription-plans", response_model=List[SubscriptionPlanRead])
+def get_all_subscription_plans(current_user: User = Depends(get_current_platform_admin)):
+    """Get all subscription plans - only platform admin"""
+    import json
+    with Session(engine) as session:
+        plans = session.exec(select(SubscriptionPlan).order_by(SubscriptionPlan.display_order, SubscriptionPlan.id)).all()
+        result = []
+        for plan in plans:
+            features_list = None
+            if plan.features:
+                try:
+                    features_list = json.loads(plan.features)
+                except:
+                    features_list = []
+            result.append(SubscriptionPlanRead(
+                id=plan.id,
+                name=plan.name,
+                slug=plan.slug,
+                price=plan.price,
+                period_days=plan.period_days,
+                description=plan.description,
+                features=plan.features,
+                features_list=features_list,
+                is_active=plan.is_active,
+                is_trial=plan.is_trial,
+                display_order=plan.display_order,
+                max_products=plan.max_products,
+                created_at=plan.created_at
+            ))
+        return result
+
+@app.get("/subscription-plans", response_model=List[SubscriptionPlanRead])
+def get_active_subscription_plans():
+    """Get active subscription plans - public endpoint"""
+    import json
+    with Session(engine) as session:
+        plans = session.exec(
+            select(SubscriptionPlan)
+            .where(SubscriptionPlan.is_active == True)
+            .order_by(SubscriptionPlan.display_order, SubscriptionPlan.id)
+        ).all()
+        result = []
+        for plan in plans:
+            features_list = None
+            if plan.features:
+                try:
+                    features_list = json.loads(plan.features)
+                except:
+                    features_list = []
+            result.append(SubscriptionPlanRead(
+                id=plan.id,
+                name=plan.name,
+                slug=plan.slug,
+                price=plan.price,
+                period_days=plan.period_days,
+                description=plan.description,
+                features=plan.features,
+                features_list=features_list,
+                is_active=plan.is_active,
+                is_trial=plan.is_trial,
+                display_order=plan.display_order,
+                max_products=plan.max_products,
+                created_at=plan.created_at
+            ))
+        return result
+
+@app.post("/platform/admin/subscription-plans", response_model=SubscriptionPlanRead)
+def create_subscription_plan(plan_data: SubscriptionPlanCreate, current_user: User = Depends(get_current_platform_admin)):
+    """Create a new subscription plan - only platform admin"""
+    import json
+    with Session(engine) as session:
+        # Check if slug already exists
+        existing = session.exec(select(SubscriptionPlan).where(SubscriptionPlan.slug == plan_data.slug)).first()
+        if existing:
+            raise HTTPException(status_code=400, detail="Plan with this slug already exists")
+        
+        features_json = None
+        if plan_data.features:
+            features_json = json.dumps(plan_data.features)
+        
+        plan = SubscriptionPlan(
+            name=plan_data.name,
+            slug=plan_data.slug,
+            price=plan_data.price,
+            period_days=plan_data.period_days,
+            description=plan_data.description,
+            features=features_json,
+            is_active=plan_data.is_active,
+            is_trial=plan_data.is_trial,
+            display_order=plan_data.display_order,
+            max_products=plan_data.max_products
+        )
+        session.add(plan)
+        session.commit()
+        session.refresh(plan)
+        
+        features_list = None
+        if plan.features:
+            try:
+                features_list = json.loads(plan.features)
+            except:
+                features_list = []
+        
+        return SubscriptionPlanRead(
+            id=plan.id,
+            name=plan.name,
+            slug=plan.slug,
+            price=plan.price,
+            period_days=plan.period_days,
+            description=plan.description,
+            features=plan.features,
+            features_list=features_list,
+            is_active=plan.is_active,
+            is_trial=plan.is_trial,
+            display_order=plan.display_order,
+            max_products=plan.max_products,
+            created_at=plan.created_at
+        )
+
+@app.put("/platform/admin/subscription-plans/{plan_id}", response_model=SubscriptionPlanRead)
+def update_subscription_plan(plan_id: int, plan_data: SubscriptionPlanUpdate, current_user: User = Depends(get_current_platform_admin)):
+    """Update a subscription plan - only platform admin"""
+    import json
+    with Session(engine) as session:
+        plan = session.get(SubscriptionPlan, plan_id)
+        if not plan:
+            raise HTTPException(status_code=404, detail="Subscription plan not found")
+        
+        # Check slug uniqueness if changed
+        if plan_data.slug and plan_data.slug != plan.slug:
+            existing = session.exec(select(SubscriptionPlan).where(SubscriptionPlan.slug == plan_data.slug)).first()
+            if existing:
+                raise HTTPException(status_code=400, detail="Plan with this slug already exists")
+        
+        if plan_data.name is not None:
+            plan.name = plan_data.name
+        if plan_data.slug is not None:
+            plan.slug = plan_data.slug
+        if plan_data.price is not None:
+            plan.price = plan_data.price
+        if plan_data.period_days is not None:
+            plan.period_days = plan_data.period_days
+        if plan_data.description is not None:
+            plan.description = plan_data.description
+        if plan_data.features is not None:
+            plan.features = json.dumps(plan_data.features)
+        if plan_data.is_active is not None:
+            plan.is_active = plan_data.is_active
+        if plan_data.is_trial is not None:
+            plan.is_trial = plan_data.is_trial
+        if plan_data.display_order is not None:
+            plan.display_order = plan_data.display_order
+        if plan_data.max_products is not None:
+            plan.max_products = plan_data.max_products
+        
+        session.add(plan)
+        session.commit()
+        session.refresh(plan)
+        
+        features_list = None
+        if plan.features:
+            try:
+                features_list = json.loads(plan.features)
+            except:
+                features_list = []
+        
+        return SubscriptionPlanRead(
+            id=plan.id,
+            name=plan.name,
+            slug=plan.slug,
+            price=plan.price,
+            period_days=plan.period_days,
+            description=plan.description,
+            features=plan.features,
+            features_list=features_list,
+            is_active=plan.is_active,
+            is_trial=plan.is_trial,
+            display_order=plan.display_order,
+            max_products=plan.max_products,
+            created_at=plan.created_at
+        )
+
+@app.delete("/platform/admin/subscription-plans/{plan_id}")
+def delete_subscription_plan(plan_id: int, current_user: User = Depends(get_current_platform_admin)):
+    """Delete a subscription plan - only platform admin"""
+    with Session(engine) as session:
+        plan = session.get(SubscriptionPlan, plan_id)
+        if not plan:
+            raise HTTPException(status_code=404, detail="Subscription plan not found")
+        
+        session.delete(plan)
+        session.commit()
+        return {"message": "Subscription plan deleted successfully"}
+
+# --- Offer Endpoints ---
+
+@app.get("/offers", response_model=List[OfferRead])
+def get_active_offers():
+    """Get active offers - public endpoint"""
+    with Session(engine) as session:
+        offers = session.exec(
+            select(Offer)
+            .where(Offer.is_active == True)
+            .order_by(Offer.display_order, Offer.id)
+        ).all()
+        return offers
+
+@app.get("/platform/admin/offers", response_model=List[OfferRead])
+def get_all_offers(current_user: User = Depends(get_current_platform_admin)):
+    """Get all offers - only platform admin"""
+    with Session(engine) as session:
+        offers = session.exec(
+            select(Offer)
+            .order_by(Offer.display_order, Offer.id)
+        ).all()
+        return offers
+
+@app.post("/platform/admin/offers", response_model=OfferRead)
+def create_offer(offer_data: OfferCreate, current_user: User = Depends(get_current_platform_admin)):
+    """Create a new offer - only platform admin"""
+    with Session(engine) as session:
+        offer = Offer(**offer_data.dict())
+        session.add(offer)
+        session.commit()
+        session.refresh(offer)
+        return offer
+
+@app.put("/platform/admin/offers/{offer_id}", response_model=OfferRead)
+def update_offer(offer_id: int, offer_data: OfferUpdate, current_user: User = Depends(get_current_platform_admin)):
+    """Update an offer - only platform admin"""
+    with Session(engine) as session:
+        offer = session.get(Offer, offer_id)
+        if not offer:
+            raise HTTPException(status_code=404, detail="Offer not found")
+        
+        if offer_data.title is not None:
+            offer.title = offer_data.title
+        if offer_data.description is not None:
+            offer.description = offer_data.description
+        if offer_data.price is not None:
+            offer.price = offer_data.price
+        if offer_data.price_text is not None:
+            offer.price_text = offer_data.price_text
+        if offer_data.contact_text is not None:
+            offer.contact_text = offer_data.contact_text
+        if offer_data.contact_email is not None:
+            offer.contact_email = offer_data.contact_email
+        if offer_data.contact_phone is not None:
+            offer.contact_phone = offer_data.contact_phone
+        if offer_data.is_active is not None:
+            offer.is_active = offer_data.is_active
+        if offer_data.display_order is not None:
+            offer.display_order = offer_data.display_order
+        
+        session.add(offer)
+        session.commit()
+        session.refresh(offer)
+        return offer
+
+@app.delete("/platform/admin/offers/{offer_id}")
+def delete_offer(offer_id: int, current_user: User = Depends(get_current_platform_admin)):
+    """Delete an offer - only platform admin"""
+    with Session(engine) as session:
+        offer = session.get(Offer, offer_id)
+        if not offer:
+            raise HTTPException(status_code=404, detail="Offer not found")
+        
+        session.delete(offer)
+        session.commit()
+        return {"message": "Offer deleted successfully"}
+
+# --- Subscription Requests Endpoints ---
+
+@app.post("/shop/{shop_slug}/subscription/request", response_model=SubscriptionRequestRead)
+def create_subscription_request(shop_slug: str, request_data: SubscriptionRequestCreate, current_user: User = Depends(get_current_user)):
+    """Create a subscription request - only shop owner"""
+    shop = get_shop_owner_or_admin(shop_slug, current_user)
+    
+    with Session(engine) as session:
+        # Проверяем, что план существует
+        plan = session.get(SubscriptionPlan, request_data.plan_id)
+        if not plan:
+            raise HTTPException(status_code=404, detail="Subscription plan not found")
+        
+        # Проверяем, что длительность валидна
+        if request_data.duration_months not in [1, 3, 6, 12]:
+            raise HTTPException(status_code=400, detail="Duration must be 1, 3, 6, or 12 months")
+        
+        # Проверяем, нет ли уже активного запроса
+        existing_request = session.exec(
+            select(SubscriptionRequest)
+            .where(SubscriptionRequest.shop_id == shop.id)
+            .where(SubscriptionRequest.status == "pending")
+        ).first()
+        
+        if existing_request:
+            raise HTTPException(status_code=400, detail="У вас уже есть активный запрос на подписку. Дождитесь ответа администратора.")
+        
+        # Создаем запрос
+        subscription_request = SubscriptionRequest(
+            shop_id=shop.id,
+            plan_id=request_data.plan_id,
+            duration_months=request_data.duration_months,
+            status="pending"
+        )
+        session.add(subscription_request)
+        session.commit()
+        session.refresh(subscription_request)
+        
+        return SubscriptionRequestRead(
+            id=subscription_request.id,
+            shop_id=subscription_request.shop_id,
+            plan_id=subscription_request.plan_id,
+            plan_name=plan.name,
+            duration_months=subscription_request.duration_months,
+            status=subscription_request.status,
+            requested_at=subscription_request.requested_at,
+            approved_at=subscription_request.approved_at,
+            notes=subscription_request.notes
+        )
+
+@app.get("/shop/{shop_slug}/subscription/request", response_model=Optional[SubscriptionRequestRead])
+def get_subscription_request(shop_slug: str, current_user: User = Depends(get_current_user)):
+    """Get current subscription request for shop - only shop owner"""
+    shop = get_shop_owner_or_admin(shop_slug, current_user)
+    
+    with Session(engine) as session:
+        # Получаем последний запрос (pending или недавно обработанный)
+        request = session.exec(
+            select(SubscriptionRequest)
+            .where(SubscriptionRequest.shop_id == shop.id)
+            .order_by(SubscriptionRequest.requested_at.desc())
+        ).first()
+        
+        if not request:
+            return None
+        
+        plan = session.get(SubscriptionPlan, request.plan_id)
+        
+        shop = session.get(Shop, request.shop_id)
+        return SubscriptionRequestRead(
+            id=request.id,
+            shop_id=request.shop_id,
+            plan_id=request.plan_id,
+            plan_name=plan.name if plan else None,
+            duration_months=request.duration_months,
+            status=request.status,
+            requested_at=request.requested_at,
+            approved_at=request.approved_at,
+            notes=request.notes,
+            shop_name=shop.name if shop else None,
+            shop_slug=shop.slug if shop else None
+        )
+
+@app.get("/shop/{shop_slug}/admin/orders", response_model=List[OrderReadWithUser])
+def get_shop_orders(shop_slug: str, current_user: User = Depends(get_current_user)):
+    """Get orders for a specific shop - only owner or platform admin can access"""
+    shop = get_shop_owner_or_admin(shop_slug, current_user)
+    
+    with Session(engine) as session:
+        orders = session.exec(select(Order).where(Order.shop_id == shop.id).order_by(Order.created_at.desc())).all()
+        result = []
+        for order in orders:
+            user = session.get(User, order.user_id)
+            # Get order items
+            items = session.exec(select(OrderItem).where(OrderItem.order_id == order.id)).all()
+            item_details = []
+            for item in items:
+                product = session.get(Product, item.product_id)
+                item_details.append(OrderItemDetail(
+                    product_id=item.product_id,
+                    quantity=item.quantity,
+                    price=item.price,
+                    product_name=product.name if product else "Unknown",
+                    product_image=product.image_url if product else "",
+                    selected_color=item.selected_color,
+                    selected_size=item.selected_size
+                ))
+            
+            result.append(OrderReadWithUser(
+                id=order.id,
+                user_id=order.user_id,
+                status=order.status,
+                total_price=order.total_price,
+                created_at=order.created_at,
+                delivery_address=order.delivery_address,
+                delivery_city=order.delivery_city,
+                delivery_phone=order.delivery_phone,
+                recipient_name=order.recipient_name,
+                payment_method=order.payment_method,
+                notes=order.notes,
+                user=UserInfo(
+                    id=user.id,
+                    phone=user.phone,
+                    first_name=user.first_name,
+                    last_name=user.last_name
+                ) if user else None,
+                items=item_details
+            ))
+        return result
+
+@app.put("/shop/{shop_slug}/admin/orders/{order_id}", response_model=OrderRead)
+def update_shop_order_status(shop_slug: str, order_id: int, status_update: OrderStatusUpdate, current_user: User = Depends(get_current_user)):
+    """Update order status for a specific shop - only owner or platform admin can access"""
+    shop = get_shop_owner_or_admin(shop_slug, current_user)
+    
+    with Session(engine) as session:
+        order = session.get(Order, order_id)
+        if not order:
+            raise HTTPException(status_code=404, detail="Order not found")
+        if order.shop_id != shop.id:
+            raise HTTPException(status_code=403, detail="Order does not belong to this shop")
+        
+        old_status = order.status
+        order.status = status_update.status
+        
+        # If status changed to delivered, update stock and sold_count
+        if order.status == "delivered" and old_status != "delivered":
+            process_order_delivery(session, order)
+            
+        session.add(order)
+        session.commit()
+        session.refresh(order)
+        return order
+
+# --- Subscription Requests Management for Platform Admin ---
+@app.get("/platform/admin/subscription-requests", response_model=List[SubscriptionRequestRead])
+def get_all_subscription_requests(
+    status: Optional[str] = None,
+    current_user: User = Depends(get_current_platform_admin)
+):
+    """Get all subscription requests - platform admin only"""
+    with Session(engine) as session:
+        query = select(SubscriptionRequest)
+        if status:
+            query = query.where(SubscriptionRequest.status == status)
+        requests = session.exec(query.order_by(SubscriptionRequest.requested_at.desc())).all()
+        
+        result = []
+        for req in requests:
+            plan = session.get(SubscriptionPlan, req.plan_id)
+            shop = session.get(Shop, req.shop_id)
+            result.append(SubscriptionRequestRead(
+                id=req.id,
+                shop_id=req.shop_id,
+                plan_id=req.plan_id,
+                plan_name=plan.name if plan else None,
+                duration_months=req.duration_months,
+                status=req.status,
+                requested_at=req.requested_at,
+                approved_at=req.approved_at,
+                notes=req.notes,
+                shop_name=shop.name if shop else None,
+                shop_slug=shop.slug if shop else None
+            ))
+        return result
+
+@app.put("/platform/admin/subscription-requests/{request_id}", response_model=SubscriptionRequestRead)
+def update_subscription_request(
+    request_id: int,
+    update_data: SubscriptionRequestUpdate,
+    current_user: User = Depends(get_current_platform_admin)
+):
+    """Approve or reject subscription request - platform admin only"""
+    with Session(engine) as session:
+        request = session.get(SubscriptionRequest, request_id)
+        if not request:
+            raise HTTPException(status_code=404, detail="Subscription request not found")
+        
+        if update_data.status not in ["approved", "rejected"]:
+            raise HTTPException(status_code=400, detail="Status must be 'approved' or 'rejected'")
+        
+        request.status = update_data.status
+        request.approved_at = datetime.utcnow() if update_data.status == "approved" else None
+        if update_data.notes:
+            request.notes = update_data.notes
+        
+        # If approved, update shop subscription
+        if update_data.status == "approved":
+            shop = session.get(Shop, request.shop_id)
+            plan = session.get(SubscriptionPlan, request.plan_id)
+            if shop and plan:
+                shop.subscription_status = "active"
+                # Calculate expiration date
+                from datetime import timedelta
+                expires_at = datetime.utcnow() + timedelta(days=30 * request.duration_months)
+                shop.subscription_expires_at = expires_at
+                session.add(shop)
+        
+        session.add(request)
+        session.commit()
+        session.refresh(request)
+        
+        plan = session.get(SubscriptionPlan, request.plan_id)
+        shop = session.get(Shop, request.shop_id)
+        return SubscriptionRequestRead(
+            id=request.id,
+            shop_id=request.shop_id,
+            plan_id=request.plan_id,
+            plan_name=plan.name if plan else None,
+            duration_months=request.duration_months,
+            status=request.status,
+            requested_at=request.requested_at,
+            approved_at=request.approved_at,
+            notes=request.notes,
+            shop_name=shop.name if shop else None,
+            shop_slug=shop.slug if shop else None
+        )
+
+@app.put("/admin/orders/{order_id}", response_model=OrderRead)
+def update_order_status(order_id: int, status_update: OrderStatusUpdate, current_user: User = Depends(get_current_admin)):
+    """Update any order - only platform admin"""
+    with Session(engine) as session:
+        order = session.get(Order, order_id)
+        if not order:
+            raise HTTPException(status_code=404, detail="Order not found")
+            
+        old_status = order.status
+        order.status = status_update.status
+        
+        # If status changed to delivered, update stock and sold_count
+        if order.status == "delivered" and old_status != "delivered":
+            process_order_delivery(session, order)
+            
+        session.add(order)
+        session.commit()
+        session.refresh(order)
+        return order
+
+# --- Banner Endpoints ---
+
+@app.get("/banner", response_model=Banner)
+def get_banner(shop_slug: Optional[str] = Query(None)):
+    with Session(engine) as session:
+        # Default banner data
+        default_banner = Banner(
+            id=0,
+            badge_text="NEW ARRIVAL",
+            title="Ray-Ban Meta Smart Glasses",
+            subtitle="Starting from $299",
+            button_text="Shop Now",
+            button_link="/products",
+            image_url="https://images.unsplash.com/photo-1572635196237-14b3f281503f?q=80&w=800&auto=format&fit=crop",
+            is_active=True,
+            shop_id=None
+        )
+
+        if shop_slug:
+            shop = session.exec(select(Shop).where(Shop.slug == shop_slug)).first()
+            if not shop:
+                # If shop not found, return default (or could raise 404)
+                return default_banner
+                
+            banner = session.exec(select(Banner).where(Banner.shop_id == shop.id)).first()
+            if not banner:
+                # Return default but don't save it yet
+                return default_banner
+            return banner
+        else:
+            # Global banner? Current logic uses shop_id=None for global
+            banner = session.exec(select(Banner).where(Banner.shop_id == None)).first()
+            return banner or default_banner
+
+@app.put("/banner", response_model=Banner)
+def update_banner(banner_update: BannerUpdate, shop_slug: Optional[str] = Query(None), current_user: User = Depends(get_current_user)):
+    with Session(engine) as session:
+        shop_id = None
+        if shop_slug:
+            shop = get_shop_owner_or_admin(shop_slug, current_user, check_subscription=False)
+            shop_id = shop.id
+        else:
+            # Only platform admin can update global banner
+            if current_user.role not in ["admin", "platform_admin"]:
+                raise HTTPException(status_code=403, detail="Not authorized")
+        
+        statement = select(Banner).where(Banner.shop_id == shop_id)
+        banner = session.exec(statement).first()
+        
+        if not banner:
+            banner = Banner(shop_id=shop_id)
+            session.add(banner)
+        
+        # Update fields
+        if banner_update.badge_text is not None:
+            banner.badge_text = banner_update.badge_text
+        if banner_update.title is not None:
+            banner.title = banner_update.title
+        if banner_update.subtitle is not None:
+            banner.subtitle = banner_update.subtitle
+        if banner_update.button_text is not None:
+            banner.button_text = banner_update.button_text
+        if banner_update.button_link is not None:
+            banner.button_link = banner_update.button_link
+        if banner_update.image_url is not None:
+            banner.image_url = banner_update.image_url
+        if banner_update.is_active is not None:
+            banner.is_active = banner_update.is_active
+            
+        session.add(banner)
+        session.commit()
+        session.refresh(banner)
+        return banner
+
+
+
+

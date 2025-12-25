@@ -1,0 +1,51 @@
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
+from typing import List
+from app.db.session import get_db
+from app.core.dependencies import get_current_user, get_current_platform_admin
+from .service import ShopService
+from .schemas import ShopCreate, ShopRead, ShopReadWithOwner, ShopUpdate, DashboardStats
+
+router = APIRouter()
+shop_service = ShopService()
+
+@router.post("/platform/shops/register", response_model=ShopRead)
+def register_shop(shop: ShopCreate, db: Session = Depends(get_db), current_user = Depends(get_current_user)):
+    return shop_service.register_shop(db, shop, current_user.id)
+
+@router.get("/platform/shops/me", response_model=List[ShopRead])
+def get_my_shops(db: Session = Depends(get_db), current_user = Depends(get_current_user)):
+    shop = shop_service.get_my_shops(db, current_user.id)
+    return [shop] if shop else []
+
+@router.get("/platform/shops", response_model=List[ShopReadWithOwner])
+def get_all_shops(db: Session = Depends(get_db), admin = Depends(get_current_platform_admin)):
+    return shop_service.get_all_shops_for_admin(db)
+
+@router.get("/platform/shops/{shop_slug}", response_model=ShopRead)
+def get_shop(shop_slug: str, db: Session = Depends(get_db)):
+    return shop_service.get_shop_by_slug(db, shop_slug, check_active=True)
+
+@router.put("/shop/{shop_slug}/admin/info", response_model=ShopRead)
+def update_shop_settings(
+    shop_slug: str, 
+    shop_in: ShopUpdate, 
+    db: Session = Depends(get_db), 
+    current_user = Depends(get_current_user)
+):
+    return shop_service.update_shop(db, shop_slug, shop_in, current_user)
+
+@router.get("/shop/{shop_slug}/admin/stats", response_model=DashboardStats)
+def get_shop_admin_stats(
+    shop_slug: str, 
+    db: Session = Depends(get_db), 
+    current_user = Depends(get_current_user)
+):
+    return shop_service.get_shop_stats(db, shop_slug, current_user)
+
+@router.get("/platform/admin/stats", response_model=DashboardStats)
+def get_platform_admin_stats(
+    db: Session = Depends(get_db), 
+    current_user = Depends(get_current_platform_admin)
+):
+    return shop_service.get_platform_stats(db)

@@ -13,15 +13,15 @@
       </div> -->
       
       <!-- Hero Section -->
-      <div v-if="banner" class="hero-card mb-8">
+      <div v-if="banner && Array.isArray(banner) && banner.length > 0" class="hero-card mb-8">
         <div class="hero-content">
-          <div class="badge">{{ banner.badge_text }}</div>
-          <h1 class="hero-title" v-html="banner.title.replace(/\\n/g, '<br/>')"></h1>
-          <p class="hero-price">{{ banner.subtitle }}</p>
-          <NuxtLink :to="`/${shopSlug}/products`" class="hero-btn">{{ banner.button_text }}</NuxtLink>
+          <div class="badge">{{ banner[0].badge_text }}</div>
+          <h1 class="hero-title" v-html="banner[0]?.title ? banner[0].title.replace(/\\n/g, '<br/>') : ''"></h1>
+          <p class="hero-price">{{ banner[0]?.subtitle }}</p>
+          <NuxtLink :to="`/${shopSlug}/products`" class="hero-btn">{{ banner[0].button_text }}</NuxtLink>
         </div>
         <div class="hero-image">
-          <img :src="banner.image_url" alt="Banner" />
+          <img :src="banner[0].image_url" alt="Banner" />
         </div>
       </div>
 

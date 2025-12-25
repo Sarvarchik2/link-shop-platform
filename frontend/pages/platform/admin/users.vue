@@ -395,7 +395,7 @@ const { data: users, pending, error, refresh } = await useFetch('http://localhos
 })
 
 // Fetch shops and orders for stats
-const { data: shops } = await useFetch('http://localhost:8000/platform/admin/shops', {
+const { data: shops } = await useFetch('http://localhost:8000/platform/shops', {
   server: false,
   lazy: true,
   headers: computed(() => ({

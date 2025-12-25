@@ -343,7 +343,8 @@ const { data: shop } = await useFetch(`http://localhost:8000/platform/shops/${sh
   lazy: true,
   headers: computed(() => ({
     'Authorization': token.value ? `Bearer ${token.value}` : ''
-  }))
+  })),
+  watch: [token]
 })
 
 const { data: stats, pending, refresh, error } = await useFetch(`http://localhost:8000/shop/${shopSlug}/admin/stats`, {

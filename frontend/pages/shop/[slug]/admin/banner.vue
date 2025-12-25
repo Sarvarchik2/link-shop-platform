@@ -213,8 +213,9 @@ const { data: banner } = await useFetch(`http://localhost:8000/banner?shop_slug=
   }
 })
 
-watch(banner, (newBanner) => {
-  if (newBanner) {
+watch(banner, (newBannerArray) => {
+  if (newBannerArray && newBannerArray.length > 0) {
+    const newBanner = newBannerArray[0]
     form.value = {
       badge_text: newBanner.badge_text || '',
       title: newBanner.title || '',

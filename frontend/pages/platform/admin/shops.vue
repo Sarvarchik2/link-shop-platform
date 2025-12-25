@@ -489,7 +489,7 @@ const currentRoute = computed(() => {
   return 'dashboard'
 })
 
-const { data: shops, pending, refresh, error } = await useFetch('http://localhost:8000/platform/admin/shops', {
+const { data: shops, pending, refresh, error } = await useFetch('http://localhost:8000/platform/shops', {
   server: false,
   lazy: true,
   watch: [token],
