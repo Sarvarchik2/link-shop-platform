@@ -575,7 +575,7 @@ const getStatusPercent = (status) => {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 32px;
+  margin-bottom: 40px;
 }
 
 .page-title {
@@ -708,9 +708,10 @@ const getStatusPercent = (status) => {
 
 .stat-card {
   background: white;
-  border-radius: 20px;
+  border-radius: 24px;
   padding: 24px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 10px 40px rgba(0,0,0,0.02);
+  border: 1px solid #f1f1f1;
   transition: all 0.3s;
 }
 
@@ -791,9 +792,10 @@ const getStatusPercent = (status) => {
 
 .section {
   background: white;
-  border-radius: 20px;
+  border-radius: 24px;
   padding: 28px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 10px 40px rgba(0,0,0,0.02);
+  border: 1px solid #f1f1f1;
 }
 
 .section-title {

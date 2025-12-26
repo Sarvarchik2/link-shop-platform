@@ -648,7 +648,7 @@ textarea.form-input {
 @media (max-width: 1024px) {
   .admin-main {
     margin-left: 0;
-    padding: 20px;
+    padding: 0px;
     padding-top: 84px;
   }
   

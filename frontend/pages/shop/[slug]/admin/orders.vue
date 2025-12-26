@@ -309,13 +309,13 @@ const updateStatus = async (id, newStatus) => {
   flex: 1;
   margin-left: 280px;
   min-height: 100vh;
+  padding: 40px;
   background: #fafafa;
 }
 
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 40px;
 }
 
 .page-header {
@@ -433,9 +433,10 @@ const updateStatus = async (id, newStatus) => {
 
 .order-card {
   background: white;
-  border-radius: 16px;
+  border-radius: 20px;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 10px 40px rgba(0,0,0,0.02);
+  border: 1px solid #f1f1f1;
 }
 
 .order-header {

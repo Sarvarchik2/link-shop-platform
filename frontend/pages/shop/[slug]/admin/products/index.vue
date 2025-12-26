@@ -201,20 +201,20 @@ const deleteProduct = async (id) => {
   flex: 1;
   margin-left: 280px;
   min-height: 100vh;
+  padding: 40px;
   background: #fafafa;
 }
 
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 40px;
 }
 
 .page-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 32px;
+  margin-bottom: 40px;
 }
 
 .page-title {
@@ -250,12 +250,12 @@ const deleteProduct = async (id) => {
 }
 
 .btn-primary {
-  background: white;
-  color: #111;
+  background: #111;
+  color: white;
 }
 
 .btn-primary:hover {
-  background: #F3F4F6;
+  background: #000;
   transform: translateY(-1px);
 }
 
@@ -300,11 +300,11 @@ const deleteProduct = async (id) => {
 
 .product-card {
   background: white;
-  border-radius: 16px;
+  border-radius: 24px;
   overflow: hidden;
   transition: all 0.3s;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-  border: 1px solid #f0f0f0;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 10px 40px rgba(0,0,0,0.02);
+  border: 1px solid #f1f1f1;
 }
 
 .product-card:hover {
@@ -327,6 +327,7 @@ const deleteProduct = async (id) => {
   height: 100%;
   object-fit: contain;
   mix-blend-mode: multiply;
+  border-radius: 10px;
 }
 
 .product-actions {
@@ -477,10 +478,19 @@ const deleteProduct = async (id) => {
   }
 
   .page-header {
-    padding: 12px 16px;
-    margin-bottom: 16px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
     background: white;
     border-bottom: 1px solid #eee;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .btn-primary {
+    width: 100%;
+    justify-content: center;
+    padding: 14px;
+    border-radius: 12px;
   }
   
   .products-grid {

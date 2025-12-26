@@ -183,24 +183,24 @@
 }
   
   /* Main Content */
-  .admin-main {
+.admin-main {
   flex: 1;
   margin-left: 280px;
   min-height: 100vh;
+  padding: 40px;
   background: #fafafa;
 }
 
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 40px;
 }
 
 .page-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 32px;
+  margin-bottom: 40px;
 }
 
 .page-title {
@@ -236,12 +236,12 @@
   }
   
   .btn-primary {
-    background: white;
-    color: #111;
+    background: #111;
+    color: white;
   }
   
   .btn-primary:hover {
-    background: #F3F4F6;
+    background: #000;
     transform: translateY(-1px);
   }
   
@@ -262,11 +262,11 @@
   
   .brand-card {
     background: white;
-    border-radius: 20px;
+    border-radius: 24px;
     padding: 32px 24px;
     transition: all 0.3s;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-    border: 1px solid #f0f0f0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 10px 40px rgba(0,0,0,0.02);
+    border: 1px solid #f1f1f1;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -329,36 +329,87 @@
     color: white;
   }
   
-  @media (max-width: 1024px) {
-    .admin-main {
-      margin-left: 0;
-      padding-top: 60px;
-    }
-    
-    .mobile-header {
-      display: flex;
-    }
+@media (max-width: 1024px) {
+  .admin-main {
+    margin-left: 0;
+    padding: 64px 0 0 0;
+    width: 100%;
+    min-width: 0;
   }
   
-  @media (max-width: 768px) {
-     .admin-content {
-    padding: 10px;
+  .container {
+    padding: 0;
+  }
+
+  .page-header {
+    background: white;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
+  }
+
+  .page-title, 
+  .page-subtitle {
+    display: none;
+  }
+
+  .mobile-header {
+    display: flex;
+  }
+}
+  
+@media (max-width: 768px) {
+  .page-header > div:first-child {
+    display: none;
+  }
+  
+  .page-header {
+    background: white;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .btn-primary {
+    width: 100%;
+    justify-content: center;
+    padding: 14px;
+    border-radius: 12px;
+  }
+
+  .admin-content {
+    padding: 0 20px 40px 20px;
   }
     
-    .brands-grid {
-      grid-template-columns: repeat(2, 1fr);
-      gap: 16px;
-    }
-    
-    .brand-card {
-      padding: 24px 16px;
-    }
-    
-    .brand-logo-wrapper {
-      width: 100px;
-      height: 100px;
-    }
+  .brands-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
   }
+  
+  .brand-card {
+    padding: 24px 12px;
+    border-radius: 20px;
+  }
+  
+  .brand-logo-wrapper {
+    width: 70px;
+    height: 70px;
+    margin-bottom: 12px;
+    padding: 12px;
+  }
+
+  .brand-name {
+    font-size: 0.9rem;
+    margin-bottom: 12px;
+  }
+
+  .btn-text {
+    font-size: 0.8rem;
+  }
+}
   
   @media (min-width: 1200px) {
     .brands-grid {

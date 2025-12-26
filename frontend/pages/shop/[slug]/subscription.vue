@@ -702,11 +702,11 @@ const getStatusClass = (status) => {
 /* Current Subscription */
 .current-subscription-card {
   background: white;
-  border-radius: 20px;
-  padding: 32px;
+  border-radius: 24px;
+  padding: 40px;
   margin-bottom: 48px;
   border: 1px solid #f1f1f1;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 10px 40px rgba(0,0,0,0.02);
 }
 
 .card-header-row {
@@ -875,9 +875,10 @@ const getStatusClass = (status) => {
 
 .plan-card {
   background: white;
-  border-radius: 20px;
-  padding: 32px;
-  border: 1px solid #e5e7eb;
+  border-radius: 24px;
+  padding: 40px;
+  border: 1px solid #f1f1f1;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 10px 40px rgba(0,0,0,0.02);
   position: relative;
   display: flex;
   flex-direction: column;
@@ -1104,10 +1105,12 @@ const getStatusClass = (status) => {
 .btn-secondary { background: white; border: 1px solid #e5e7eb; color: #111; padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; }
 .btn-primary { background: #111; color: white; border: none; padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; }
 .btn-danger { background: #EF4444; color: white; border: none; padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; }
-
+.mobile-header{
+  display: none;
+}
 /* Mobile */
 @media (max-width: 1024px) {
-  .admin-main { margin-left: 0; padding: 20px; padding-top: 84px; }
+  .admin-main { margin-left: 0; padding: 0px; padding-top: 84px; }
   
   .mobile-header {
     display: flex;

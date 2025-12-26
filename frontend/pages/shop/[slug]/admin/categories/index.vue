@@ -185,20 +185,20 @@ const deleteCategory = async (id) => {
   flex: 1;
   margin-left: 280px;
   min-height: 100vh;
+  padding: 40px;
   background: #fafafa;
 }
 
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 40px;
 }
 
 .page-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 32px;
+  margin-bottom: 40px;
 }
 
 .page-title {
@@ -234,12 +234,12 @@ const deleteCategory = async (id) => {
 }
 
 .btn-primary {
-  background: white;
-  color: #111;
+  background: #111;
+  color: white;
 }
 
 .btn-primary:hover {
-  background: #F3F4F6;
+  background: #000;
   transform: translateY(-1px);
 }
 
@@ -260,11 +260,11 @@ const deleteCategory = async (id) => {
 
 .category-card {
   background: white;
-  border-radius: 20px;
+  border-radius: 24px;
   overflow: hidden;
   transition: all 0.3s;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-  border: 1px solid #f0f0f0;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 10px 40px rgba(0,0,0,0.02);
+  border: 1px solid #f1f1f1;
 }
 
 .category-card:hover {
@@ -348,9 +348,30 @@ const deleteCategory = async (id) => {
 }
 
 @media (max-width: 768px) {
+  .page-header > div:first-child {
+    display: none;
+  }
+  
+  .page-header {
+    background: white;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .btn-primary {
+    width: 100%;
+    justify-content: center;
+    padding: 14px;
+    border-radius: 12px;
+  }
+
   .admin-content {
-  padding: 10px;
-}
+    padding: 0 20px 40px 20px;
+  }
 
   .categories-grid {
     grid-template-columns: repeat(2, 1fr);

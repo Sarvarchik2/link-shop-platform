@@ -245,6 +245,7 @@ const saveBanner = async () => {
 .admin-main {
   flex: 1;
   margin-left: 280px;
+  padding: 40px;
   min-height: 100vh;
   background: #fafafa;
 }
@@ -255,7 +256,7 @@ const saveBanner = async () => {
 }
 
 .page-header {
-  margin-bottom: 32px;
+  margin-bottom: 40px;
 }
 
 .page-title {
@@ -292,8 +293,10 @@ const saveBanner = async () => {
 /* Preview Section */
 .preview-section {
   background: white;
-  border-radius: 16px;
-  padding: 24px;
+  border-radius: 24px;
+  padding: 40px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 10px 40px rgba(0,0,0,0.02);
+  border: 1px solid #f1f1f1;
 }
 
 .banner-preview {
@@ -369,8 +372,10 @@ const saveBanner = async () => {
 /* Form Section */
 .form-section {
   background: white;
-  border-radius: 16px;
-  padding: 24px;
+  border-radius: 24px;
+  padding: 40px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 10px 40px rgba(0,0,0,0.02);
+  border: 1px solid #f1f1f1;
 }
 
 .form-group {
@@ -444,7 +449,25 @@ const saveBanner = async () => {
 @media (max-width: 1024px) {
   .admin-main {
     margin-left: 0;
-    padding-top: 60px; /* Space for mobile header */
+    padding: 64px 0 0 0;
+    width: 100%;
+    min-width: 0;
+  }
+  
+  .container {
+    padding: 0;
+  }
+
+  .page-header {
+    background: white;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
+  }
+
+  .page-title, 
+  .page-subtitle {
+    display: none;
   }
 
   .mobile-header {
@@ -453,6 +476,8 @@ const saveBanner = async () => {
   
   .banner-editor {
     grid-template-columns: 1fr;
+    padding: 0 16px 40px;
+    gap: 20px;
   }
 
   .preview-section {
@@ -466,12 +491,9 @@ const saveBanner = async () => {
 
 @media (max-width: 768px) {
   .admin-content {
-  padding: 0;
-}
-  .admin-title {
-    font-size: 1.5rem;
+    padding: 0;
   }
-
+  
   .banner-preview {
     padding: 24px;
     min-height: 220px;
