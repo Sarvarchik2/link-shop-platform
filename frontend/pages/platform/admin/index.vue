@@ -531,8 +531,25 @@ const filteredShops = computed(() => {
 })
 
 // Subscription statistics computed from filtered shops data
+// Subscription statistics computed from filtered shops data
 const subscriptionStats = computed(() => {
   const shopsToUse = filteredShops.value
+
+  // Use backend stats if available and period is 'all'
+  if (selectedPeriod.value === 'all' && stats.value && stats.value.subscriptions_mrr !== undefined) {
+      return {
+          totalShops: stats.value.total_shops || 0,
+          activeShops: stats.value.active_shops || 0,
+          monthlyRevenue: stats.value.subscriptions_mrr || 0,
+          byStatus: {
+              trial: stats.value.subscriptions_trial || 0,
+              active: stats.value.subscriptions_active || 0,
+              expired: stats.value.subscriptions_expired || 0,
+              cancelled: 0 // Backend might not track explicitly if not in enum, or we assume 0 for now
+          },
+          totalPayments: stats.value.subscriptions_active || 0
+      }
+  }
 
   if (!shopsToUse || shopsToUse.length === 0) {
     return {
@@ -549,7 +566,6 @@ const subscriptionStats = computed(() => {
     }
   }
 
-  const now = new Date()
   const activeShops = shopsToUse.filter(s => s.is_active && 
     (s.subscription_status === 'active' || s.subscription_status === 'trial'))
   
@@ -560,6 +576,7 @@ const subscriptionStats = computed(() => {
     cancelled: shopsToUse.filter(s => s.subscription_status === 'cancelled').length
   }
 
+  // Fallback estimation if not from backend
   const monthlyRevenue = byStatus.active * 29
   const totalPayments = byStatus.active
 

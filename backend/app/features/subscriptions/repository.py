@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from .models import SubscriptionPlan, SubscriptionRequest
+from .schemas import SubscriptionPlanCreate, SubscriptionPlanUpdate
 
 class SubscriptionRepository:
     def get_plans(self, db: Session, active_only: bool = True) -> List[SubscriptionPlan]:
@@ -11,6 +12,28 @@ class SubscriptionRepository:
 
     def get_plan_by_id(self, db: Session, plan_id: int) -> Optional[SubscriptionPlan]:
         return db.query(SubscriptionPlan).filter(SubscriptionPlan.id == plan_id).first()
+
+    def create_plan(self, db: Session, plan_in: SubscriptionPlanCreate) -> SubscriptionPlan:
+        db_plan = SubscriptionPlan(**plan_in.model_dump())
+        db.add(db_plan)
+        db.commit()
+        db.refresh(db_plan)
+        return db_plan
+
+    def update_plan(self, db: Session, db_plan: SubscriptionPlan, plan_in: SubscriptionPlanUpdate) -> SubscriptionPlan:
+        plan_data = plan_in.model_dump(exclude_unset=True)
+        for key, value in plan_data.items():
+            setattr(db_plan, key, value)
+        
+        db.add(db_plan)
+        db.commit()
+        db.refresh(db_plan)
+        return db_plan
+
+    def delete_plan(self, db: Session, db_plan: SubscriptionPlan) -> SubscriptionPlan:
+        db.delete(db_plan)
+        db.commit()
+        return db_plan
 
     def create_request(self, db: Session, request_data: dict) -> SubscriptionRequest:
         db_request = SubscriptionRequest(**request_data)
@@ -25,10 +48,12 @@ class SubscriptionRepository:
             order_by(SubscriptionRequest.requested_at.desc()).\
             first()
 
-    def get_all_requests(self, db: Session, status: Optional[str] = None) -> List[SubscriptionRequest]:
+    def get_all_requests(self, db: Session, status: Optional[str] = None, shop_id: Optional[int] = None) -> List[SubscriptionRequest]:
         q = db.query(SubscriptionRequest)
         if status:
             q = q.filter(SubscriptionRequest.status == status)
+        if shop_id:
+            q = q.filter(SubscriptionRequest.shop_id == shop_id)
         return q.order_by(SubscriptionRequest.requested_at.desc()).all()
 
     def get_request_by_id(self, db: Session, request_id: int) -> Optional[SubscriptionRequest]:

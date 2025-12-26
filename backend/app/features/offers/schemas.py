@@ -16,6 +16,17 @@ class OfferBase(BaseModel):
 class OfferCreate(OfferBase):
     pass
 
+class OfferUpdate(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    price: Optional[float] = None
+    price_text: Optional[str] = None
+    contact_text: Optional[str] = None
+    contact_email: Optional[str] = None
+    contact_phone: Optional[str] = None
+    is_active: Optional[bool] = None
+    display_order: Optional[int] = None
+
 class OfferRead(OfferBase):
     id: int
     created_at: datetime

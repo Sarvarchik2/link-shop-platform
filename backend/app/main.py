@@ -30,6 +30,7 @@ from app.features.orders.router import router as orders_router
 from app.features.media.router import router as media_router
 from app.features.subscriptions.router import router as subscriptions_router
 from app.features.offers.router import router as offers_router
+from app.features.users.router import router as users_router
 
 app = FastAPI(title="Link Shop Platform API")
 
@@ -48,6 +49,7 @@ app.mount("/uploads", StaticFiles(directory=settings.UPLOAD_DIR), name="uploads"
 
 # Include Routers
 app.include_router(auth_router, tags=["Authentication"])
+app.include_router(users_router, tags=["Users"])
 app.include_router(shops_router, tags=["Shops"])
 app.include_router(products_router, tags=["Products"])
 app.include_router(brands_router, tags=["Brands"])

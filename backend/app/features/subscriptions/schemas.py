@@ -17,6 +17,18 @@ class SubscriptionPlanBase(BaseModel):
 class SubscriptionPlanCreate(SubscriptionPlanBase):
     pass
 
+class SubscriptionPlanUpdate(BaseModel):
+    name: Optional[str] = None
+    slug: Optional[str] = None
+    price: Optional[float] = None
+    period_days: Optional[int] = None
+    description: Optional[str] = None
+    features: Optional[str] = None
+    is_active: Optional[bool] = None
+    is_trial: Optional[bool] = None
+    display_order: Optional[int] = None
+    max_products: Optional[int] = None
+
 class SubscriptionPlanRead(SubscriptionPlanBase):
     id: int
     created_at: datetime

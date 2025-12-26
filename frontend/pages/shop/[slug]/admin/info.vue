@@ -198,6 +198,7 @@ const toast = useToast()
 const { token } = useAuth()
 
 const { data: shop, refresh } = await useFetch(`http://localhost:8000/platform/shops/${shopSlug.value}`, {
+  key: `shop-data-${shopSlug.value}`,
   server: false
 })
 
@@ -433,6 +434,7 @@ textarea.input {
   display: flex;
   align-items: center;
   gap: 16px;
+  flex-direction: column;
 }
 
 .input-divider {
@@ -544,6 +546,7 @@ textarea.input {
   text-decoration: none;
   display: inline-block;
   font-size: 1rem;
+  text-align: center;
 }
 
 .btn-primary {
@@ -569,6 +572,9 @@ textarea.input {
   background: #E5E7EB;
 }
 
+ .form-actions{
+    flex-direction: column;
+  }
 @media (max-width: 1024px) {
   .admin-main {
     margin-left: 0;
@@ -614,8 +620,14 @@ textarea.input {
 }
 
 @media (min-width: 768px) {
+  .form-actions{
+    flex-direction: row;
+  }
   .form-row {
     grid-template-columns: repeat(2, 1fr);
+  }
+  .logo-input-wrapper{
+    flex-direction: row;
   }
 }
 </style>

@@ -1,6 +1,8 @@
 from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey
+from sqlalchemy.orm import relationship
 from datetime import datetime
 from app.db.base_class import Base
+from app.features.users.models import User
 
 class Order(Base):
     id = Column(Integer, primary_key=True, index=True)
@@ -15,6 +17,8 @@ class Order(Base):
     recipient_name = Column(String, nullable=True)
     payment_method = Column(String, default="cash")
     notes = Column(String, nullable=True)
+    
+    user = relationship("User")
 
 class OrderItem(Base):
     id = Column(Integer, primary_key=True, index=True)

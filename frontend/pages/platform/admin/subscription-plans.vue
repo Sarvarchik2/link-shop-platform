@@ -386,7 +386,7 @@ const savePlan = async () => {
   try {
     const payload = {
       ...planForm,
-      features: planForm.features.filter(f => f.trim() !== ''),
+      features: planForm.features.filter(f => f.trim() !== '').join(','),
       max_products: planForm.max_products === null || planForm.max_products === '' ? null : Number(planForm.max_products)
     }
 

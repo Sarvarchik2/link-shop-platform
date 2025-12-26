@@ -258,111 +258,9 @@ const updateStatus = async (id, newStatus) => {
   background: #FAFAFA;
 }
 
-/* Sidebar - same as products.vue */
-.admin-sidebar {
-  width: 280px;
-  background: white;
-  border-right: 1px solid #E5E7EB;
-  display: flex;
-  flex-direction: column;
-  position: fixed;
-  height: 100vh;
-  overflow-y: auto;
-}
 
-.sidebar-header {
-  padding: 24px 20px;
-  border-bottom: 1px solid #E5E7EB;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
+/* Sidebar styles handled by ShopAdminSidebar component */
 
-.sidebar-logo {
-  width: 40px;
-  height: 40px;
-  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-}
-
-.sidebar-title {
-  font-size: 1.125rem;
-  font-weight: 800;
-  color: #111;
-  margin: 0;
-}
-
-.sidebar-nav {
-  flex: 1;
-  padding: 16px 0;
-}
-
-.nav-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 20px;
-  color: #6B7280;
-  text-decoration: none;
-  transition: all 0.2s;
-  font-weight: 500;
-}
-
-.nav-item:hover {
-  background: #F9FAFB;
-  color: #111;
-}
-
-.nav-item.active {
-  background: #111;
-  color: white;
-}
-
-.sidebar-footer {
-  padding: 16px 20px;
-  border-top: 1px solid #E5E7EB;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.back-link {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #6B7280;
-  text-decoration: none;
-  font-size: 0.875rem;
-  transition: color 0.2s;
-}
-
-.back-link:hover {
-  color: #111;
-}
-
-.logout-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #EF4444;
-  background: none;
-  border: none;
-  font-size: 0.875rem;
-  cursor: pointer;
-  transition: all 0.2s;
-  padding: 0;
-  font-family: inherit;
-}
-
-.logout-btn:hover {
-  color: #DC2626;
-}
-
-/* Main Content */
 /* Mobile Header */
 .mobile-header {
   display: none;
@@ -776,58 +674,119 @@ const updateStatus = async (id, newStatus) => {
   .admin-main {
     margin-left: 0;
     padding-top: 60px;
+    width: 100%;
+    min-width: 0;
   }
 }
 
 @media (max-width: 768px) {
+  /* Fixed Filters on Mobile */
+  .admin-header {
+    padding: 12px 16px;
+    gap: 12px;
+    position: sticky;
+    top: 60px; /* Below the 60px fixed mobile header */
+    z-index: 990; /* Below header (1000) but above content */
+    background: #1a1a1a; /* Opaque background for sticky state */
+  }
+
   .admin-main {
     margin-left: 0;
-    padding-top: 60px;
-    padding: 16px;
+    padding: 60px 0 0 0;
+    width: 100%;
+    min-width: 0;
+  }
+
+  /* Hide large title/subtitle on mobile since we have the Mobile Header */
+  .admin-title, 
+  .admin-subtitle {
+    display: none;
   }
   
   .filters {
+    width: 100%;
     overflow-x: auto;
+    padding-bottom: 2px;
     flex-wrap: nowrap;
-    padding-bottom: 8px;
+    -webkit-overflow-scrolling: touch;
+    gap: 8px;
+    scrollbar-width: none;
+  }
+  .filters::-webkit-scrollbar {
+    display: none;
   }
   
   .filter-btn {
-    padding: 8px 14px;
-    white-space: nowrap;
     flex-shrink: 0;
+    padding: 6px 12px;
+    white-space: nowrap;
+    font-size: 0.75rem;
+  }
+
+  .admin-content {
+    padding: 12px;
+    overflow-x: hidden; 
   }
   
+  /* Grid Layout for Order Card Header on Mobile */
   .order-header {
-    flex-wrap: wrap;
-    gap: 12px;
-    padding: 16px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px;
+    padding: 12px;
   }
   
+  /* Compact Typography for Mobile */
+  .order-id { font-size: 0.8125rem; }
+  .order-date { font-size: 0.75rem; }
+  .customer-name { font-size: 0.875rem; }
+  .customer-phone { font-size: 0.75rem; }
+  .order-total { font-size: 0.9375rem; }
+  .status-select { font-size: 0.75rem; padding: 4px 8px; }
+
+  /* 
+    Mobile Layout Idea:
+    Row 1: ID & Date (Left), Expand Btn (Right)
+    Row 2: Customer Name & Phone
+    Row 3: Total (Left), Status (Right)
+  */
+
   .order-main-info {
-    min-width: auto;
-    flex: 1;
+    grid-column: 1;
+    grid-row: 1;
+    margin-right: 40px; /* Space for expand button */
   }
-  
+
+  .expand-btn {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+  }
+
   .order-customer {
-    order: 3;
+    grid-column: 1 / -1;
+    grid-row: 2;
     width: 100%;
     flex-direction: row;
     justify-content: space-between;
-    padding-top: 12px;
+    padding-top: 8px;
+    margin-top: 8px;
     border-top: 1px solid #F3F4F6;
   }
-  
+
   .order-total {
-    min-width: auto;
-    font-size: 1rem;
+    grid-column: 1;
+    grid-row: 3;
     text-align: left;
+    align-self: center;
   }
-  
+
   .status-select {
-    min-width: 100px;
-    font-size: 0.7rem;
-    padding: 6px 12px;
+    grid-column: 2;
+    grid-row: 3;
+    width: auto;
+    min-width: 0;
+    justify-self: end;
   }
   
   .detail-grid {

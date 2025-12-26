@@ -11,6 +11,7 @@ class Shop(Base):
     logo_url = Column(String, nullable=True)
     subscription_status = Column(String, default="trial")
     subscription_expires_at = Column(DateTime, nullable=True)
+    subscription_plan_id = Column(Integer, ForeignKey("subscriptionplan.id"), nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     is_active = Column(Boolean, default=True)
     # Contact information

@@ -390,68 +390,7 @@ const handleSubmit = async () => {
   background: #FAFAFA;
 }
 
-.admin-sidebar {
-  width: 280px;
-  background: white;
-  border-right: 1px solid #E5E7EB;
-  display: flex;
-  flex-direction: column;
-  position: fixed;
-  height: 100vh;
-}
-
-.sidebar-header {
-  padding: 24px 20px;
-  border-bottom: 1px solid #E5E7EB;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.sidebar-logo {
-  width: 40px;
-  height: 40px;
-  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-}
-
-.sidebar-title {
-  font-size: 1.125rem;
-  font-weight: 800;
-  margin: 0;
-}
-
-.sidebar-nav {
-  flex: 1;
-  padding: 16px 0;
-}
-
-.nav-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 20px;
-  color: #6B7280;
-  text-decoration: none;
-  font-weight: 500;
-}
-
-.nav-item.active {
-  background: #111;
-  color: white;
-}
-
-.sidebar-footer {
-  padding: 16px 20px;
-  border-top: 1px solid #E5E7EB;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
+/* Sidebar styles handled by ShopAdminSidebar component */
 
 .admin-main {
   flex: 1;
@@ -503,27 +442,72 @@ const handleSubmit = async () => {
   
   .admin-main {
     margin-left: 0;
-    padding-top: 80px;
+    padding: 70px 12px 20px;
+    width: 100%;
+    min-width: 0;
+  }
+
+  /* Hide huge title since we have it in mobile-header */
+  .page-header {
+    display: none;
+  }
+
+  .form-card {
     padding: 20px;
+    border-radius: 16px;
+  }
+
+  .form-section {
+    margin-bottom: 24px;
+    padding-bottom: 24px;
+  }
+
+  .form-row {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
   }
 }
 
-@media (max-width: 640px) {
-  .form-card {
-    padding: 24px;
-  }
-  
+@media (max-width: 768px) {
   .form-row {
     grid-template-columns: 1fr;
   }
-  
+
   .variant-row {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr 60px;
     gap: 8px;
   }
-  
-  .stock-input, .btn-remove {
-    grid-column: span 1;
+
+  .stock-input {
+    grid-column: 1 / span 2;
+  }
+
+  .btn-remove {
+    grid-column: 3;
+    grid-row: 1 / span 2;
+    height: 100%;
+    background: #FEE2E2;
+    color: #DC2626;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.2rem;
+  }
+
+  .url-input-row {
+    flex-direction: column;
+  }
+
+  .btn-add-url {
+    padding: 12px;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .form-actions .btn {
+    width: 100%;
+    text-align: center;
   }
 }
 

@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from typing import List, Optional
 from app.db.session import get_db
 from app.core.dependencies import get_current_user
+from app.features.subscriptions.dependencies import check_product_limit
 from .service import ProductService
 from .schemas import ProductCreate, ProductRead, ProductUpdate
 
@@ -31,10 +32,12 @@ def get_product(product_id: int, db: Session = Depends(get_db)):
 @router.post("/products", response_model=ProductRead)
 def create_product(
     product_in: ProductCreate,
-    shop_slug: Optional[str] = Query(None),
+    shop_slug: str = Query(..., description="Shop Slug is required to verify limits"),
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_user)
+    current_user = Depends(get_current_user),
+    shop = Depends(check_product_limit)
 ):
+    # check_product_limit returns the shop object if valid
     return product_service.create_product(db, product_in, shop_slug, current_user)
 
 @router.put("/products/{product_id}", response_model=ProductRead)

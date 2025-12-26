@@ -5,6 +5,7 @@ from app.db.session import get_db
 from .service import OrderService
 from .schemas import OrderCreate, OrderRead, OrderReadWithItems, OrderStatusUpdate
 from app.core.dependencies import get_current_user, get_current_platform_admin
+from app.features.subscriptions.dependencies import check_shop_active
 
 router = APIRouter()
 order_service = OrderService()
@@ -44,7 +45,8 @@ def get_order(
 def get_shop_orders(
     shop_slug: str,
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_user)
+    current_user = Depends(get_current_user),
+    shop = Depends(check_shop_active)
 ):
     return order_service.get_shop_orders(db, shop_slug, current_user)
 
@@ -70,6 +72,7 @@ def update_order_status_shop(
     order_id: int,
     status_update: OrderStatusUpdate,
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_user)
+    current_user = Depends(get_current_user),
+    shop = Depends(check_shop_active)
 ):
     return order_service.update_order_status(db, order_id, status_update.status, current_user)

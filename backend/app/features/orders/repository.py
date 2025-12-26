@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from .models import Order, OrderItem
 from app.features.products.models import Product
 from app.features.shops.models import Shop
@@ -25,7 +25,7 @@ class OrderRepository:
         return db.query(Order).filter(Order.user_id == user_id).order_by(Order.created_at.desc()).all()
 
     def get_shop_orders(self, db: Session, shop_id: int):
-        return db.query(Order).filter(Order.shop_id == shop_id).order_by(Order.created_at.desc()).all()
+        return db.query(Order).options(joinedload(Order.user)).filter(Order.shop_id == shop_id).order_by(Order.created_at.desc()).all()
 
     def get_all_orders(self, db: Session):
         return db.query(Order).order_by(Order.created_at.desc()).all()

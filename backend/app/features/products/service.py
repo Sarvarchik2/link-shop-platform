@@ -25,7 +25,7 @@ class ProductService:
         if not shop_slug:
             raise HTTPException(status_code=400, detail="shop_slug is required to create a product")
             
-        shop = self.shop_service.get_shop_by_slug(db, shop_slug)
+        shop = self.shop_service.get_shop_by_slug(db, shop_slug, check_active=True)
         
         # Check permissions
         if current_user.role != "platform_admin" and shop.owner_id != current_user.id:
@@ -40,7 +40,7 @@ class ProductService:
 
     def update_product(self, db: Session, product_id: int, product_in: ProductUpdate, current_user):
         product = self.get_product(db, product_id)
-        shop = self.shop_service.get_shop_by_id(db, shop_id=product.shop_id) 
+        shop = self.shop_service.get_shop_by_id(db, shop_id=product.shop_id, check_active=True) 
         
         if current_user.role != "platform_admin" and shop.owner_id != current_user.id:
             raise HTTPException(status_code=403, detail="Not authorized")
@@ -51,7 +51,7 @@ class ProductService:
     def delete_product(self, db: Session, product_id: int, current_user):
         product = self.get_product(db, product_id)
         
-        shop = self.shop_service.get_shop_by_id(db, shop_id=product.shop_id)
+        shop = self.shop_service.get_shop_by_id(db, shop_id=product.shop_id, check_active=True)
         if current_user.role != "platform_admin" and shop.owner_id != current_user.id:
             raise HTTPException(status_code=403, detail="Not authorized")
             

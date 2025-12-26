@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from typing import List, Optional
 from .models import User
 
 class UserRepository:
@@ -7,6 +8,9 @@ class UserRepository:
 
     def get_by_id(self, db: Session, user_id: int):
         return db.query(User).filter(User.id == user_id).first()
+
+    def get_all(self, db: Session, skip: int = 0, limit: int = 100) -> List[User]:
+        return db.query(User).offset(skip).limit(limit).all()
 
     def create(self, db: Session, user_data: dict):
         db_user = User(**user_data)

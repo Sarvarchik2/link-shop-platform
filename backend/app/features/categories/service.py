@@ -18,7 +18,7 @@ class CategoryService:
     def create_category(self, db: Session, category_in, shop_slug: str, current_user):
         shop_id = None
         if shop_slug:
-            shop = self.shop_service.get_shop_by_slug(db, shop_slug)
+            shop = self.shop_service.get_shop_by_slug(db, shop_slug, check_active=True)
             if current_user.role != "platform_admin" and shop.owner_id != current_user.id:
                 raise HTTPException(status_code=403, detail="Not authorized")
             shop_id = shop.id
@@ -36,7 +36,7 @@ class CategoryService:
             raise HTTPException(status_code=404, detail="Category not found")
         
         if category.shop_id:
-            shop = self.shop_service.get_shop_by_id(db, category.shop_id)
+            shop = self.shop_service.get_shop_by_id(db, category.shop_id, check_active=True)
             if current_user.role != "platform_admin" and shop.owner_id != current_user.id:
                 raise HTTPException(status_code=403, detail="Not authorized")
         else:
@@ -52,7 +52,7 @@ class CategoryService:
             raise HTTPException(status_code=404, detail="Category not found")
 
         if category.shop_id:
-            shop = self.shop_service.get_shop_by_id(db, category.shop_id)
+            shop = self.shop_service.get_shop_by_id(db, category.shop_id, check_active=True)
             if current_user.role != "platform_admin" and shop.owner_id != current_user.id:
                 raise HTTPException(status_code=403, detail="Not authorized")
         else:

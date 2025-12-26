@@ -1,6 +1,7 @@
 from pydantic import BaseModel, ConfigDict
 from datetime import datetime
 from typing import Optional, List
+from app.features.users.schemas import UserRead
 
 class OrderItemBase(BaseModel):
     product_id: int
@@ -19,10 +20,10 @@ class OrderItemRead(OrderItemBase):
     model_config = ConfigDict(from_attributes=True)
 
 class OrderBase(BaseModel):
-    delivery_address: str
-    delivery_city: str
-    delivery_phone: str
-    recipient_name: str
+    delivery_address: Optional[str] = None
+    delivery_city: Optional[str] = None
+    delivery_phone: Optional[str] = None
+    recipient_name: Optional[str] = None
     payment_method: str = "cash"
     notes: Optional[str] = None
 
@@ -36,13 +37,14 @@ class OrderRead(OrderBase):
     status: str
     total_price: float
     created_at: datetime
+    user: Optional[UserRead] = None
 
     model_config = ConfigDict(from_attributes=True)
 
 class OrderItemDetail(OrderItemBase):
     price: float
     product_name: str
-    product_image: str
+    product_image: Optional[str] = None
     shop_slug: Optional[str] = None
 
 class OrderReadWithItems(OrderRead):

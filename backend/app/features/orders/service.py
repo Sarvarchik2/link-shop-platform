@@ -16,7 +16,7 @@ class OrderService:
         shop_id = None
         
         if shop_slug:
-            shop = self.shop_service.get_shop_by_slug(db, shop_slug)
+            shop = self.shop_service.get_shop_by_slug(db, shop_slug, check_active=True)
             shop_id = shop.id
             
         # 1. Calc total price and validate products
@@ -103,6 +103,7 @@ class OrderService:
             order_dict = order.__dict__.copy()
             order_dict.pop("_sa_instance_state", None)
             order_dict["items"] = items_list
+            order_dict["user"] = order.user  # Attach user for schema validation
             result.append(order_dict)
         return result
 

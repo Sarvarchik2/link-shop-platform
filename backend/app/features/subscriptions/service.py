@@ -1,9 +1,12 @@
 from sqlalchemy.orm import Session
-from fastapi import HTTPException
+from fastapi import HTTPException, status
 from typing import List, Optional
 from datetime import datetime, timedelta
 from .repository import SubscriptionRepository
-from .schemas import SubscriptionRequestCreate, SubscriptionPlanRead, SubscriptionRequestRead, SubscriptionRequestUpdate
+from .schemas import (
+    SubscriptionRequestCreate, SubscriptionPlanRead, SubscriptionRequestRead, 
+    SubscriptionRequestUpdate, SubscriptionPlanCreate, SubscriptionPlanUpdate
+)
 from app.features.shops.service import ShopService
 from app.features.shops.repository import ShopRepository
 
@@ -18,10 +21,36 @@ class SubscriptionService:
         result = []
         for plan in plans:
             plan_data = SubscriptionPlanRead.model_validate(plan)
+            # The features_list processing is now handled by the field_validator in SubscriptionPlanRead schema
+            # But we double check here if needed or just rely on validator. 
+            # Given the validator logic, we don't need manual parsing here anymore if using standard Pydantic validation
+            # ensuring from_attributes=True calls the validator.
+            # However, validators with mode='before' and from_attributes might need care.
+            # Let's manually ensure compatibility if the validator doesn't trigger on ORM objects directly
             if plan.features:
-                plan_data.features_list = [f.strip() for f in plan.features.split(",") if f.strip()]
+                 plan_data.features_list = [f.strip() for f in plan.features.split(",") if f.strip()]
             result.append(plan_data)
         return result
+
+    def get_plan(self, db: Session, plan_id: int):
+        plan = self.repository.get_plan_by_id(db, plan_id)
+        if not plan:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Subscription plan not found"
+            )
+        return plan
+
+    def create_plan(self, db: Session, plan_in: SubscriptionPlanCreate):
+        return self.repository.create_plan(db, plan_in)
+
+    def update_plan(self, db: Session, plan_id: int, plan_in: SubscriptionPlanUpdate):
+        plan = self.get_plan(db, plan_id)
+        return self.repository.update_plan(db, plan, plan_in)
+
+    def delete_plan(self, db: Session, plan_id: int):
+        plan = self.get_plan(db, plan_id)
+        return self.repository.delete_plan(db, plan)
 
     def create_subscription_request(self, db: Session, shop_slug: str, request_in: SubscriptionRequestCreate, current_user):
         shop = self.shop_service.get_shop_by_slug(db, shop_slug)
@@ -64,9 +93,9 @@ class SubscriptionService:
             
         return self._populate_request_details(db, db_request)
 
-    def get_all_requests(self, db: Session, status: Optional[str] = None):
+    def get_all_requests(self, db: Session, status: Optional[str] = None, shop_id: Optional[int] = None):
         """Get all subscription requests - for platform admin"""
-        requests = self.repository.get_all_requests(db, status)
+        requests = self.repository.get_all_requests(db, status, shop_id)
         result = []
         for req in requests:
             result.append(self._populate_request_details(db, req))
@@ -96,11 +125,18 @@ class SubscriptionService:
             
             if shop and plan:
                 # Calculate expiration date
-                expires_at = datetime.utcnow() + timedelta(days=30 * db_request.duration_months)
+                now = datetime.utcnow()
+                if shop.subscription_status == "active" and shop.subscription_expires_at and shop.subscription_expires_at > now:
+                     # Extend existing subscription
+                     expires_at = shop.subscription_expires_at + timedelta(days=30 * db_request.duration_months)
+                else:
+                     # New or renewed from expired
+                     expires_at = now + timedelta(days=30 * db_request.duration_months)
                 
                 shop_update_data = {
                     "subscription_status": "active",
-                    "subscription_expires_at": expires_at
+                    "subscription_expires_at": expires_at,
+                    "subscription_plan_id": plan.id
                 }
                 
                 self.shop_repository.update(db, shop, shop_update_data)

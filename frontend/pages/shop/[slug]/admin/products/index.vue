@@ -151,111 +151,8 @@ const deleteProduct = async (id) => {
   background: #FAFAFA;
 }
 
-/* Sidebar */
-.admin-sidebar {
-  width: 280px;
-  background: white;
-  border-right: 1px solid #E5E7EB;
-  display: flex;
-  flex-direction: column;
-  position: fixed;
-  height: 100vh;
-  overflow-y: auto;
-}
+/* Sidebar styles handled by ShopAdminSidebar component */
 
-.sidebar-header {
-  padding: 24px 20px;
-  border-bottom: 1px solid #E5E7EB;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.sidebar-logo {
-  width: 40px;
-  height: 40px;
-  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-}
-
-.sidebar-title {
-  font-size: 1.125rem;
-  font-weight: 800;
-  color: #111;
-  margin: 0;
-}
-
-.sidebar-nav {
-  flex: 1;
-  padding: 16px 0;
-}
-
-.nav-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 20px;
-  color: #6B7280;
-  text-decoration: none;
-  transition: all 0.2s;
-  font-weight: 500;
-}
-
-.nav-item:hover {
-  background: #F9FAFB;
-  color: #111;
-}
-
-.nav-item.active {
-  background: #111;
-  color: white;
-}
-
-.sidebar-footer {
-  padding: 16px 20px;
-  border-top: 1px solid #E5E7EB;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.back-link {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #6B7280;
-  text-decoration: none;
-  font-size: 0.875rem;
-  transition: color 0.2s;
-}
-
-.back-link:hover {
-  color: #111;
-}
-
-.logout-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #EF4444;
-  background: none;
-  border: none;
-  font-size: 0.875rem;
-  cursor: pointer;
-  transition: all 0.2s;
-  padding: 0;
-  font-family: inherit;
-}
-
-.logout-btn:hover {
-  color: #DC2626;
-}
-
-/* Main Content */
 /* Mobile Header */
 .mobile-header {
   display: none;
@@ -328,7 +225,7 @@ const deleteProduct = async (id) => {
 }
 
 .admin-content {
-  padding: 40px;
+  padding: 10px;
 }
 
 .btn {
@@ -565,7 +462,7 @@ const deleteProduct = async (id) => {
   .admin-main {
     margin-left: 0;
     padding-top: 60px;
-    padding: 16px;
+    padding: 0px;
   }
   
   .products-grid {

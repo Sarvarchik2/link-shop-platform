@@ -1,6 +1,32 @@
 <template>
   <div class="subscription-page">
-    <ShopAdminSidebar :shop-slug="shopSlug" current-route="subscription" />
+    <!-- Mobile Header -->
+    <header class="mobile-header">
+      <button class="menu-btn" @click="sidebarOpen = !sidebarOpen">
+        <svg v-if="!sidebarOpen" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+        <svg v-else width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+      <span class="mobile-title">Подписка</span>
+      <NuxtLink :to="`/shop/${shopSlug}`" class="home-btn">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+      </NuxtLink>
+    </header>
+
+    <ShopAdminSidebar 
+      :shop-slug="shopSlug" 
+      current-route="subscription" 
+      v-model="sidebarOpen"
+    />
     
     <main class="admin-main">
       <div class="container">
@@ -59,6 +85,16 @@
                 <div class="info-label">ОСТАЛОСЬ ДНЕЙ</div>
                 <div class="info-value" :class="getDaysLeftClass(shop.subscription_expires_at)">
                   {{ getDaysLeft(shop.subscription_expires_at) }}
+                </div>
+              </div>
+              
+              <div class="info-box">
+                <div class="info-label">ТОВАРЫ</div>
+                <div class="info-value">
+                  {{ getProductStats().current }} <span class="text-sm font-normal text-gray-500">/ {{ getProductStats().limit }}</span>
+                </div>
+                <div class="usage-bar">
+                   <div class="usage-fill" :style="{ width: getProductStats().percent + '%' }" :class="{ 'over-limit': getProductStats().percent >= 100 }"></div>
                 </div>
               </div>
             </div>
@@ -307,9 +343,10 @@ const shopSlug = route.params.slug
 const { token } = useAuth()
 const toast = useToast()
 
-const selectedPlan = ref(null)
+const sidebarOpen = ref(false)
 const planDurations = ref({})
 const loading = ref(false)
+const selectedPlan = ref(null)
 const subscriptionRequest = ref(null)
 const showRenewModal = ref(false)
 const showCancelModal = ref(false)
@@ -335,6 +372,13 @@ const { data: availablePlans } = await useFetch('http://localhost:8000/subscript
 
 const { data: offers } = await useFetch('http://localhost:8000/offers', {
   server: false
+})
+
+const { data: stats } = await useFetch(`http://localhost:8000/shop/${shopSlug}/admin/stats`, {
+  server: false,
+  headers: {
+    'Authorization': `Bearer ${token.value}`
+  }
 })
 
 const fetchSubscriptionRequest = async () => {
@@ -404,19 +448,40 @@ const calculatePrice = (plan, durationMonths) => {
 }
 
 const getCurrentPlanId = () => {
-  if (!availablePlans.value) return 'Неизвестно'
+  if (!availablePlans.value) return 'Загрузка...'
   
-  if (shop.value.subscription_status === 'trial') {
-    const trialPlan = availablePlans.value.find(p => p.is_trial)
-    return trialPlan?.slug || 'trial'
+  if (shop.value.subscription_plan_id) {
+    const plan = availablePlans.value.find(p => p.id === shop.value.subscription_plan_id)
+    return plan ? plan.name : 'Архивный план'
   }
   
-  if (shop.value.subscription_status === 'active') {
-    const activePlan = availablePlans.value.find(p => !p.is_trial && p.is_active)
-    return activePlan?.slug || 'basic'
+  if (shop.value.subscription_status === 'trial') {
+    return 'Пробный период'
   }
   
   return 'Не активна'
+}
+
+const getProductStats = () => {
+  if (!stats.value) return { current: 0, limit: 0, percent: 0 }
+  
+  let limit = 50 // Default trial limit
+  
+  if (shop.value.subscription_plan_id && availablePlans.value) {
+    const plan = availablePlans.value.find(p => p.id === shop.value.subscription_plan_id)
+    if (plan && plan.max_products) {
+       limit = plan.max_products
+    }
+  } else if (shop.value.subscription_status === 'trial') {
+      // Find trial plan if exists?
+      const trial = availablePlans.value?.find(p => p.is_trial)
+      if (trial && trial.max_products) limit = trial.max_products
+  }
+  
+  const current = stats.value.total_products || 0
+  const percent = Math.min(Math.round((current / limit) * 100), 100)
+  
+  return { current, limit, percent }
 }
 
 const getPlanPrice = (status) => {
@@ -1447,10 +1512,7 @@ textarea.form-input {
 }
 
 @media (max-width: 1024px) {
-  .admin-main {
-    margin-left: 0;
-    padding: 24px;
-  }
+  /* Removed duplicate admin-main rule since it's now at the bottom with header styles */
   
   .info-grid {
     grid-template-columns: 1fr;
@@ -1476,6 +1538,97 @@ textarea.form-input {
   
   .duration-grid-modal {
     grid-template-columns: 1fr;
+  }
+}
+
+.usage-bar {
+  height: 6px;
+  background: #E5E7EB;
+  border-radius: 3px;
+  margin-top: 8px;
+  overflow: hidden;
+}
+
+.usage-fill {
+  height: 100%;
+  background: #10B981;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.usage-fill.over-limit {
+  background: #EF4444;
+}
+
+.text-sm {
+  font-size: 0.875rem;
+}
+
+.text-gray-500 {
+  color: #6B7280;
+}
+
+/* Mobile Header */
+.mobile-header {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: white;
+  border-bottom: 1px solid #E5E7EB;
+  padding: 0 16px;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 1000;
+}
+
+.menu-btn,
+.home-btn {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #F3F4F6;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  color: #111;
+  transition: all 0.2s;
+}
+
+.menu-btn:hover,
+.home-btn:hover {
+  background: #111;
+  color: white;
+}
+
+.mobile-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #111;
+}
+
+@media (max-width: 1024px) {
+  .admin-main {
+    margin-left: 0;
+    padding-top: 80px; 
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+  
+  .mobile-header {
+    display: flex;
+  }
+  @media (max-width: 768px) {
+    .modal-footer{
+      flex-direction: column;
+    }
+    .admin-main{
+      padding: 60px 0px;
+    }
   }
 }
 </style>

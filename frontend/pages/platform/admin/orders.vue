@@ -41,7 +41,7 @@
           <span>Пользователи</span>
         </NuxtLink>
         
-        <NuxtLink to="/platform/admin/orders" class="nav-item" :class="{ active: $route.path === '/platform/admin/orders' }">
+        <!-- <NuxtLink to="/platform/admin/orders" class="nav-item" :class="{ active: $route.path === '/platform/admin/orders' }">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
             <polyline points="14 2 14 8 20 8"></polyline>
@@ -49,7 +49,7 @@
             <line x1="16" y1="17" x2="8" y2="17"></line>
           </svg>
           <span>Заказы</span>
-        </NuxtLink>
+        </NuxtLink> -->
       </nav>
       
       <div class="sidebar-footer">
@@ -137,7 +137,16 @@ definePageMeta({
   middleware: 'platform-admin'
 })
 
-const { token } = useAuth()
+const { token, logout } = useAuth()
+const router = useRouter()
+const sidebarOpen = ref(false)
+
+const handleLogout = () => {
+  logout()
+  useToast().success('Вы вышли из аккаунта')
+}
+
+const currentRoute = computed(() => 'orders')
 
 const { data: orders, pending, error, refresh } = await useFetch('http://localhost:8000/platform/admin/orders', {
   server: false,
@@ -216,92 +225,61 @@ const formatDate = (dateString) => {
   background: #FAFAFA;
 }
 
-.admin-sidebar {
-  width: 280px;
-  background: white;
-  border-right: 1px solid #E5E7EB;
-  display: flex;
-  flex-direction: column;
-  position: fixed;
-  height: 100vh;
-  overflow-y: auto;
-}
-
-.sidebar-header {
-  padding: 24px 20px;
-  border-bottom: 1px solid #E5E7EB;
-  display: flex;
+/* New mobile header styles */
+.mobile-header {
+  display: none; /* Hidden by default, shown on smaller screens */
+  justify-content: space-between;
   align-items: center;
-  gap: 12px;
+  padding: 16px;
+  background: white;
+  border-bottom: 1px solid #E5E7EB;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 }
 
-.sidebar-logo {
-  width: 40px;
-  height: 40px;
-  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-  border-radius: 10px;
+.mobile-header .menu-btn,
+.mobile-header .home-btn {
+  background: none;
+  border: none;
+  color: #111;
+  cursor: pointer;
+  padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
 }
 
-.sidebar-title {
+.mobile-header .mobile-title {
   font-size: 1.125rem;
-  font-weight: 800;
-  color: #111;
-  margin: 0;
-}
-
-.sidebar-nav {
-  flex: 1;
-  padding: 16px 0;
-}
-
-.nav-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 20px;
-  color: #6B7280;
-  text-decoration: none;
-  transition: all 0.2s;
-  font-weight: 500;
-}
-
-.nav-item:hover {
-  background: #F9FAFB;
+  font-weight: 700;
   color: #111;
 }
 
-.nav-item.active {
-  background: #111;
-  color: white;
-}
-
-.sidebar-footer {
-  padding: 16px 20px;
-  border-top: 1px solid #E5E7EB;
-}
-
-.back-link {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #6B7280;
-  text-decoration: none;
-  font-size: 0.875rem;
-}
-
-.back-link:hover {
-  color: #111;
-}
-
+/* Adjust main content margin for desktop */
 .admin-main {
   flex: 1;
-  margin-left: 280px;
+  margin-left: 280px; /* Default for desktop */
   min-height: 100vh;
 }
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .admin-sidebar {
+    display: none; /* Hide default sidebar on smaller screens */
+  }
+
+  .mobile-header {
+    display: flex; /* Show mobile header */
+  }
+
+  .admin-main {
+    margin-left: 0; /* No margin on smaller screens */
+  }
+
+  /* If PlatformAdminSidebar is a modal/overlay, it will handle its own positioning */
+}
+
 
 .admin-header {
   background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);

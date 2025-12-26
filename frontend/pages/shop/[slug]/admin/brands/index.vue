@@ -1,7 +1,34 @@
+```
 <template>
     <div class="shop-admin-page">
-      <!-- Sidebar -->
-      <ShopAdminSidebar :shop-slug="shopSlug" current-route="brands" />
+      <!-- Mobile Header -->
+    <header class="mobile-header">
+      <button class="menu-btn" @click="sidebarOpen = !sidebarOpen">
+        <svg v-if="!sidebarOpen" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+        <svg v-else width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+      <span class="mobile-title">Бренды</span>
+      <NuxtLink :to="`/shop/${shopSlug}`" class="home-btn">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+      </NuxtLink>
+    </header>
+
+    <!-- Sidebar -->
+    <ShopAdminSidebar 
+      :shop-slug="shopSlug" 
+      current-route="brands" 
+      v-model="sidebarOpen"
+    />
   
       <!-- Main Content -->
       <main class="admin-main">
@@ -52,12 +79,8 @@
   
   const route = useRoute()
   const shopSlug = route.params.slug
-  const { token, logout } = useAuth()
-  
-  const handleLogout = () => {
-    logout()
-    useToast().success('Вы вышли из аккаунта')
-  }
+  const { token } = useAuth()
+  const sidebarOpen = ref(false)
   
   const { data: brands, error, refresh } = await useFetch(`http://localhost:8000/brands?shop_slug=${shopSlug}`, {
     server: false,
@@ -109,115 +132,54 @@
   </script>
   
   <style scoped>
-  .shop-admin-page {
-    min-height: 100vh;
-    display: flex;
-    background: #FAFAFA;
-  }
-  
-  /* Sidebar - same as orders.vue */
-  .admin-sidebar {
-    width: 280px;
-    background: white;
-    border-right: 1px solid #E5E7EB;
-    display: flex;
-    flex-direction: column;
-    position: fixed;
-    height: 100vh;
-    overflow-y: auto;
-  }
-  
-  .sidebar-header {
-    padding: 24px 20px;
-    border-bottom: 1px solid #E5E7EB;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  
-  .sidebar-logo {
-    width: 40px;
-    height: 40px;
-    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-  }
-  
-  .sidebar-title {
-    font-size: 1.125rem;
-    font-weight: 800;
-    color: #111;
-    margin: 0;
-  }
-  
-  .sidebar-nav {
-    flex: 1;
-    padding: 16px 0;
-  }
-  
-  .nav-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 20px;
-    color: #6B7280;
-    text-decoration: none;
-    transition: all 0.2s;
-    font-weight: 500;
-  }
-  
-  .nav-item:hover {
-    background: #F9FAFB;
-    color: #111;
-  }
-  
-  .nav-item.active {
-    background: #111;
-    color: white;
-  }
-  
-  .sidebar-footer {
-    padding: 16px 20px;
-    border-top: 1px solid #E5E7EB;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-  
-  .back-link {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: #6B7280;
-    text-decoration: none;
-    font-size: 0.875rem;
-    transition: color 0.2s;
-  }
-  
-  .back-link:hover {
-    color: #111;
-  }
-  
-  .logout-btn {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: #EF4444;
-    background: none;
-    border: none;
-    font-size: 0.875rem;
-    cursor: pointer;
-    transition: all 0.2s;
-    padding: 0;
-    font-family: inherit;
-  }
-  
-  .logout-btn:hover {
-    color: #DC2626;
-  }
+.shop-admin-page {
+  min-height: 100vh;
+  display: flex;
+  background: #FAFAFA;
+}
+
+/* Mobile Header */
+.mobile-header {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: white;
+  border-bottom: 1px solid #E5E7EB;
+  padding: 0 16px;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 1000;
+}
+
+.menu-btn,
+.home-btn {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #F3F4F6;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  color: #111;
+  transition: all 0.2s;
+}
+
+.menu-btn:hover,
+.home-btn:hover {
+  background: #111;
+  color: white;
+}
+
+.mobile-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #111;
+}
   
   /* Main Content */
   .admin-main {
@@ -361,24 +323,20 @@
   }
   
   @media (max-width: 1024px) {
-    .admin-sidebar {
-      width: 240px;
+    .admin-main {
+      margin-left: 0;
+      padding-top: 60px;
     }
     
-    .admin-main {
-      margin-left: 240px;
+    .mobile-header {
+      display: flex;
     }
   }
   
   @media (max-width: 768px) {
-    .admin-sidebar {
-      transform: translateX(-100%);
-      transition: transform 0.3s;
-    }
-    
-    .admin-main {
-      margin-left: 0;
-    }
+     .admin-content {
+    padding: 10px;
+  }
     
     .brands-grid {
       grid-template-columns: repeat(2, 1fr);

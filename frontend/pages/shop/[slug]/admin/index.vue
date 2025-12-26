@@ -54,6 +54,35 @@
           </div>
 
           <div v-else class="dashboard-content">
+            
+      <!-- Plan Usage Section -->
+      <div v-if="stats?.plan_name" class="section plan-section">
+         <div class="plan-header">
+            <div>
+               <h3 class="section-title mb-1">Ваш тариф: {{ stats.plan_name }}</h3>
+               <p class="text-sm text-gray-500">Использование лимитов</p>
+            </div>
+            <NuxtLink :to="`/shop/${shopSlug}/subscription`" class="upgrade-link">
+               Улучшить тариф
+            </NuxtLink>
+         </div>
+
+         <div class="limit-bar-container">
+            <div class="limit-info">
+               <span class="limit-label">Товары</span>
+               <span class="limit-value">
+                  {{ stats.total_products }} / {{ stats.plan_limit_products || '∞' }}
+               </span>
+            </div>
+            <div class="progress-bg">
+               <div class="progress-fill" :class="{ 'danger': stats.products_usage_percent >= 90 }" :style="{ width: `${stats.products_usage_percent || 0}%` }"></div>
+            </div>
+            <p v-if="stats.products_usage_percent >= 90" class="limit-warning">
+               Вы почти достигли лимита! Обновите тариф для добавления новых товаров.
+            </p>
+         </div>
+      </div>
+
       <!-- Period Selector -->
       <div class="period-selector">
         <button 
@@ -425,6 +454,67 @@ const getStatusPercent = (status) => {
   min-height: 100vh;
   display: flex;
   background: #FAFAFA;
+}
+
+.plan-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.plan-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.upgrade-link {
+  color: #2563EB;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-decoration: none;
+}
+
+.upgrade-link:hover {
+  text-decoration: underline;
+}
+
+.limit-bar-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.limit-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.875rem;
+}
+
+.limit-label { font-weight: 500; color: #374151; }
+.limit-value { font-weight: 700; color: #111; }
+
+.progress-bg {
+  width: 100%;
+  height: 8px;
+  background: #E5E7EB;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: #2563EB;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.progress-fill.danger { background: #EF4444; }
+
+.limit-warning {
+  color: #EF4444;
+  font-size: 0.75rem;
+  font-weight: 500;
 }
 
 /* Mobile Header */
@@ -863,45 +953,70 @@ const getStatusPercent = (status) => {
   .admin-main {
     margin-left: 0;
     padding-top: 60px;
-    padding: 20px;
+    padding: 12px;
+    width: 100%;
+    min-width: 0;
   }
   
-  .stats-grid { grid-template-columns: repeat(2, 1fr); }
-  .status-grid { grid-template-columns: repeat(3, 1fr); }
-  .comparison-grid { grid-template-columns: repeat(2, 1fr); }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .status-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .comparison-grid { grid-template-columns: 1fr; gap: 12px; }
 }
 
 @media (max-width: 768px) {
   .admin-main {
-    margin-left: 0;
-    padding-top: 60px;
-    padding: 16px;
+    padding: 70px 10px 20px 10px;
   }
   
-  .dashboard-header { flex-direction: column; gap: 12px; }
-  .page-title { font-size: 1.75rem; }
-  .header-right { align-self: flex-start; flex-direction: column; align-items: flex-start; }
+  .dashboard-header { 
+    flex-direction: column; 
+    gap: 12px; 
+    padding: 12px 0;
+    align-items: flex-start;
+  }
+  
+  .page-title { font-size: 1.5rem; }
+  .header-right { 
+    width: 100%;
+    align-self: flex-start; 
+    flex-direction: column; 
+    align-items: flex-start;
+    gap: 10px;
+  }
   
   .period-selector {
     width: 100%;
+    background: #F3F4F6;
+    padding: 4px;
+    border-radius: 8px;
+    display: flex;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
   }
+  .period-selector::-webkit-scrollbar { display: none; }
   
   .period-btn {
-    padding: 8px 16px;
+    flex: 1;
+    padding: 8px 12px;
     white-space: nowrap;
+    font-size: 0.8125rem;
+    text-align: center;
   }
   
-  .stats-grid { grid-template-columns: 1fr; gap: 12px; }
-  .stat-card { padding: 20px; }
-  .section { padding: 20px; border-radius: 16px; }
-  .section-title { font-size: 1.1rem; margin-bottom: 16px; }
-  .status-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .stats-grid { grid-template-columns: 1fr; gap: 10px; }
+  .stat-card { padding: 16px; border-radius: 12px; }
+  .stat-value { font-size: 1.5rem; }
+  
+  .section { padding: 16px; border-radius: 12px; margin-bottom: 20px; }
+  .section-title { font-size: 1rem; margin-bottom: 12px; }
+  
+  .status-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .status-card { padding: 12px; border-radius: 10px; }
   .status-card:last-child { grid-column: span 2; }
-  .status-card { padding: 16px; }
-  .status-count { font-size: 1.25rem; }
-  .comparison-grid { grid-template-columns: 1fr; gap: 12px; }
-  .comparison-card { padding: 16px; }
+  .status-count { font-size: 1.125rem; }
+  
+  .comparison-grid { grid-template-columns: 1fr; gap: 10px; }
+  .comparison-card { padding: 12px; }
 }
 </style>

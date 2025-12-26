@@ -31,12 +31,16 @@ class ShopUpdate(BaseModel):
     facebook: Optional[str] = None
     twitter: Optional[str] = None
     whatsapp: Optional[str] = None
+    subscription_status: Optional[str] = None
+    subscription_expires_at: Optional[datetime] = None
+    subscription_plan_id: Optional[int] = None
 
 class ShopRead(ShopBase):
     id: int
     owner_id: int
     subscription_status: str
     subscription_expires_at: Optional[datetime] = None
+    subscription_plan_id: Optional[int] = None
     created_at: datetime
     is_active: bool
 
@@ -45,6 +49,7 @@ class ShopRead(ShopBase):
 class ShopReadWithOwner(ShopRead):
     owner_name: Optional[str] = None
     owner_phone: Optional[str] = None
+    subscription_plan_name: Optional[str] = None
 
 class OrdersByStatus(BaseModel):
     pending: int = 0
@@ -67,3 +72,10 @@ class DashboardStats(BaseModel):
     month_orders: int = 0
     total_shops: Optional[int] = None
     active_shops: Optional[int] = None
+    subscriptions_mrr: Optional[float] = 0.0
+    subscriptions_active: Optional[int] = 0
+    subscriptions_trial: Optional[int] = 0
+    subscriptions_expired: Optional[int] = 0
+    plan_limit_products: Optional[int] = None
+    plan_name: Optional[str] = None
+    products_usage_percent: Optional[float] = 0.0

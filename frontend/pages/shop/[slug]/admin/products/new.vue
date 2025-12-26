@@ -34,6 +34,16 @@
           </NuxtLink>
           <h1 class="page-title">Добавить товар</h1>
         </div>
+
+        <!-- Limit Warning -->
+        <div v-if="limitReached" class="limit-warning">
+          <div class="warning-icon">⚠️</div>
+          <div class="warning-content">
+            <h3>Лимит товаров исчерпан</h3>
+            <p>Вы достигли максимального количества товаров для вашего тарифного плана ({{ stats?.plan_limit_products }}). Пожалуйста, удалите старые товары или обновите подписку, чтобы добавить новые.</p>
+            <NuxtLink :to="`/shop/${shopSlug}/subscription`" class="btn-upgrade">Улучшить тариф</NuxtLink>
+          </div>
+        </div>
         
         <div class="form-card">
       <form @submit.prevent="handleSubmit">
@@ -172,7 +182,7 @@
 
         <div class="form-actions">
           <NuxtLink :to="`/shop/${shopSlug}/admin/products`" class="btn btn-secondary">Отмена</NuxtLink>
-          <button type="submit" class="btn btn-primary" :disabled="loading || uploadedImages.length === 0">
+          <button type="submit" class="btn btn-primary" :disabled="loading || uploadedImages.length === 0 || limitReached">
             {{ loading ? 'Создание...' : 'Создать товар' }}
           </button>
         </div>
@@ -225,11 +235,17 @@ onMounted(() => {
 const sidebarOpen = ref(false)
 const loading = ref(false)
 const uploadingImages = ref(false)
+const stats = ref(null)
 const brands = ref([])
 const categories = ref([])
 const brandsError = ref(null)
 const categoriesError = ref(null)
 const toast = useToast()
+
+const limitReached = computed(() => {
+  if (!stats.value || stats.value.plan_limit_products === null) return false
+  return stats.value.total_products >= stats.value.plan_limit_products
+})
 
 onMounted(async () => {
   console.log('[Add Product] Компонент смонтирован, shopSlug:', shopSlug.value)
@@ -241,32 +257,39 @@ onMounted(async () => {
   
   // Загружаем данные после монтирования
   try {
-    console.log('[Add Product] Загрузка брендов и категорий для shop:', shopSlug.value)
-    const [brandsData, categoriesData] = await Promise.all([
+    console.log('[Add Product] Загрузка данных для shop:', shopSlug.value)
+    const [brandsData, categoriesData, statsData] = await Promise.all([
       $fetch(`http://localhost:8000/brands?shop_slug=${shopSlug.value}`, {
-        headers: {
-          'Authorization': `Bearer ${token.value}`
-        }
+        headers: { 'Authorization': `Bearer ${token.value}` }
       }).catch(e => {
         console.error('[Add Product] Ошибка загрузки брендов:', e)
         brandsError.value = e
         return []
       }),
       $fetch(`http://localhost:8000/categories?shop_slug=${shopSlug.value}`, {
-        headers: {
-          'Authorization': `Bearer ${token.value}`
-        }
+        headers: { 'Authorization': `Bearer ${token.value}` }
       }).catch(e => {
         console.error('[Add Product] Ошибка загрузки категорий:', e)
         categoriesError.value = e
         return []
+      }),
+      $fetch(`http://localhost:8000/shop/${shopSlug.value}/admin/stats`, {
+        headers: { 'Authorization': `Bearer ${token.value}` }
+      }).catch(e => {
+        console.error('[Add Product] Ошибка загрузки статистики магазина:', e)
+        return null
       })
     ])
     
     brands.value = brandsData || []
     categories.value = categoriesData || []
-    console.log('[Add Product] Бренды загружены:', brands.value.length)
-    console.log('[Add Product] Категории загружены:', categories.value.length)
+    stats.value = statsData
+    console.log('[Add Product] Данные загружены:', { 
+      brands: brands.value.length, 
+      categories: categories.value.length,
+      limit: stats.value?.plan_limit_products,
+      current: stats.value?.total_products
+    })
   } catch (e) {
     console.error('[Add Product] Ошибка при загрузке данных:', e)
   }
@@ -428,109 +451,7 @@ const handleSubmit = async () => {
   background: #FAFAFA;
 }
 
-/* Sidebar */
-.admin-sidebar {
-  width: 280px;
-  background: white;
-  border-right: 1px solid #E5E7EB;
-  display: flex;
-  flex-direction: column;
-  position: fixed;
-  height: 100vh;
-  overflow-y: auto;
-}
-
-.sidebar-header {
-  padding: 24px 20px;
-  border-bottom: 1px solid #E5E7EB;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.sidebar-logo {
-  width: 40px;
-  height: 40px;
-  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-}
-
-.sidebar-title {
-  font-size: 1.125rem;
-  font-weight: 800;
-  color: #111;
-  margin: 0;
-}
-
-.sidebar-nav {
-  flex: 1;
-  padding: 16px 0;
-}
-
-.nav-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 20px;
-  color: #6B7280;
-  text-decoration: none;
-  transition: all 0.2s;
-  font-weight: 500;
-}
-
-.nav-item:hover {
-  background: #F9FAFB;
-  color: #111;
-}
-
-.nav-item.active {
-  background: #111;
-  color: white;
-}
-
-.sidebar-footer {
-  padding: 16px 20px;
-  border-top: 1px solid #E5E7EB;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.back-link {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #6B7280;
-  text-decoration: none;
-  font-size: 0.875rem;
-  transition: color 0.2s;
-}
-
-.back-link:hover {
-  color: #111;
-}
-
-.logout-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #EF4444;
-  background: none;
-  border: none;
-  font-size: 0.875rem;
-  cursor: pointer;
-  transition: all 0.2s;
-  padding: 0;
-  font-family: inherit;
-}
-
-.logout-btn:hover {
-  color: #DC2626;
-}
+/* Sidebar styles handled by ShopAdminSidebar component */
 
 /* Main Content */
 .admin-main {
@@ -990,43 +911,125 @@ const handleSubmit = async () => {
 }
 
 @media (max-width: 1024px) {
-  .admin-sidebar {
-    width: 240px;
-  }
-  
-  .admin-main {
-    margin-left: 240px;
-  }
-}
-
-@media (max-width: 768px) {
-  .admin-sidebar {
-    transform: translateX(-100%);
-    transition: transform 0.3s;
+  .mobile-header {
+    display: flex;
   }
   
   .admin-main {
     margin-left: 0;
+    padding: 70px 12px 20px;
+    width: 100%;
+    min-width: 0;
   }
-  
+
+  .page-header {
+    display: none;
+  }
+
   .add-product-page {
-    padding: 20px;
+    padding: 0;
   }
-  
+
   .form-card {
-    padding: 24px;
+    padding: 20px;
+    border-radius: 16px;
   }
-  
+
+  .form-section {
+    margin-bottom: 24px;
+    padding-bottom: 24px;
+  }
+
+  .images-preview {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.limit-warning {
+  display: flex;
+  gap: 16px;
+  background: #FFFBEB;
+  border: 1px solid #FEF3C7;
+  padding: 24px;
+  border-radius: 16px;
+  margin-bottom: 24px;
+}
+
+.warning-icon {
+  font-size: 2rem;
+}
+
+.warning-content h3 {
+  color: #92400E;
+  margin-bottom: 4px;
+}
+
+.warning-content p {
+  color: #B45309;
+  font-size: 0.9375rem;
+  margin-bottom: 16px;
+}
+
+.btn-upgrade {
+  display: inline-block;
+  background: #92400E;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 0.875rem;
+}
+
+.btn-upgrade:hover {
+  background: #78350F;
+}
+
+@media (max-width: 768px) {
   .form-row {
     grid-template-columns: 1fr;
   }
-  
-  .page-title {
-    font-size: 1.5rem;
+
+  .variant-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 60px;
+    gap: 8px;
   }
-  
-  .images-preview {
-    grid-template-columns: repeat(3, 1fr);
+
+  .variant-size-input, .variant-color-input {
+    flex: none;
+  }
+
+  .stock-input {
+    grid-column: 1 / span 2;
+    width: 100%;
+  }
+
+  .btn-remove {
+    grid-column: 3;
+    grid-row: 1 / span 2;
+    height: 100%;
+    width: 100%;
+    margin: 0;
+  }
+
+  .url-input-row {
+    flex-direction: column;
+  }
+
+  .btn-add-url {
+    width: 100%;
+  }
+
+  .form-actions {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .form-actions .btn {
+    width: 100%;
+    text-align: center;
+    margin: 0;
   }
 }
 

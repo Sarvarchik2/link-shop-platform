@@ -206,6 +206,7 @@
                       </svg>
                     </div>
                   </th>
+                  <th>План</th>
                   <th @click="sortBy('subscription_status')" class="sortable">
                     <div class="th-content">
                       Статус подписки
@@ -274,6 +275,9 @@
                         {{ shop.owner_phone }}
                       </div>
                     </div>
+                  </td>
+                  <td>
+                    <span class="plan-name-cell">{{ shop.subscription_plan_name || '-' }}</span>
                   </td>
                   <td>
                     <span :class="['status-badge', getStatusClass(shop.subscription_status)]">
@@ -419,6 +423,9 @@
             </div>
 
             <div class="current-status-section">
+              <label class="status-label">Текущий тарифный план:</label>
+              <div class="current-plan-name">{{ selectedShop.subscription_plan_name || 'Не выбран' }}</div>
+
               <label class="status-label">Текущий статус:</label>
               <span :class="['current-status-badge', getStatusClass(selectedShop.subscription_status)]">
                 {{ getStatusText(selectedShop.subscription_status) }}
@@ -429,6 +436,23 @@
                   ({{ getDaysRemaining(selectedShop) }})
                 </span>
               </div>
+            </div>
+
+            <!-- История подписок -->
+            <div class="subscription-history-section" v-if="subscriptionHistory.length > 0">
+               <h3>История запросов</h3>
+               <div class="history-list">
+                 <div v-for="req in subscriptionHistory" :key="req.id" class="history-item">
+                   <div class="history-main">
+                     <span class="history-plan">{{ req.plan_name }}</span>
+                     <span :class="['history-status', `status-${req.status}`]">{{ getRequestStatusText(req.status) }}</span>
+                   </div>
+                   <div class="history-meta">
+                     <span>{{ formatDate(req.requested_at) }}</span>
+                     <span>{{ req.duration_months }} мес.</span>
+                   </div>
+                 </div>
+               </div>
             </div>
 
             <form @submit.prevent="updateSubscription" class="modal-form">
@@ -473,6 +497,7 @@ definePageMeta({
 })
 
 const route = useRoute()
+const router = useRouter()
 const { token, logout } = useAuth()
 const toast = useToast()
 
@@ -514,6 +539,7 @@ const itemsPerPage = 20
 // Modal
 const showModal = ref(false)
 const selectedShop = ref(null)
+const subscriptionHistory = ref([])
 const subscriptionForm = reactive({
   status: 'trial',
   expires_at: ''
@@ -709,8 +735,7 @@ const truncateText = (text, maxLength) => {
 }
 
 const openShopDetails = (shop) => {
-  // Можно добавить модальное окно с деталями или переход на страницу магазина
-  toast.info(`Магазин: ${shop.name}`)
+  router.push(`/platform/admin/shops/${shop.id}`)
 }
 
 const exportData = () => {
@@ -737,10 +762,34 @@ const exportData = () => {
   toast.success('Данные экспортированы')
 }
 
-const openSubscriptionModal = (shop) => {
+const getRequestStatusText = (status) => {
+  const map = {
+    pending: 'Ожидает',
+    approved: 'Одобрен',
+    rejected: 'Отклонен'
+  }
+  return map[status] || status
+}
+
+const openSubscriptionModal = async (shop) => {
   selectedShop.value = shop
   subscriptionForm.status = shop.subscription_status
   subscriptionForm.expires_at = shop.subscription_expires_at ? new Date(shop.subscription_expires_at).toISOString().slice(0, 16) : ''
+  
+  // Fetch history
+  try {
+    const { data } = await useFetch(`http://localhost:8000/platform/admin/subscription-requests`, {
+       query: { shop_id: shop.id },
+       headers: {
+          'Authorization': `Bearer ${token.value}`
+       }
+    })
+    subscriptionHistory.value = data.value || []
+  } catch (e) {
+    console.error('Failed to fetch subscription history', e)
+    subscriptionHistory.value = []
+  }
+
   showModal.value = true
 }
 
@@ -1797,5 +1846,74 @@ const toggleActive = async (shop) => {
   .shops-table {
     min-width: 1200px;
   }
+}
+
+
+.plan-name-cell {
+  font-weight: 500;
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+/* Subscription History */
+.subscription-history-section {
+  margin-top: 20px;
+  border-top: 1px solid var(--border-color);
+  padding-top: 15px;
+}
+
+.subscription-history-section h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: var(--text-primary);
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+.history-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background-color: var(--bg-secondary);
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.history-main {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.history-plan {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.history-status {
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.status-pending { background-color: #fff7ed; color: #c2410c; }
+.status-approved { background-color: #f0fdf4; color: #15803d; }
+.status-rejected { background-color: #fef2f2; color: #b91c1c; }
+
+.history-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  font-size: 12px;
+  color: var(--text-secondary);
 }
 </style>

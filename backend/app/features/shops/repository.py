@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from .models import Shop
 from app.features.users.models import User
+from app.features.subscriptions.models import SubscriptionPlan
 
 class ShopRepository:
     def get_by_slug(self, db: Session, slug: str):
@@ -16,8 +17,11 @@ class ShopRepository:
         return db.query(Shop).all()
 
     def get_all_with_owners(self, db: Session):
-        return db.query(Shop, User.first_name, User.last_name, User.phone).\
-            join(User, Shop.owner_id == User.id).all()
+        # Left join with SubscriptionPlan so we don't exclude shops without a plan
+        return db.query(Shop, User.first_name, User.last_name, User.phone, SubscriptionPlan.name).\
+            join(User, Shop.owner_id == User.id).\
+            outerjoin(SubscriptionPlan, Shop.subscription_plan_id == SubscriptionPlan.id).\
+            all()
 
     def create(self, db: Session, shop_data: dict):
         db_shop = Shop(**shop_data)

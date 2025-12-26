@@ -22,6 +22,14 @@ def get_my_shops(db: Session = Depends(get_db), current_user = Depends(get_curre
 def get_all_shops(db: Session = Depends(get_db), admin = Depends(get_current_platform_admin)):
     return shop_service.get_all_shops_for_admin(db)
 
+@router.get("/platform/admin/shops/{shop_id}", response_model=ShopReadWithOwner)
+def get_shop_admin_details(
+    shop_id: int, 
+    db: Session = Depends(get_db), 
+    admin = Depends(get_current_platform_admin)
+):
+    return shop_service.get_shop_details_for_admin(db, shop_id)
+
 @router.get("/platform/shops/{shop_slug}", response_model=ShopRead)
 def get_shop(shop_slug: str, db: Session = Depends(get_db)):
     return shop_service.get_shop_by_slug(db, shop_slug, check_active=True)
@@ -49,3 +57,26 @@ def get_platform_admin_stats(
     current_user = Depends(get_current_platform_admin)
 ):
     return shop_service.get_platform_stats(db)
+@router.put("/platform/admin/shops/{shop_id}/subscription", response_model=ShopRead)
+def update_shop_subscription(
+    shop_id: int,
+    shop_in: ShopUpdate,
+    db: Session = Depends(get_db),
+    admin = Depends(get_current_platform_admin)
+):
+    """Update shop subscription - platform admin only"""
+    shop = shop_service.get_shop_by_id(db, shop_id)
+    update_data = shop_in.model_dump(exclude_unset=True)
+    return shop_service.repository.update(db, shop, update_data)
+
+@router.put("/platform/admin/shops/{shop_id}/activate", response_model=ShopRead)
+def toggle_shop_active(
+    shop_id: int,
+    shop_in: ShopUpdate,
+    db: Session = Depends(get_db),
+    admin = Depends(get_current_platform_admin)
+):
+    """Activate/deactivate shop - platform admin only"""
+    shop = shop_service.get_shop_by_id(db, shop_id)
+    update_data = shop_in.model_dump(exclude_unset=True)
+    return shop_service.repository.update(db, shop, update_data)
