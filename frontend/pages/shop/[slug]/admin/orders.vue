@@ -25,34 +25,34 @@
     <ShopAdminSidebar 
       :shop-slug="shopSlug" 
       :current-route="currentRoute"
-      :model-value="sidebarOpen"
-      @update:model-value="sidebarOpen = $event"
+      v-model="sidebarOpen"
     />
 
     <!-- Main Content -->
     <main class="admin-main">
-      <div class="admin-header">
-        <div>
-          <h1 class="admin-title">Заказы</h1>
-          <p class="admin-subtitle">Управление заказами магазина</p>
+      <div class="container">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Заказы</h1>
+            <p class="page-subtitle">Управление заказами магазина</p>
+          </div>
+          <div class="filters">
+            <button 
+              v-for="status in statuses" 
+              :key="status.value"
+              @click="selectedStatus = status.value"
+              class="filter-btn"
+              :class="{ active: selectedStatus === status.value, [status.value]: true }"
+            >
+              {{ status.label }}
+              <span v-if="getStatusCount(status.value) > 0" class="filter-count">
+                {{ getStatusCount(status.value) }}
+              </span>
+            </button>
+          </div>
         </div>
-        <div class="filters">
-          <button 
-            v-for="status in statuses" 
-            :key="status.value"
-            @click="selectedStatus = status.value"
-            class="filter-btn"
-            :class="{ active: selectedStatus === status.value, [status.value]: true }"
-          >
-            {{ status.label }}
-            <span v-if="getStatusCount(status.value) > 0" class="filter-count">
-              {{ getStatusCount(status.value) }}
-            </span>
-          </button>
-        </div>
-      </div>
 
-      <div class="admin-content">
+        <div class="admin-content">
         <div v-if="!filteredOrders || filteredOrders.length === 0" class="empty-state">
           <p>Заказы не найдены.</p>
         </div>
@@ -176,8 +176,9 @@
           </div>
         </div>
       </div>
-    </main>
-  </div>
+    </div>
+  </main>
+</div>
 </template>
 
 <script setup>
@@ -308,32 +309,39 @@ const updateStatus = async (id, newStatus) => {
   flex: 1;
   margin-left: 280px;
   min-height: 100vh;
+  background: #fafafa;
 }
 
-.admin-header {
-  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-  color: white;
-  padding: 48px 40px;
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px;
+}
+
+.page-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
+  align-items: flex-start;
+  margin-bottom: 40px;
   gap: 24px;
 }
 
-.admin-title {
-  font-size: 2.5rem;
-  font-weight: 900;
-  margin-bottom: 8px;
+.page-title {
+  font-size: 2.25rem;
+  font-weight: 800;
+  color: #111;
+  margin: 0 0 8px 0;
+  letter-spacing: -0.03em;
 }
 
-.admin-subtitle {
-  font-size: 1.125rem;
-  opacity: 0.9;
+.page-subtitle {
+  font-size: 1rem;
+  color: #6B7280;
+  margin: 0;
 }
 
 .admin-content {
-  padding: 40px;
+  padding: 0;
 }
 
 .filters {
@@ -347,24 +355,25 @@ const updateStatus = async (id, newStatus) => {
   align-items: center;
   gap: 8px;
   padding: 10px 18px;
-  border: 2px solid rgba(255,255,255,0.2);
-  border-radius: 10px;
-  background: rgba(255,255,255,0.1);
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: white;
   font-size: 0.875rem;
   font-weight: 600;
-  color: white;
+  color: #374151;
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .filter-btn:hover {
-  background: rgba(255,255,255,0.2);
+  background: #f9fafb;
+  border-color: #d1d5db;
 }
 
 .filter-btn.active {
-  background: white;
-  border-color: white;
-  color: #111;
+  background: #111;
+  border-color: #111;
+  color: white;
 }
 
 .filter-btn.active.pending {
@@ -681,13 +690,14 @@ const updateStatus = async (id, newStatus) => {
 
 @media (max-width: 768px) {
   /* Fixed Filters on Mobile */
-  .admin-header {
+  .page-header {
     padding: 12px 16px;
     gap: 12px;
     position: sticky;
     top: 60px; /* Below the 60px fixed mobile header */
     z-index: 990; /* Below header (1000) but above content */
-    background: #1a1a1a; /* Opaque background for sticky state */
+    background: white; 
+    border-bottom: 1px solid #eee;
   }
 
   .admin-main {
@@ -697,9 +707,13 @@ const updateStatus = async (id, newStatus) => {
     min-width: 0;
   }
 
+  .container {
+    padding: 0;
+  }
+
   /* Hide large title/subtitle on mobile since we have the Mobile Header */
-  .admin-title, 
-  .admin-subtitle {
+  .page-title, 
+  .page-subtitle {
     display: none;
   }
   

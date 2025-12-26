@@ -14,7 +14,7 @@
         </svg>
       </button>
       <span class="mobile-title">Категории</span>
-      <NuxtLink :to="`/shop/${shopSlug}`" class="home-btn">
+      <NuxtLink :to="`/${shopSlug}`" class="home-btn">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
           <polyline points="9 22 9 12 15 12 15 22"></polyline>
@@ -30,21 +30,22 @@
 
     <!-- Main Content -->
     <main class="admin-main">
-      <div class="admin-header">
-        <div>
-          <h1 class="admin-title">Категории</h1>
-          <p class="admin-subtitle">Управление категориями магазина</p>
+      <div class="container">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Категории</h1>
+            <p class="page-subtitle">Управление категориями магазина</p>
+          </div>
+          <NuxtLink :to="`/shop/${shopSlug}/admin/categories/new`" class="btn btn-primary">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            <span class="btn-text">Добавить категорию</span>
+          </NuxtLink>
         </div>
-        <NuxtLink :to="`/shop/${shopSlug}/admin/categories/new`" class="btn btn-primary">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="12" y1="5" x2="12" y2="19"></line>
-            <line x1="5" y1="12" x2="19" y2="12"></line>
-          </svg>
-          <span class="btn-text">Добавить категорию</span>
-        </NuxtLink>
-      </div>
 
-      <div class="admin-content">
+        <div class="admin-content">
         <div v-if="!categories || categories.length === 0" class="empty-state">
           <p>Категории не найдены</p>
         </div>
@@ -65,6 +66,7 @@
               </button>
             </div>
           </div>
+        </div>
         </div>
       </div>
     </main>
@@ -183,32 +185,38 @@ const deleteCategory = async (id) => {
   flex: 1;
   margin-left: 280px;
   min-height: 100vh;
+  background: #fafafa;
 }
 
-.admin-header {
-  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-  color: white;
-  padding: 48px 40px;
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px;
+}
+
+.page-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 24px;
+  margin-bottom: 32px;
 }
 
-.admin-title {
-  font-size: 2.5rem;
-  font-weight: 900;
-  margin-bottom: 8px;
+.page-title {
+  font-size: 2.25rem;
+  font-weight: 800;
+  color: #111;
+  margin: 0 0 6px 0;
+  letter-spacing: -0.02em;
 }
 
-.admin-subtitle {
-  font-size: 1.125rem;
-  opacity: 0.9;
+.page-subtitle {
+  font-size: 0.95rem;
+  color: #6B7280;
+  margin: 0;
 }
 
 .admin-content {
-  padding: 40px;
+  padding: 0;
 }
 
 .btn {
@@ -313,9 +321,27 @@ const deleteCategory = async (id) => {
 @media (max-width: 1024px) {
   .admin-main {
     margin-left: 0;
-    padding-top: 60px;
+    padding: 64px 0 0 0;
+    width: 100%;
+    min-width: 0;
   }
   
+  .container {
+    padding: 0;
+  }
+
+  .page-header {
+    background: white;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
+  }
+
+  .page-title, 
+  .page-subtitle {
+    display: none;
+  }
+
   .mobile-header {
     display: flex;
   }

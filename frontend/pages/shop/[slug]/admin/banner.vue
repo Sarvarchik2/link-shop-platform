@@ -14,7 +14,7 @@
         </svg>
       </button>
       <span class="mobile-title">Баннер</span>
-      <NuxtLink :to="`/shop/${shopSlug}`" class="home-btn">
+      <NuxtLink :to="`/${shopSlug}`" class="home-btn">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
           <polyline points="9 22 9 12 15 12 15 22"></polyline>
@@ -30,14 +30,13 @@
 
     <!-- Main Content -->
     <main class="admin-main">
-      <div class="admin-header">
-        <div>
-          <h1 class="admin-title">Баннер</h1>
-          <p class="admin-subtitle">Настройка баннера магазина</p>
+      <div class="container">
+        <div class="page-header">
+          <h1 class="page-title">Баннер</h1>
+          <p class="page-subtitle">Настройка баннера магазина</p>
         </div>
-      </div>
 
-      <div class="admin-content">
+        <div class="admin-content">
         <div class="banner-editor">
           <!-- Preview -->
           <div class="preview-section">
@@ -107,8 +106,9 @@
           </div>
         </div>
       </div>
-    </main>
-  </div>
+    </div>
+  </main>
+</div>
 </template>
 
 <script setup>
@@ -246,27 +246,34 @@ const saveBanner = async () => {
   flex: 1;
   margin-left: 280px;
   min-height: 100vh;
+  background: #fafafa;
 }
 
-.admin-header {
-  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-  color: white;
-  padding: 48px 40px;
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-.admin-title {
-  font-size: 2.5rem;
-  font-weight: 900;
-  margin-bottom: 8px;
+.page-header {
+  margin-bottom: 32px;
 }
 
-.admin-subtitle {
-  font-size: 1.125rem;
-  opacity: 0.9;
+.page-title {
+  font-size: 2.25rem;
+  font-weight: 800;
+  color: #111;
+  margin: 0 0 6px 0;
+  letter-spacing: -0.02em;
+}
+
+.page-subtitle {
+  font-size: 0.95rem;
+  color: #6B7280;
+  margin: 0;
 }
 
 .admin-content {
-  padding: 20px;
+  padding: 0;
 }
 
 .banner-editor {
@@ -490,6 +497,26 @@ const saveBanner = async () => {
   .preview-image {
     opacity: 0.2;
   }
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.btn-spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.8s linear infinite; }
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 0;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #111;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
 }
 </style>
 

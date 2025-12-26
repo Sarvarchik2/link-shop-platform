@@ -25,8 +25,7 @@
     <ShopAdminSidebar 
       :shop-slug="shopSlug" 
       :current-route="currentRoute"
-      :model-value="sidebarOpen"
-      @update:model-value="sidebarOpen = $event"
+      v-model="sidebarOpen"
     />
 
     <!-- Main Content -->

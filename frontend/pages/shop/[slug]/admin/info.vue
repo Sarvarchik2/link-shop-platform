@@ -13,7 +13,7 @@
           <line x1="6" y1="6" x2="18" y2="18"></line>
         </svg>
       </button>
-      <span class="mobile-title">О магазине</span>
+       <span class="mobile-title">Настройки магазина</span>
       <NuxtLink :to="`/${shopSlug}`" class="home-btn">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
@@ -25,70 +25,69 @@
     <ShopAdminSidebar 
       :shop-slug="shopSlug" 
       current-route="info"
-      :model-value="sidebarOpen"
-      @update:model-value="sidebarOpen = $event"
+      v-model="sidebarOpen"
     />
 
     <!-- Main Content -->
     <main class="admin-main">
-      <div class="admin-header">
-        <div>
-          <h1 class="admin-title">Информация о магазине</h1>
-          <p class="admin-subtitle">Управление контактами и социальными сетями</p>
+      <div class="container">
+        <div class="page-header">
+          <h1 class="page-title">Информация о магазине</h1>
+          <p class="page-subtitle">Управляйте брендингом, контактами и социальными сетями вашего магазина</p>
         </div>
-      </div>
 
-      <div class="admin-content">
+        <div class="admin-content">
         <form @submit.prevent="handleSubmit" class="shop-info-form">
           <!-- Basic Info -->
           <div class="form-section">
             <h2 class="section-title">Основная информация</h2>
-            <p class="section-description">Название магазина всегда отображается. Если добавлен логотип, он будет показан в навбаре вместо названия.</p>
             
             <div class="form-group">
-              <label>Название магазина *</label>
-              <input v-model="form.name" type="text" required class="input" placeholder="Название магазина" />
-              <small class="help-text">Название магазина отображается, если логотип не загружен</small>
+              <label class="form-label">Название магазина *</label>
+              <input v-model="form.name" type="text" required class="form-input" placeholder="Например: Style Haven" />
+              <p class="form-help">Отображается в шапке сайта, если не загружен логотип</p>
             </div>
 
             <div class="form-group">
-              <label>Описание</label>
-              <textarea v-model="form.description" class="input" rows="4" placeholder="Описание магазина"></textarea>
+              <label class="form-label">Описание</label>
+              <textarea v-model="form.description" class="form-input" rows="4" placeholder="Кратко расскажите о вашем магазине..."></textarea>
             </div>
 
             <div class="form-group">
-              <label>Логотип магазина</label>
-              <div class="logo-upload-container">
-                <div class="logo-input-wrapper">
-                  <input v-model="form.logo_url" type="url" class="input" placeholder="https://example.com/logo.png" />
-                  <span class="input-divider">или</span>
-                  <button type="button" class="btn-upload" @click="$refs.logoInput.click()" :disabled="uploading">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                      <polyline points="17 8 12 3 7 8"></polyline>
-                      <line x1="12" y1="3" x2="12" y2="15"></line>
+              <label class="form-label">Логотип магазина</label>
+              <div class="logo-area">
+                <div class="logo-preview-box" :class="{ 'has-logo': form.logo_url }">
+                  <template v-if="form.logo_url">
+                    <img :src="form.logo_url" alt="Logo" class="logo-img" @error="logoError = true" />
+                    <button type="button" class="logo-remove-btn" @click="form.logo_url = ''" title="Удалить">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                      </svg>
+                    </button>
+                  </template>
+                  <div v-else class="logo-empty" @click="$refs.logoInput.click()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                      <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                      <polyline points="21 15 16 10 5 21"></polyline>
                     </svg>
-                    {{ uploading ? 'Загрузка...' : 'Загрузить файл' }}
-                  </button>
-                  <input 
-                    type="file" 
-                    ref="logoInput" 
-                    style="display: none" 
-                    accept="image/*"
-                    @change="handleLogoUpload"
-                  />
-                </div>
-                <small class="help-text">Рекомендуемый размер: до 200px по ширине, высота автоматическая.</small>
-                
-                <div v-if="form.logo_url" class="logo-preview">
-                  <div class="preview-header">
-                    <span class="preview-label">Предпросмотр:</span>
-                    <button type="button" class="btn-remove-logo" @click="form.logo_url = ''">Удалить</button>
+                    <span>Загрузить</span>
                   </div>
-                  <img :src="form.logo_url" alt="Логотип" class="preview-image" @error="logoError = true" />
-                  <p v-if="logoError" class="preview-error">Ошибка загрузки изображения. Проверьте URL или файл.</p>
                 </div>
+                
+                <div class="logo-actions">
+                  <div class="url-input-container">
+                    <input v-model="form.logo_url" type="url" class="form-input-small" placeholder="URL логотипа" />
+                    <button type="button" class="btn-file-upload" @click="$refs.logoInput.click()" :disabled="uploading">
+                      {{ uploading ? '...' : 'Файл' }}
+                    </button>
+                  </div>
+                  <p class="form-help">Рекомендуемый размер: 200x200px (PNG, JPG, SVG)</p>
+                </div>
+                <input type="file" ref="logoInput" style="display: none" accept="image/*" @change="handleLogoUpload" />
               </div>
+              <p v-if="logoError" class="error-msg">Ошибка загрузки логотипа. Проверьте ссылку.</p>
             </div>
           </div>
 
@@ -96,92 +95,95 @@
           <div class="form-section">
             <h2 class="section-title">Контакты</h2>
             
-            <div class="form-row">
+            <div class="form-grid">
               <div class="form-group">
-                <label>Email</label>
-                <input v-model="form.email" type="email" class="input" placeholder="shop@example.com" />
+                <label class="form-label">Email для связи</label>
+                <input v-model="form.email" type="email" class="form-input" placeholder="hello@shop.com" />
               </div>
               
               <div class="form-group">
-                <label>Телефон</label>
-                <input v-model="form.phone" type="tel" class="input" placeholder="+998901234567" />
+                <label class="form-label">Телефон</label>
+                <input v-model="form.phone" type="tel" class="form-input" placeholder="+998 90 123 45 67" />
               </div>
             </div>
 
             <div class="form-group">
-              <label>Адрес</label>
-              <input v-model="form.address" type="text" class="input" placeholder="Город, улица, дом" />
+              <label class="form-label">Физический адрес</label>
+              <input v-model="form.address" type="text" class="form-input" placeholder="Город, улица, ориентир" />
             </div>
           </div>
 
           <!-- Social Media -->
-          <div class="form-section">
+          <div class="form-section last">
             <h2 class="section-title">Социальные сети</h2>
-            <p class="help-text">Введите полные URL-адреса ваших страниц в социальных сетях</p>
             
-            <div class="form-group">
-              <label>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="vertical-align: middle; margin-right: 8px;">
-                  <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.161c-.169 1.858-.896 6.728-.896 6.728s-.537 3.593-2.351 4.131c-1.815.538-3.785-1.15-4.371-1.705-.293-.278-5.185-3.266-5.185-3.266s-2.023-1.387 1.421-2.738c3.444-1.351 7.377-2.853 7.377-2.853s1.512-.956 2.895.538c1.383 1.494 2.109 3.266 2.109 3.266h.001z"/>
-                </svg>
-                Telegram
-              </label>
-              <input v-model="form.telegram" type="url" class="input" placeholder="https://t.me/yourchannel" />
-            </div>
+            <div class="social-grid">
+              <div class="social-input-group">
+                <div class="social-label">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.161c-.169 1.858-.896 6.728-.896 6.728s-.537 3.593-2.351 4.131c-1.815.538-3.785-1.15-4.371-1.705-.293-.278-5.185-3.266-5.185-3.266s-2.023-1.387 1.421-2.738c3.444-1.351 7.377-2.853 7.377-2.853s1.512-.956 2.895.538c1.383 1.494 2.109 3.266 2.109 3.266h.001z"/>
+                  </svg>
+                  <span>Telegram</span>
+                </div>
+                <input v-model="form.telegram" type="url" class="form-input" placeholder="https://t.me/..." />
+              </div>
 
-            <div class="form-group">
-              <label>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 8px;">
-                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-                  <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
-                </svg>
-                Instagram
-              </label>
-              <input v-model="form.instagram" type="url" class="input" placeholder="https://instagram.com/yourpage" />
-            </div>
+              <div class="social-input-group">
+                <div class="social-label">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                  </svg>
+                  <span>Instagram</span>
+                </div>
+                <input v-model="form.instagram" type="url" class="form-input" placeholder="https://instagram.com/..." />
+              </div>
 
-            <div class="form-group">
-              <label>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="vertical-align: middle; margin-right: 8px;">
-                  <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
-                </svg>
-                Facebook
-              </label>
-              <input v-model="form.facebook" type="url" class="input" placeholder="https://facebook.com/yourpage" />
-            </div>
+              <div class="social-input-group">
+                <div class="social-label">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+                  </svg>
+                  <span>Facebook</span>
+                </div>
+                <input v-model="form.facebook" type="url" class="form-input" placeholder="https://facebook.com/..." />
+              </div>
 
-            <div class="form-group">
-              <label>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="vertical-align: middle; margin-right: 8px;">
-                  <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
-                </svg>
-                Twitter
-              </label>
-              <input v-model="form.twitter" type="url" class="input" placeholder="https://twitter.com/yourpage" />
-            </div>
+              <div class="social-input-group">
+                <div class="social-label">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M23.643 4.937c-.835.37-1.732.62-2.675.733.962-.576 1.7-1.49 2.048-2.578-.9.534-1.897.922-2.958 1.13-.85-.904-2.06-1.47-3.4-1.47-2.572 0-4.658 2.086-4.658 4.66 0 .364.042.718.12 1.06-3.873-.195-7.304-2.05-9.602-4.868-.4.69-.63 1.49-.63 2.342 0 1.616.823 3.043 2.072 3.878-.764-.025-1.482-.234-2.11-.583v.06c0 2.257 1.605 4.14 3.737 4.568-.392.106-.803.162-1.227.162-.3 0-.593-.028-.877-.082.593 1.85 2.313 3.198 4.352 3.234-1.595 1.25-3.604 1.995-5.786 1.995-.376 0-.747-.022-1.112-.065 2.062 1.323 4.51 2.093 7.14 2.093 8.57 0 13.255-7.098 13.255-13.254 0-.2-.005-.402-.014-.602.91-.658 1.7-1.477 2.323-2.41z"/>
+                  </svg>
+                  <span>Twitter</span>
+                </div>
+                <input v-model="form.twitter" type="url" class="form-input" placeholder="https://twitter.com/..." />
+              </div>
 
-            <div class="form-group">
-              <label>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="vertical-align: middle; margin-right: 8px;">
-                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
-                </svg>
-                WhatsApp
-              </label>
-              <input v-model="form.whatsapp" type="url" class="input" placeholder="https://wa.me/998901234567" />
+              <div class="social-input-group">
+                <div class="social-label">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+                  </svg>
+                  <span>WhatsApp</span>
+                </div>
+                <input v-model="form.whatsapp" type="url" class="form-input" placeholder="https://wa.me/..." />
+              </div>
             </div>
           </div>
 
-          <div class="form-actions">
-            <NuxtLink :to="`/shop/${shopSlug}/admin`" class="btn btn-secondary">Отмена</NuxtLink>
-            <button type="submit" class="btn btn-primary" :disabled="loading">
+          <div class="form-footer">
+            <NuxtLink :to="`/shop/${shopSlug}/admin`" class="btn-cancel">Отмена</NuxtLink>
+            <button type="submit" class="btn-save" :disabled="loading">
+              <span v-if="loading" class="btn-spinner"></span>
               {{ loading ? 'Сохранение...' : 'Сохранить изменения' }}
             </button>
           </div>
         </form>
       </div>
-    </main>
-  </div>
+    </div>
+  </main>
+</div>
 </template>
 
 <script setup>
@@ -305,31 +307,34 @@ const handleSubmit = async () => {
 <style scoped>
 .shop-admin-page {
   min-height: 100vh;
-  background: #FAFAFA;
-}
-
-.mobile-header {
-  display: none;
+  background: #fdfdfd;
 }
 
 .admin-main {
   margin-left: 280px;
   padding: 40px;
   min-height: 100vh;
+  background: #fafafa;
 }
 
-.admin-header {
-  margin-bottom: 32px;
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
 }
 
-.admin-title {
-  font-size: 2rem;
+.page-header {
+  margin-bottom: 40px;
+}
+
+.page-title {
+  font-size: 2.25rem;
   font-weight: 800;
   color: #111;
   margin: 0 0 8px 0;
+  letter-spacing: -0.03em;
 }
 
-.admin-subtitle {
+.page-subtitle {
   font-size: 1rem;
   color: #6B7280;
   margin: 0;
@@ -339,295 +344,373 @@ const handleSubmit = async () => {
   background: white;
   border-radius: 24px;
   padding: 40px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-  border: 1px solid #E5E7EB;
-}
-
-.shop-info-form {
-  max-width: 800px;
+  max-width: 960px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 10px 40px rgba(0,0,0,0.02);
+  border: 1px solid #f1f1f1;
 }
 
 .form-section {
-  margin-bottom: 48px;
-  padding-bottom: 48px;
-  border-bottom: 1px solid #E5E7EB;
+  margin-bottom: 40px;
+  padding-bottom: 40px;
+  border-bottom: 1px solid #f3f4f6;
 }
 
-.form-section:last-of-type {
+.form-section.last {
   border-bottom: none;
   margin-bottom: 0;
   padding-bottom: 0;
 }
 
 .section-title {
-  font-size: 1.5rem;
+  font-size: 1.15rem;
   font-weight: 700;
   color: #111;
-  margin: 0 0 8px 0;
-}
-
-.section-description {
-  font-size: 0.875rem;
-  color: #6B7280;
   margin: 0 0 24px 0;
-  line-height: 1.5;
 }
 
 .form-group {
-  margin-bottom: 24px;
+  margin-bottom: 32px;
 }
 
-.form-group label {
+.form-group:last-child {
+  margin-bottom: 0;
+}
+
+.form-label {
   display: block;
-  font-weight: 600;
-  color: #111;
-  margin-bottom: 8px;
   font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
 }
 
-.form-group label svg {
-  display: inline-block;
-  vertical-align: middle;
-}
-
-.input {
+.form-input {
   width: 100%;
   padding: 12px 16px;
-  border: 2px solid #E5E7EB;
+  border: 1px solid #e5e7eb;
   border-radius: 12px;
-  font-size: 1rem;
-  transition: all 0.2s;
-  font-family: inherit;
+  font-size: 0.95rem;
+  color: #111;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  background: #f9f9f9;
 }
 
-.input:focus {
+.form-input:focus {
   outline: none;
   border-color: #111;
-  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+  background: white;
+  box-shadow: 0 0 0 4px rgba(17, 17, 17, 0.05);
 }
 
-textarea.input {
+textarea.form-input {
   resize: vertical;
   min-height: 100px;
+  line-height: 1.5;
 }
 
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 24px;
-}
-
-.help-text {
-  font-size: 0.875rem;
+.form-help {
+  font-size: 0.8rem;
   color: #6B7280;
-  margin-top: 8px;
-  display: block;
+  margin-top: 6px;
 }
 
-.logo-upload-container {
+/* Logo Area */
+.logo-area {
   display: flex;
-  flex-direction: column;
-  gap: 12px;
+  gap: 20px;
+  align-items: flex-start;
 }
 
-.logo-input-wrapper {
+.logo-preview-box {
+  width: 110px;
+  height: 110px;
+  background: #f3f4f6;
+  border-radius: 16px;
+  border: 2px dashed #e5e7eb;
   display: flex;
   align-items: center;
-  gap: 16px;
-  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  overflow: visible;
+  transition: all 0.2s;
+  cursor: pointer;
+  flex-shrink: 0;
 }
 
-.input-divider {
-  color: #9CA3AF;
-  font-size: 0.875rem;
-  font-weight: 500;
-  white-space: nowrap;
+.logo-preview-box:hover {
+  border-color: #111;
+  background: #f0f0f0;
 }
 
-.btn-upload {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 20px;
+.logo-preview-box.has-logo {
+  border-style: solid;
   background: white;
-  border: 2px solid #E5E7EB;
-  border-radius: 12px;
-  color: #111;
+  border-color: #f1f1f1;
+}
+
+.logo-img {
+  width: 80%;
+  height: 80%;
+  object-fit: contain;
+}
+
+.logo-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  color: #9ca3af;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.logo-remove-btn {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 24px;
+  height: 24px;
+  background: #111;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  transition: transform 0.2s;
+}
+
+.logo-remove-btn:hover {
+  transform: scale(1.1);
+}
+
+.logo-actions {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 110px;
+}
+
+.url-input-container {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.form-input-small {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  background: #f9f9f9;
+}
+
+.form-input-small:focus {
+  outline: none;
+  border-color: #111;
+  background: white;
+}
+
+.btn-file-upload {
+  padding: 0 16px;
+  background: #111;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.8rem;
   font-weight: 600;
   cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-file-upload:hover {
+  background: #333;
+}
+
+/* Grids */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+}
+
+.social-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.social-input-group {
+  background: white;
+  border: 1px solid #eee;
+  border-radius: 16px;
+  padding: 20px;
   transition: all 0.2s;
-  white-space: nowrap;
 }
 
-.btn-upload:hover:not(:disabled) {
+.social-input-group:focus-within {
   border-color: #111;
-  background: #F9FAFB;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
 }
 
-.btn-upload:disabled {
+.social-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #111;
+  margin-bottom: 12px;
+}
+
+.social-input-group .form-input {
+  height: 40px;
+  padding: 8px 12px;
+  font-size: 0.85rem;
+  background: white;
+  border-color: #e5e7eb;
+}
+
+/* Footer & Buttons */
+.form-footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 20px;
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid #f3f4f6;
+}
+
+.btn-cancel {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #6B7280;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.btn-cancel:hover {
+  color: #111;
+}
+
+.btn-save {
+  padding: 12px 32px;
+  background: #111;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.2s;
+}
+
+.btn-save:hover:not(:disabled) {
+  background: #000;
+  transform: translateY(-1px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.btn-save:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
 
-.logo-preview {
-  margin-top: 16px;
-  padding: 20px;
-  background: #F9FAFB;
-  border-radius: 16px;
-  border: 2px dashed #E5E7EB;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
+.error-msg {
+  color: #ef4444;
+  font-size: 0.8rem;
+  margin-top: 8px;
 }
 
-.preview-header {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.btn-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
 }
 
-.btn-remove-logo {
-  background: none;
-  border: none;
-  color: #DC2626;
-  font-size: 0.875rem;
-  font-weight: 600;
-  cursor: pointer;
-  padding: 4px 8px;
-  border-radius: 6px;
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
-
-.btn-remove-logo:hover {
-  background: #FEE2E2;
+.mobile-header{
+  display: none;
 }
-
-.preview-label {
-  font-size: 0.75rem;
-  color: #6B7280;
-  font-weight: 600;
-}
-
-.preview-image {
-  max-height: 80px;
-  max-width: 100%;
-  width: auto;
-  height: auto;
-  object-fit: contain;
-  background: white;
-  padding: 12px;
-  border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-}
-
-.preview-error {
-  font-size: 0.75rem;
-  color: #DC2626;
-  margin-top: 0;
-}
-
-.form-actions {
-  display: flex;
-  gap: 12px;
-  justify-content: flex-end;
-  margin-top: 40px;
-  padding-top: 40px;
-  border-top: 1px solid #E5E7EB;
-}
-
-.btn {
-  padding: 14px 28px;
-  border-radius: 12px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.2s;
-  border: none;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 1rem;
-  text-align: center;
-}
-
-.btn-primary {
-  background: #111;
-  color: white;
-}
-
-.btn-primary:hover:not(:disabled) {
-  background: #000;
-}
-
-.btn-primary:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.btn-secondary {
-  background: #F3F4F6;
-  color: #111;
-}
-
-.btn-secondary:hover {
-  background: #E5E7EB;
-}
-
- .form-actions{
-    flex-direction: column;
-  }
 @media (max-width: 1024px) {
   .admin-main {
     margin-left: 0;
     padding: 20px;
+    padding-top: 84px;
   }
   
   .mobile-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 16px 20px;
+    position: fixed;
+    top: 0; left: 0; right: 0;
     background: white;
-    border-bottom: 1px solid #E5E7EB;
-    position: sticky;
-    top: 0;
     z-index: 1000;
+    border-bottom: 1px solid #f3f4f6;
+    height: 64px;
+    padding: 0 20px;
   }
-  
+
   .menu-btn {
     background: none;
     border: none;
     padding: 8px;
-    cursor: pointer;
     color: #111;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
   }
-  
+
   .mobile-title {
     font-weight: 700;
-    font-size: 1.125rem;
+    font-size: 1rem;
+    color: #111;
   }
-  
+
   .home-btn {
     color: #111;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   
   .admin-content {
-    padding: 24px 20px;
+    padding: 24px 16px;
+    border-radius: 16px;
   }
   
-  .form-row {
+  .form-grid {
     grid-template-columns: 1fr;
+    gap: 0;
+  }
+  
+  .logo-area {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .logo-preview-box {
+    width: 100%;
+    max-width: 200px;
+    height: 140px;
   }
 }
 
-@media (min-width: 768px) {
-  .form-actions{
-    flex-direction: row;
-  }
-  .form-row {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .logo-input-wrapper{
-    flex-direction: row;
-  }
-}
 </style>
