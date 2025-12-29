@@ -462,6 +462,7 @@ const deletePlan = async (plan) => {
   min-height: 100vh;
   display: flex;
   background: #F5F7FA;
+  width: 100%;
 }
 
 /* Mobile Header */
@@ -507,10 +508,29 @@ const deletePlan = async (plan) => {
   color: #111;
 }
 
+/* Main Content */
 .admin-main {
   flex: 1;
   margin-left: 280px;
   min-height: 100vh;
+}
+
+@media (max-width: 1024px) {
+  .admin-main {
+    margin-left: 0;
+    padding-top: 60px;
+  }
+}
+
+@media (max-width: 640px) {
+  .admin-title {
+    font-size: 1.5rem !important;
+    line-height: 1.2 !important;
+  }
+  
+  .admin-header {
+    padding: 20px !important;
+  }
 }
 
 .admin-header {
@@ -568,6 +588,12 @@ const deletePlan = async (plan) => {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
   gap: 24px;
+}
+
+@media (max-width: 640px) {
+  .plans-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .plan-card {
@@ -989,6 +1015,25 @@ const deletePlan = async (plan) => {
 .modal-close:hover {
   background: #F3F4F6;
   color: #111;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 20px;
+  padding: 32px;
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+@media (max-width: 640px) {
+  .modal-content {
+    width: 95%;
+    padding: 20px;
+    border-radius: 16px;
+  }
 }
 
 .modal-form {

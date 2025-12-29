@@ -815,6 +815,7 @@ const getSubscriptionOffset = (status, stats) => {
   min-height: 100vh;
   display: flex;
   background: #F5F7FA;
+  width: 100%;
 }
 
 /* Mobile Header */
@@ -867,6 +868,31 @@ const getSubscriptionOffset = (status, stats) => {
   min-height: 100vh;
 }
 
+@media (max-width: 1024px) {
+  .mobile-header {
+    display: flex;
+  }
+  
+  .admin-main {
+    margin-left: 0;
+    padding: 60px 0 0 0;
+    width: 100%;
+    min-width: 0;
+  }
+  
+  .admin-header {
+    padding: 16px 20px !important;
+  }
+  
+  .admin-content {
+    padding: 16px 20px !important;
+  }
+  
+  .admin-title {
+    font-size: 1.75rem !important;
+  }
+}
+
 .admin-header {
   background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
   color: white;
@@ -884,6 +910,21 @@ const getSubscriptionOffset = (status, stats) => {
   font-weight: 900;
   margin-bottom: 8px;
   letter-spacing: -0.02em;
+}
+
+@media (max-width: 640px) {
+  .admin-title {
+    font-size: 1.25rem !important;
+    line-height: 1.2 !important;
+  }
+  
+  .admin-header {
+    padding: 20px !important;
+  }
+  
+  .admin-content {
+    padding: 16px !important;
+  }
 }
 
 .admin-subtitle {
@@ -927,6 +968,12 @@ const getSubscriptionOffset = (status, stats) => {
   padding: 32px;
 }
 
+@media (max-width: 640px) {
+  .admin-content {
+    padding: 16px !important;
+  }
+}
+
 /* Period Selector */
 .period-selector {
   display: flex;
@@ -938,6 +985,22 @@ const getSubscriptionOffset = (status, stats) => {
   box-shadow: 0 1px 3px rgba(0,0,0,0.05);
   border: 1px solid #E5E7EB;
   width: fit-content;
+  max-width: 100%;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 640px) {
+  .period-selector {
+    width: 100%;
+    justify-content: stretch;
+  }
+  
+  .period-btn {
+    flex: 1;
+    min-width: 0;
+    font-size: 0.75rem;
+    padding: 8px 12px;
+  }
 }
 
 .period-btn {
@@ -1034,6 +1097,19 @@ const getSubscriptionOffset = (status, stats) => {
   grid-template-columns: repeat(4, 1fr);
   gap: 24px;
   margin-bottom: 32px;
+}
+
+@media (max-width: 1280px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .stats-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
 }
 
 .stat-card {
@@ -1137,6 +1213,18 @@ const getSubscriptionOffset = (status, stats) => {
   gap: 32px;
 }
 
+@media (max-width: 1280px) {
+  .two-column-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+  }
+  
+  .left-column,
+  .right-column {
+    width: 100%;
+  }
+}
+
 .left-column,
 .right-column {
   display: flex;
@@ -1188,13 +1276,27 @@ const getSubscriptionOffset = (status, stats) => {
 }
 
 .chart-container {
-  display: grid;
-  grid-template-columns: 300px 1fr;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
   gap: 32px;
   margin-bottom: 24px;
   padding: 24px;
   background: #F9FAFB;
   border-radius: 16px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+  .chart-container {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .chart-legend {
+    width: 100%;
+    align-items: flex-start;
+  }
 }
 
 .pie-chart-wrapper {
@@ -1282,6 +1384,18 @@ const getSubscriptionOffset = (status, stats) => {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 12px;
+}
+
+@media (max-width: 1024px) {
+  .status-cards {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .status-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 .status-card {

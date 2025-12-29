@@ -1,67 +1,32 @@
 <template>
   <div class="platform-admin-page">
-    <!-- Sidebar -->
-    <aside class="admin-sidebar">
-      <div class="sidebar-header">
-        <div class="sidebar-logo">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
-            <path d="M2 17l10 5 10-5"></path>
-            <path d="M2 12l10 5 10-5"></path>
-          </svg>
-        </div>
-        <h2 class="sidebar-title">Панель управления</h2>
-      </div>
-      
-      <nav class="sidebar-nav">
-        <NuxtLink to="/platform/admin" class="nav-item" :class="{ active: $route.path === '/platform/admin' }">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="3" y="3" width="7" height="7"></rect>
-            <rect x="14" y="3" width="7" height="7"></rect>
-            <rect x="14" y="14" width="7" height="7"></rect>
-            <rect x="3" y="14" width="7" height="7"></rect>
-          </svg>
-          <span>Главная</span>
-        </NuxtLink>
-        
-        <NuxtLink to="/platform/admin/shops" class="nav-item" :class="{ active: $route.path === '/platform/admin/shops' }">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M20 7h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v3H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2z"></path>
-          </svg>
-          <span>Магазины</span>
-        </NuxtLink>
-        
-        <NuxtLink to="/platform/admin/users" class="nav-item" :class="{ active: $route.path === '/platform/admin/users' }">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-            <circle cx="9" cy="7" r="4"></circle>
-            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-          </svg>
-          <span>Пользователи</span>
-        </NuxtLink>
-        
-        <!-- <NuxtLink to="/platform/admin/orders" class="nav-item" :class="{ active: $route.path === '/platform/admin/orders' }">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-            <polyline points="14 2 14 8 20 8"></polyline>
-            <line x1="16" y1="13" x2="8" y2="13"></line>
-            <line x1="16" y1="17" x2="8" y2="17"></line>
-          </svg>
-          <span>Заказы</span>
-        </NuxtLink> -->
-      </nav>
-      
-      <div class="sidebar-footer">
-        <NuxtLink to="/" class="back-link">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="19" y1="12" x2="5" y2="12"></line>
-            <polyline points="12 19 5 12 12 5"></polyline>
-          </svg>
-          <span>На главную</span>
-        </NuxtLink>
-      </div>
-    </aside>
+    <!-- Mobile Header -->
+    <header class="mobile-header">
+      <button class="menu-btn" @click="sidebarOpen = !sidebarOpen">
+        <svg v-if="!sidebarOpen" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+        <svg v-else width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+      <span class="mobile-title">Заказы</span>
+      <NuxtLink to="/" class="home-btn">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+      </NuxtLink>
+    </header>
+
+    <PlatformAdminSidebar 
+      current-route="orders" 
+      :model-value="sidebarOpen"
+      @update:model-value="sidebarOpen = $event"
+    />
 
     <!-- Main Content -->
     <main class="admin-main">
@@ -223,6 +188,7 @@ const formatDate = (dateString) => {
   min-height: 100vh;
   display: flex;
   background: #FAFAFA;
+  width: 100%;
 }
 
 /* New mobile header styles */
@@ -265,19 +231,16 @@ const formatDate = (dateString) => {
 
 /* Responsive adjustments */
 @media (max-width: 1024px) {
-  .admin-sidebar {
-    display: none; /* Hide default sidebar on smaller screens */
-  }
-
   .mobile-header {
     display: flex; /* Show mobile header */
   }
 
   .admin-main {
     margin-left: 0; /* No margin on smaller screens */
+    padding-top: 80px;
+    padding-left: 16px;
+    padding-right: 16px;
   }
-
-  /* If PlatformAdminSidebar is a modal/overlay, it will handle its own positioning */
 }
 
 
@@ -293,6 +256,17 @@ const formatDate = (dateString) => {
   margin-bottom: 8px;
 }
 
+@media (max-width: 640px) {
+  .admin-title {
+    font-size: 1.25rem !important;
+    line-height: 1.2 !important;
+  }
+  
+  .admin-header {
+    padding: 20px !important;
+  }
+}
+
 .admin-subtitle {
   font-size: 1.125rem;
   opacity: 0.9;
@@ -300,6 +274,12 @@ const formatDate = (dateString) => {
 
 .admin-content {
   padding: 40px;
+}
+
+@media (max-width: 640px) {
+  .admin-content {
+    padding: 16px !important;
+  }
 }
 
 .orders-list {

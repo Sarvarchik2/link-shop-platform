@@ -619,6 +619,7 @@ const exportData = () => {
   min-height: 100vh;
   display: flex;
   background: #F5F7FA;
+  width: 100%;
 }
 
 /* Mobile Header */
@@ -670,6 +671,13 @@ const exportData = () => {
   min-height: 100vh;
 }
 
+@media (max-width: 1024px) {
+  .admin-main {
+    margin-left: 0;
+    padding-top: 60px;
+  }
+}
+
 .admin-header {
   background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
   color: white;
@@ -687,6 +695,21 @@ const exportData = () => {
   font-weight: 900;
   margin-bottom: 8px;
   letter-spacing: -0.02em;
+}
+
+@media (max-width: 640px) {
+  .admin-title {
+    font-size: 1.25rem !important;
+    line-height: 1.2 !important;
+  }
+  
+  .admin-header {
+    padding: 20px !important;
+  }
+  
+  .admin-content {
+    padding: 16px !important;
+  }
 }
 
 .admin-subtitle {
@@ -726,12 +749,31 @@ const exportData = () => {
   padding: 32px;
 }
 
+@media (max-width: 640px) {
+  .admin-content {
+    padding: 16px !important;
+  }
+}
+
 /* Statistics Overview */
 .stats-overview {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 20px;
   margin-bottom: 24px;
+}
+
+@media (max-width: 1280px) {
+  .stats-overview {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .stats-overview {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
 }
 
 .stat-card {
@@ -808,6 +850,27 @@ const exportData = () => {
   gap: 16px;
   align-items: center;
   flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+  .filters-section {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .filters-group {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .search-box {
+    min-width: 0;
+  }
+  
+  .filter-select,
+  .clear-filters-btn {
+    width: 100%;
+  }
 }
 
 .search-box {
@@ -934,11 +997,14 @@ const exportData = () => {
 }
 
 .users-table-wrapper {
+  width: 100%;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .users-table {
   width: 100%;
+  min-width: 800px;
   border-collapse: collapse;
 }
 

@@ -382,6 +382,7 @@ const deleteOffer = async (offer) => {
   min-height: 100vh;
   display: flex;
   background: #F5F7FA;
+  width: 100%;
 }
 
 .mobile-header {
@@ -426,10 +427,18 @@ const deleteOffer = async (offer) => {
   color: #111;
 }
 
+/* Main Content */
 .admin-main {
   flex: 1;
   margin-left: 280px;
   min-height: 100vh;
+}
+
+@media (max-width: 1024px) {
+  .admin-main {
+    margin-left: 0;
+    padding-top: 60px;
+  }
 }
 
 .admin-header {
@@ -444,11 +453,38 @@ const deleteOffer = async (offer) => {
   align-items: flex-start;
 }
 
+@media (max-width: 768px) {
+  .header-content {
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .create-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
 .admin-title {
   font-size: 2.5rem;
   font-weight: 800;
   color: white;
   margin: 0 0 8px 0;
+}
+
+@media (max-width: 640px) {
+  .admin-title {
+    font-size: 1.25rem !important;
+    line-height: 1.2 !important;
+  }
+  
+  .admin-header {
+    padding: 20px !important;
+  }
+  
+  .admin-content {
+    padding: 16px !important;
+  }
 }
 
 .admin-subtitle {
@@ -480,10 +516,23 @@ const deleteOffer = async (offer) => {
   padding: 40px;
 }
 
+@media (max-width: 640px) {
+  .admin-content {
+    padding: 16px !important;
+  }
+}
+
+/* Offers Grid */
 .offers-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
   gap: 24px;
+}
+
+@media (max-width: 640px) {
+  .offers-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .offer-card {
@@ -747,6 +796,24 @@ const deleteOffer = async (offer) => {
   box-shadow: 0 20px 60px rgba(0,0,0,0.3);
 }
 
+@media (max-width: 768px) {
+  .modal-content {
+    width: 95%;
+    border-radius: 20px;
+    padding: 0;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .modal-header,
+  .modal-form,
+  .modal-actions {
+    padding: 20px;
+  }
+}
+
 .modal-header {
   display: flex;
   justify-content: space-between;
@@ -922,6 +989,36 @@ const deleteOffer = async (offer) => {
   .create-btn {
     width: 100%;
     justify-content: center;
+  }
+}
+</style>
+
+<style scoped>
+/* Responsive improvements */
+@media (max-width: 640px) {
+  .offer-header {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .offer-badges {
+    margin-top: 8px;
+  }
+  
+  .offer-actions {
+    margin-top: 0;
+    justify-content: flex-end;
+    width: 100%;
+  }
+  
+  .offer-footer {
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  
+  .toggle-btn {
+    width: 100%;
   }
 }
 </style>
