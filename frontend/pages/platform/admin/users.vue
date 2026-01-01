@@ -14,7 +14,7 @@
           <line x1="6" y1="6" x2="18" y2="18"></line>
         </svg>
       </button>
-      <span class="mobile-title">Пользователи</span>
+      <span class="mobile-title">{{ $t('platformAdmin.users.title') }}</span>
       <NuxtLink to="/" class="home-btn">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
@@ -31,8 +31,8 @@
       <div class="admin-header">
         <div class="header-content">
           <div>
-            <h1 class="admin-title">Управление пользователями</h1>
-            <p class="admin-subtitle">Все зарегистрированные пользователи платформы</p>
+            <h1 class="admin-title">{{ $t('platformAdmin.users.title') }}</h1>
+            <p class="admin-subtitle">{{ $t('platformAdmin.users.subtitle') }}</p>
           </div>
           <button @click="refresh" class="refresh-btn" :disabled="pending">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -41,7 +41,7 @@
               <polyline points="1 20 1 14 7 14"></polyline>
               <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
             </svg>
-            <span>Обновить</span>
+            <span>{{ $t('platformAdmin.dashboard.refresh') }}</span>
           </button>
         </div>
       </div>
@@ -60,7 +60,7 @@
             </div>
             <div class="stat-content">
               <div class="stat-value">{{ users?.length || 0 }}</div>
-              <div class="stat-label">Всего пользователей</div>
+              <div class="stat-label">{{ $t('platformAdmin.users.total') }}</div>
             </div>
           </div>
 
@@ -74,7 +74,7 @@
             </div>
             <div class="stat-content">
               <div class="stat-value">{{ adminUsersCount }}</div>
-              <div class="stat-label">Админов платформы</div>
+              <div class="stat-label">{{ $t('platformAdmin.users.admins') }}</div>
             </div>
           </div>
 
@@ -88,7 +88,7 @@
             </div>
             <div class="stat-content">
               <div class="stat-value">{{ shopOwnersCount }}</div>
-              <div class="stat-label">Владельцев магазинов</div>
+              <div class="stat-label">{{ $t('platformAdmin.users.shopOwners') }}</div>
             </div>
           </div>
 
@@ -101,7 +101,7 @@
             </div>
             <div class="stat-content">
               <div class="stat-value">{{ regularUsersCount }}</div>
-              <div class="stat-label">Обычных пользователей</div>
+              <div class="stat-label">{{ $t('platformAdmin.users.regular') }}</div>
             </div>
           </div>
         </div>
@@ -113,15 +113,16 @@
               <circle cx="11" cy="11" r="8"></circle>
               <path d="m21 21-4.35-4.35"></path>
             </svg>
-            <input v-model="searchQuery" type="text" placeholder="Поиск по имени, телефону..." class="search-input" />
+            <input v-model="searchQuery" type="text" :placeholder="$t('platformAdmin.users.search')"
+              class="search-input" />
           </div>
 
           <div class="filters-group">
             <select v-model="filterRole" class="filter-select">
-              <option value="">Все роли</option>
-              <option value="platform_admin">Админ платформы</option>
-              <option value="shop_owner">Владелец магазина</option>
-              <option value="user">Пользователь</option>
+              <option value="">{{ $t('platformAdmin.users.filterRole') }}</option>
+              <option value="platform_admin">{{ $t('platformAdmin.users.roles.admin') }}</option>
+              <option value="shop_owner">{{ $t('platformAdmin.users.roles.owner') }}</option>
+              <option value="user">{{ $t('platformAdmin.users.roles.user') }}</option>
             </select>
 
             <button @click="clearFilters" class="clear-filters-btn">
@@ -129,7 +130,7 @@
                 <line x1="18" y1="6" x2="6" y2="18"></line>
                 <line x1="6" y1="6" x2="18" y2="18"></line>
               </svg>
-              Сбросить
+              {{ $t('platformAdmin.shops.clear') }}
             </button>
           </div>
         </div>
@@ -141,21 +142,22 @@
             <line x1="12" y1="8" x2="12" y2="12"></line>
             <line x1="12" y1="16" x2="12.01" y2="16"></line>
           </svg>
-          <p class="error-message">Ошибка загрузки данных: {{ error.message || 'Неизвестная ошибка' }}</p>
-          <button @click="refresh" class="retry-btn">Повторить</button>
+          <p class="error-message">{{ $t('platformAdmin.dashboard.error') }}: {{ error.message || 'Unknown' }}</p>
+          <button @click="refresh" class="retry-btn">{{ $t('platformAdmin.dashboard.refresh') }}</button>
         </div>
 
         <!-- Loading State -->
         <div v-else-if="pending" class="loading-state">
           <div class="loading-spinner"></div>
-          <p>Пользователи загружаются...</p>
+          <p>{{ $t('platformAdmin.dashboard.loading') }}</p>
         </div>
 
         <!-- Table -->
         <div v-else class="table-container">
           <div class="table-header">
             <div class="table-info">
-              <span>Показано: {{ displayedUsers.length }} из {{ users?.length || 0 }}</span>
+              <span>{{ $t('common.showing') }} {{ displayedUsers.length }} {{ $t('common.of') }} {{ users?.length || 0
+              }}</span>
             </div>
             <div class="table-actions">
               <button @click="exportData" class="export-btn">
@@ -164,7 +166,7 @@
                   <polyline points="7 10 12 15 17 10"></polyline>
                   <line x1="12" y1="15" x2="12" y2="3"></line>
                 </svg>
-                Экспорт
+                {{ $t('platformAdmin.shops.export') }}
               </button>
             </div>
           </div>
@@ -184,7 +186,7 @@
                   </th>
                   <th @click="sortBy('name')" class="sortable">
                     <div class="th-content">
-                      Имя
+                      {{ $t('platformAdmin.users.table.name') }}
                       <svg v-if="sortField === 'name'" width="12" height="12" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" :class="{ reverse: sortOrder === 'desc' }">
                         <polyline points="18 15 12 9 6 15"></polyline>
@@ -193,7 +195,7 @@
                   </th>
                   <th @click="sortBy('phone')" class="sortable">
                     <div class="th-content">
-                      Телефон
+                      {{ $t('platformAdmin.users.table.phone') }}
                       <svg v-if="sortField === 'phone'" width="12" height="12" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" :class="{ reverse: sortOrder === 'desc' }">
                         <polyline points="18 15 12 9 6 15"></polyline>
@@ -202,7 +204,7 @@
                   </th>
                   <th @click="sortBy('role')" class="sortable">
                     <div class="th-content">
-                      Роль
+                      {{ $t('platformAdmin.users.table.role') }}
                       <svg v-if="sortField === 'role'" width="12" height="12" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" :class="{ reverse: sortOrder === 'desc' }">
                         <polyline points="18 15 12 9 6 15"></polyline>
@@ -211,7 +213,7 @@
                   </th>
                   <th @click="sortBy('shops')" class="sortable">
                     <div class="th-content">
-                      Магазинов
+                      {{ $t('platformAdmin.users.table.shops') }}
                       <svg v-if="sortField === 'shops'" width="12" height="12" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" :class="{ reverse: sortOrder === 'desc' }">
                         <polyline points="18 15 12 9 6 15"></polyline>
@@ -220,7 +222,7 @@
                   </th>
                   <th @click="sortBy('orders')" class="sortable">
                     <div class="th-content">
-                      Заказов
+                      {{ $t('platformAdmin.users.table.orders') }}
                       <svg v-if="sortField === 'orders'" width="12" height="12" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" :class="{ reverse: sortOrder === 'desc' }">
                         <polyline points="18 15 12 9 6 15"></polyline>
@@ -229,14 +231,14 @@
                   </th>
                   <th @click="sortBy('created_at')" class="sortable">
                     <div class="th-content">
-                      Дата регистрации
+                      {{ $t('platformAdmin.users.table.created') }}
                       <svg v-if="sortField === 'created_at'" width="12" height="12" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" :class="{ reverse: sortOrder === 'desc' }">
                         <polyline points="18 15 12 9 6 15"></polyline>
                       </svg>
                     </div>
                   </th>
-                  <th>Действия</th>
+                  <th>{{ $t('platformAdmin.users.table.actions') }}</th>
                 </tr>
               </thead>
               <tbody>
@@ -307,8 +309,8 @@
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                 <circle cx="12" cy="7" r="4"></circle>
               </svg>
-              <p>Пользователи не найдены</p>
-              <p class="empty-subtitle">Попробуйте изменить фильтры поиска</p>
+              <p>{{ $t('platformAdmin.users.notFound') }}</p>
+              <p class="empty-subtitle"></p>
             </div>
           </div>
 
@@ -588,6 +590,7 @@ watch([searchQuery, filterRole], () => {
 })
 
 // Functions
+const { t } = useI18n()
 const clearFilters = () => {
   searchQuery.value = ''
   filterRole.value = ''
@@ -609,7 +612,7 @@ const getUserInitials = (user) => {
 }
 
 const getUserName = (user) => {
-  return `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.phone || 'Без имени'
+  return `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.phone || t('common.noName')
 }
 
 const getRoleClass = (role) => {
@@ -623,9 +626,9 @@ const getRoleClass = (role) => {
 
 const getRoleText = (role) => {
   const roleMap = {
-    'platform_admin': 'Админ платформы',
-    'shop_owner': 'Владелец магазина',
-    'user': 'Пользователь'
+    'platform_admin': t('platformAdmin.users.roles.admin'),
+    'shop_owner': t('platformAdmin.users.roles.owner'),
+    'user': t('platformAdmin.users.roles.user')
   }
   return roleMap[role] || role
 }
@@ -666,7 +669,7 @@ const exportData = () => {
   link.href = URL.createObjectURL(blob)
   link.download = `users-${new Date().toISOString().split('T')[0]}.csv`
   link.click()
-  toast.success('Данные экспортированы')
+  toast.success(t('common.saved'))
 }
 </script>
 

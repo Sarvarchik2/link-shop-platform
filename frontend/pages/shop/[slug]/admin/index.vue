@@ -14,7 +14,7 @@
           <line x1="6" y1="6" x2="18" y2="18"></line>
         </svg>
       </button>
-      <span class="mobile-title">Админка</span>
+      <span class="mobile-title">{{ $t('admin.intro') }}</span>
       <NuxtLink :to="`/${shopSlug}`" class="home-btn">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
@@ -31,8 +31,8 @@
         <ClientOnly>
           <div class="dashboard-header">
             <div class="header-left">
-              <h1 class="page-title">{{ shop?.name || 'Загрузка...' }} - Админка</h1>
-              <p class="page-subtitle">Добро пожаловать! Статус вашего магазина.</p>
+              <h1 class="page-title">{{ shop?.name || $t('common.loading') }} - {{ $t('admin.intro') }}</h1>
+              <p class="page-subtitle">{{ $t('admin.welcome') }}</p>
             </div>
             <div class="header-right">
               <span v-if="shop" :class="['status-badge', getStatusClass(shop?.subscription_status)]">
@@ -41,7 +41,7 @@
               <NuxtLink
                 v-if="shop && (shop?.subscription_status === 'trial' || shop?.subscription_status === 'expired')"
                 :to="`/shop/${shopSlug}/subscription`" class="upgrade-btn">
-                Выбрать подписку
+                {{ $t('admin.selectPlan') }}
               </NuxtLink>
             </div>
           </div>
@@ -57,17 +57,17 @@
             <div v-if="stats?.plan_name" class="section plan-section">
               <div class="plan-header">
                 <div>
-                  <h3 class="section-title mb-1">Ваш тариф: {{ stats.plan_name }}</h3>
-                  <p class="text-sm text-gray-500">Использование лимитов</p>
+                  <h3 class="section-title mb-1">{{ $t('admin.yourPlan') }}: {{ stats.plan_name }}</h3>
+                  <p class="text-sm text-gray-500">{{ $t('admin.usage') }}</p>
                 </div>
                 <NuxtLink :to="`/shop/${shopSlug}/subscription`" class="upgrade-link">
-                  Улучшить тариф
+                  {{ $t('admin.upgrade') }}
                 </NuxtLink>
               </div>
 
               <div class="limit-bar-container">
                 <div class="limit-info">
-                  <span class="limit-label">Товары</span>
+                  <span class="limit-label">{{ $t('admin.products') }}</span>
                   <span class="limit-value">
                     {{ stats.total_products }} / {{ stats.plan_limit_products || '∞' }}
                   </span>
@@ -77,7 +77,7 @@
                     :style="{ width: `${stats.products_usage_percent || 0}%` }"></div>
                 </div>
                 <p v-if="stats.products_usage_percent >= 90" class="limit-warning">
-                  Вы почти достигли лимита! Обновите тариф для добавления новых товаров.
+                  {{ $t('admin.limitWarning') }}
                 </p>
               </div>
             </div>
@@ -160,7 +160,7 @@
 
             <!-- Orders by Status -->
             <div class="section orders-section">
-              <h2 class="section-title">Заказы по статусу</h2>
+              <h2 class="section-title">{{ $t('admin.ordersByStatus') }}</h2>
               <div class="status-grid">
                 <div class="status-card pending">
                   <div class="status-icon">
@@ -251,7 +251,7 @@
 
             <!-- Period Comparison -->
             <div class="section comparison-section">
-              <h2 class="section-title">Общие показатели</h2>
+              <h2 class="section-title">{{ $t('admin.generalStats') }}</h2>
               <div class="comparison-grid">
                 <div class="comparison-card">
                   <div class="comparison-header">
@@ -334,6 +334,7 @@
 </template>
 
 <script setup>
+const { t } = useI18n()
 definePageMeta({
   middleware: ['auth', 'shop-owner']
 })
@@ -356,12 +357,12 @@ const currentRoute = computed(() => {
 })
 
 const selectedPeriod = ref('all')
-const periods = [
-  { key: 'today', label: 'Сегодня' },
-  { key: 'week', label: 'Эта неделя' },
-  { key: 'month', label: 'Этот месяц' },
-  { key: 'all', label: 'Все время' }
-]
+const periods = computed(() => [
+  { key: 'today', label: t('admin.periods.today') },
+  { key: 'week', label: t('admin.periods.week') },
+  { key: 'month', label: t('admin.periods.month') },
+  { key: 'all', label: t('admin.periods.all') }
+])
 
 const { data: shop } = await useFetch(`http://localhost:8000/platform/shops/${shopSlug}`, {
   server: false,
@@ -407,20 +408,20 @@ const getStatusClass = (status) => {
 
 const getStatusText = (status) => {
   const statusMap = {
-    'trial': 'Пробный период',
-    'active': 'Активна',
-    'expired': 'Истекла',
-    'cancelled': 'Отменена'
+    'trial': t('admin.status.trial'),
+    'active': t('admin.status.active'),
+    'expired': t('admin.status.expired'),
+    'cancelled': t('admin.status.cancelled')
   }
   return statusMap[status] || status
 }
 
 const periodLabel = computed(() => {
   switch (selectedPeriod.value) {
-    case 'today': return "Сегодняшняя"
-    case 'week': return "Недельная"
-    case 'month': return "Месячная"
-    default: return 'Общая'
+    case 'today': return t('admin.periodLabel.today')
+    case 'week': return t('admin.periodLabel.week')
+    case 'month': return t('admin.periodLabel.month')
+    default: return t('admin.periodLabel.total')
   }
 })
 

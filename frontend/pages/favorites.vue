@@ -1,33 +1,31 @@
 <template>
   <div class="favorites-page">
     <AppHeader />
-    
+
     <main class="container py-8">
       <div class="page-header">
-        <h1 class="page-title">Sevimlilar</h1>
-        <p class="page-subtitle">Sizning sevimli mahsulotlaringiz</p>
+        <h1 class="page-title">{{ $t('favorites.title') }}</h1>
+        <p class="page-subtitle">{{ $t('favorites.subtitle') }}</p>
       </div>
 
       <div v-if="pending" class="loading-state">
         <div class="spinner"></div>
-        <p>Yuklanmoqda...</p>
+        <p>{{ $t('common.loading') }}</p>
       </div>
 
       <div v-else-if="favoriteProducts.length === 0" class="empty-state">
         <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+          <path
+            d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
+          </path>
         </svg>
-        <h2>Sevimlilar ro'yxati bo'sh</h2>
-        <p>Yoqtirgan mahsulotlaringizni qo'shing!</p>
-        <NuxtLink to="/" class="btn-explore">Mahsulotlarni ko'rish</NuxtLink>
+        <h2>{{ $t('favorites.empty_title') }}</h2>
+        <p>{{ $t('favorites.empty_text') }}</p>
+        <NuxtLink to="/" class="btn-explore">{{ $t('favorites.explore_button') }}</NuxtLink>
       </div>
 
       <div v-else class="products-grid">
-        <ProductCard 
-          v-for="product in favoriteProducts" 
-          :key="product.id" 
-          :product="product"
-        />
+        <ProductCard v-for="product in favoriteProducts" :key="product.id" :product="product" />
       </div>
     </main>
   </div>
@@ -38,21 +36,27 @@ definePageMeta({
   middleware: 'auth'
 })
 
-const { data: products, pending, refresh } = await useFetch('http://localhost:8000/products', {
+const config = useRuntimeConfig()
+const { data: products, pending, refresh } = await useFetch(`${config.public.apiBase}/products`, {
   server: false
 })
 
 const favoriteProducts = computed(() => {
-  return products.value?.filter(p => p.is_favorite) || []
+  if (!products.value || !Array.isArray(products.value)) return []
+  return products.value.filter(p => p.is_favorite)
 })
 
 // Refresh every 2 seconds to update favorites
-const refreshInterval = setInterval(() => {
-  refresh()
-}, 2000)
+let refreshInterval
+
+onMounted(() => {
+  refreshInterval = setInterval(() => {
+    refresh()
+  }, 2000)
+})
 
 onUnmounted(() => {
-  clearInterval(refreshInterval)
+  if (refreshInterval) clearInterval(refreshInterval)
 })
 </script>
 
@@ -98,8 +102,13 @@ onUnmounted(() => {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .empty-state {
@@ -119,6 +128,7 @@ onUnmounted(() => {
   font-weight: 800;
   color: #111;
   margin: 0 0 8px 0;
+  letter-spacing: -0.02em;
 }
 
 .empty-state p {
@@ -152,7 +162,7 @@ onUnmounted(() => {
   .page-title {
     font-size: 2rem;
   }
-  
+
   .products-grid {
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
     gap: 16px;

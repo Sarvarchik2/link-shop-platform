@@ -14,7 +14,7 @@
           <line x1="6" y1="6" x2="18" y2="18"></line>
         </svg>
       </button>
-      <span class="mobile-title">Магазины</span>
+      <span class="mobile-title">{{ $t('platformAdmin.shops.title') }}</span>
       <NuxtLink to="/" class="home-btn">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
@@ -31,8 +31,8 @@
       <div class="admin-header">
         <div class="header-content">
           <div>
-            <h1 class="admin-title">Управление магазинами</h1>
-            <p class="admin-subtitle">Все зарегистрированные магазины на платформе</p>
+            <h1 class="admin-title">{{ $t('platformAdmin.shops.title') }}</h1>
+            <p class="admin-subtitle">{{ $t('platformAdmin.shops.subtitle') }}</p>
           </div>
           <button @click="refresh" class="refresh-btn" :disabled="pending">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -41,7 +41,7 @@
               <polyline points="1 20 1 14 7 14"></polyline>
               <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
             </svg>
-            <span>Обновить</span>
+            <span>{{ $t('platformAdmin.dashboard.refresh') }}</span>
           </button>
         </div>
       </div>
@@ -59,7 +59,7 @@
             </div>
             <div class="stat-content">
               <div class="stat-value">{{ shops?.length || 0 }}</div>
-              <div class="stat-label">Всего магазинов</div>
+              <div class="stat-label">{{ $t('platformAdmin.shops.total') }}</div>
             </div>
           </div>
 
@@ -71,7 +71,7 @@
             </div>
             <div class="stat-content">
               <div class="stat-value">{{ activeShopsCount }}</div>
-              <div class="stat-label">Активных</div>
+              <div class="stat-label">{{ $t('platformAdmin.shops.active') }}</div>
             </div>
           </div>
 
@@ -84,7 +84,7 @@
             </div>
             <div class="stat-content">
               <div class="stat-value">{{ trialShopsCount }}</div>
-              <div class="stat-label">Пробный период</div>
+              <div class="stat-label">{{ $t('platformAdmin.shops.trial') }}</div>
             </div>
           </div>
 
@@ -97,7 +97,7 @@
             </div>
             <div class="stat-content">
               <div class="stat-value">{{ expiredShopsCount }}</div>
-              <div class="stat-label">Истекшие</div>
+              <div class="stat-label">{{ $t('platformAdmin.shops.expired') }}</div>
             </div>
           </div>
         </div>
@@ -109,23 +109,23 @@
               <circle cx="11" cy="11" r="8"></circle>
               <path d="m21 21-4.35-4.35"></path>
             </svg>
-            <input v-model="searchQuery" type="text" placeholder="Поиск по названию, slug, владельцу..."
+            <input v-model="searchQuery" type="text" :placeholder="$t('platformAdmin.shops.search')"
               class="search-input" />
           </div>
 
           <div class="filters-group">
             <select v-model="filterStatus" class="filter-select">
-              <option value="">Все статусы</option>
-              <option value="trial">Пробный период</option>
-              <option value="active">Активные</option>
-              <option value="expired">Истекшие</option>
-              <option value="cancelled">Отмененные</option>
+              <option value="">{{ $t('platformAdmin.shops.filterStatus') }}</option>
+              <option value="trial">{{ $t('platformAdmin.shops.trial') }}</option>
+              <option value="active">{{ $t('platformAdmin.shops.active') }}</option>
+              <option value="expired">{{ $t('platformAdmin.shops.expired') }}</option>
+              <option value="cancelled">Cancelled</option>
             </select>
 
             <select v-model="filterActive" class="filter-select">
-              <option value="">Все магазины</option>
-              <option value="true">Только активные</option>
-              <option value="false">Только неактивные</option>
+              <option value="">{{ $t('platformAdmin.shops.filterActive') }}</option>
+              <option value="true">{{ $t('platformAdmin.shops.onlyActive') }}</option>
+              <option value="false">{{ $t('platformAdmin.shops.onlyInactive') }}</option>
             </select>
 
             <button @click="clearFilters" class="clear-filters-btn">
@@ -133,7 +133,7 @@
                 <line x1="18" y1="6" x2="6" y2="18"></line>
                 <line x1="6" y1="6" x2="18" y2="18"></line>
               </svg>
-              Сбросить
+              {{ $t('platformAdmin.shops.clear') }}
             </button>
           </div>
         </div>
@@ -145,14 +145,14 @@
             <line x1="12" y1="8" x2="12" y2="12"></line>
             <line x1="12" y1="16" x2="12.01" y2="16"></line>
           </svg>
-          <p class="error-message">Ошибка загрузки данных: {{ error.message || 'Неизвестная ошибка' }}</p>
-          <button @click="refresh" class="retry-btn">Повторить</button>
+          <p class="error-message">{{ $t('platformAdmin.dashboard.error') }}: {{ error.message || 'Unknown' }}</p>
+          <button @click="refresh" class="retry-btn">{{ $t('platformAdmin.dashboard.refresh') }}</button>
         </div>
 
         <!-- Loading State -->
         <div v-else-if="pending" class="loading-state">
           <div class="loading-spinner"></div>
-          <p>Магазины загружаются...</p>
+          <p>{{ $t('platformAdmin.dashboard.loading') }}</p>
         </div>
 
         <!-- Table -->
@@ -168,7 +168,7 @@
                   <polyline points="7 10 12 15 17 10"></polyline>
                   <line x1="12" y1="15" x2="12" y2="3"></line>
                 </svg>
-                Экспорт
+                {{ $t('platformAdmin.shops.export') }}
               </button>
             </div>
           </div>
@@ -188,7 +188,7 @@
                   </th>
                   <th @click="sortBy('name')" class="sortable">
                     <div class="th-content">
-                      Название
+                      {{ $t('platformAdmin.shops.table.name') }}
                       <svg v-if="sortField === 'name'" width="12" height="12" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" :class="{ reverse: sortOrder === 'desc' }">
                         <polyline points="18 15 12 9 6 15"></polyline>
@@ -198,17 +198,17 @@
                   <th>Slug</th>
                   <th @click="sortBy('owner')" class="sortable">
                     <div class="th-content">
-                      Владелец
+                      {{ $t('platformAdmin.shops.table.owner') }}
                       <svg v-if="sortField === 'owner'" width="12" height="12" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" :class="{ reverse: sortOrder === 'desc' }">
                         <polyline points="18 15 12 9 6 15"></polyline>
                       </svg>
                     </div>
                   </th>
-                  <th>План</th>
+                  <th>{{ $t('platformAdmin.shops.table.plan') }}</th>
                   <th @click="sortBy('subscription_status')" class="sortable">
                     <div class="th-content">
-                      Статус подписки
+                      {{ $t('platformAdmin.shops.table.status') }}
                       <svg v-if="sortField === 'subscription_status'" width="12" height="12" viewBox="0 0 24 24"
                         fill="none" stroke="currentColor" stroke-width="2" :class="{ reverse: sortOrder === 'desc' }">
                         <polyline points="18 15 12 9 6 15"></polyline>
@@ -217,7 +217,7 @@
                   </th>
                   <th @click="sortBy('expires_at')" class="sortable">
                     <div class="th-content">
-                      Истекает
+                      {{ $t('platformAdmin.shops.table.expires') }}
                       <svg v-if="sortField === 'expires_at'" width="12" height="12" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" :class="{ reverse: sortOrder === 'desc' }">
                         <polyline points="18 15 12 9 6 15"></polyline>
@@ -226,7 +226,7 @@
                   </th>
                   <th @click="sortBy('created_at')" class="sortable">
                     <div class="th-content">
-                      Дата создания
+                      {{ $t('platformAdmin.shops.table.created') }}
                       <svg v-if="sortField === 'created_at'" width="12" height="12" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" :class="{ reverse: sortOrder === 'desc' }">
                         <polyline points="18 15 12 9 6 15"></polyline>
@@ -235,14 +235,14 @@
                   </th>
                   <th @click="sortBy('is_active')" class="sortable">
                     <div class="th-content">
-                      Активен
+                      {{ $t('platformAdmin.shops.table.isActive') }}
                       <svg v-if="sortField === 'is_active'" width="12" height="12" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" :class="{ reverse: sortOrder === 'desc' }">
                         <polyline points="18 15 12 9 6 15"></polyline>
                       </svg>
                     </div>
                   </th>
-                  <th>Действия</th>
+                  <th>{{ $t('platformAdmin.shops.table.actions') }}</th>
                 </tr>
               </thead>
               <tbody>
@@ -257,7 +257,7 @@
                       <div class="shop-details">
                         <span class="shop-name">{{ shop.name }}</span>
                         <span v-if="shop.description" class="shop-description">{{ truncateText(shop.description, 40)
-                        }}</span>
+                          }}</span>
                       </div>
                     </div>
                   </td>
@@ -308,7 +308,7 @@
                   </td>
                   <td>
                     <span :class="['status-badge', shop.is_active ? 'status-active' : 'status-cancelled']">
-                      {{ shop.is_active ? 'Да' : 'Нет' }}
+                      {{ shop.is_active ? $t('common.yes') : $t('common.no') }}
                     </span>
                   </td>
                   <td>
@@ -343,8 +343,8 @@
                   d="M20 7h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v3H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2z">
                 </path>
               </svg>
-              <p>Магазины не найдены</p>
-              <p class="empty-subtitle">Попробуйте изменить фильтры поиска</p>
+              <p>{{ $t('platformAdmin.shops.notFound') }}</p>
+              <p class="empty-subtitle"></p>
             </div>
           </div>
 
@@ -513,7 +513,7 @@
                   <div class="history-main">
                     <span class="history-plan">{{ req.plan_name }}</span>
                     <span :class="['history-status', `status-${req.status}`]">{{ getRequestStatusText(req.status)
-                    }}</span>
+                      }}</span>
                   </div>
                   <div class="history-meta">
                     <span>{{ formatDate(req.requested_at) }}</span>
@@ -559,6 +559,7 @@
 </template>
 
 <script setup>
+const { t } = useI18n()
 definePageMeta({
   middleware: 'platform-admin'
 })
@@ -745,10 +746,10 @@ const getStatusClass = (status) => {
 
 const getStatusText = (status) => {
   const statusMap = {
-    'trial': 'Пробный период',
-    'active': 'Активна',
-    'expired': 'Истекла',
-    'cancelled': 'Отменена'
+    'trial': t('platformAdmin.shops.trial'),
+    'active': t('platformAdmin.shops.active'),
+    'expired': t('platformAdmin.shops.expired'),
+    'cancelled': 'Cancelled'
   }
   return statusMap[status] || status
 }

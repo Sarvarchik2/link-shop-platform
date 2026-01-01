@@ -11,7 +11,7 @@
           <path d="M2 12l10 5 10-5"></path>
         </svg>
       </div>
-      <h2 class="sidebar-title">Панель управления</h2>
+      <h2 class="sidebar-title">{{ $t('platformAdmin.dashboard.title') }}</h2>
       <button class="close-btn" @click="closeSidebar">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -29,7 +29,7 @@
           <rect x="14" y="14" width="7" height="7"></rect>
           <rect x="3" y="14" width="7" height="7"></rect>
         </svg>
-        <span>Главная</span>
+        <span>{{ $t('platformAdmin.nav.dashboard') }}</span>
       </NuxtLink>
 
       <NuxtLink to="/platform/admin/shops" class="nav-item" :class="{ active: currentRoute === 'shops' }"
@@ -39,7 +39,7 @@
             d="M20 7h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v3H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2z">
           </path>
         </svg>
-        <span>Магазины</span>
+        <span>{{ $t('platformAdmin.nav.shops') }}</span>
       </NuxtLink>
 
       <NuxtLink to="/platform/admin/users" class="nav-item" :class="{ active: currentRoute === 'users' }"
@@ -50,7 +50,7 @@
           <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
           <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
         </svg>
-        <span>Пользователи</span>
+        <span>{{ $t('platformAdmin.nav.users') }}</span>
       </NuxtLink>
 
       <!-- <NuxtLink to="/platform/admin/orders" class="nav-item" :class="{ active: currentRoute === 'orders' }" @click="closeSidebar">
@@ -72,7 +72,7 @@
           <line x1="3" y1="10" x2="21" y2="10"></line>
           <path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01"></path>
         </svg>
-        <span>Планы подписки</span>
+        <span>{{ $t('platformAdmin.nav.plans') }}</span>
       </NuxtLink>
 
       <NuxtLink to="/platform/admin/subscription-requests" class="nav-item"
@@ -87,7 +87,7 @@
           <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
           <line x1="12" y1="22.08" x2="12" y2="12"></line>
         </svg>
-        <span>Запросы на подписку</span>
+        <span>{{ $t('platformAdmin.nav.requests') }}</span>
       </NuxtLink>
 
       <NuxtLink to="/platform/admin/offers" class="nav-item" :class="{ active: currentRoute === 'offers' }"
@@ -97,7 +97,7 @@
           <path d="M2 17l10 5 10-5"></path>
           <path d="M2 12l10 5 10-5"></path>
         </svg>
-        <span>Офферы</span>
+        <span>{{ $t('platformAdmin.nav.offers') }}</span>
       </NuxtLink>
     </nav>
 
@@ -107,7 +107,7 @@
           <line x1="19" y1="12" x2="5" y2="12"></line>
           <polyline points="12 19 5 12 12 5"></polyline>
         </svg>
-        <span>На главную</span>
+        <span>{{ $t('nav.home') }}</span>
       </NuxtLink>
       <button @click="$emit('logout')" class="logout-btn">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -115,13 +115,14 @@
           <polyline points="16 17 21 12 16 7"></polyline>
           <line x1="21" y1="12" x2="9" y2="12"></line>
         </svg>
-        <span>Выйти</span>
+        <span>{{ $t('common.logout') }}</span>
       </button>
     </div>
   </aside>
 </template>
 
 <script setup>
+const { t } = useI18n()
 const props = defineProps({
   currentRoute: {
     type: String,

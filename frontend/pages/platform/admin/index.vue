@@ -14,7 +14,7 @@
           <line x1="6" y1="6" x2="18" y2="18"></line>
         </svg>
       </button>
-      <span class="mobile-title">Панель управления</span>
+      <span class="mobile-title">{{ $t('platformAdmin.dashboard.title') }}</span>
       <NuxtLink to="/" class="home-btn">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
@@ -31,8 +31,8 @@
       <div class="admin-header">
         <div class="header-content">
           <div>
-            <h1 class="admin-title">Панель управления платформой</h1>
-            <p class="admin-subtitle">Добро пожаловать! Обзор статистики вашей платформы.</p>
+            <h1 class="admin-title">{{ $t('platformAdmin.dashboard.title') }}</h1>
+            <p class="admin-subtitle">{{ $t('platformAdmin.dashboard.welcome') }}</p>
           </div>
           <button @click="refresh" class="refresh-btn" :disabled="pending">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -41,7 +41,7 @@
               <polyline points="1 20 1 14 7 14"></polyline>
               <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
             </svg>
-            <span>Обновить</span>
+            <span>{{ $t('platformAdmin.dashboard.refresh') }}</span>
           </button>
         </div>
       </div>
@@ -55,12 +55,12 @@
               <line x1="12" y1="16" x2="12.01" y2="16"></line>
             </svg>
             <p class="error-message">Ошибка загрузки данных: {{ error.message || 'Неизвестная ошибка' }}</p>
-            <button @click="refresh" class="retry-btn">Повторить</button>
+            <button @click="refresh" class="retry-btn">{{ $t('platformAdmin.dashboard.refresh') }}</button>
           </div>
 
           <div v-else-if="pending" class="loading-state">
             <div class="loading-spinner"></div>
-            <p>Загрузка данных...</p>
+            <p>{{ $t('platformAdmin.dashboard.loading') }}</p>
           </div>
 
           <div v-else class="dashboard-content">
@@ -88,7 +88,7 @@
                 </div>
                 <div class="stat-info">
                   <div class="stat-value">{{ subscriptionStats.totalShops }}</div>
-                  <div class="stat-label">Всего магазинов</div>
+                  <div class="stat-label">{{ $t('platformAdmin.dashboard.stats.totalShops') }}</div>
                   <div class="stat-change positive" v-if="shopsRecentlyAdded > 0">
                     <span v-if="selectedPeriod === 'today'">+{{ shopsRecentlyAdded }} сегодня</span>
                     <span v-else-if="selectedPeriod === 'week'">+{{ shopsRecentlyAdded }} на неделе</span>
@@ -106,7 +106,7 @@
                 </div>
                 <div class="stat-info">
                   <div class="stat-value">{{ subscriptionStats.activeShops }}</div>
-                  <div class="stat-label">Активных магазинов</div>
+                  <div class="stat-label">{{ $t('platformAdmin.dashboard.stats.activeShops') }}</div>
                   <div class="stat-percentage">
                     {{ activeShopsPercentage }}% от общего числа
                   </div>
@@ -126,7 +126,7 @@
                     <span v-if="selectedPeriod === 'today'">Доход с подписок (сегодня)</span>
                     <span v-else-if="selectedPeriod === 'week'">Доход с подписок (неделя)</span>
                     <span v-else-if="selectedPeriod === 'month'">Доход с подписок (месяц)</span>
-                    <span v-else>Доход с подписок/мес</span>
+                    <span v-else>{{ $t('platformAdmin.dashboard.stats.revenue') }}/{{ $t('home.pricing.month') }}</span>
                   </div>
                   <div class="stat-yearly" v-if="selectedPeriod === 'all'">
                     ≈ ${{ (subscriptionStats.monthlyRevenue * 12).toFixed(0) }}/год
@@ -148,7 +148,7 @@
                 </div>
                 <div class="stat-info">
                   <div class="stat-value">{{ periodStats?.users || stats?.total_users || 0 }}</div>
-                  <div class="stat-label">Пользователей</div>
+                  <div class="stat-label">{{ $t('platformAdmin.dashboard.stats.users') }}</div>
                   <div class="stat-products"
                     v-if="periodStats?.products !== null && periodStats?.products !== undefined">
                     {{ periodStats.products }} товаров
@@ -436,6 +436,7 @@
 </template>
 
 <script setup>
+const { t } = useI18n()
 definePageMeta({
   middleware: 'platform-admin'
 })
@@ -453,12 +454,12 @@ const handleLogout = () => {
 
 // Period selection
 const selectedPeriod = ref('all')
-const periods = [
-  { key: 'today', label: 'Сегодня' },
-  { key: 'week', label: 'Эта неделя' },
-  { key: 'month', label: 'Этот месяц' },
-  { key: 'all', label: 'Все время' }
-]
+const periods = computed(() => [
+  { key: 'today', label: t('admin.periods.today') },
+  { key: 'week', label: t('admin.periods.week') },
+  { key: 'month', label: t('admin.periods.month') },
+  { key: 'all', label: t('admin.periods.all') }
+])
 
 const currentRoute = computed(() => {
   if (route.path.includes('/shops')) return 'shops'

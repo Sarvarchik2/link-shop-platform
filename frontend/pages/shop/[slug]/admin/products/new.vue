@@ -3,7 +3,8 @@
     <!-- Mobile Header -->
     <header class="mobile-header">
       <button class="menu-btn" @click="sidebarOpen = !sidebarOpen">
-        <svg v-if="!sidebarOpen" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg v-if="!sidebarOpen" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2">
           <line x1="3" y1="12" x2="21" y2="12"></line>
           <line x1="3" y1="6" x2="21" y2="6"></line>
           <line x1="3" y1="18" x2="21" y2="18"></line>
@@ -13,14 +14,10 @@
           <line x1="6" y1="6" x2="18" y2="18"></line>
         </svg>
       </button>
-      <span class="mobile-title">Добавить товар</span>
+      <span class="mobile-title">{{ $t('admin.addProduct') }}</span>
     </header>
 
-    <ShopAdminSidebar 
-      :shop-slug="shopSlug" 
-      current-route="products"
-      v-model="sidebarOpen"
-    />
+    <ShopAdminSidebar :shop-slug="shopSlug" current-route="products" v-model="sidebarOpen" />
 
     <!-- Main Content -->
     <main class="admin-main">
@@ -32,7 +29,7 @@
               <polyline points="12 19 5 12 12 5"></polyline>
             </svg>
           </NuxtLink>
-          <h1 class="page-title">Добавить товар</h1>
+          <h1 class="page-title">{{ $t('admin.addProduct') }}</h1>
         </div>
 
         <!-- Limit Warning -->
@@ -40,153 +37,204 @@
           <div class="warning-icon">⚠️</div>
           <div class="warning-content">
             <h3>Лимит товаров исчерпан</h3>
-            <p>Вы достигли максимального количества товаров для вашего тарифного плана ({{ stats?.plan_limit_products }}). Пожалуйста, удалите старые товары или обновите подписку, чтобы добавить новые.</p>
+            <p>Вы достигли максимального количества товаров для вашего тарифного плана ({{ stats?.plan_limit_products
+            }}). Пожалуйста, удалите старые товары или обновите подписку, чтобы добавить новые.</p>
             <NuxtLink :to="`/shop/${shopSlug}/subscription`" class="btn-upgrade">Улучшить тариф</NuxtLink>
           </div>
         </div>
-        
+
         <div class="form-card">
-      <form @submit.prevent="handleSubmit">
-        <div class="form-section">
-          <h2 class="section-title">Основная информация</h2>
-          
-          <div class="form-row">
-            <div class="form-group">
-              <label class="label">Название товара</label>
-              <input v-model="form.name" required class="input" placeholder="например, Ray-Ban Wayfarer" />
-            </div>
-            
-            <div class="form-group">
-              <label class="label">Цена ($)</label>
-              <input v-model.number="form.price" type="number" step="0.01" required class="input" placeholder="0.00" />
-            </div>
-            
-            <div class="form-group">
-              <label class="label">Скидка (%)</label>
-              <input v-model.number="form.discount" type="number" step="0.1" min="0" max="100" class="input" placeholder="0" />
-              <p class="help-text-small">Введите процент скидки (0-100)</p>
-            </div>
-          </div>
+          <form @submit.prevent="handleSubmit">
+            <div class="form-section">
+              <h2 class="section-title">{{ $t('admin.basicInfo') }}</h2>
 
-          <div class="form-row">
-            <div class="form-group">
-              <label class="label">Бренд</label>
-              <select v-model="form.brand" required class="input" :disabled="!brands || brands.length === 0">
-                <option value="">{{ brands && brands.length > 0 ? 'Выберите бренд' : 'Загрузка брендов...' }}</option>
-                <option v-for="brand in brands" :key="brand.id" :value="brand.name">{{ brand.name }}</option>
-              </select>
-              <p v-if="brandsError" class="error-text">Ошибка загрузки брендов. Попробуйте обновить страницу.</p>
-            </div>
-            
-            <div class="form-group">
-              <label class="label">Категория</label>
-              <select v-model="form.category" required class="input" :disabled="!categories || categories.length === 0">
-                <option value="">{{ categories && categories.length > 0 ? 'Выберите категорию' : 'Загрузка категорий...' }}</option>
-                <option v-for="category in categories" :key="category.id" :value="category.name">{{ category.name }}</option>
-              </select>
-              <p v-if="categoriesError" class="error-text">Ошибка загрузки категорий. Попробуйте обновить страницу.</p>
-            </div>
-          </div>
+              <!-- Language Tabs -->
+              <div class="language-tabs">
+                <button type="button" v-for="lang in ['uz', 'ru', 'en']" :key="lang" @click="currentLang = lang"
+                  class="lang-tab" :class="{ active: currentLang === lang }">
+                  {{ lang === 'uz' ? '🇺🇿 O\'zbek' : lang === 'ru' ? '🇷🇺 Русский' : '🇬🇧 English' }}
+                </button>
+              </div>
 
-          <div class="form-group">
-            <label class="label">Описание</label>
-            <textarea v-model="form.description" rows="4" required class="input" placeholder="Описание товара..."></textarea>
-          </div>
-        </div>
-
-        <div class="form-section">
-          <h2 class="section-title">Изображения</h2>
-          
-          <!-- Image Upload Area -->
-          <div class="images-upload-area">
-            <!-- Uploaded Images Preview -->
-            <div class="images-preview" v-if="uploadedImages.length > 0">
-              <div 
-                v-for="(img, index) in uploadedImages" 
-                :key="index" 
-                class="image-preview-item"
-                :class="{ 'main-image': index === 0 }"
-              >
-                <img :src="img" alt="Product image" />
-                <div class="image-actions">
-                  <button v-if="index !== 0" type="button" @click="setMainImage(index)" class="btn-set-main" title="Сделать главным">
-                    ⭐
-                  </button>
-                  <button type="button" @click="removeImage(index)" class="btn-remove-image" title="Удалить">
-                    ✕
-                  </button>
+              <!-- Uzbek Fields -->
+              <div v-show="currentLang === 'uz'" class="lang-content">
+                <div class="form-group">
+                  <label class="label">Название товара (O'zbekcha) *</label>
+                  <input v-model="form.name_uz" required class="input" placeholder="masalan, Ray-Ban Wayfarer" />
                 </div>
-                <span v-if="index === 0" class="main-badge">Главное</span>
+
+                <div class="form-group">
+                  <label class="label">Описание (O'zbekcha) *</label>
+                  <textarea v-model="form.description_uz" rows="4" required class="input"
+                    placeholder="Mahsulot tavsifi..."></textarea>
+                </div>
+
+                <div class="form-group">
+                  <label class="label">Kategoriya (O'zbekcha) *</label>
+                  <input v-model="form.category_uz" required class="input" placeholder="masalan, Ko'zoynak" />
+                </div>
+
+                <div class="form-group">
+                  <label class="label">Brend (O'zbekcha) *</label>
+                  <input v-model="form.brand_uz" required class="input" placeholder="masalan, Ray-Ban" />
+                </div>
+              </div>
+
+              <!-- Russian Fields -->
+              <div v-show="currentLang === 'ru'" class="lang-content">
+                <div class="form-group">
+                  <label class="label">Название товара (Русский) *</label>
+                  <input v-model="form.name_ru" required class="input" placeholder="например, Ray-Ban Wayfarer" />
+                </div>
+
+                <div class="form-group">
+                  <label class="label">Описание (Русский) *</label>
+                  <textarea v-model="form.description_ru" rows="4" required class="input"
+                    placeholder="Описание товара..."></textarea>
+                </div>
+
+                <div class="form-group">
+                  <label class="label">Категория (Русский) *</label>
+                  <input v-model="form.category_ru" required class="input" placeholder="например, Очки" />
+                </div>
+
+                <div class="form-group">
+                  <label class="label">Бренд (Русский) *</label>
+                  <input v-model="form.brand_ru" required class="input" placeholder="например, Ray-Ban" />
+                </div>
+              </div>
+
+              <!-- English Fields -->
+              <div v-show="currentLang === 'en'" class="lang-content">
+                <div class="form-group">
+                  <label class="label">Product Name (English) *</label>
+                  <input v-model="form.name_en" required class="input" placeholder="e.g., Ray-Ban Wayfarer" />
+                </div>
+
+                <div class="form-group">
+                  <label class="label">Description (English) *</label>
+                  <textarea v-model="form.description_en" rows="4" required class="input"
+                    placeholder="Product description..."></textarea>
+                </div>
+
+                <div class="form-group">
+                  <label class="label">Category (English) *</label>
+                  <input v-model="form.category_en" required class="input" placeholder="e.g., Sunglasses" />
+                </div>
+
+                <div class="form-group">
+                  <label class="label">Brand (English) *</label>
+                  <input v-model="form.brand_en" required class="input" placeholder="e.g., Ray-Ban" />
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="label">{{ $t('admin.price') }} ($)</label>
+                  <input v-model.number="form.price" type="number" step="0.01" required class="input"
+                    placeholder="0.00" />
+                </div>
+
+                <div class="form-group">
+                  <label class="label">{{ $t('admin.discount') }} (%)</label>
+                  <input v-model.number="form.discount" type="number" step="0.1" min="0" max="100" class="input"
+                    placeholder="0" />
+                  <p class="help-text-small">{{ $t('admin.discountHint') }}</p>
+                </div>
               </div>
             </div>
-            
-            <!-- Upload Button -->
-            <div class="upload-zone" @click="triggerFileInput" @dragover.prevent @drop.prevent="handleDrop">
-              <input 
-                ref="fileInput" 
-                type="file" 
-                accept="image/*" 
-                multiple 
-                @change="handleFileSelect" 
-                class="hidden-input" 
-              />
-              <div class="upload-content">
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                  <polyline points="17 8 12 3 7 8"></polyline>
-                  <line x1="12" y1="3" x2="12" y2="15"></line>
+
+            <div class="form-section">
+              <h2 class="section-title">{{ $t('admin.images') }}</h2>
+
+              <!-- Image Upload Area -->
+              <div class="images-upload-area">
+                <!-- Uploaded Images Preview -->
+                <div class="images-preview" v-if="uploadedImages.length > 0">
+                  <div v-for="(img, index) in uploadedImages" :key="index" class="image-preview-item"
+                    :class="{ 'main-image': index === 0 }">
+                    <img :src="img" alt="Product image" />
+                    <div class="image-actions">
+                      <button v-if="index !== 0" type="button" @click="setMainImage(index)" class="btn-set-main"
+                        :title="$t('admin.setAsMain')">
+                        ⭐
+                      </button>
+                      <button type="button" @click="removeImage(index)" class="btn-remove-image"
+                        :title="$t('common.delete')">
+                        ✕
+                      </button>
+                    </div>
+                    <span v-if="index === 0" class="main-badge">{{ $t('admin.mainImage') }}</span>
+                  </div>
+                </div>
+
+                <!-- Upload Button -->
+                <div class="upload-zone" @click="triggerFileInput" @dragover.prevent @drop.prevent="handleDrop">
+                  <input ref="fileInput" type="file" accept="image/*" multiple @change="handleFileSelect"
+                    class="hidden-input" />
+                  <div class="upload-content">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                      stroke-width="1.5">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                      <polyline points="17 8 12 3 7 8"></polyline>
+                      <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    <span class="upload-text">{{ $t('admin.uploadImages') }}</span>
+                    <span class="upload-hint">{{ $t('admin.uploadHint') }}</span>
+                  </div>
+                </div>
+
+                <!-- OR URL Input -->
+                <div class="url-input-section">
+                  <span class="divider-text">{{ $t('admin.orAddUrl') }}</span>
+                  <div class="url-input-row">
+                    <input v-model="imageUrl" class="input" placeholder="https://example.com/image.jpg" />
+                    <button type="button" @click="addImageUrl" class="btn-add-url" :disabled="!imageUrl">{{
+                      $t('admin.addUrl') }}</button>
+                  </div>
+                </div>
+              </div>
+
+              <p v-if="uploadingImages" class="uploading-text">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="12 6 12 12 16 14"></polyline>
                 </svg>
-                <span class="upload-text">Нажмите или перетащите изображения</span>
-                <span class="upload-hint">PNG, JPG до 5MB</span>
+                Загрузка изображений...
+              </p>
+            </div>
+
+            <div class="form-section">
+              <h2 class="section-title">Варианты товара</h2>
+              <p class="help-text">Добавьте комбинации размера и цвета с количеством на складе</p>
+
+              <div class="variants-list">
+                <div v-for="(variant, index) in variants" :key="index" class="variant-row">
+                  <input v-model="variant.size" class="input variant-size-input"
+                    placeholder="Размер (например, M, L)" />
+                  <input v-model="variant.color" class="input variant-color-input"
+                    placeholder="Цвет (например, Черный)" />
+                  <input v-model="variant.colorHex" type="color" class="color-picker" title="Выбрать цвет" />
+                  <input v-model.number="variant.stock" type="number" min="0" class="input stock-input"
+                    placeholder="Склад" />
+                  <button type="button" @click="removeVariant(index)" class="btn-remove">✕</button>
+                </div>
               </div>
+
+              <button type="button" @click="addVariant" class="btn-add">
+                + Добавить вариант
+              </button>
+              <p class="help-text">Каждый вариант = размер + цвет + количество на складе</p>
             </div>
 
-            <!-- OR URL Input -->
-            <div class="url-input-section">
-              <span class="divider-text">или добавьте по URL</span>
-              <div class="url-input-row">
-                <input v-model="imageUrl" class="input" placeholder="https://example.com/image.jpg" />
-                <button type="button" @click="addImageUrl" class="btn-add-url" :disabled="!imageUrl">Добавить</button>
-              </div>
+            <div class="form-actions">
+              <NuxtLink :to="`/shop/${shopSlug}/admin/products`" class="btn btn-secondary">Отмена</NuxtLink>
+              <button type="submit" class="btn btn-primary"
+                :disabled="loading || uploadedImages.length === 0 || limitReached">
+                {{ loading ? 'Создание...' : 'Создать товар' }}
+              </button>
             </div>
-          </div>
-          
-          <p v-if="uploadingImages" class="uploading-text">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="10"></circle>
-              <polyline points="12 6 12 12 16 14"></polyline>
-            </svg>
-            Загрузка изображений...
-          </p>
-        </div>
-
-        <div class="form-section">
-          <h2 class="section-title">Варианты товара</h2>
-          <p class="help-text">Добавьте комбинации размера и цвета с количеством на складе</p>
-          
-          <div class="variants-list">
-            <div v-for="(variant, index) in variants" :key="index" class="variant-row">
-              <input v-model="variant.size" class="input variant-size-input" placeholder="Размер (например, M, L)" />
-              <input v-model="variant.color" class="input variant-color-input" placeholder="Цвет (например, Черный)" />
-              <input v-model="variant.colorHex" type="color" class="color-picker" title="Выбрать цвет" />
-              <input v-model.number="variant.stock" type="number" min="0" class="input stock-input" placeholder="Склад" />
-              <button type="button" @click="removeVariant(index)" class="btn-remove">✕</button>
-            </div>
-          </div>
-          
-          <button type="button" @click="addVariant" class="btn-add">
-            + Добавить вариант
-          </button>
-          <p class="help-text">Каждый вариант = размер + цвет + количество на складе</p>
-        </div>
-
-        <div class="form-actions">
-          <NuxtLink :to="`/shop/${shopSlug}/admin/products`" class="btn btn-secondary">Отмена</NuxtLink>
-          <button type="submit" class="btn btn-primary" :disabled="loading || uploadedImages.length === 0 || limitReached">
-            {{ loading ? 'Создание...' : 'Создать товар' }}
-          </button>
-        </div>
-      </form>
+          </form>
         </div>
       </div>
     </main>
@@ -249,12 +297,12 @@ const limitReached = computed(() => {
 
 onMounted(async () => {
   console.log('[Add Product] Компонент смонтирован, shopSlug:', shopSlug.value)
-  
+
   if (!shopSlug.value) {
     console.error('[Add Product] ОШИБКА: shopSlug отсутствует, невозможно загрузить данные')
     return
   }
-  
+
   // Загружаем данные после монтирования
   try {
     console.log('[Add Product] Загрузка данных для shop:', shopSlug.value)
@@ -280,12 +328,12 @@ onMounted(async () => {
         return null
       })
     ])
-    
+
     brands.value = brandsData || []
     categories.value = categoriesData || []
     stats.value = statsData
-    console.log('[Add Product] Данные загружены:', { 
-      brands: brands.value.length, 
+    console.log('[Add Product] Данные загружены:', {
+      brands: brands.value.length,
       categories: categories.value.length,
       limit: stats.value?.plan_limit_products,
       current: stats.value?.total_products
@@ -332,19 +380,19 @@ const handleDrop = async (event) => {
 
 const uploadFiles = async (files) => {
   uploadingImages.value = true
-  
+
   for (const file of files) {
     if (file.type.startsWith('image/')) {
       try {
         console.log('[Add Product] Загрузка изображения:', file.name)
         const formData = new FormData()
         formData.append('file', file)
-        
+
         const response = await $fetch('http://localhost:8000/upload', {
           method: 'POST',
           body: formData
         })
-        
+
         console.log('[Add Product] Изображение загружено:', response.url)
         uploadedImages.value.push(response.url)
         toast.success(`Изображение "${file.name}" загружено`)
@@ -359,7 +407,7 @@ const uploadFiles = async (files) => {
       }
     }
   }
-  
+
   uploadingImages.value = false
 }
 
@@ -379,13 +427,23 @@ const setMainImage = (index) => {
   uploadedImages.value.unshift(img)
 }
 
+const currentLang = ref('uz')
+
 const form = reactive({
-  name: '',
-  brand: '',
-  category: '',
+  name_uz: '',
+  name_ru: '',
+  name_en: '',
+  description_uz: '',
+  description_ru: '',
+  description_en: '',
+  category_uz: '',
+  category_ru: '',
+  category_en: '',
+  brand_uz: '',
+  brand_ru: '',
+  brand_en: '',
   price: 0,
-  discount: 0,
-  description: ''
+  discount: 0
 })
 
 const handleSubmit = async () => {
@@ -393,13 +451,13 @@ const handleSubmit = async () => {
     toast.warning('Пожалуйста, добавьте хотя бы одно изображение')
     return
   }
-  
+
   // Filter valid variants (both size and color must be filled)
   const validVariants = variants.value.filter(v => v.size.trim() && v.color.trim())
-  
+
   // Calculate total stock from variants
   const totalStock = validVariants.reduce((acc, v) => acc + (v.stock || 0), 0)
-  
+
   loading.value = true
   try {
     const productData = {
@@ -411,21 +469,21 @@ const handleSubmit = async () => {
       colors: null, // Legacy field
       stock: totalStock || 0
     }
-    
+
     console.log('[Add Product] Отправка данных:', productData)
     console.log('[Add Product] Shop slug:', shopSlug.value)
-    
+
     if (!shopSlug.value) {
       toast.error('Ошибка: не указан магазин')
       return
     }
-    
+
     const response = await $fetch(`http://localhost:8000/products?shop_slug=${shopSlug.value}`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${token.value}` },
       body: productData
     })
-    
+
     console.log('[Add Product] Товар создан успешно:', response)
     toast.success('Товар успешно создан!')
     navigateTo(`/shop/${shopSlug.value}/admin/products`)
@@ -501,7 +559,7 @@ const handleSubmit = async () => {
   .mobile-header {
     display: flex;
   }
-  
+
   .admin-main {
     margin-left: 0;
     padding-top: 60px;
@@ -554,7 +612,7 @@ const handleSubmit = async () => {
   background: white;
   border-radius: 24px;
   padding: 40px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .form-section {
@@ -914,7 +972,7 @@ const handleSubmit = async () => {
   .mobile-header {
     display: flex;
   }
-  
+
   .admin-main {
     margin-left: 0;
     padding: 70px 12px 20px;
@@ -942,6 +1000,53 @@ const handleSubmit = async () => {
 
   .images-preview {
     grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Language Tabs */
+.language-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  border-bottom: 2px solid #E5E7EB;
+  padding-bottom: 0;
+}
+
+.lang-tab {
+  padding: 12px 20px;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  font-weight: 600;
+  color: #9CA3AF;
+  transition: all 0.2s;
+  font-size: 0.9375rem;
+}
+
+.lang-tab:hover {
+  color: #111;
+  background: #F9FAFB;
+}
+
+.lang-tab.active {
+  color: #111;
+  border-bottom-color: #111;
+}
+
+.lang-content {
+  animation: fadeIn 0.2s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
@@ -996,7 +1101,8 @@ const handleSubmit = async () => {
     gap: 8px;
   }
 
-  .variant-size-input, .variant-color-input {
+  .variant-size-input,
+  .variant-color-input {
     flex: none;
   }
 
@@ -1032,5 +1138,4 @@ const handleSubmit = async () => {
     margin: 0;
   }
 }
-
 </style>

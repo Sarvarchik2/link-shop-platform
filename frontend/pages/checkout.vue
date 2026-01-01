@@ -2,15 +2,15 @@
   <div class="checkout-page">
     <!-- Desktop Header -->
     <AppHeader class="desktop-header" />
-    
+
     <!-- Mobile Header -->
     <header class="checkout-header mobile-header">
       <button @click="$router.back()" class="back-btn">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M19 12H5M12 19l-7-7 7-7"/>
+          <path d="M19 12H5M12 19l-7-7 7-7" />
         </svg>
       </button>
-      <h1 class="page-title">Buyurtma berish</h1>
+      <h1 class="page-title">{{ $t('checkout.title') }}</h1>
       <div class="spacer"></div>
     </header>
 
@@ -25,25 +25,27 @@
                 <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
                 <circle cx="12" cy="10" r="3"></circle>
               </svg>
-              Yetkazib berish manzili
+              {{ $t('checkout.sections.delivery') }}
             </h2>
-            
+
             <div class="form-row">
               <div class="form-group">
-                <label class="form-label">Qabul qiluvchi ismi</label>
-                <input v-model="form.recipient_name" type="text" class="form-input" placeholder="To'liq ism" required />
+                <label class="form-label">{{ $t('checkout.form.name') }}</label>
+                <input v-model="form.recipient_name" type="text" class="form-input"
+                  :placeholder="$t('checkout.form.namePlaceholder')" required />
               </div>
-              
+
               <div class="form-group">
-                <label class="form-label">Telefon raqami</label>
-                <input v-model="form.delivery_phone" type="tel" class="form-input" placeholder="+998 90 123 45 67" required />
+                <label class="form-label">{{ $t('checkout.form.phone') }}</label>
+                <input v-model="form.delivery_phone" type="tel" class="form-input"
+                  :placeholder="$t('checkout.form.phonePlaceholder')" required />
               </div>
             </div>
-            
+
             <div class="form-group">
-              <label class="form-label">Shahar</label>
+              <label class="form-label">{{ $t('checkout.form.city') }}</label>
               <select v-model="form.delivery_city" class="form-input" required>
-                <option value="">Shaharni tanlang</option>
+                <option value="">{{ $t('checkout.form.selectCity') }}</option>
                 <option value="Toshkent">Toshkent</option>
                 <option value="Samarqand">Samarqand</option>
                 <option value="Buxoro">Buxoro</option>
@@ -53,10 +55,11 @@
                 <option value="Boshqa">Boshqa</option>
               </select>
             </div>
-            
+
             <div class="form-group">
-              <label class="form-label">Yetkazib berish manzili</label>
-              <textarea v-model="form.delivery_address" class="form-input" rows="3" placeholder="Ko'cha, uy, kvartira..." required></textarea>
+              <label class="form-label">{{ $t('checkout.form.address') }}</label>
+              <textarea v-model="form.delivery_address" class="form-input" rows="3"
+                :placeholder="$t('checkout.form.addressPlaceholder')" required></textarea>
             </div>
           </section>
 
@@ -67,24 +70,25 @@
                 <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
                 <line x1="1" y1="10" x2="23" y2="10"></line>
               </svg>
-              To'lov usuli
+              {{ $t('checkout.sections.payment') }}
             </h2>
-            
+
             <div class="payment-options">
               <label class="payment-option" :class="{ active: form.payment_method === 'cash' }">
                 <input type="radio" v-model="form.payment_method" value="cash" />
                 <div class="payment-icon">💵</div>
                 <div class="payment-info">
-                  <span class="payment-name">Naqd pul</span>
-                  <span class="payment-desc">Qabul qilganda to'lang</span>
+                  <span class="payment-name">{{ $t('checkout.payment.cash.title') }}</span>
+                  <span class="payment-desc">{{ $t('checkout.payment.cash.desc') }}</span>
                 </div>
                 <div class="payment-check">
-                  <svg v-if="form.payment_method === 'cash'" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                  <svg v-if="form.payment_method === 'cash'" width="20" height="20" viewBox="0 0 24 24"
+                    fill="currentColor">
+                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
                   </svg>
                 </div>
               </label>
-              
+
               <label class="payment-option" :class="{ active: form.payment_method === 'card' }">
                 <input type="radio" v-model="form.payment_method" value="card" />
                 <div class="payment-icon">
@@ -94,12 +98,13 @@
                   </svg>
                 </div>
                 <div class="payment-info">
-                  <span class="payment-name">Karta orqali</span>
-                  <span class="payment-desc">Yetkazib berishda karta bilan to'lang</span>
+                  <span class="payment-name">{{ $t('checkout.payment.card.title') }}</span>
+                  <span class="payment-desc">{{ $t('checkout.payment.card.desc') }}</span>
                 </div>
                 <div class="payment-check">
-                  <svg v-if="form.payment_method === 'card'" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                  <svg v-if="form.payment_method === 'card'" width="20" height="20" viewBox="0 0 24 24"
+                    fill="currentColor">
+                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
                   </svg>
                 </div>
               </label>
@@ -115,17 +120,18 @@
                 <line x1="16" y1="13" x2="8" y2="13"></line>
                 <line x1="16" y1="17" x2="8" y2="17"></line>
               </svg>
-              Izohlar (ixtiyoriy)
+              {{ $t('checkout.sections.notes') }}
             </h2>
-            <textarea v-model="form.notes" class="form-input" rows="2" placeholder="Maxsus ko'rsatmalar..."></textarea>
+            <textarea v-model="form.notes" class="form-input" rows="2"
+              :placeholder="$t('checkout.form.notesPlaceholder')"></textarea>
           </section>
         </div>
 
         <!-- Right Column - Summary (Desktop) -->
         <div class="checkout-summary">
           <div class="summary-card">
-            <h2 class="summary-title">Buyurtma xulosasi</h2>
-            
+            <h2 class="summary-title">{{ $t('checkout.sections.summary') }}</h2>
+
             <div class="summary-items">
               <div v-for="item in items" :key="item.cartKey" class="summary-item">
                 <img :src="item.image_url" :alt="item.name" class="summary-img" />
@@ -138,25 +144,25 @@
                 <span class="summary-price">${{ (item.price * item.quantity).toFixed(2) }}</span>
               </div>
             </div>
-            
+
             <div class="summary-totals">
               <div class="summary-row">
-                <span>Oraliq jami</span>
+                <span>{{ $t('checkout.summary.subtotal') }}</span>
                 <span>${{ totalPrice.toFixed(2) }}</span>
               </div>
               <div class="summary-row">
-                <span>Yetkazib berish</span>
-                <span class="free">Bepul</span>
+                <span>{{ $t('checkout.summary.shipping') }}</span>
+                <span class="free">{{ $t('checkout.summary.free') }}</span>
               </div>
               <div class="summary-row total">
-                <span>Jami</span>
+                <span>{{ $t('checkout.summary.total') }}</span>
                 <span>${{ totalPrice.toFixed(2) }}</span>
               </div>
             </div>
 
             <!-- Desktop Place Order Button -->
             <button @click="placeOrder" class="btn-place-order desktop-btn" :disabled="loading || !isFormValid">
-              {{ loading ? 'Jarayonda...' : 'BUYURTMA BERISH' }}
+              {{ loading ? $t('checkout.summary.processing') : $t('checkout.summary.placeOrder') }}
             </button>
           </div>
         </div>
@@ -164,8 +170,8 @@
 
       <!-- Mobile Order Summary -->
       <section class="checkout-section order-summary-mobile">
-        <h2 class="section-title">Buyurtma xulosasi</h2>
-        
+        <h2 class="section-title">{{ $t('checkout.sections.summary') }}</h2>
+
         <div class="summary-items">
           <div v-for="item in items" :key="item.cartKey" class="summary-item">
             <img :src="item.image_url" :alt="item.name" class="summary-img" />
@@ -178,18 +184,18 @@
             <span class="summary-price">${{ (item.price * item.quantity).toFixed(2) }}</span>
           </div>
         </div>
-        
+
         <div class="summary-totals">
           <div class="summary-row">
-            <span>Oraliq jami</span>
+            <span>{{ $t('checkout.summary.subtotal') }}</span>
             <span>${{ totalPrice.toFixed(2) }}</span>
           </div>
           <div class="summary-row">
-            <span>Yetkazib berish</span>
-            <span class="free">Bepul</span>
+            <span>{{ $t('checkout.summary.shipping') }}</span>
+            <span class="free">{{ $t('checkout.summary.free') }}</span>
           </div>
           <div class="summary-row total">
-            <span>Jami</span>
+            <span>{{ $t('checkout.summary.total') }}</span>
             <span>${{ totalPrice.toFixed(2) }}</span>
           </div>
         </div>
@@ -199,7 +205,7 @@
     <!-- Mobile Footer -->
     <footer class="checkout-footer mobile-footer">
       <button @click="placeOrder" class="btn-place-order" :disabled="loading || !isFormValid">
-        {{ loading ? 'Jarayonda...' : 'BUYURTMA BERISH' }}
+        {{ loading ? $t('checkout.summary.processing') : $t('checkout.summary.placeOrder') }}
       </button>
     </footer>
   </div>
@@ -210,6 +216,7 @@ definePageMeta({
   middleware: 'auth'
 })
 
+const { t } = useI18n()
 const { items, totalPrice, clearCart } = useCart()
 const { token, user } = useAuth()
 
@@ -240,12 +247,12 @@ const toast = useToast()
 
 const placeOrder = async () => {
   if (!isFormValid.value) {
-    toast.warning('Iltimos, barcha majburiy maydonlarni to\'ldiring')
+    toast.warning(t('checkout.validation.required'))
     return
   }
-  
+
   loading.value = true
-  
+
   try {
     const orderItems = items.value.map(item => ({
       product_id: item.id,
@@ -256,7 +263,7 @@ const placeOrder = async () => {
 
     // Get shop_slug from first item if available
     const shopSlug = items.value[0]?.shopSlug || null
-    const url = shopSlug 
+    const url = shopSlug
       ? `http://localhost:8000/orders?shop_slug=${shopSlug}`
       : 'http://localhost:8000/orders'
 
@@ -270,20 +277,20 @@ const placeOrder = async () => {
     })
 
     clearCart()
-    toast.success('Buyurtma muvaffaqiyatli berildi!')
+    toast.success(t('checkout.success'))
     navigateTo('/orders')
   } catch (e) {
     console.error(e)
-    toast.error('Buyurtma berishda xatolik. Iltimos, qayta urinib ko\'ring.')
+    toast.error(t('checkout.error'))
   } finally {
     loading.value = false
   }
 }
 
 // Redirect if cart is empty
-if (items.value.length === 0) {
-  navigateTo('/cart')
-}
+// if (items.value.length === 0) {
+//   navigateTo('/cart')
+// }
 </script>
 
 <style scoped>
@@ -611,35 +618,35 @@ if (items.value.length === 0) {
   .desktop-header {
     display: block;
   }
-  
+
   .mobile-header {
     display: none;
   }
-  
+
   .mobile-footer {
     display: none;
   }
-  
+
   .order-summary-mobile {
     display: none;
   }
-  
+
   .checkout-content {
     padding: 40px;
     padding-bottom: 40px;
   }
-  
+
   .checkout-layout {
     flex-direction: row;
     gap: 40px;
     align-items: flex-start;
   }
-  
+
   .checkout-form {
     flex: 1;
     min-width: 0;
   }
-  
+
   .checkout-summary {
     display: block;
     width: 400px;
@@ -647,23 +654,23 @@ if (items.value.length === 0) {
     position: sticky;
     top: 100px;
   }
-  
+
   .summary-card {
     background: white;
     border-radius: 24px;
     padding: 28px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   }
-  
+
   .checkout-section {
     border-radius: 20px;
     padding: 28px;
   }
-  
+
   .form-row {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   .desktop-btn {
     display: block;
     margin-top: 24px;

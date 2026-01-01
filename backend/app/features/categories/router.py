@@ -8,18 +8,24 @@ from pydantic import BaseModel
 
 class CategorySchema(BaseModel):
     id: Optional[int] = None
-    name: str
+    name_uz: str
+    name_ru: str
+    name_en: str
     image_url: Optional[str] = None
     shop_id: Optional[int] = None
     class Config:
         from_attributes = True
 
 class CategoryCreate(BaseModel):
-    name: str
+    name_uz: str
+    name_ru: str
+    name_en: str
     image_url: Optional[str] = None
 
 class CategoryUpdate(BaseModel):
-    name: Optional[str] = None
+    name_uz: Optional[str] = None
+    name_ru: Optional[str] = None
+    name_en: Optional[str] = None
     image_url: Optional[str] = None
 
 router = APIRouter()

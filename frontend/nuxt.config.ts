@@ -2,7 +2,18 @@
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
-  modules: ['@nuxtjs/tailwindcss'],
+  modules: ['@nuxtjs/tailwindcss', '@nuxtjs/i18n'],
+
+  experimental: {
+    autoImportTranslationFunctions: true
+  },
+
+  runtimeConfig: {
+    public: {
+      apiBase: process.env.NUXT_PUBLIC_API_BASE || 'http://localhost:8000'
+    }
+  },
+
   css: ['~/assets/css/main.css'],
   postcss: {
     plugins: {
@@ -15,6 +26,24 @@ export default defineNuxtConfig({
       isCustomElement: (tag) => tag === 'iconify-icon'
     }
   },
+
+  i18n: {
+    locales: [
+      { code: 'uz', iso: 'uz-UZ', file: 'uz.json', name: 'O\'zbek' },
+      { code: 'ru', iso: 'ru-RU', file: 'ru.json', name: 'Русский' },
+      { code: 'en', iso: 'en-US', file: 'en.json', name: 'English' }
+    ],
+    defaultLocale: 'uz',
+    strategy: 'prefix_except_default',
+    lazy: true,
+    langDir: 'locales',
+    detectBrowserLanguage: {
+      useCookie: true,
+      cookieKey: 'i18n_redirected',
+      redirectOn: 'root',
+    }
+  },
+
   app: {
     head: {
       meta: [

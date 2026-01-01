@@ -1,7 +1,7 @@
 <template>
   <div class="product-page">
     <AppHeader />
-    
+
     <main class="container py-8">
       <div v-if="pending" class="text-center py-12">
         <div class="loading-spinner"></div>
@@ -11,24 +11,19 @@
       <div v-else-if="product" class="product-content">
         <div class="product-gallery">
           <div class="main-image">
-            <img :src="selectedImage || product.image_url" :alt="product.name" />
+            <img :src="selectedImage || product.image_url" :alt="getField(product, 'name')" />
           </div>
           <div v-if="productImages.length > 1" class="thumbnail-images">
-            <div 
-              v-for="(img, index) in productImages" 
-              :key="index" 
-              class="thumbnail"
-              :class="{ active: selectedImage === img }"
-              @click="selectedImage = img"
-            >
-              <img :src="img" :alt="`${product.name} ${index + 1}`" />
+            <div v-for="(img, index) in productImages" :key="index" class="thumbnail"
+              :class="{ active: selectedImage === img }" @click="selectedImage = img">
+              <img :src="img" :alt="`${getField(product, 'name')} ${index + 1}`" />
             </div>
           </div>
         </div>
 
         <div class="product-details">
-          <div class="product-category">{{ product.category }}</div>
-          <h1 class="product-title">{{ product.name }}</h1>
+          <div class="product-category">{{ getField(product, 'category') }}</div>
+          <h1 class="product-title">{{ getField(product, 'name') }}</h1>
 
           <div class="product-price-section">
             <div class="price-container">
@@ -43,19 +38,25 @@
             <template v-if="productVariants.length > 0">
               <div v-if="totalColorStock === 0" class="stock-badge out-of-stock">TUGADI</div>
               <div v-else-if="selectedColor && selectedSize && selectedVariant">
-                <div v-if="selectedVariant.stock === 0" class="stock-badge out-of-stock">{{ selectedSize }} / {{ selectedColor.name }} - TUGADI</div>
-                <div v-else-if="selectedVariant.stock <= 5" class="stock-badge low-stock">{{ selectedSize }} / {{ selectedColor.name }}: Faqat {{ selectedVariant.stock }} ta qoldi!</div>
-                <div v-else class="stock-badge in-stock">{{ selectedSize }} / {{ selectedColor.name }}: Mavjud ({{ selectedVariant.stock }})</div>
+                <div v-if="selectedVariant.stock === 0" class="stock-badge out-of-stock">{{ selectedSize }} / {{
+                  selectedColor.name }} - TUGADI</div>
+                <div v-else-if="selectedVariant.stock <= 5" class="stock-badge low-stock">{{ selectedSize }} / {{
+                  selectedColor.name }}: Faqat {{ selectedVariant.stock }} ta qoldi!</div>
+                <div v-else class="stock-badge in-stock">{{ selectedSize }} / {{ selectedColor.name }}: Mavjud ({{
+                  selectedVariant.stock }})</div>
               </div>
-              <div v-else-if="selectedColor && !selectedSize" class="stock-badge select-color">Mavjudligini ko'rish uchun o'lchamni tanlang</div>
-              <div v-else-if="!selectedColor && selectedSize" class="stock-badge select-color">Mavjudligini ko'rish uchun rangni tanlang</div>
+              <div v-else-if="selectedColor && !selectedSize" class="stock-badge select-color">Mavjudligini ko'rish
+                uchun o'lchamni tanlang</div>
+              <div v-else-if="!selectedColor && selectedSize" class="stock-badge select-color">Mavjudligini ko'rish
+                uchun rangni tanlang</div>
               <div v-else class="stock-badge select-color">Mavjudligini ko'rish uchun o'lcham va rangni tanlang</div>
             </template>
             <!-- Stock badge for products without variants -->
             <template v-else>
-            <div v-if="product.stock === 0" class="stock-badge out-of-stock">TUGADI</div>
-            <div v-else-if="product.stock <= 5" class="stock-badge low-stock">Faqat {{ product.stock }} ta qoldi!</div>
-            <div v-else class="stock-badge in-stock">Mavjud ({{ product.stock }})</div>
+              <div v-if="product.stock === 0" class="stock-badge out-of-stock">TUGADI</div>
+              <div v-else-if="product.stock <= 5" class="stock-badge low-stock">Faqat {{ product.stock }} ta qoldi!
+              </div>
+              <div v-else class="stock-badge in-stock">Mavjud ({{ product.stock }})</div>
             </template>
           </div>
 
@@ -65,16 +66,10 @@
               <span v-if="productSizes.length > 0" class="required-badge">*</span>
             </h3>
             <div class="colors">
-              <button 
-                v-for="color in productColors" 
-                :key="color.name" 
-                class="color-btn"
+              <button v-for="color in productColors" :key="color.name" class="color-btn"
                 :class="{ active: selectedColor?.name === color.name, 'out-of-stock': color.stock === 0 }"
-                :style="{ '--color': color.hex }"
-                @click="selectColor(color)"
-                :disabled="color.stock === 0"
-                :title="color.stock === 0 ? 'Tugagan' : `${color.name} (${color.stock} ta mavjud)`"
-              >
+                :style="{ '--color': color.hex }" @click="selectColor(color)" :disabled="color.stock === 0"
+                :title="color.stock === 0 ? 'Tugagan' : `${color.name} (${color.stock} ta mavjud)`">
                 <span class="color-swatch"></span>
                 <span class="color-name">{{ color.name }}</span>
                 <span v-if="color.stock === 0" class="color-oos">✕</span>
@@ -88,15 +83,10 @@
               <span v-if="productColors.length > 0" class="required-badge">*</span>
             </h3>
             <div class="sizes">
-              <button 
-                v-for="size in productSizes" 
-                :key="size.name || size" 
-                class="size-btn"
+              <button v-for="size in productSizes" :key="size.name || size" class="size-btn"
                 :class="{ active: selectedSize === (size.name || size), 'out-of-stock': size.stock === 0 }"
-                @click="selectSize(size)"
-                :disabled="size.stock === 0"
-                :title="size.stock === 0 ? 'Tugagan' : `${size.name || size} (${size.stock || 'mavjud'})`"
-              >
+                @click="selectSize(size)" :disabled="size.stock === 0"
+                :title="size.stock === 0 ? 'Tugagan' : `${size.name || size} (${size.stock || 'mavjud'})`">
                 {{ size.name || size }}
                 <span v-if="size.stock === 0" class="size-oos">✕</span>
               </button>
@@ -104,28 +94,23 @@
           </div>
 
           <div class="product-description">
-            <h3 class="section-title">Tavsif</h3>
-            <p>{{ product.description }}</p>
+            <h3 class="section-title">{{ $t('product.description') }}</h3>
+            <p>{{ getField(product, 'description') }}</p>
           </div>
 
           <div class="product-meta">
             <div class="meta-item">
-              <span class="meta-label">Brend:</span>
-              <span class="meta-value">{{ product.brand }}</span>
+              <span class="meta-label">{{ $t('product.brand') }}:</span>
+              <span class="meta-value">{{ getField(product, 'brand') }}</span>
             </div>
             <div class="meta-item">
-              <span class="meta-label">Kategoriya:</span>
-              <span class="meta-value">{{ product.category }}</span>
+              <span class="meta-label">{{ $t('product.category') }}:</span>
+              <span class="meta-value">{{ getField(product, 'category') }}</span>
             </div>
           </div>
 
           <div class="product-actions">
-            <button 
-              v-if="canAddToCart"
-              @click="addToCart" 
-              class="btn-add-cart"
-              :disabled="!canAddToCart"
-            >
+            <button v-if="canAddToCart" @click="addToCart" class="btn-add-cart" :disabled="!canAddToCart">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="9" cy="21" r="1"></circle>
                 <circle cx="20" cy="21" r="1"></circle>
@@ -133,11 +118,7 @@
               </svg>
               {{ buttonText }}
             </button>
-            <button 
-              v-else-if="showPreorderButton"
-              @click="openPreorderModal" 
-              class="btn-preorder"
-            >
+            <button v-else-if="showPreorderButton" @click="openPreorderModal" class="btn-preorder">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
                 <path d="M2 17l10 5 10-5"></path>
@@ -146,12 +127,15 @@
               Предзаказ
             </button>
             <button @click="toggleFavorite" class="btn-favorite" :class="{ active: product.is_favorite }">
-              <svg width="20" height="20" viewBox="0 0 24 24" :fill="product.is_favorite ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2">
-                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+              <svg width="20" height="20" viewBox="0 0 24 24" :fill="product.is_favorite ? 'currentColor' : 'none'"
+                stroke="currentColor" stroke-width="2">
+                <path
+                  d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
+                </path>
               </svg>
             </button>
           </div>
-          
+
           <!-- Pre-order Modal -->
           <div v-if="showPreorderModal" class="modal-overlay" @click="closePreorderModal">
             <div class="modal-content" @click.stop>
@@ -182,7 +166,8 @@
               </div>
               <div class="modal-footer">
                 <button @click="closePreorderModal" class="btn-cancel">Отмена</button>
-                <button @click="submitPreorder" class="btn-submit" :disabled="!preorderForm.phone || isSubmittingPreorder">
+                <button @click="submitPreorder" class="btn-submit"
+                  :disabled="!preorderForm.phone || isSubmittingPreorder">
                   {{ isSubmittingPreorder ? 'Отправка...' : 'Оставить предзаказ' }}
                 </button>
               </div>
@@ -198,6 +183,8 @@
 const route = useRoute()
 const { addItem } = useCart()
 const { user } = useAuth()
+const { getField } = useMultilingual()
+const { t } = useI18n()
 
 const { data: product, pending, refresh } = await useFetch(`http://localhost:8000/products/${route.params.id}`, {
   server: false
@@ -237,7 +224,7 @@ const productVariants = computed(() => {
     // Legacy format: sizes + colors
     const hasSizes = product.value.sizes && product.value.sizes.trim()
     const hasColors = product.value.colors && product.value.colors.trim()
-    
+
     if (hasSizes && hasColors) {
       // Both sizes and colors
       const sizes = JSON.parse(product.value.sizes)
@@ -350,7 +337,7 @@ const availableSizes = computed(() => {
   if (!selectedColor.value) return productSizes.value
   // Get sizes that have stock for selected color
   return productSizes.value.filter(size => {
-    const variant = productVariants.value.find(v => 
+    const variant = productVariants.value.find(v =>
       v.size === size && v.color === selectedColor.value.name && (v.stock || 0) > 0
     )
     return !!variant
@@ -360,11 +347,11 @@ const availableSizes = computed(() => {
 // Get selected variant (based on selected size and color)
 const selectedVariant = computed(() => {
   if (productVariants.value.length === 0) return null
-  
+
   // If product has both sizes and colors, both must be selected
   if (productSizes.value.length > 0 && productColors.value.length > 0) {
     if (!selectedColor.value || !selectedSize.value) return null
-    return productVariants.value.find(v => 
+    return productVariants.value.find(v =>
       v.color === selectedColor.value.name && v.size === selectedSize.value
     )
   }
@@ -380,7 +367,7 @@ const selectedVariant = computed(() => {
     // Find variant with this size (color can be null or any)
     return productVariants.value.find(v => v.size === selectedSize.value)
   }
-  
+
   return null
 })
 
@@ -445,9 +432,9 @@ const selectSize = (size) => {
 const canAddToCart = computed(() => {
   // User must be logged in to add to cart
   if (!user.value) return false
-  
+
   if (!product.value) return false
-  
+
   // If product has variants
   if (productVariants.value.length > 0) {
     // If product has both sizes and colors, both must be selected
@@ -464,11 +451,11 @@ const canAddToCart = computed(() => {
     }
     // If product has variants but no sizes and no colors, check variant stock
     // This case is rare but handle it
-    
+
     // Check if selected variant has stock
     const variant = selectedVariant.value
     if (variant && (variant.stock || 0) === 0) return false
-    
+
     // If we have colors/sizes but no variant found, can't add
     if ((productSizes.value.length > 0 || productColors.value.length > 0) && !variant) return false
   }
@@ -476,18 +463,18 @@ const canAddToCart = computed(() => {
   else {
     if (product.value.stock === 0) return false
   }
-  
+
   return true
 })
 
 const buttonText = computed(() => {
   if (!product.value) return 'Yuklanmoqda...'
-  
+
   // Check if user is logged in
   if (!user.value) {
     return 'TIZIMGA KIRING'
   }
-  
+
   // If product has variants
   if (productVariants.value.length > 0) {
     // If product has both sizes and colors
@@ -503,7 +490,7 @@ const buttonText = computed(() => {
     else if (productSizes.value.length > 0 && productColors.value.length === 0) {
       if (!selectedSize.value) return 'O\'lchamni tanlang'
     }
-    
+
     const variant = selectedVariant.value
     if (variant && (variant.stock || 0) === 0) return 'Tugagan'
   }
@@ -511,7 +498,7 @@ const buttonText = computed(() => {
   else if (product.value.stock === 0) {
     return 'Tugagan'
   }
-  
+
   return 'SAVATGA QO\'SHISH'
 })
 
@@ -529,13 +516,13 @@ const preorderForm = ref({
 const showPreorderButton = computed(() => {
   if (!product.value || !user.value) return false
   if (!product.value.is_preorder_enabled) return false
-  
+
   // Check if product is out of stock
   if (productVariants.value.length > 0) {
     // Check if we need to select variants
     const needsColor = productColors.value.length > 0
     const needsSize = productSizes.value.length > 0
-    
+
     // If we need both but haven't selected them, don't show pre-order button yet
     if (needsColor && needsSize && (!selectedColor.value || !selectedSize.value)) {
       return false
@@ -548,7 +535,7 @@ const showPreorderButton = computed(() => {
     if (!needsColor && needsSize && !selectedSize.value) {
       return false
     }
-    
+
     const variant = selectedVariant.value
     if (variant && (variant.stock || 0) > 0) return false
     // If variant selected but out of stock, or no variant selected but all out of stock
@@ -565,13 +552,13 @@ const openPreorderModal = () => {
     navigateTo(`/login?returnUrl=${encodeURIComponent(returnUrl)}`)
     return
   }
-  
+
   // Pre-fill user data if available
   if (user.value) {
     preorderForm.value.name = `${user.value.first_name || ''} ${user.value.last_name || ''}`.trim()
     preorderForm.value.phone = user.value.phone || ''
   }
-  
+
   showPreorderModal.value = true
 }
 
@@ -585,14 +572,14 @@ const submitPreorder = async () => {
     toast.error('Пожалуйста, укажите номер телефона')
     return
   }
-  
+
   if (!user.value) {
     toast.warning('Для предзаказа необходимо войти в систему')
     return
   }
-  
+
   isSubmittingPreorder.value = true
-  
+
   try {
     const { token } = useAuth()
     await $fetch(`http://localhost:8000/products/${route.params.id}/preorder`, {
@@ -608,7 +595,7 @@ const submitPreorder = async () => {
         name: preorderForm.value.name || null
       }
     })
-    
+
     toast.success('Предзаказ успешно оформлен! Мы уведомим вас, когда товар поступит в продажу.')
     closePreorderModal()
   } catch (e) {
@@ -632,7 +619,7 @@ const addToCart = () => {
     navigateTo(`/login?returnUrl=${encodeURIComponent(returnUrl)}`)
     return
   }
-  
+
   if (!canAddToCart.value) {
     // If product has both sizes and colors
     if (productSizes.value.length > 0 && productColors.value.length > 0) {
@@ -669,7 +656,7 @@ const addToCart = () => {
     }
     return
   }
-  
+
   addItem({
     ...product.value,
     price: finalPrice.value,  // Add discounted price
@@ -689,7 +676,7 @@ const toggleFavorite = async () => {
     navigateTo(`/login?returnUrl=${encodeURIComponent(returnUrl)}`)
     return
   }
-  
+
   try {
     await $fetch(`http://localhost:8000/products/${route.params.id}/favorite`, { method: 'POST' })
     refresh()
@@ -724,7 +711,7 @@ const toggleFavorite = async () => {
   background: white;
   border-radius: 24px;
   padding: 40px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   aspect-ratio: 1;
   display: flex;
   align-items: center;
@@ -909,7 +896,7 @@ const toggleFavorite = async () => {
   height: 24px;
   border-radius: 50%;
   background: var(--color);
-  border: 2px solid rgba(0,0,0,0.1);
+  border: 2px solid rgba(0, 0, 0, 0.1);
 }
 
 .color-name {
@@ -1087,15 +1074,20 @@ const toggleFavorite = async () => {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 @media (min-width: 768px) {
   .product-content {
     grid-template-columns: 1fr 1fr;
   }
-  
+
   .product-title {
     font-size: 3rem;
   }
@@ -1282,20 +1274,20 @@ const toggleFavorite = async () => {
   .main-image {
     padding: 24px;
   }
-  
+
   .product-title {
     font-size: 1.75rem;
   }
-  
+
   .product-price {
     font-size: 2rem;
   }
-  
+
   .btn-add-cart,
   .btn-preorder {
     padding: 14px 24px;
   }
-  
+
   .modal-content {
     margin: 20px;
   }

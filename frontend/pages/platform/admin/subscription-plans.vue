@@ -3,7 +3,8 @@
     <!-- Mobile Header -->
     <header class="mobile-header">
       <button class="menu-btn" @click="sidebarOpen = !sidebarOpen">
-        <svg v-if="!sidebarOpen" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg v-if="!sidebarOpen" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2">
           <line x1="3" y1="12" x2="21" y2="12"></line>
           <line x1="3" y1="6" x2="21" y2="6"></line>
           <line x1="3" y1="18" x2="21" y2="18"></line>
@@ -13,7 +14,7 @@
           <line x1="6" y1="6" x2="18" y2="18"></line>
         </svg>
       </button>
-      <span class="mobile-title">Планы подписки</span>
+      <span class="mobile-title">{{ $t('platformAdmin.plans.title') }}</span>
       <NuxtLink to="/" class="home-btn">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
@@ -22,27 +23,23 @@
       </NuxtLink>
     </header>
 
-    <PlatformAdminSidebar 
-      :current-route="currentRoute" 
-      :model-value="sidebarOpen"
-      @update:model-value="sidebarOpen = $event"
-      @logout="handleLogout" 
-    />
+    <PlatformAdminSidebar :current-route="currentRoute" :model-value="sidebarOpen"
+      @update:model-value="sidebarOpen = $event" @logout="handleLogout" />
 
     <!-- Main Content -->
     <main class="admin-main">
       <div class="admin-header">
         <div class="header-content">
           <div>
-            <h1 class="admin-title">Управление планами подписки</h1>
-            <p class="admin-subtitle">Создавайте и управляйте планами подписки для магазинов</p>
+            <h1 class="admin-title">{{ $t('platformAdmin.plans.title') }}</h1>
+            <p class="admin-subtitle">{{ $t('platformAdmin.plans.subtitle') }}</p>
           </div>
           <button @click="openCreateModal" class="create-btn">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="12" y1="5" x2="12" y2="19"></line>
               <line x1="5" y1="12" x2="19" y2="12"></line>
             </svg>
-            <span>Добавить план</span>
+            <span>{{ $t('platformAdmin.plans.add') }}</span>
           </button>
         </div>
       </div>
@@ -55,25 +52,27 @@
             <line x1="12" y1="8" x2="12" y2="12"></line>
             <line x1="12" y1="16" x2="12.01" y2="16"></line>
           </svg>
-          <p class="error-message">Ошибка загрузки данных: {{ error.message || 'Неизвестная ошибка' }}</p>
-          <button @click="refresh" class="retry-btn">Повторить</button>
+          <p class="error-message">{{ $t('platformAdmin.dashboard.error') }}: {{ error.message || 'Unknown' }}</p>
+          <button @click="refresh" class="retry-btn">{{ $t('platformAdmin.dashboard.refresh') }}</button>
         </div>
-        
+
         <!-- Loading State -->
         <div v-else-if="pending" class="loading-state">
           <div class="loading-spinner"></div>
-          <p>Загрузка планов...</p>
+          <p>{{ $t('platformAdmin.dashboard.loading') }}</p>
         </div>
 
         <!-- Plans Grid -->
         <div v-else class="plans-grid">
-          <div v-for="plan in plans" :key="plan.id" class="plan-card" :class="{ 'inactive': !plan.is_active, 'trial': plan.is_trial }">
+          <div v-for="plan in plans" :key="plan.id" class="plan-card"
+            :class="{ 'inactive': !plan.is_active, 'trial': plan.is_trial }">
             <div class="plan-header">
               <div class="plan-title-section">
                 <h3 class="plan-name">{{ plan.name }}</h3>
                 <div class="plan-badges">
-                  <span v-if="plan.is_trial" class="badge trial-badge">Пробный</span>
-                  <span v-if="!plan.is_active" class="badge inactive-badge">Неактивен</span>
+                  <span v-if="plan.is_trial" class="badge trial-badge">{{ $t('platformAdmin.plans.card.trial') }}</span>
+                  <span v-if="!plan.is_active" class="badge inactive-badge">{{ $t('platformAdmin.plans.card.inactive')
+                    }}</span>
                 </div>
               </div>
               <div class="plan-actions">
@@ -94,7 +93,8 @@
 
             <div class="plan-price-section">
               <div class="plan-price">
-                <span v-if="plan.price === 0 || plan.is_trial" class="price-amount">Бесплатно</span>
+                <span v-if="plan.price === 0 || plan.is_trial" class="price-amount">{{
+                  $t('platformAdmin.plans.card.free') }}</span>
                 <span v-else class="price-amount">${{ plan.price }}</span>
                 <span class="price-period">/ {{ plan.period_days }} {{ getPeriodText(plan.period_days) }}</span>
               </div>
@@ -107,7 +107,7 @@
 
             <div class="plan-features">
               <div class="features-header">
-                <span class="features-title">Что входит:</span>
+                <span class="features-title">{{ $t('platformAdmin.plans.card.includes') }}</span>
               </div>
               <ul class="features-list" v-if="plan.features_list && plan.features_list.length > 0">
                 <li v-for="(feature, index) in plan.features_list" :key="index">
@@ -117,7 +117,7 @@
                   {{ feature }}
                 </li>
               </ul>
-              <div v-else class="no-features">Функции не указаны</div>
+              <div v-else class="no-features">{{ $t('platformAdmin.plans.card.noFeatures') }}</div>
             </div>
 
             <div class="plan-limits">
@@ -126,19 +126,19 @@
                   <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
                   <line x1="1" y1="10" x2="23" y2="10"></line>
                 </svg>
-                <span class="limit-label">Товаров:</span>
+                <span class="limit-label">{{ $t('platformAdmin.plans.card.products') }}</span>
                 <span class="limit-value">
-                  {{ plan.max_products === null ? 'Неограниченно' : plan.max_products }}
+                  {{ plan.max_products === null ? $t('platformAdmin.plans.card.unlimited') : plan.max_products }}
                 </span>
               </div>
             </div>
 
             <div class="plan-footer">
               <div class="plan-meta">
-                <span>Порядок: {{ plan.display_order }}</span>
+                <span>{{ $t('platformAdmin.plans.card.order') }} {{ plan.display_order }}</span>
               </div>
               <button @click="toggleActive(plan)" :class="['toggle-btn', plan.is_active ? 'active' : 'inactive']">
-                {{ plan.is_active ? 'Активен' : 'Неактивен' }}
+                {{ plan.is_active ? $t('platformAdmin.plans.card.active') : $t('platformAdmin.plans.card.inactive') }}
               </button>
             </div>
           </div>
@@ -151,9 +151,9 @@
               <line x1="8" y1="2" x2="8" y2="6"></line>
               <line x1="3" y1="10" x2="21" y2="10"></line>
             </svg>
-            <p>Планов подписки пока нет</p>
-            <p class="empty-subtitle">Создайте первый план подписки</p>
-            <button @click="openCreateModal" class="create-first-btn">Создать план</button>
+            <p>{{ $t('platformAdmin.plans.empty') }}</p>
+            <p class="empty-subtitle">{{ $t('platformAdmin.plans.emptySubtitle') }}</p>
+            <button @click="openCreateModal" class="create-first-btn">{{ $t('platformAdmin.plans.create') }}</button>
           </div>
         </div>
 
@@ -161,79 +161,76 @@
         <div v-if="showModal" class="modal-overlay" @click="closeModal">
           <div class="modal-content" @click.stop>
             <div class="modal-header">
-              <h2 class="modal-title">{{ editingPlan ? 'Редактировать план' : 'Создать новый план' }}</h2>
+              <h2 class="modal-title">{{ editingPlan ? $t('platformAdmin.plans.edit') : $t('platformAdmin.plans.create')
+                }}</h2>
               <button @click="closeModal" class="modal-close">×</button>
             </div>
 
             <form @submit.prevent="savePlan" class="modal-form">
               <div class="form-grid">
                 <div class="form-group">
-                  <label>Название плана *</label>
-                  <input v-model="planForm.name" type="text" class="form-input" required placeholder="Например: Базовый" />
+                  <label>{{ $t('platformAdmin.plans.form.name') }} *</label>
+                  <input v-model="planForm.name" type="text" class="form-input" required
+                    :placeholder="$t('platformAdmin.plans.form.name')" />
                 </div>
 
                 <div class="form-group">
-                  <label>Slug *</label>
-                  <input v-model="planForm.slug" type="text" class="form-input" required placeholder="Например: basic" />
-                  <small class="form-hint">Уникальный идентификатор (латиница, без пробелов)</small>
+                  <label>{{ $t('platformAdmin.plans.form.slug') }} *</label>
+                  <input v-model="planForm.slug" type="text" class="form-input" required placeholder="basic" />
+                  <small class="form-hint">{{ $t('platformAdmin.plans.form.hints.slug') }}</small>
                 </div>
 
                 <div class="form-group">
-                  <label>Цена ($) *</label>
-                  <input v-model.number="planForm.price" type="number" step="0.01" min="0" class="form-input" required />
+                  <label>{{ $t('platformAdmin.plans.form.price') }} *</label>
+                  <input v-model.number="planForm.price" type="number" step="0.01" min="0" class="form-input"
+                    required />
                 </div>
 
                 <div class="form-group">
-                  <label>Период (дней) *</label>
+                  <label>{{ $t('platformAdmin.plans.form.period') }} *</label>
                   <input v-model.number="planForm.period_days" type="number" min="1" class="form-input" required />
                 </div>
 
                 <div class="form-group">
-                  <label>Максимум товаров</label>
-                  <input 
-                    :value="planForm.max_products === null ? '' : planForm.max_products"
+                  <label>{{ $t('platformAdmin.plans.form.maxProducts') }}</label>
+                  <input :value="planForm.max_products === null ? '' : planForm.max_products"
                     @input="planForm.max_products = $event.target.value === '' ? null : Number($event.target.value)"
-                    type="number" 
-                    min="0" 
-                    class="form-input" 
-                    placeholder="Оставьте пустым для неограниченно" 
-                  />
-                  <small class="form-hint">Оставьте пустым для неограниченного количества товаров</small>
+                    type="number" min="0" class="form-input" placeholder="" />
+                  <small class="form-hint">{{ $t('platformAdmin.plans.form.hints.maxProducts') }}</small>
                 </div>
 
                 <div class="form-group full-width">
-                  <label>Описание</label>
-                  <textarea v-model="planForm.description" class="form-input" rows="3" placeholder="Краткое описание плана"></textarea>
+                  <label>{{ $t('platformAdmin.plans.form.description') }}</label>
+                  <textarea v-model="planForm.description" class="form-input" rows="3"
+                    :placeholder="$t('platformAdmin.plans.form.description')"></textarea>
                 </div>
 
                 <div class="form-group full-width">
                   <label>
-                    Функции плана
+                    {{ $t('platformAdmin.plans.form.features') }}
                     <button type="button" @click="addFeature" class="add-feature-btn">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
                         <line x1="12" y1="5" x2="12" y2="19"></line>
                         <line x1="5" y1="12" x2="19" y2="12"></line>
                       </svg>
-                      Добавить
+                      {{ $t('platformAdmin.plans.form.addFeature') }}
                     </button>
                   </label>
                   <div class="features-input-list">
                     <div v-for="(feature, index) in planForm.features" :key="index" class="feature-input-row">
-                      <input 
-                        v-model="planForm.features[index]" 
-                        type="text" 
-                        class="form-input" 
-                        :placeholder="`Функция ${index + 1}`"
-                      />
+                      <input v-model="planForm.features[index]" type="text" class="form-input"
+                        :placeholder="`${$t('platformAdmin.plans.form.features')} ${index + 1}`" />
                       <button type="button" @click="removeFeature(index)" class="remove-feature-btn">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                          stroke-width="2">
                           <line x1="18" y1="6" x2="6" y2="18"></line>
                           <line x1="6" y1="6" x2="18" y2="18"></line>
                         </svg>
                       </button>
                     </div>
                     <div v-if="planForm.features.length === 0" class="no-features-input">
-                      Функции не указаны. Нажмите "Добавить", чтобы добавить функцию.
+                      {{ $t('platformAdmin.plans.card.noFeatures') }}
                     </div>
                   </div>
                 </div>
@@ -241,28 +238,30 @@
                 <div class="form-group">
                   <label class="checkbox-label">
                     <input v-model="planForm.is_trial" type="checkbox" class="checkbox-input" />
-                    <span>Пробный период</span>
+                    <span>{{ $t('platformAdmin.plans.form.isTrial') }}</span>
                   </label>
                 </div>
 
                 <div class="form-group">
                   <label class="checkbox-label">
                     <input v-model="planForm.is_active" type="checkbox" class="checkbox-input" />
-                    <span>Активен</span>
+                    <span>{{ $t('platformAdmin.plans.form.isActive') }}</span>
                   </label>
                 </div>
 
                 <div class="form-group">
-                  <label>Порядок отображения</label>
+                  <label>{{ $t('platformAdmin.plans.form.order') }}</label>
                   <input v-model.number="planForm.display_order" type="number" min="0" class="form-input" />
-                  <small class="form-hint">Меньше число = выше в списке</small>
+                  <small class="form-hint">{{ $t('platformAdmin.plans.form.hints.order') }}</small>
                 </div>
               </div>
 
               <div class="modal-actions">
-                <button type="button" @click="closeModal" class="btn-secondary">Отмена</button>
+                <button type="button" @click="closeModal" class="btn-secondary">{{ $t('platformAdmin.plans.cancel')
+                  }}</button>
                 <button type="submit" class="btn-primary" :disabled="saving">
-                  {{ saving ? 'Сохранение...' : (editingPlan ? 'Сохранить' : 'Создать') }}
+                  {{ saving ? $t('common.saving') : (editingPlan ? $t('platformAdmin.plans.save') :
+                    $t('platformAdmin.plans.create')) }}
                 </button>
               </div>
             </form>
@@ -278,6 +277,8 @@ definePageMeta({
   middleware: 'platform-admin'
 })
 
+// Imports
+const { t } = useI18n()
 const route = useRoute()
 const { token, logout } = useAuth()
 const toast = useToast()
@@ -286,7 +287,7 @@ const sidebarOpen = ref(false)
 
 const handleLogout = () => {
   logout()
-  useToast().success('Вы вышли из аккаунта')
+  useToast().success(t('common.logout'))
 }
 
 const currentRoute = computed(() => {
@@ -372,13 +373,13 @@ const removeFeature = (index) => {
 }
 
 const getPeriodText = (days) => {
-  if (days === 1) return 'день'
-  if (days >= 2 && days <= 4) return 'дня'
-  if (days >= 5 && days <= 20) return 'дней'
+  if (days === 1) return t('platformAdmin.plans.period.day')
+  if (days >= 2 && days <= 4) return t('platformAdmin.plans.period.days_2_4')
+  if (days >= 5 && days <= 20) return t('platformAdmin.plans.period.days')
   const lastDigit = days % 10
-  if (lastDigit === 1) return 'день'
-  if (lastDigit >= 2 && lastDigit <= 4) return 'дня'
-  return 'дней'
+  if (lastDigit === 1) return t('platformAdmin.plans.period.day')
+  if (lastDigit >= 2 && lastDigit <= 4) return t('platformAdmin.plans.period.days_2_4')
+  return t('platformAdmin.plans.period.days')
 }
 
 const savePlan = async () => {
@@ -398,7 +399,7 @@ const savePlan = async () => {
         },
         body: payload
       })
-      toast.success('План обновлен')
+      toast.success(t('common.saved'))
     } else {
       await $fetch('http://localhost:8000/platform/admin/subscription-plans', {
         method: 'POST',
@@ -407,13 +408,13 @@ const savePlan = async () => {
         },
         body: payload
       })
-      toast.success('План создан')
+      toast.success(t('common.saved'))
     }
 
     closeModal()
     refresh()
   } catch (e) {
-    toast.error(e.data?.detail || 'Ошибка при сохранении плана')
+    toast.error(e.data?.detail || t('platformAdmin.dashboard.error'))
   } finally {
     saving.value = false
   }
@@ -430,15 +431,15 @@ const toggleActive = async (plan) => {
         is_active: !plan.is_active
       }
     })
-    toast.success(`План ${!plan.is_active ? 'активирован' : 'деактивирован'}`)
+    toast.success(t('common.saved'))
     refresh()
   } catch (e) {
-    toast.error(e.data?.detail || 'Ошибка при изменении статуса')
+    toast.error(e.data?.detail || t('platformAdmin.dashboard.error'))
   }
 }
 
 const deletePlan = async (plan) => {
-  if (!confirm(`Вы уверены, что хотите удалить план "${plan.name}"?`)) {
+  if (!confirm(`${t('platformAdmin.plans.delete')} "${plan.name}"?`)) {
     return
   }
 
@@ -449,10 +450,10 @@ const deletePlan = async (plan) => {
         'Authorization': `Bearer ${token.value}`
       }
     })
-    toast.success('План удален')
+    toast.success(t('common.deleted'))
     refresh()
   } catch (e) {
-    toast.error(e.data?.detail || 'Ошибка при удалении плана')
+    toast.error(e.data?.detail || t('platformAdmin.dashboard.error'))
   }
 }
 </script>
@@ -527,7 +528,7 @@ const deletePlan = async (plan) => {
     font-size: 1.5rem !important;
     line-height: 1.2 !important;
   }
-  
+
   .admin-header {
     padding: 20px !important;
   }
@@ -576,7 +577,7 @@ const deletePlan = async (plan) => {
 .create-btn:hover {
   background: #F9FAFB;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .admin-content {
@@ -600,7 +601,7 @@ const deletePlan = async (plan) => {
   background: white;
   border-radius: 20px;
   padding: 24px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   border: 2px solid #E5E7EB;
   transition: all 0.2s;
   display: flex;
@@ -608,7 +609,7 @@ const deletePlan = async (plan) => {
 }
 
 .plan-card:hover {
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   transform: translateY(-2px);
 }
 
@@ -893,7 +894,7 @@ const deletePlan = async (plan) => {
 .create-first-btn:hover {
   background: #000;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 /* Loading & Error States */
@@ -907,7 +908,7 @@ const deletePlan = async (plan) => {
   text-align: center;
   background: white;
   border-radius: 16px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   border: 1px solid #E5E7EB;
 }
 
@@ -952,8 +953,13 @@ const deletePlan = async (plan) => {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Modal Styles */
@@ -963,7 +969,7 @@ const deletePlan = async (plan) => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1218,16 +1224,16 @@ textarea.form-input {
   .mobile-header {
     display: flex;
   }
-  
+
   .admin-main {
     margin-left: 0;
     padding-top: 60px;
   }
-  
+
   .plans-grid {
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   }
-  
+
   .form-grid {
     grid-template-columns: 1fr;
   }
@@ -1238,23 +1244,22 @@ textarea.form-input {
     margin-left: 0;
     padding-top: 60px;
   }
-  
+
   .plans-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .header-content {
     flex-direction: column;
     gap: 16px;
   }
-  
+
   .admin-title {
     font-size: 2rem;
   }
-  
+
   .admin-content {
     padding: 20px;
   }
 }
 </style>
-

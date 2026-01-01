@@ -9,66 +9,47 @@
               <line x1="1" y1="10" x2="23" y2="10"></line>
             </svg>
           </div>
-          <h1 class="register-title">Регистрация</h1>
-          <p class="register-subtitle">Создайте аккаунт и начните делать покупки</p>
-          <p class="register-note">Хотите создать магазин? <NuxtLink to="/register-shop" class="register-link">Создать магазин</NuxtLink></p>
+          <h1 class="register-title">{{ $t('auth.register_title') }}</h1>
+          <p class="register-subtitle">{{ $t('auth.register_subtitle') }}</p>
+          <p class="register-note">{{ $t('auth.shop_promo') }} <NuxtLink to="/register-shop" class="register-link">{{
+            $t('auth.create_shop_link') }}</NuxtLink>
+          </p>
         </div>
-        
+
         <form @submit.prevent="handleRegister" class="register-form">
           <div class="form-row">
             <div class="form-group">
-              <label class="form-label">Имя</label>
-              <input 
-                v-model="firstName" 
-                type="text" 
-                required 
-                class="form-input" 
-                placeholder="Иван" 
-              />
+              <label class="form-label">{{ $t('auth.first_name_label') }}</label>
+              <input v-model="firstName" type="text" required class="form-input"
+                :placeholder="$t('auth.name_placeholder')" />
             </div>
-            
+
             <div class="form-group">
-              <label class="form-label">Фамилия</label>
-              <input 
-                v-model="lastName" 
-                type="text" 
-                required 
-                class="form-input" 
-                placeholder="Иванов" 
-              />
+              <label class="form-label">{{ $t('auth.last_name_label') }}</label>
+              <input v-model="lastName" type="text" required class="form-input"
+                :placeholder="$t('auth.lastname_placeholder')" />
             </div>
           </div>
-          
+
           <div class="form-group">
-            <label class="form-label">Номер телефона</label>
-            <input 
-              v-model="phone" 
-              type="tel" 
-              required 
-              class="form-input" 
-              placeholder="+998901234567" 
-            />
+            <label class="form-label">{{ $t('auth.phone_label') }}</label>
+            <input v-model="phone" type="tel" required class="form-input" :placeholder="$t('auth.phone_placeholder')" />
           </div>
-          
+
           <div class="form-group">
-            <label class="form-label">Пароль</label>
-            <input 
-              v-model="password" 
-              type="password" 
-              required 
-              class="form-input" 
-              placeholder="••••••••" 
-            />
+            <label class="form-label">{{ $t('auth.password_label') }}</label>
+            <input v-model="password" type="password" required class="form-input"
+              :placeholder="$t('auth.password_placeholder')" />
           </div>
-          
+
           <button type="submit" :disabled="loading" class="btn-submit">
-            <span v-if="loading">Регистрация...</span>
-            <span v-else>Зарегистрироваться</span>
+            <span v-if="loading">{{ $t('auth.registering') }}</span>
+            <span v-else>{{ $t('auth.register_button') }}</span>
           </button>
-          
+
           <div class="form-footer">
-            <span class="footer-text">Уже есть аккаунт?</span>
-            <NuxtLink :to="loginLink" class="footer-link">Войти</NuxtLink>
+            <span class="footer-text">{{ $t('auth.have_account') }}</span>
+            <NuxtLink :to="loginLink" class="footer-link">{{ $t('auth.login_link_text') }}</NuxtLink>
           </div>
         </form>
       </div>
@@ -81,6 +62,7 @@ definePageMeta({
   layout: false
 })
 
+const { t } = useI18n()
 const route = useRoute()
 const firstName = ref('')
 const lastName = ref('')
@@ -88,17 +70,18 @@ const phone = ref('')
 const password = ref('')
 const loading = ref(false)
 const { register } = useAuth()
+const toast = useToast()
 
 // Save returnUrl when page loads
 onMounted(() => {
   let returnUrl: string | null = null;
-  
+
   if (Array.isArray(route.query.returnUrl)) {
     returnUrl = route.query.returnUrl[0] || null
   } else if (typeof route.query.returnUrl === 'string') {
     returnUrl = route.query.returnUrl
   }
-  
+
   if (returnUrl) {
     localStorage.setItem('returnUrl', returnUrl)
   } else {
@@ -119,14 +102,14 @@ onMounted(() => {
 // Preserve returnUrl when linking to login
 const loginLink = computed(() => {
   let queryReturnUrl: string | null = null;
-  
+
   if (Array.isArray(route.query.returnUrl)) {
     queryReturnUrl = route.query.returnUrl[0] || null
   } else if (typeof route.query.returnUrl === 'string') {
     queryReturnUrl = route.query.returnUrl
   }
-  
-  const returnUrl = queryReturnUrl || (process.client ? localStorage.getItem('returnUrl') : null)
+
+  const returnUrl = queryReturnUrl || (import.meta.client ? localStorage.getItem('returnUrl') : null)
   if (returnUrl) {
     return `/login?returnUrl=${encodeURIComponent(returnUrl)}`
   }
@@ -135,19 +118,19 @@ const loginLink = computed(() => {
 
 const handleRegister = async () => {
   if (loading.value) return
-  
+
   if (!phone.value || !password.value || !firstName.value || !lastName.value) {
-    useToast().error('Заполните все поля')
+    toast.error(t('auth.validation.required'))
     return
   }
-  
+
   loading.value = true
   try {
-  await register(phone.value, password.value, firstName.value, lastName.value)
-  } catch (e) {
+    await register(phone.value, password.value, firstName.value, lastName.value)
+  } catch (e: any) {
     console.error('Register error details:', e)
-    let errorMessage = 'Ошибка при регистрации. Этот номер телефона уже зарегистрирован.'
-    
+    let errorMessage = t('auth.validation.register_error')
+
     if (e?.data?.detail) {
       errorMessage = e.data.detail
     } else if (e?.message) {
@@ -155,8 +138,8 @@ const handleRegister = async () => {
     } else if (e?.statusMessage) {
       errorMessage = e.statusMessage
     }
-    
-    useToast().error(errorMessage)
+
+    toast.error(errorMessage)
   } finally {
     loading.value = false
   }
@@ -182,7 +165,7 @@ const handleRegister = async () => {
   background: white;
   border-radius: 24px;
   padding: 48px 40px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
 .register-header {
@@ -332,11 +315,11 @@ const handleRegister = async () => {
   .register-card {
     padding: 32px 24px;
   }
-  
+
   .register-title {
     font-size: 2rem;
   }
-  
+
   .form-row {
     grid-template-columns: 1fr;
   }

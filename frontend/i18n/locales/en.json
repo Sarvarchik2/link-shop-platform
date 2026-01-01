@@ -1,0 +1,681 @@
+{
+    "nav": {
+        "home": "Home",
+        "features": "Features",
+        "solutions": "Solutions",
+        "pricing": "Pricing",
+        "clients": "Clients",
+        "login": "Login",
+        "profile": "Profile",
+        "create_shop": "Create Shop",
+        "cart": "Cart",
+        "products": "Products",
+        "orders": "Orders",
+        "favorites": "Favorites",
+        "register": "Register"
+    },
+    "home": {
+        "hero": {
+            "title_1": "Sell your products",
+            "title_2": "on our platform",
+            "subtitle": "Manage your business with automated capabilities. Create your online store in minutes with LinkShop",
+            "start_free": "Start Free",
+            "demo_video": "Demo Video"
+        },
+        "features": {
+            "title": "All features of modern e-commerce",
+            "subtitle": "Our toolkit covers every aspect of modern e-commerce"
+        },
+        "pricing": {
+            "title": "Choose a convenient plan for your business",
+            "subtitle": "From small business to large enterprise - solutions for companies of any level",
+            "month": "mo",
+            "year": "yr",
+            "popular": "Popular",
+            "choose_plan": "Choose Plan",
+            "features": "Features"
+        }
+    },
+    "cart": {
+        "title": "Cart",
+        "empty_title": "Your cart is empty",
+        "empty_text": "Add products to start shopping",
+        "continue_shopping": "Continue Shopping",
+        "total": "Total",
+        "checkout": "Checkout",
+        "login_required": "Login to checkout"
+    },
+    "favorites": {
+        "title": "Favorites",
+        "subtitle": "Your favorite products",
+        "empty_title": "Favorites list is empty",
+        "empty_text": "Add products you love!",
+        "explore_button": "Explore Products"
+    },
+    "auth": {
+        "login_title": "Login",
+        "register_title": "Register",
+        "login_subtitle": "Sign in to your account",
+        "register_subtitle": "Create an account and start shopping",
+        "login_button": "Sign In",
+        "register_button": "Sign Up",
+        "phone_label": "Phone Number",
+        "password_label": "Password",
+        "first_name_label": "First Name",
+        "last_name_label": "Last Name",
+        "logging_in": "Signing in...",
+        "registering": "Registering...",
+        "no_account": "Don't have an account?",
+        "have_account": "Already have an account?",
+        "register_link_text": "Register",
+        "login_link_text": "Sign In",
+        "shop_promo": "Want to open a shop?",
+        "create_shop_link": "Create Shop",
+        "phone_placeholder": "+998901234567",
+        "password_placeholder": "••••••••",
+        "name_placeholder": "John",
+        "lastname_placeholder": "Doe",
+        "validation": {
+            "required": "Please fill in all fields",
+            "login_error": "Invalid phone number or password",
+            "register_error": "Registration failed. This number might already be registered."
+        }
+    },
+    "common": {
+        "loading": "Loading...",
+        "error": "An error occurred",
+        "success": "Success",
+        "save": "Save",
+        "cancel": "Cancel",
+        "delete": "Delete",
+        "edit": "Edit",
+        "create": "Create",
+        "actions": "Actions",
+        "search": "Search",
+        "filter": "Filter",
+        "back": "Back",
+        "close": "Close",
+        "sending": "Sending...",
+        "panel": "Control Panel",
+        "analytics": "Analytics"
+    },
+    "periods": {
+        "today": "Today",
+        "week": "This Week",
+        "month": "This Month",
+        "all": "All Time"
+    },
+    "revenue": "Revenue",
+    "totalOrders": "Total Orders",
+    "clients": "Clients",
+    "ordersByStatus": "Orders by Status",
+    "status": {
+        "pending": "Pending",
+        "processing": "Processing",
+        "shipping": "Shipping",
+        "delivered": "Delivered",
+        "cancelled": "Cancelled",
+        "trial": "Trial Period",
+        "active": "Active",
+        "expired": "Expired"
+    },
+    "generalStats": "General Stats",
+    "periodLabel": {
+        "today": "Today's",
+        "week": "Weekly",
+        "month": "Monthly",
+        "total": "Total"
+    },
+    "ordersPage": {
+        "title": "Orders",
+        "subtitle": "Manage shop orders",
+        "empty": "No orders found",
+        "delivery": "Delivery",
+        "payment": "Payment",
+        "items": "Items",
+        "notes": "Notes",
+        "recipient": "Recipient",
+        "phone": "Phone",
+        "city": "City",
+        "address": "Address",
+        "cash": "Cash",
+        "card": "Card",
+        "qty": "Qty",
+        "statusUpdateSuccess": "Order status updated!",
+        "statusUpdateError": "Error updating status"
+    },
+    "categoriesPage": {
+        "title": "Categories",
+        "subtitle": "Manage shop categories",
+        "add": "Add Category",
+        "empty": "No categories found",
+        "deleteConfirm": "Are you sure you want to delete this category?",
+        "deleteSuccess": "Category deleted"
+    },
+    "add": "Add",
+    "store": {
+        "brands": "Brands",
+        "viewAll": "View All",
+        "recommended": "Recommended Products",
+        "loadingProducts": "Loading products...",
+        "viewAllProducts": "View all products",
+        "productsTitle": "Products",
+        "allCategories": "All Categories",
+        "allBrands": "All Brands",
+        "noProducts": "No products found"
+    },
+    "footer": {
+        "contacts": "Contacts",
+        "followUs": "Follow Us",
+        "rights": "All rights reserved"
+    },
+    "product": {
+        "loading": "Loading product details...",
+        "outOfStock": "Out of stock",
+        "lowStock": "Hurry! Only {count} left",
+        "inStock": "In stock: {count}",
+        "selectVariant": "Select variant",
+        "selectColor": "Select color",
+        "selectSize": "Select size",
+        "description": "Description",
+        "reviews": "Reviews",
+        "writeReview": "Write a review",
+        "related": "Related products",
+        "preorder": "Pre-order",
+        "preorderDesc": "Product is temporarily out of stock. Place a pre-order and we will notify you when it arrives.",
+        "preorderConfig": "Selected configuration:",
+        "submitPreorder": "Place Pre-order",
+        "preorderSuccess": "Pre-order placed successfully! We will notify you when the product is available.",
+        "preorderError": "Error placing pre-order. Please try again.",
+        "brand": "Brand",
+        "category": "Category",
+        "addToCart": "ADD TO CART",
+        "form": {
+            "name": "Name",
+            "phone": "Phone number"
+        },
+        "soldOut": "SOLD OUT",
+        "loginRequired": "Login to add to cart",
+        "addedToCart": "Added to cart!",
+        "addedToFavorites": "Added to favorites!",
+        "removedFromFavorites": "Removed from favorites"
+    },
+    "admin": {
+        "intro": "Welcome",
+        "welcome": "Welcome to dashboard",
+        "panel": "Dashboard",
+        "analytics": "Analytics",
+        "overview": "Overview",
+        "shop": "Shop",
+        "viewShop": "View shop",
+        "settings": "Settings",
+        "logout": "Logout",
+        "banner": "Banner",
+        "yourPlan": "Your Plan",
+        "usage": "Usage",
+        "limitWarning": "Approaching limit",
+        "aboutShop": "About Shop",
+        "subscription": "Subscription",
+        "periods": {
+            "today": "Today",
+            "week": "Week",
+            "month": "Month"
+        },
+        "status": {
+            "active": "Active",
+            "trial": "Trial",
+            "expired": "Expired",
+            "cancelled": "Cancelled"
+        },
+        "dashboard": "Dashboard",
+        "products": "Products",
+        "categories": "Categories",
+        "orders": "Orders",
+        "addProduct": "Add Product",
+        "editProduct": "Edit Product",
+        "basicInfo": "Basic Information",
+        "images": "Images",
+        "variants": "Variants",
+        "productName": "Product Name",
+        "productNameUz": "Product Name (Uzbek)",
+        "productNameRu": "Product Name (Russian)",
+        "productNameEn": "Product Name (English)",
+        "description": "Description",
+        "descriptionUz": "Description (Uzbek)",
+        "descriptionRu": "Description (Russian)",
+        "descriptionEn": "Description (English)",
+        "price": "Price",
+        "discount": "Discount",
+        "discountHint": "Enter discount percentage (0-100)",
+        "stock": "Stock",
+        "image": "Image",
+        "category": "Category",
+        "categoryUz": "Category (Uzbek)",
+        "categoryRu": "Category (Russian)",
+        "categoryEn": "Category (English)",
+        "brand": "Brand",
+        "brandUz": "Brand (Uzbek)",
+        "brandRu": "Brand (Russian)",
+        "brandEn": "Brand (English)",
+        "uploadImages": "Click or drag images",
+        "uploadHint": "PNG, JPG up to 5MB",
+        "orAddUrl": "or add by URL",
+        "addUrl": "Add",
+        "addVariant": "+ Add variant",
+        "variantsHint": "Add size and color combinations with stock quantity",
+        "size": "Size",
+        "color": "Color",
+        "selectColor": "Select color",
+        "creating": "Creating...",
+        "saving": "Saving...",
+        "createProduct": "Create Product",
+        "saveChanges": "Save Changes",
+        "mainImage": "Main",
+        "setAsMain": "Set as main",
+        "uploading": "Uploading...",
+        "loadingProduct": "Loading product data...",
+        "errorLoadingBrands": "Error loading brands",
+        "errorLoadingCategories": "Error loading categories",
+        "selectBrand": "Select brand",
+        "selectCategory": "Select category",
+        "loadingBrands": "Loading brands...",
+        "loadingCategories": "Loading categories..."
+    },
+    "platformAdmin": {
+        "dashboard": {
+            "title": "Dashboard",
+            "subtitle": "Platform Management",
+            "refresh": "Refresh",
+            "error": "Error occurred",
+            "loading": "Loading...",
+            "stats": {
+                "totalShops": "Total Shops",
+                "activeShops": "Active Shops",
+                "revenue": "Revenue",
+                "users": "Users"
+            }
+        },
+        "nav": {
+            "dashboard": "Dashboard",
+            "shops": "Shops",
+            "users": "Users",
+            "plans": "Subscription Plans",
+            "requests": "Subscription Requests",
+            "offers": "Offers"
+        },
+        "shops": {
+            "title": "Shop Management",
+            "subtitle": "All registered shops on the platform",
+            "total": "Total Shops",
+            "active": "Active",
+            "trial": "Trial Period",
+            "expired": "Expired",
+            "search": "Search by name, slug, owner...",
+            "filterStatus": "All Statuses",
+            "filterActive": "All Shops",
+            "onlyActive": "Only Active",
+            "onlyInactive": "Only Inactive",
+            "clear": "Clear",
+            "notFound": "No shops found",
+            "export": "Export",
+            "table": {
+                "name": "Name",
+                "slug": "Slug",
+                "owner": "Owner",
+                "plan": "Plan",
+                "status": "Subscription Status",
+                "expires": "Expires",
+                "created": "Created At",
+                "isActive": "Active",
+                "actions": "Actions"
+            }
+        },
+        "users": {
+            "title": "User Management",
+            "subtitle": "All registered users on the platform",
+            "total": "Total Users",
+            "admins": "Platform Admins",
+            "shopOwners": "Shop Owners",
+            "regular": "Regular Users",
+            "search": "Search by name, phone...",
+            "filterRole": "All Roles",
+            "roles": {
+                "admin": "Platform Admin",
+                "owner": "Shop Owner",
+                "user": "User"
+            },
+            "table": {
+                "id": "ID",
+                "name": "Name",
+                "phone": "Phone",
+                "role": "Role",
+                "shops": "Shops",
+                "orders": "Orders",
+                "created": "Registered At",
+                "actions": "Actions"
+            },
+            "notFound": "No users found"
+        },
+        "plans": {
+            "title": "Subscription Plans",
+            "subtitle": "Create and manage subscription plans for shops",
+            "add": "Add Plan",
+            "create": "Create Plan",
+            "edit": "Edit Plan",
+            "delete": "Delete",
+            "save": "Save",
+            "cancel": "Cancel",
+            "empty": "No subscription plans yet",
+            "emptySubtitle": "Create the first subscription plan",
+            "card": {
+                "free": "Free",
+                "trial": "Trial",
+                "inactive": "Inactive",
+                "includes": "Includes:",
+                "noFeatures": "Features not specified",
+                "products": "Products:",
+                "unlimited": "Unlimited",
+                "order": "Order:",
+                "active": "Active",
+                "activate": "Activate",
+                "deactivate": "Deactivate"
+            },
+            "form": {
+                "name": "Plan Name",
+                "slug": "Slug",
+                "price": "Price ($)",
+                "period": "Period (days)",
+                "maxProducts": "Max Products",
+                "description": "Description",
+                "features": "Plan Features",
+                "addFeature": "Add",
+                "isTrial": "Trial Period",
+                "isActive": "Active",
+                "order": "Display Order",
+                "hints": {
+                    "slug": "Unique identifier (latin, no spaces)",
+                    "maxProducts": "Leave empty for unlimited products",
+                    "order": "Lower number = higher in list"
+                }
+            },
+            "period": {
+                "day": "day",
+                "days_2_4": "days",
+                "days": "days"
+            }
+        },
+        "requests": {
+            "title": "Subscription Requests",
+            "subtitle": "Manage subscription activation requests from shops",
+            "filter": {
+                "all": "All",
+                "pending": "Pending",
+                "approved": "Approved",
+                "rejected": "Rejected"
+            },
+            "empty": "No requests",
+            "emptySubtitle": "No subscription requests yet",
+            "card": {
+                "shop": "Shop",
+                "plan": "Plan",
+                "duration": "Duration",
+                "date": "Request Date",
+                "notes": "Notes",
+                "approved": "Approved:",
+                "rejected": "Rejected:"
+            },
+            "status": {
+                "pending": "Pending",
+                "approved": "Approved",
+                "rejected": "Rejected"
+            },
+            "actions": {
+                "approve": "Approve",
+                "reject": "Reject",
+                "viewShop": "Shop"
+            },
+            "modal": {
+                "approveTitle": "Approve Subscription Request",
+                "rejectTitle": "Reject Subscription Request",
+                "confirmApprove": "Are you sure you want to approve this request?",
+                "confirmReject": "Are you sure you want to reject this request?",
+                "notesPlaceholder": "Add notes...",
+                "reasonPlaceholder": "Reason for rejection..."
+            }
+        },
+        "offers": {
+            "title": "Offer Management",
+            "subtitle": "Create and manage special offers (WhiteLabel, etc.)",
+            "add": "Add Offer",
+            "create": "Create Offer",
+            "edit": "Edit Offer",
+            "delete": "Delete",
+            "empty": "No offers yet",
+            "emptySubtitle": "Create the first offer",
+            "card": {
+                "priceByRequest": "Price by request",
+                "inactive": "Inactive",
+                "order": "Order:",
+                "active": "Active",
+                "activate": "Activate",
+                "deactivate": "Deactivate"
+            },
+            "form": {
+                "title": "Title",
+                "description": "Description",
+                "price": "Price ($)",
+                "priceText": "Price Text",
+                "contactText": "Contact Text",
+                "email": "Contact Email",
+                "phone": "Contact Phone",
+                "isActive": "Active",
+                "order": "Display Order",
+                "hints": {
+                    "price": "Leave empty if price is 'by request'"
+                }
+            }
+        }
+    },
+    "shopSettings": {
+        "title": "Shop Settings",
+        "infoTitle": "Shop Information",
+        "infoSubtitle": "Manage your shop branding and contact info",
+        "basicInfo": "Basic Information",
+        "shopName": "Shop Name",
+        "description": "Description",
+        "logo": "Shop Logo",
+        "contacts": "Contacts",
+        "email": "Contact Email",
+        "phone": "Phone",
+        "address": "Address",
+        "socials": "Social Networks",
+        "save": "Save Changes",
+        "saved": "Shop information changes saved!",
+        "uploadLogo": "Upload Logo"
+    },
+    "checkout": {
+        "title": "Checkout",
+        "back": "Back",
+        "sections": {
+            "delivery": "Delivery Address",
+            "payment": "Payment Method",
+            "notes": "Order Notes (optional)",
+            "summary": "Order Summary"
+        },
+        "form": {
+            "name": "Recipient Name",
+            "namePlaceholder": "Full Name",
+            "phone": "Phone Number",
+            "phonePlaceholder": "+998 90 123 45 67",
+            "city": "City",
+            "selectCity": "Select City",
+            "address": "Delivery Address",
+            "addressPlaceholder": "Street, Building, Apt...",
+            "notesPlaceholder": "Special instructions..."
+        },
+        "payment": {
+            "cash": {
+                "title": "Cash",
+                "desc": "Pay upon delivery"
+            },
+            "card": {
+                "title": "Card",
+                "desc": "Pay via card on delivery"
+            }
+        },
+        "summary": {
+            "subtotal": "Subtotal",
+            "shipping": "Shipping",
+            "free": "Free",
+            "total": "Total",
+            "placeOrder": "PLACE ORDER",
+            "processing": "Processing..."
+        },
+        "validation": {
+            "required": "Please fill in all required fields"
+        },
+        "success": "Order placed successfully!",
+        "error": "Error placing order. Please try again."
+    },
+    "profile": {
+        "title": "My Profile",
+        "id": "User ID",
+        "role": "Role",
+        "roles": {
+            "admin": "Admin",
+            "shopOwner": "Shop Owner",
+            "user": "User"
+        },
+        "links": {
+            "platformAdmin": "Platform Admin",
+            "myShop": "My Shop",
+            "shopAdmin": "Shop Admin",
+            "createShop": "Create Shop",
+            "customerProfile": "Customer Profile"
+        },
+        "actions": {
+            "orders": "My Orders",
+            "favorites": "Favorites",
+            "cart": "Cart",
+            "products": "Products",
+            "logout": "Logout"
+        },
+        "info": {
+            "title": "Personal Information",
+            "firstName": "First Name",
+            "lastName": "Last Name",
+            "phone": "Phone"
+        },
+        "shops": {
+            "title": "My Shops",
+            "status": {
+                "trial": "Trial",
+                "active": "Active",
+                "expired": "Expired",
+                "cancelled": "Cancelled"
+            },
+            "expires": {
+                "expired": "Expired",
+                "today": "Expires today",
+                "tomorrow": "Expires tomorrow",
+                "days": "Expires in {days} days",
+                "date": "Expires {date}"
+            },
+            "actions": {
+                "open": "Open Shop",
+                "admin": "Admin Panel",
+                "subscription": "Subscription"
+            }
+        },
+        "shopPromo": {
+            "title": "Shop Owner Profile",
+            "desc": "This profile is for shop owners. Click below if you want to create a shop.",
+            "redirect": "If you are a customer, go to Customer Profile"
+        }
+    },
+    "orders": {
+        "title": "My Orders",
+        "search": "Search by Order ID...",
+        "empty": {
+            "title": "No orders yet",
+            "subtitle": "Your orders will appear here after you make a purchase",
+            "action": "Start Shopping"
+        },
+        "card": {
+            "order": "Order",
+            "qty": "Qty",
+            "total": "Total",
+            "details": "Details",
+            "hide": "Hide",
+            "moreProducts": "+{count} products"
+        },
+        "details": {
+            "status": "Order Status",
+            "delivery": "Delivery Address",
+            "payment": "Payment Method",
+            "products": "Products"
+        },
+        "status": {
+            "all": "All",
+            "pending": "Pending",
+            "processing": "Processing",
+            "shipping": "Shipping",
+            "delivered": "Delivered",
+            "cancelled": "Cancelled"
+        },
+        "steps": {
+            "placed": "Order Placed",
+            "processing": "Processing",
+            "shipping": "Shipping",
+            "delivered": "Delivered"
+        }
+    },
+    "shopRegistration": {
+        "title": "Create Shop",
+        "subtitle": "Register your shop on the platform",
+        "authNotice": "You must be logged in to create a shop",
+        "login": "Login",
+        "register": "Register",
+        "checking": "Checking...",
+        "alreadyExists": {
+            "title": "You already have a shop",
+            "desc": "Only one shop is allowed per account.",
+            "goToAdmin": "Go to Shop Admin",
+            "backToProfile": "Back to Profile"
+        },
+        "form": {
+            "name": "Shop Name *",
+            "namePlaceholder": "e.g. Nike Store",
+            "slug": "Shop URL (slug) *",
+            "slugPlaceholder": "nike",
+            "slugHint": "Latin letters, numbers and hyphens only. Example: nike, adidas-store",
+            "description": "Description (optional)",
+            "descPlaceholder": "Short description of your shop",
+            "logo": "Shop Logo",
+            "logoUrl": "or via URL",
+            "upload": "Upload",
+            "uploading": "Uploading...",
+            "divider": "or",
+            "logoHint": "Recommended size: up to 200px width",
+            "preview": "Preview:",
+            "remove": "Remove",
+            "submit": "Create Shop",
+            "submitting": "Creating..."
+        },
+        "info": {
+            "title": "What's next?",
+            "trial": "You will get a 30-day trial period after registration",
+            "url": "Your shop URL:",
+            "features": "Ability to add products and manage orders",
+            "admin": "Admin panel will appear in your profile"
+        },
+        "notifications": {
+            "imageRequired": "Please select an image",
+            "sizeLimit": "File size must not exceed 2MB",
+            "success": "Shop created successfully!",
+            "error": "Error creating shop",
+            "logoSuccess": "Logo uploaded successfully",
+            "logoError": "Error uploading logo"
+        }
+    }
+}

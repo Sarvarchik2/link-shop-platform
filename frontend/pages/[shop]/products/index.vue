@@ -1,17 +1,17 @@
 <template>
   <div class="products-page">
     <AppHeader />
-    
+
     <main class="container py-8">
       <div class="page-header">
-        <h1 class="page-title">Mahsulotlar</h1>
+        <h1 class="page-title">{{ $t('store.productsTitle') }}</h1>
         <div class="filters">
           <select v-model="selectedCategory" class="filter-select">
-            <option value="">Barcha kategoriyalar</option>
+            <option value="">{{ $t('store.allCategories') }}</option>
             <option v-for="cat in categories" :key="cat.id" :value="cat.name">{{ cat.name }}</option>
           </select>
           <select v-model="selectedBrand" class="filter-select">
-            <option value="">Barcha brendlar</option>
+            <option value="">{{ $t('store.allBrands') }}</option>
             <option v-for="brand in brands" :key="brand.id" :value="brand.name">{{ brand.name }}</option>
           </select>
         </div>
@@ -19,20 +19,15 @@
 
       <div v-if="pending" class="text-center py-12 text-gray-400">
         <div class="loading-spinner"></div>
-        <p class="mt-4">Mahsulotlar yuklanmoqda...</p>
+        <p class="mt-4">{{ $t('store.loadingProducts') }}</p>
       </div>
-      
+
       <div v-else-if="filteredProducts.length > 0" class="products-grid">
-        <ProductCard 
-          v-for="product in filteredProducts" 
-          :key="product.id" 
-          :product="product"
-          :shop-slug="shopSlug"
-        />
+        <ProductCard v-for="product in filteredProducts" :key="product.id" :product="product" :shop-slug="shopSlug" />
       </div>
-      
+
       <div v-else class="text-center py-12 text-gray-400">
-        <p>Mahsulotlar topilmadi</p>
+        <p>{{ $t('store.noProducts') }}</p>
       </div>
     </main>
   </div>
@@ -41,28 +36,29 @@
 <script setup>
 const route = useRoute()
 const shopSlug = route.params.shop
+const config = useRuntimeConfig()
 
 const selectedCategory = ref('')
 const selectedBrand = ref('')
 
-const { data: categories } = await useFetch(`http://localhost:8000/categories?shop_slug=${shopSlug}`, { server: false })
-const { data: brands } = await useFetch(`http://localhost:8000/brands?shop_slug=${shopSlug}`, { server: false })
-const { data: products, pending } = await useFetch(`http://localhost:8000/products?shop_slug=${shopSlug}`, {
+const { data: categories } = await useFetch(`${config.public.apiBase}/categories?shop_slug=${shopSlug}`, { server: false })
+const { data: brands } = await useFetch(`${config.public.apiBase}/brands?shop_slug=${shopSlug}`, { server: false })
+const { data: products, pending } = await useFetch(`${config.public.apiBase}/products?shop_slug=${shopSlug}`, {
   server: false
 })
 
 const filteredProducts = computed(() => {
   if (!products.value) return []
   let filtered = products.value
-  
+
   if (selectedCategory.value) {
     filtered = filtered.filter(p => p.category === selectedCategory.value)
   }
-  
+
   if (selectedBrand.value) {
     filtered = filtered.filter(p => p.brand === selectedBrand.value)
   }
-  
+
   return filtered
 })
 </script>
@@ -124,8 +120,13 @@ const filteredProducts = computed(() => {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 @media (min-width: 1024px) {
@@ -135,4 +136,3 @@ const filteredProducts = computed(() => {
   }
 }
 </style>
-

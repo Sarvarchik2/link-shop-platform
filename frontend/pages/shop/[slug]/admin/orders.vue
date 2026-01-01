@@ -3,7 +3,8 @@
     <!-- Mobile Header -->
     <header class="mobile-header">
       <button class="menu-btn" @click="sidebarOpen = !sidebarOpen">
-        <svg v-if="!sidebarOpen" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg v-if="!sidebarOpen" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2">
           <line x1="3" y1="12" x2="21" y2="12"></line>
           <line x1="3" y1="6" x2="21" y2="6"></line>
           <line x1="3" y1="18" x2="21" y2="18"></line>
@@ -13,7 +14,7 @@
           <line x1="6" y1="6" x2="18" y2="18"></line>
         </svg>
       </button>
-      <span class="mobile-title">Заказы</span>
+      <span class="mobile-title">{{ $t('admin.ordersPage.title') }}</span>
       <NuxtLink :to="`/${shopSlug}`" class="home-btn">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
@@ -22,28 +23,19 @@
       </NuxtLink>
     </header>
 
-    <ShopAdminSidebar 
-      :shop-slug="shopSlug" 
-      :current-route="currentRoute"
-      v-model="sidebarOpen"
-    />
+    <ShopAdminSidebar :shop-slug="shopSlug" :current-route="currentRoute" v-model="sidebarOpen" />
 
     <!-- Main Content -->
     <main class="admin-main">
       <div class="container">
         <div class="page-header">
           <div>
-            <h1 class="page-title">Заказы</h1>
-            <p class="page-subtitle">Управление заказами магазина</p>
+            <h1 class="page-title">{{ $t('admin.ordersPage.title') }}</h1>
+            <p class="page-subtitle">{{ $t('admin.ordersPage.subtitle') }}</p>
           </div>
           <div class="filters">
-            <button 
-              v-for="status in statuses" 
-              :key="status.value"
-              @click="selectedStatus = status.value"
-              class="filter-btn"
-              :class="{ active: selectedStatus === status.value, [status.value]: true }"
-            >
+            <button v-for="status in statuses" :key="status.value" @click="selectedStatus = status.value"
+              class="filter-btn" :class="{ active: selectedStatus === status.value, [status.value]: true }">
               {{ status.label }}
               <span v-if="getStatusCount(status.value) > 0" class="filter-count">
                 {{ getStatusCount(status.value) }}
@@ -53,135 +45,133 @@
         </div>
 
         <div class="admin-content">
-        <div v-if="!filteredOrders || filteredOrders.length === 0" class="empty-state">
-          <p>Заказы не найдены.</p>
-        </div>
-        
-        <div v-else class="orders-list">
-          <div v-for="order in filteredOrders" :key="order.id" class="order-card">
-            <div class="order-header" @click="toggleOrder(order.id)">
-              <div class="order-main-info">
-                <span class="order-id">#{{ order.id }}</span>
-                <span class="order-date">{{ formatDate(order.created_at) }}</span>
-              </div>
-              <div class="order-customer">
-                <span class="customer-name">{{ order.user?.first_name }} {{ order.user?.last_name }}</span>
-                <span class="customer-phone">{{ order.user?.phone }}</span>
-              </div>
-              <div class="order-total">${{ order.total_price.toFixed(2) }}</div>
-              <select 
-                :value="order.status" 
-                @click.stop
-                @change="updateStatus(order.id, $event.target.value)"
-                class="status-select"
-                :class="order.status"
-              >
-                <option value="pending">Ожидает</option>
-                <option value="processing">В обработке</option>
-                <option value="shipping">Доставляется</option>
-                <option value="delivered">Доставлен</option>
-                <option value="cancelled">Отменен</option>
-              </select>
-              <button class="expand-btn" :class="{ expanded: expandedOrder === order.id }">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-              </button>
-            </div>
-            
-            <div v-if="expandedOrder === order.id" class="order-details">
-              <!-- Delivery Info -->
-              <div class="detail-section">
-                <h3 class="detail-title">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                    <circle cx="12" cy="10" r="3"></circle>
-                  </svg>
-                  Доставка
-                </h3>
-                <div class="detail-grid">
-                  <div class="detail-item">
-                    <span class="detail-label">Получатель</span>
-                    <span class="detail-value">{{ order.recipient_name || 'N/A' }}</span>
-                  </div>
-                  <div class="detail-item">
-                    <span class="detail-label">Телефон</span>
-                    <span class="detail-value">{{ order.delivery_phone || 'N/A' }}</span>
-                  </div>
-                  <div class="detail-item">
-                    <span class="detail-label">Город</span>
-                    <span class="detail-value">{{ order.delivery_city || 'N/A' }}</span>
-                  </div>
-                  <div class="detail-item full-width">
-                    <span class="detail-label">Адрес</span>
-                    <span class="detail-value">{{ order.delivery_address || 'N/A' }}</span>
-                  </div>
+          <div v-if="!filteredOrders || filteredOrders.length === 0" class="empty-state">
+            <p>{{ $t('admin.ordersPage.empty') }}</p>
+          </div>
+
+          <div v-else class="orders-list">
+            <div v-for="order in filteredOrders" :key="order.id" class="order-card">
+              <div class="order-header" @click="toggleOrder(order.id)">
+                <div class="order-main-info">
+                  <span class="order-id">#{{ order.id }}</span>
+                  <span class="order-date">{{ formatDate(order.created_at) }}</span>
                 </div>
-              </div>
-              
-              <!-- Payment Info -->
-              <div class="detail-section">
-                <h3 class="detail-title">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
-                    <line x1="1" y1="10" x2="23" y2="10"></line>
-                  </svg>
-                  Оплата
-                </h3>
-                <div class="payment-badge" :class="order.payment_method">
-                  {{ order.payment_method === 'cash' ? 'Наличными' : 'Картой' }}
+                <div class="order-customer">
+                  <span class="customer-name">{{ order.user?.first_name }} {{ order.user?.last_name }}</span>
+                  <span class="customer-phone">{{ order.user?.phone }}</span>
                 </div>
-              </div>
-              
-              <!-- Order Items -->
-              <div class="detail-section">
-                <h3 class="detail-title">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-                    <line x1="3" y1="6" x2="21" y2="6"></line>
-                    <path d="M16 10a4 4 0 0 1-8 0"></path>
+                <div class="order-total">${{ order.total_price.toFixed(2) }}</div>
+                <select :value="order.status" @click.stop @change="updateStatus(order.id, $event.target.value)"
+                  class="status-select" :class="order.status">
+                  <option value="pending">{{ $t('admin.status.pending') }}</option>
+                  <option value="processing">{{ $t('admin.status.processing') }}</option>
+                  <option value="shipping">{{ $t('admin.status.shipping') }}</option>
+                  <option value="delivered">{{ $t('admin.status.delivered') }}</option>
+                  <option value="cancelled">{{ $t('admin.status.cancelled') }}</option>
+                </select>
+                <button class="expand-btn" :class="{ expanded: expandedOrder === order.id }">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="6 9 12 15 18 9"></polyline>
                   </svg>
-                  Товары ({{ order.items?.length || 0 }})
-                </h3>
-                <div class="items-list">
-                  <NuxtLink v-for="(item, idx) in order.items" :key="idx" :to="`/${shopSlug}/products/${item.product_id}`" class="order-item">
-                    <img :src="item.product_image" :alt="item.product_name" class="item-image" />
-                    <div class="item-info">
-                      <span class="item-name">{{ item.product_name }}</span>
-                      <div class="item-options" v-if="item.selected_color || item.selected_size">
-                        <span v-if="item.selected_color" class="item-option color">{{ item.selected_color }}</span>
-                        <span v-if="item.selected_size" class="item-option size">{{ item.selected_size }}</span>
-                      </div>
-                      <span class="item-meta">Кол-во: {{ item.quantity }} × ${{ item.price.toFixed(2) }}</span>
+                </button>
+              </div>
+
+              <div v-if="expandedOrder === order.id" class="order-details">
+                <!-- Delivery Info -->
+                <div class="detail-section">
+                  <h3 class="detail-title">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                      <circle cx="12" cy="10" r="3"></circle>
+                    </svg>
+                    {{ $t('admin.ordersPage.delivery') }}
+                  </h3>
+                  <div class="detail-grid">
+                    <div class="detail-item">
+                      <span class="detail-label">{{ $t('admin.ordersPage.recipient') }}</span>
+                      <span class="detail-value">{{ order.recipient_name || 'N/A' }}</span>
                     </div>
-                    <span class="item-total">${{ (item.quantity * item.price).toFixed(2) }}</span>
-                  </NuxtLink>
+                    <div class="detail-item">
+                      <span class="detail-label">{{ $t('admin.ordersPage.phone') }}</span>
+                      <span class="detail-value">{{ order.delivery_phone || 'N/A' }}</span>
+                    </div>
+                    <div class="detail-item">
+                      <span class="detail-label">{{ $t('admin.ordersPage.city') }}</span>
+                      <span class="detail-value">{{ order.delivery_city || 'N/A' }}</span>
+                    </div>
+                    <div class="detail-item full-width">
+                      <span class="detail-label">{{ $t('admin.ordersPage.address') }}</span>
+                      <span class="detail-value">{{ order.delivery_address || 'N/A' }}</span>
+                    </div>
+                  </div>
                 </div>
-              </div>
-              
-              <!-- Notes -->
-              <div v-if="order.notes" class="detail-section">
-                <h3 class="detail-title">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                    <polyline points="14 2 14 8 20 8"></polyline>
-                    <line x1="16" y1="13" x2="8" y2="13"></line>
-                    <line x1="16" y1="17" x2="8" y2="17"></line>
-                  </svg>
-                  Примечания
-                </h3>
-                <p class="notes-text">{{ order.notes }}</p>
+
+                <!-- Payment Info -->
+                <div class="detail-section">
+                  <h3 class="detail-title">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                      <line x1="1" y1="10" x2="23" y2="10"></line>
+                    </svg>
+                    {{ $t('admin.ordersPage.payment') }}
+                  </h3>
+                  <div class="payment-badge" :class="order.payment_method">
+                    {{ order.payment_method === 'cash' ? $t('admin.ordersPage.cash') : $t('admin.ordersPage.card') }}
+                  </div>
+                </div>
+
+                <!-- Order Items -->
+                <div class="detail-section">
+                  <h3 class="detail-title">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                      <line x1="3" y1="6" x2="21" y2="6"></line>
+                      <path d="M16 10a4 4 0 0 1-8 0"></path>
+                    </svg>
+                    {{ $t('admin.ordersPage.items') }} ({{ order.items?.length || 0 }})
+                  </h3>
+                  <div class="items-list">
+                    <NuxtLink v-for="(item, idx) in order.items" :key="idx"
+                      :to="`/${shopSlug}/products/${item.product_id}`" class="order-item">
+                      <img :src="item.product_image" :alt="item.product_name" class="item-image" />
+                      <div class="item-info">
+                        <span class="item-name">{{ item.product_name }}</span>
+                        <div class="item-options" v-if="item.selected_color || item.selected_size">
+                          <span v-if="item.selected_color" class="item-option color">{{ item.selected_color }}</span>
+                          <span v-if="item.selected_size" class="item-option size">{{ item.selected_size }}</span>
+                        </div>
+                        <span class="item-meta">{{ $t('admin.ordersPage.qty') }}: {{ item.quantity }} × ${{
+                          item.price.toFixed(2) }}</span>
+                      </div>
+                      <span class="item-total">${{ (item.quantity * item.price).toFixed(2) }}</span>
+                    </NuxtLink>
+                  </div>
+                </div>
+
+                <!-- Notes -->
+                <div v-if="order.notes" class="detail-section">
+                  <h3 class="detail-title">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                      <polyline points="14 2 14 8 20 8"></polyline>
+                      <line x1="16" y1="13" x2="8" y2="13"></line>
+                      <line x1="16" y1="17" x2="8" y2="17"></line>
+                    </svg>
+                    {{ $t('admin.ordersPage.notes') }}
+                  </h3>
+                  <p class="notes-text">{{ order.notes }}</p>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  </main>
-</div>
+    </main>
+  </div>
 </template>
 
 <script setup>
+const { t } = useI18n()
 definePageMeta({
   middleware: ['auth', 'shop-owner']
 })
@@ -197,14 +187,14 @@ const currentRoute = computed(() => 'orders')
 const expandedOrder = ref(null)
 const selectedStatus = ref('all')
 
-const statuses = [
-  { value: 'all', label: 'Все' },
-  { value: 'pending', label: 'Ожидают' },
-  { value: 'processing', label: 'В обработке' },
-  { value: 'shipping', label: 'Доставляются' },
-  { value: 'delivered', label: 'Доставлены' },
-  { value: 'cancelled', label: 'Отменены' }
-]
+const statuses = computed(() => [
+  { value: 'all', label: t('admin.periods.all') },
+  { value: 'pending', label: t('admin.status.pending') },
+  { value: 'processing', label: t('admin.status.processing') },
+  { value: 'shipping', label: t('admin.status.shipping') },
+  { value: 'delivered', label: t('admin.status.delivered') },
+  { value: 'cancelled', label: t('admin.status.cancelled') }
+])
 
 const { data: orders, refresh } = await useFetch(`http://localhost:8000/shop/${shopSlug}/admin/orders`, {
   headers: { Authorization: `Bearer ${token.value}` },
@@ -245,9 +235,9 @@ const updateStatus = async (id, newStatus) => {
       body: { status: newStatus }
     })
     refresh()
-    useToast().success('Статус заказа обновлен!')
+    useToast().success(t('admin.ordersPage.statusUpdateSuccess'))
   } catch (e) {
-    useToast().error('Ошибка при обновлении статуса')
+    useToast().error(t('admin.ordersPage.statusUpdateError'))
   }
 }
 </script>
@@ -407,14 +397,14 @@ const updateStatus = async (id, newStatus) => {
 }
 
 .filter-count {
-  background: rgba(0,0,0,0.2);
+  background: rgba(0, 0, 0, 0.2);
   padding: 2px 8px;
   border-radius: 10px;
   font-size: 0.75rem;
 }
 
 .filter-btn.active .filter-count {
-  background: rgba(0,0,0,0.1);
+  background: rgba(0, 0, 0, 0.1);
 }
 
 .empty-state {
@@ -435,7 +425,7 @@ const updateStatus = async (id, newStatus) => {
   background: white;
   border-radius: 20px;
   overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 10px 40px rgba(0,0,0,0.02);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 10px 40px rgba(0, 0, 0, 0.02);
   border: 1px solid #f1f1f1;
 }
 
@@ -502,11 +492,30 @@ const updateStatus = async (id, newStatus) => {
   min-width: 120px;
 }
 
-.status-select.pending { background: #FFF3E0; color: #EF6C00; }
-.status-select.processing { background: #E3F2FD; color: #1565C0; }
-.status-select.shipping { background: #FFF8E1; color: #F9A825; }
-.status-select.delivered { background: #E8F5E9; color: #2E7D32; }
-.status-select.cancelled { background: #FFEBEE; color: #C62828; }
+.status-select.pending {
+  background: #FFF3E0;
+  color: #EF6C00;
+}
+
+.status-select.processing {
+  background: #E3F2FD;
+  color: #1565C0;
+}
+
+.status-select.shipping {
+  background: #FFF8E1;
+  color: #F9A825;
+}
+
+.status-select.delivered {
+  background: #E8F5E9;
+  color: #2E7D32;
+}
+
+.status-select.cancelled {
+  background: #FFEBEE;
+  color: #C62828;
+}
 
 .expand-btn {
   width: 36px;
@@ -680,7 +689,7 @@ const updateStatus = async (id, newStatus) => {
   .mobile-header {
     display: flex;
   }
-  
+
   .admin-main {
     margin-left: 0;
     padding-top: 60px;
@@ -690,14 +699,17 @@ const updateStatus = async (id, newStatus) => {
 }
 
 @media (max-width: 768px) {
+
   /* Fixed Filters on Mobile */
   .page-header {
     padding: 12px 16px;
     gap: 12px;
     position: sticky;
-    top: 60px; /* Below the 60px fixed mobile header */
-    z-index: 990; /* Below header (1000) but above content */
-    background: white; 
+    top: 60px;
+    /* Below the 60px fixed mobile header */
+    z-index: 990;
+    /* Below header (1000) but above content */
+    background: white;
     border-bottom: 1px solid #eee;
   }
 
@@ -713,11 +725,11 @@ const updateStatus = async (id, newStatus) => {
   }
 
   /* Hide large title/subtitle on mobile since we have the Mobile Header */
-  .page-title, 
+  .page-title,
   .page-subtitle {
     display: none;
   }
-  
+
   .filters {
     width: 100%;
     overflow-x: auto;
@@ -727,10 +739,11 @@ const updateStatus = async (id, newStatus) => {
     gap: 8px;
     scrollbar-width: none;
   }
+
   .filters::-webkit-scrollbar {
     display: none;
   }
-  
+
   .filter-btn {
     flex-shrink: 0;
     padding: 6px 12px;
@@ -740,9 +753,9 @@ const updateStatus = async (id, newStatus) => {
 
   .admin-content {
     padding: 12px;
-    overflow-x: hidden; 
+    overflow-x: hidden;
   }
-  
+
   /* Grid Layout for Order Card Header on Mobile */
   .order-header {
     display: grid;
@@ -750,14 +763,32 @@ const updateStatus = async (id, newStatus) => {
     gap: 8px;
     padding: 12px;
   }
-  
+
   /* Compact Typography for Mobile */
-  .order-id { font-size: 0.8125rem; }
-  .order-date { font-size: 0.75rem; }
-  .customer-name { font-size: 0.875rem; }
-  .customer-phone { font-size: 0.75rem; }
-  .order-total { font-size: 0.9375rem; }
-  .status-select { font-size: 0.75rem; padding: 4px 8px; }
+  .order-id {
+    font-size: 0.8125rem;
+  }
+
+  .order-date {
+    font-size: 0.75rem;
+  }
+
+  .customer-name {
+    font-size: 0.875rem;
+  }
+
+  .customer-phone {
+    font-size: 0.75rem;
+  }
+
+  .order-total {
+    font-size: 0.9375rem;
+  }
+
+  .status-select {
+    font-size: 0.75rem;
+    padding: 4px 8px;
+  }
 
   /* 
     Mobile Layout Idea:
@@ -769,7 +800,8 @@ const updateStatus = async (id, newStatus) => {
   .order-main-info {
     grid-column: 1;
     grid-row: 1;
-    margin-right: 40px; /* Space for expand button */
+    margin-right: 40px;
+    /* Space for expand button */
   }
 
   .expand-btn {
@@ -803,11 +835,10 @@ const updateStatus = async (id, newStatus) => {
     min-width: 0;
     justify-self: end;
   }
-  
+
   .detail-grid {
     grid-template-columns: 1fr;
     gap: 12px;
   }
 }
 </style>
-

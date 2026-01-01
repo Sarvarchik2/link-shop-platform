@@ -9,41 +9,30 @@
               <line x1="1" y1="10" x2="23" y2="10"></line>
             </svg>
           </div>
-          <h1 class="login-title">Вход в систему</h1>
-          <p class="login-subtitle">Войдите в свой аккаунт</p>
+          <h1 class="login-title">{{ $t('auth.login_title') }}</h1>
+          <p class="login-subtitle">{{ $t('auth.login_subtitle') }}</p>
         </div>
-        
+
         <form @submit.prevent="handleLogin" class="login-form">
           <div class="form-group">
-            <label class="form-label">Номер телефона</label>
-            <input 
-              v-model="phone" 
-              type="tel" 
-              required 
-              class="form-input" 
-              placeholder="+998901234567" 
-            />
+            <label class="form-label">{{ $t('auth.phone_label') }}</label>
+            <input v-model="phone" type="tel" required class="form-input" :placeholder="$t('auth.phone_placeholder')" />
           </div>
-          
+
           <div class="form-group">
-            <label class="form-label">Пароль</label>
-            <input 
-              v-model="password" 
-              type="password" 
-              required 
-              class="form-input" 
-              placeholder="••••••••" 
-            />
+            <label class="form-label">{{ $t('auth.password_label') }}</label>
+            <input v-model="password" type="password" required class="form-input"
+              :placeholder="$t('auth.password_placeholder')" />
           </div>
-          
+
           <button type="submit" :disabled="loading" class="btn-submit">
-            <span v-if="loading">Вход...</span>
-            <span v-else>Войти</span>
+            <span v-if="loading">{{ $t('auth.logging_in') }}</span>
+            <span v-else>{{ $t('auth.login_button') }}</span>
           </button>
-          
+
           <div class="form-footer">
-            <span class="footer-text">Нет аккаунта?</span>
-            <NuxtLink :to="registerLink" class="footer-link">Зарегистрироваться</NuxtLink>
+            <span class="footer-text">{{ $t('auth.no_account') }}</span>
+            <NuxtLink :to="registerLink" class="footer-link">{{ $t('auth.register_link_text') }}</NuxtLink>
           </div>
         </form>
       </div>
@@ -56,22 +45,24 @@ definePageMeta({
   layout: false
 })
 
+const { t } = useI18n()
 const route = useRoute()
 const phone = ref('')
 const password = ref('')
 const loading = ref(false)
 const { login } = useAuth()
+const toast = useToast()
 
 // Save returnUrl when page loads
 onMounted(() => {
   let returnUrl: string | null = null;
-  
+
   if (Array.isArray(route.query.returnUrl)) {
     returnUrl = route.query.returnUrl[0] || null
   } else if (typeof route.query.returnUrl === 'string') {
     returnUrl = route.query.returnUrl
   }
-  
+
   if (returnUrl) {
     localStorage.setItem('returnUrl', returnUrl)
   } else {
@@ -92,14 +83,14 @@ onMounted(() => {
 // Preserve returnUrl when linking to register
 const registerLink = computed(() => {
   let queryReturnUrl: string | null = null;
-  
+
   if (Array.isArray(route.query.returnUrl)) {
     queryReturnUrl = route.query.returnUrl[0] || null
   } else if (typeof route.query.returnUrl === 'string') {
     queryReturnUrl = route.query.returnUrl
   }
-  
-  const returnUrl = queryReturnUrl || (process.client ? localStorage.getItem('returnUrl') : null)
+
+  const returnUrl = queryReturnUrl || (import.meta.client ? localStorage.getItem('returnUrl') : null)
   if (returnUrl) {
     return `/register?returnUrl=${encodeURIComponent(returnUrl)}`
   }
@@ -108,19 +99,19 @@ const registerLink = computed(() => {
 
 const handleLogin = async () => {
   if (loading.value) return
-  
+
   if (!phone.value || !password.value) {
-    useToast().error('Заполните все поля')
+    toast.error(t('auth.validation.required'))
     return
   }
-  
+
   loading.value = true
   try {
-  await login(phone.value, password.value)
-  } catch (e) {
+    await login(phone.value, password.value)
+  } catch (e: any) {
     console.error('Login error details:', e)
-    let errorMessage = 'Неверный номер телефона или пароль'
-    
+    let errorMessage = t('auth.validation.login_error')
+
     if (e?.data?.detail) {
       errorMessage = e.data.detail
     } else if (e?.message) {
@@ -128,8 +119,8 @@ const handleLogin = async () => {
     } else if (e?.statusMessage) {
       errorMessage = e.statusMessage
     }
-    
-    useToast().error(errorMessage)
+
+    toast.error(errorMessage)
   } finally {
     loading.value = false
   }
@@ -155,7 +146,7 @@ const handleLogin = async () => {
   background: white;
   border-radius: 24px;
   padding: 48px 40px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
 .login-header {
@@ -283,7 +274,7 @@ const handleLogin = async () => {
   .login-card {
     padding: 32px 24px;
   }
-  
+
   .login-title {
     font-size: 2rem;
   }

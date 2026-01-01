@@ -1,35 +1,23 @@
 <template>
   <!-- Mobile Bottom Navigation -->
   <nav class="mobile-nav">
-    <NuxtLink 
-      :to="homeLink" 
-      class="mobile-nav-item"
-      :class="{ 'is-active': isHomeActive }"
-    >
+    <NuxtLink :to="homeLink" class="mobile-nav-item" :class="{ 'is-active': isHomeActive }">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
         <polyline points="9 22 9 12 15 12 15 22"></polyline>
       </svg>
-      <span>Bosh sahifa</span>
+      <span>{{ $t('nav.home') }}</span>
     </NuxtLink>
-    
-    <NuxtLink 
-      :to="productsLink" 
-      class="mobile-nav-item"
-      :class="{ 'is-active': isProductsActive }"
-    >
+
+    <NuxtLink :to="productsLink" class="mobile-nav-item" :class="{ 'is-active': isProductsActive }">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
         <line x1="1" y1="10" x2="23" y2="10"></line>
       </svg>
-      <span>Mahsulotlar</span>
+      <span>{{ $t('nav.products') }}</span>
     </NuxtLink>
-    
-    <NuxtLink 
-      to="/cart" 
-      class="mobile-nav-item cart-nav-item"
-      :class="{ 'is-active': isCartActive }"
-    >
+
+    <NuxtLink :to="localePath('/cart')" class="mobile-nav-item cart-nav-item" :class="{ 'is-active': isCartActive }">
       <div class="cart-icon-wrapper">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="9" cy="21" r="1"></circle>
@@ -38,37 +26,32 @@
         </svg>
         <span v-if="totalItems > 0" class="cart-badge-mobile">{{ totalItems }}</span>
       </div>
-      <span>Savatcha</span>
+      <span>{{ $t('nav.cart') }}</span>
     </NuxtLink>
-    
-    <NuxtLink 
-      to="/orders" 
-      class="mobile-nav-item"
-      :class="{ 'is-active': isOrdersActive }"
-    >
+
+    <NuxtLink :to="localePath('/orders')" class="mobile-nav-item" :class="{ 'is-active': isOrdersActive }">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
         <polyline points="14 2 14 8 20 8"></polyline>
         <line x1="16" y1="13" x2="8" y2="13"></line>
         <line x1="16" y1="17" x2="8" y2="17"></line>
       </svg>
-      <span>Buyurtmalar</span>
+      <span>{{ $t('nav.orders') }}</span>
     </NuxtLink>
-    
-    <NuxtLink 
-      to="/favorites" 
-      class="mobile-nav-item"
-      :class="{ 'is-active': isFavoritesActive }"
-    >
+
+    <NuxtLink :to="localePath('/favorites')" class="mobile-nav-item" :class="{ 'is-active': isFavoritesActive }">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+        <path
+          d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
+        </path>
       </svg>
-      <span>Sevimlilar</span>
+      <span>{{ $t('nav.favorites') }}</span>
     </NuxtLink>
   </nav>
 </template>
 
 <script setup>
+const localePath = useLocalePath()
 const { totalItems } = useCart()
 const route = useRoute()
 const { getCurrentShopSlug } = useShopContext()
@@ -98,7 +81,7 @@ const productsLink = computed(() => {
 const isHomeActive = computed(() => {
   const path = route.path
   const currentShopSlug = route.params.shop || route.params.slug
-  
+
   if (currentShopSlug) {
     // On shop pages, active if we're on shop home
     return path === `/${currentShopSlug}` || path === `/${currentShopSlug}/`
@@ -113,7 +96,7 @@ const isHomeActive = computed(() => {
 const isProductsActive = computed(() => {
   const path = route.path
   const currentShopSlug = route.params.shop || route.params.slug
-  
+
   if (currentShopSlug) {
     // On shop pages, active if we're on shop products
     return path.startsWith(`/${currentShopSlug}/products`)
@@ -151,7 +134,7 @@ const isFavoritesActive = computed(() => {
   padding: 8px 0;
   padding-bottom: calc(8px + env(safe-area-inset-bottom));
   z-index: 100;
-  box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05);
 }
 
 .mobile-nav-item {

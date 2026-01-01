@@ -3,7 +3,8 @@
     <!-- Mobile Header -->
     <header class="mobile-header">
       <button class="menu-btn" @click="sidebarOpen = !sidebarOpen">
-        <svg v-if="!sidebarOpen" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg v-if="!sidebarOpen" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2">
           <line x1="3" y1="12" x2="21" y2="12"></line>
           <line x1="3" y1="6" x2="21" y2="6"></line>
           <line x1="3" y1="18" x2="21" y2="18"></line>
@@ -13,7 +14,7 @@
           <line x1="6" y1="6" x2="18" y2="18"></line>
         </svg>
       </button>
-      <span class="mobile-title">Категории</span>
+      <span class="mobile-title">{{ $t('admin.categoriesPage.title') }}</span>
       <NuxtLink :to="`/${shopSlug}`" class="home-btn">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
@@ -22,51 +23,47 @@
       </NuxtLink>
     </header>
 
-    <ShopAdminSidebar 
-      :shop-slug="shopSlug"
-      current-route="categories"
-      v-model="sidebarOpen"
-    />
+    <ShopAdminSidebar :shop-slug="shopSlug" current-route="categories" v-model="sidebarOpen" />
 
     <!-- Main Content -->
     <main class="admin-main">
       <div class="container">
         <div class="page-header">
           <div>
-            <h1 class="page-title">Категории</h1>
-            <p class="page-subtitle">Управление категориями магазина</p>
+            <h1 class="page-title">{{ $t('admin.categoriesPage.title') }}</h1>
+            <p class="page-subtitle">{{ $t('admin.categoriesPage.subtitle') }}</p>
           </div>
           <NuxtLink :to="`/shop/${shopSlug}/admin/categories/new`" class="btn btn-primary">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="12" y1="5" x2="12" y2="19"></line>
               <line x1="5" y1="12" x2="19" y2="12"></line>
             </svg>
-            <span class="btn-text">Добавить категорию</span>
+            <span class="btn-text">{{ $t('admin.categoriesPage.add') }}</span>
           </NuxtLink>
         </div>
 
         <div class="admin-content">
-        <div v-if="!categories || categories.length === 0" class="empty-state">
-          <p>Категории не найдены</p>
-        </div>
-        
-        <div v-else class="categories-grid">
-          <div v-for="category in categories" :key="category.id" class="category-card">
-            <div class="category-image-wrapper">
-              <img :src="category.image_url" :alt="category.name" class="category-image" />
-            </div>
-            <div class="category-info">
-              <h3 class="category-name">{{ category.name }}</h3>
-              <button @click="deleteCategory(category.id)" class="btn-delete">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <polyline points="3 6 5 6 21 6"></polyline>
-                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                </svg>
-                Удалить
-              </button>
+          <div v-if="!categories || categories.length === 0" class="empty-state">
+            <p>{{ $t('admin.categoriesPage.empty') }}</p>
+          </div>
+
+          <div v-else class="categories-grid">
+            <div v-for="category in categories" :key="category.id" class="category-card">
+              <div class="category-image-wrapper">
+                <img :src="category.image_url" :alt="category.name" class="category-image" />
+              </div>
+              <div class="category-info">
+                <h3 class="category-name">{{ category.name }}</h3>
+                <button @click="deleteCategory(category.id)" class="btn-delete">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
+                  {{ $t('common.delete') }}
+                </button>
+              </div>
             </div>
           </div>
-        </div>
         </div>
       </div>
     </main>
@@ -74,6 +71,7 @@
 </template>
 
 <script setup>
+const { t } = useI18n()
 definePageMeta({
   middleware: ['auth', 'shop-owner']
 })
@@ -108,7 +106,7 @@ watch(error, (newError) => {
 })
 
 const deleteCategory = async (id) => {
-  if (!confirm('Вы уверены, что хотите удалить эту категорию?')) return
+  if (!confirm(t('admin.categoriesPage.deleteConfirm'))) return
   try {
     console.log('[Categories List] Удаление категории:', id)
     await $fetch(`http://localhost:8000/categories/${id}`, {
@@ -117,7 +115,7 @@ const deleteCategory = async (id) => {
     })
     console.log('[Categories List] Категория удалена успешно')
     refresh()
-    useToast().success('Категория удалена')
+    useToast().success(t('admin.categoriesPage.deleteSuccess'))
   } catch (e) {
     console.error('[Categories List] Ошибка при удалении категории:', e)
     console.error('[Categories List] Детали ошибки:', {
@@ -263,13 +261,13 @@ const deleteCategory = async (id) => {
   border-radius: 24px;
   overflow: hidden;
   transition: all 0.3s;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 10px 40px rgba(0,0,0,0.02);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 10px 40px rgba(0, 0, 0, 0.02);
   border: 1px solid #f1f1f1;
 }
 
 .category-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 24px rgba(0,0,0,0.08);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
 }
 
 .category-image-wrapper {
@@ -325,7 +323,7 @@ const deleteCategory = async (id) => {
     width: 100%;
     min-width: 0;
   }
-  
+
   .container {
     padding: 0;
   }
@@ -337,7 +335,7 @@ const deleteCategory = async (id) => {
     border-bottom: 1px solid #eee;
   }
 
-  .page-title, 
+  .page-title,
   .page-subtitle {
     display: none;
   }
@@ -348,10 +346,10 @@ const deleteCategory = async (id) => {
 }
 
 @media (max-width: 768px) {
-  .page-header > div:first-child {
+  .page-header>div:first-child {
     display: none;
   }
-  
+
   .page-header {
     background: white;
     padding: 16px 20px;
@@ -377,15 +375,15 @@ const deleteCategory = async (id) => {
     grid-template-columns: repeat(2, 1fr);
     gap: 16px;
   }
-  
+
   .category-card {
     border-radius: 16px;
   }
-  
+
   .category-image-wrapper {
     height: 140px;
   }
-  
+
   .category-info {
     padding: 16px;
   }
@@ -397,4 +395,3 @@ const deleteCategory = async (id) => {
   }
 }
 </style>
-

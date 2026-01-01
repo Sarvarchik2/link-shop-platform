@@ -1,29 +1,20 @@
 <template>
   <!-- Sidebar Overlay -->
-  <div 
-    v-if="isOpen" 
-    class="sidebar-overlay" 
-    @click="closeSidebar"
-  ></div>
+  <div v-if="isOpen" class="sidebar-overlay" @click="closeSidebar"></div>
 
   <aside class="admin-sidebar" :class="{ open: isOpen }">
     <div class="sidebar-header">
       <div class="shop-branding">
         <div class="sidebar-logo">
-          <img 
-            v-if="shop?.logo_url && !imageError" 
-            :src="shop.logo_url" 
-            :alt="shop.name" 
-            class="shop-logo-img" 
-            @error="imageError = true"
-          />
+          <img v-if="shop?.logo_url && !imageError" :src="shop.logo_url" :alt="shop.name" class="shop-logo-img"
+            @error="imageError = true" />
           <div v-else class="logo-placeholder">
             {{ shop?.name?.charAt(0) || 'S' }}
           </div>
         </div>
         <div class="shop-info-text">
-          <span class="shop-name-label">{{ shop?.name || 'Загрузка...' }}</span>
-          <span class="admin-panel-label">Панель управления</span>
+          <span class="shop-name-label">{{ shop?.name || $t('common.loading') }}</span>
+          <span class="admin-panel-label">{{ $t('admin.panel') }}</span>
         </div>
       </div>
       <button class="close-btn" @click="closeSidebar">
@@ -33,92 +24,103 @@
         </svg>
       </button>
     </div>
-    
+
     <nav class="sidebar-nav">
       <div class="nav-section">
-        <div class="nav-section-title">Аналитика</div>
-        <NuxtLink :to="`/shop/${shopSlug}/admin`" class="nav-item" :class="{ active: currentRoute === 'dashboard' }" @click="closeSidebar">
+        <div class="nav-section-title">{{ $t('admin.analytics') }}</div>
+        <NuxtLink :to="`/shop/${shopSlug}/admin`" class="nav-item" :class="{ active: currentRoute === 'dashboard' }"
+          @click="closeSidebar">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <rect x="3" y="3" width="7" height="7"></rect>
             <rect x="14" y="3" width="7" height="7"></rect>
             <rect x="14" y="14" width="7" height="7"></rect>
             <rect x="3" y="14" width="7" height="7"></rect>
           </svg>
-          <span>Обзор</span>
+          <span>{{ $t('admin.overview') }}</span>
         </NuxtLink>
-        <NuxtLink :to="`/shop/${shopSlug}/admin/orders`" class="nav-item" :class="{ active: currentRoute === 'orders' }" @click="closeSidebar">
+        <NuxtLink :to="`/shop/${shopSlug}/admin/orders`" class="nav-item" :class="{ active: currentRoute === 'orders' }"
+          @click="closeSidebar">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
             <polyline points="14 2 14 8 20 8"></polyline>
             <line x1="16" y1="13" x2="8" y2="13"></line>
             <line x1="16" y1="17" x2="8" y2="17"></line>
           </svg>
-          <span>Заказы</span>
+          <span>{{ $t('admin.orders') }}</span>
         </NuxtLink>
       </div>
 
       <div class="nav-section">
-        <div class="nav-section-title">Магазин</div>
-        <NuxtLink :to="`/shop/${shopSlug}/admin/products`" class="nav-item" :class="{ active: currentRoute === 'products' }" @click="closeSidebar">
+        <div class="nav-section-title">{{ $t('admin.shop') }}</div>
+        <NuxtLink :to="`/shop/${shopSlug}/admin/products`" class="nav-item"
+          :class="{ active: currentRoute === 'products' }" @click="closeSidebar">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
             <path d="M7 7h10"></path>
             <path d="M7 12h10"></path>
             <path d="M7 17h10"></path>
           </svg>
-          <span>Товары</span>
+          <span>{{ $t('admin.products') }}</span>
         </NuxtLink>
-        <NuxtLink :to="`/shop/${shopSlug}/admin/categories`" class="nav-item" :class="{ active: currentRoute === 'categories' }" @click="closeSidebar">
+        <NuxtLink :to="`/shop/${shopSlug}/admin/categories`" class="nav-item"
+          :class="{ active: currentRoute === 'categories' }" @click="closeSidebar">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
           </svg>
-          <span>Категории</span>
+          <span>{{ $t('admin.categories') }}</span>
         </NuxtLink>
-        <NuxtLink :to="`/shop/${shopSlug}/admin/brands`" class="nav-item" :class="{ active: currentRoute === 'brands' }" @click="closeSidebar">
+        <NuxtLink :to="`/shop/${shopSlug}/admin/brands`" class="nav-item" :class="{ active: currentRoute === 'brands' }"
+          @click="closeSidebar">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
             <circle cx="7" cy="7" r=".5"></circle>
           </svg>
-          <span>Бренды</span>
+          <span>{{ $t('admin.brand') }}</span>
         </NuxtLink>
       </div>
-      
+
       <div class="nav-section">
-        <div class="nav-section-title">Настройки</div>
-        <NuxtLink :to="`/shop/${shopSlug}/admin/banner`" class="nav-item" :class="{ active: currentRoute === 'banner' }" @click="closeSidebar">
+        <div class="nav-section-title">{{ $t('admin.settings') }}</div>
+        <NuxtLink :to="`/shop/${shopSlug}/admin/banner`" class="nav-item" :class="{ active: currentRoute === 'banner' }"
+          @click="closeSidebar">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
             <circle cx="8.5" cy="8.5" r="1.5"></circle>
             <polyline points="21 15 16 10 5 21"></polyline>
           </svg>
-          <span>Баннер</span>
+          <span>{{ $t('admin.banner') }}</span>
         </NuxtLink>
-        <NuxtLink :to="`/shop/${shopSlug}/admin/info`" class="nav-item" :class="{ active: currentRoute === 'info' }" @click="closeSidebar">
+        <NuxtLink :to="`/shop/${shopSlug}/admin/info`" class="nav-item" :class="{ active: currentRoute === 'info' }"
+          @click="closeSidebar">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <circle cx="12" cy="12" r="10"></circle>
             <line x1="12" y1="16" x2="12" y2="12"></line>
             <line x1="12" y1="8" x2="12.01" y2="8"></line>
           </svg>
-          <span>О магазине</span>
+          <span>{{ $t('admin.aboutShop') }}</span>
         </NuxtLink>
-        <NuxtLink :to="`/shop/${shopSlug}/subscription`" class="nav-item" :class="{ active: currentRoute === 'subscription' }" @click="closeSidebar">
+        <NuxtLink :to="`/shop/${shopSlug}/subscription`" class="nav-item"
+          :class="{ active: currentRoute === 'subscription' }" @click="closeSidebar">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <circle cx="12" cy="12" r="10"></circle>
             <path d="M16 8l-8 8"></path>
             <path d="M12 7V17"></path>
           </svg>
-          <span>Подписка</span>
+          <span>{{ $t('admin.subscription') }}</span>
         </NuxtLink>
       </div>
     </nav>
-    
+
     <div class="sidebar-footer">
+      <div class="language-section">
+        <LanguageSwitcher />
+      </div>
       <NuxtLink :to="`/${shopSlug}`" class="footer-link-btn view-shop" @click="closeSidebar">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
           <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path>
           <circle cx="12" cy="12" r="3"></circle>
         </svg>
-        <span>В магазин</span>
+        <span>{{ $t('admin.viewShop') }}</span>
       </NuxtLink>
       <button @click="handleLogout" class="footer-link-btn logout">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -126,7 +128,7 @@
           <polyline points="16 17 21 12 16 7"></polyline>
           <line x1="21" y1="12" x2="9" y2="12"></line>
         </svg>
-        <span>Выйти</span>
+        <span>{{ $t('admin.logout') }}</span>
       </button>
     </div>
   </aside>
@@ -239,7 +241,8 @@ watch(() => route.path, () => {
 .shop-info-text {
   display: flex;
   flex-direction: column;
-  min-width: 0; /* Allow shrinking for name */
+  min-width: 0;
+  /* Allow shrinking for name */
 }
 
 .shop-name-label {
@@ -322,6 +325,12 @@ watch(() => route.path, () => {
   gap: 8px;
 }
 
+.language-section {
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid #f1f1f1;
+}
+
 .footer-link-btn {
   display: flex;
   align-items: center;
@@ -376,11 +385,11 @@ watch(() => route.path, () => {
   .admin-sidebar {
     transform: translateX(-100%);
   }
-  
+
   .admin-sidebar.open {
     transform: translateX(0);
   }
-  
+
   .close-btn {
     display: flex;
   }

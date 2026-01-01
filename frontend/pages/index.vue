@@ -10,20 +10,22 @@
             LinkShop
           </NuxtLink>
           <div class="hidden md:flex items-center gap-6 text-sm font-medium text-zinc-500">
-            <a href="#features" class="hover:text-black transition-colors">Функции</a>
-            <a href="#solutions" class="hover:text-black transition-colors">Решения</a>
-            <a href="#pricing" class="hover:text-black transition-colors">Цены</a>
-            <a href="#clients" class="hover:text-black transition-colors">Клиенты</a>
+            <a href="#features" class="hover:text-black transition-colors">{{ $t('nav.features') }}</a>
+            <a href="#solutions" class="hover:text-black transition-colors">{{ $t('nav.solutions') }}</a>
+            <a href="#pricing" class="hover:text-black transition-colors">{{ $t('nav.pricing') }}</a>
+            <a href="#clients" class="hover:text-black transition-colors">{{ $t('nav.clients') }}</a>
           </div>
         </div>
         <div class="flex items-center gap-4">
-          <NuxtLink v-if="!user" to="/login"
-            class="text-sm font-medium text-zinc-500 hover:text-black transition-colors">Войти</NuxtLink>
-          <NuxtLink v-else :to="profileLink"
-            class="text-sm font-medium text-zinc-500 hover:text-black transition-colors">Профиль</NuxtLink>
-          <NuxtLink to="/register-shop"
+          <NuxtLink v-if="!user" :to="localePath('/login')"
+            class="text-sm font-medium text-zinc-500 hover:text-black transition-colors">{{ $t('nav.login') }}
+          </NuxtLink>
+          <NuxtLink v-else :to="localePath('/profile')"
+            class="text-sm font-medium text-zinc-500 hover:text-black transition-colors">{{ $t('nav.profile') }}
+          </NuxtLink>
+          <NuxtLink :to="localePath('/register-shop')"
             class="bg-black text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-zinc-800 transition-all shadow-lg shadow-zinc-200/50">
-            Создать магазин
+            {{ $t('nav.create_shop') }}
           </NuxtLink>
         </div>
       </div>
@@ -45,26 +47,25 @@
           </div> -->
 
           <h1 class="text-5xl md:text-7xl font-semibold tracking-tight text-zinc-900 mb-8 leading-[1.1]">
-            Ваш магазин. Мгновенно. <br>
-            <span class="text-zinc-400">Профессионально.</span>
+            {{ $t('home.hero.title_1') }} <br>
+            <span class="text-zinc-400">{{ $t('home.hero.title_2') }}</span>
           </h1>
 
           <p class="text-lg md:text-xl text-zinc-500 max-w-2xl mx-auto mb-10 leading-relaxed font-normal">
-            Единая платформа для управления продажами, складом и аналитикой. Замените Excel таблицы и рутину на
-            интеллектуальную автоматизацию Commerce OS.
+            {{ $t('home.hero.subtitle') }}
           </p>
 
           <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-20">
-            <NuxtLink to="/register-shop"
+            <NuxtLink :to="localePath('/register-shop')"
               class="w-full sm:w-auto px-8 py-3.5 bg-black text-white rounded-full font-medium shadow-xl shadow-zinc-900/10 hover:shadow-2xl hover:bg-zinc-800 transition-all flex items-center justify-center gap-2 group">
-              Начать бесплатно
+              {{ $t('home.hero.start_free') }}
               <iconify-icon icon="lucide:arrow-right"
                 class="group-hover:translate-x-1 transition-transform"></iconify-icon>
             </NuxtLink>
             <button
               class="w-full sm:w-auto px-8 py-3.5 bg-white border border-zinc-200 text-zinc-700 rounded-full font-medium hover:bg-zinc-50 hover:border-zinc-300 transition-all flex items-center justify-center gap-2">
               <iconify-icon icon="lucide:play-circle" width="18"></iconify-icon>
-              Демо видео
+              {{ $t('home.hero.demo_video') }}
             </button>
           </div>
         </div>
@@ -515,6 +516,8 @@
 </template>
 
 <script setup>
+const route = useRoute()
+const localePath = useLocalePath()
 const { user, token } = useAuth()
 
 // Fetch subscription plans from API
@@ -706,6 +709,7 @@ body {
 /* Gradient Text */
 .text-gradient {
   background: linear-gradient(to bottom right, #18181b 0%, #52525b 100%);
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }

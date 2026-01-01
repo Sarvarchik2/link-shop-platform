@@ -2,16 +2,20 @@
   <div class="product-card" @click="navigateTo(productUrl)">
     <div class="product-image">
       <button class="fav-btn" :class="{ 'is-fav': isFavoriteDisplay }" @click.stop="toggleFav">
-        <svg width="20" height="20" viewBox="0 0 24 24" :fill="isFavoriteDisplay ? '#EF4444' : 'none'" :stroke="isFavoriteDisplay ? '#EF4444' : '#9CA3AF'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+        <svg width="20" height="20" viewBox="0 0 24 24" :fill="isFavoriteDisplay ? '#EF4444' : 'none'"
+          :stroke="isFavoriteDisplay ? '#EF4444' : '#9CA3AF'" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <path
+            d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
+          </path>
         </svg>
       </button>
       <div v-if="totalStock === 0" class="sold-out-badge">SOLD OUT</div>
-      <img :src="product.image_url" :alt="product.name" :class="{ 'out-of-stock': totalStock === 0 }" />
+      <img :src="product.image_url" :alt="getField(product, 'name')" :class="{ 'out-of-stock': totalStock === 0 }" />
     </div>
     <div class="product-info">
-      <div class="product-category">{{ product.category }}</div>
-      <h3 class="product-name">{{ product.name }}</h3>
+      <div class="product-category">{{ getField(product, 'category') }}</div>
+      <h3 class="product-name">{{ getField(product, 'name') }}</h3>
       <div class="product-footer">
         <div class="price-container">
           <div v-if="product.discount > 0" class="price-with-discount">
@@ -34,6 +38,8 @@ const props = defineProps({
   product: Object,
   shopSlug: String
 })
+
+const { getField } = useMultilingual()
 
 const productUrl = computed(() => {
   if (props.shopSlug) {
@@ -101,16 +107,16 @@ const toggleFav = async () => {
     openModal()
     return
   }
-  
+
   // Toggle immediately for instant feedback
   const previousState = isFavorite.value
   isFavorite.value = !isFavorite.value
-  
+
   try {
     const result = await $fetch(`http://localhost:8000/products/${props.product.id}/favorite`, { method: 'POST' })
     // Sync the actual state from server
     isFavorite.value = result.is_favorite
-    
+
     if (isFavorite.value) {
       useToast().success('Added to favorites!')
     } else {
@@ -132,12 +138,12 @@ const toggleFav = async () => {
   overflow: hidden;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .product-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 24px rgba(0,0,0,0.08);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
 }
 
 .product-image {
@@ -176,7 +182,7 @@ const toggleFav = async () => {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   z-index: 2;
   transition: all 0.2s;
 }

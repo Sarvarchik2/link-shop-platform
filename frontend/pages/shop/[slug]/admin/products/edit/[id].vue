@@ -3,7 +3,8 @@
     <!-- Mobile Header -->
     <header class="mobile-header">
       <button class="menu-btn" @click="sidebarOpen = !sidebarOpen">
-        <svg v-if="!sidebarOpen" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg v-if="!sidebarOpen" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2">
           <line x1="3" y1="12" x2="21" y2="12"></line>
           <line x1="3" y1="6" x2="21" y2="6"></line>
           <line x1="3" y1="18" x2="21" y2="18"></line>
@@ -16,11 +17,7 @@
       <span class="mobile-title">Редактировать товар</span>
     </header>
 
-    <ShopAdminSidebar 
-      :shop-slug="shopSlug" 
-      current-route="products"
-      v-model="sidebarOpen"
-    />
+    <ShopAdminSidebar :shop-slug="shopSlug" current-route="products" v-model="sidebarOpen" />
 
     <!-- Main Content -->
     <main class="admin-main">
@@ -34,74 +31,123 @@
           </NuxtLink>
           <h1 class="page-title">Редактировать товар</h1>
         </div>
-        
+
         <div v-if="productLoading" class="loading-state">
           <p>Загрузка данных товара...</p>
         </div>
-        
+
         <div v-else class="form-card">
           <form @submit.prevent="handleSubmit">
             <div class="form-section">
               <h2 class="section-title">Основная информация</h2>
-              
-              <div class="form-row">
+
+              <!-- Language Tabs -->
+              <div class="language-tabs">
+                <button type="button" v-for="lang in ['uz', 'ru', 'en']" :key="lang" @click="currentLang = lang"
+                  class="lang-tab" :class="{ active: currentLang === lang }">
+                  {{ lang === 'uz' ? '🇺🇿 O\'zbek' : lang === 'ru' ? '🇷🇺 Русский' : '🇬🇧 English' }}
+                </button>
+              </div>
+
+              <!-- Uzbek Fields -->
+              <div v-show="currentLang === 'uz'" class="lang-content">
                 <div class="form-group">
-                  <label class="label">Название товара</label>
-                  <input v-model="form.name" required class="input" placeholder="например, Ray-Ban Wayfarer" />
+                  <label class="label">Название товара (O'zbekcha) *</label>
+                  <input v-model="form.name_uz" required class="input" placeholder="masalan, Ray-Ban Wayfarer" />
                 </div>
-                
+
+                <div class="form-group">
+                  <label class="label">Описание (O'zbekcha) *</label>
+                  <textarea v-model="form.description_uz" rows="4" required class="input"
+                    placeholder="Mahsulot tavsifi..."></textarea>
+                </div>
+
+                <div class="form-group">
+                  <label class="label">Kategoriya (O'zbekcha) *</label>
+                  <input v-model="form.category_uz" required class="input" placeholder="masalan, Ko'zoynak" />
+                </div>
+
+                <div class="form-group">
+                  <label class="label">Brend (O'zbekcha) *</label>
+                  <input v-model="form.brand_uz" required class="input" placeholder="masalan, Ray-Ban" />
+                </div>
+              </div>
+
+              <!-- Russian Fields -->
+              <div v-show="currentLang === 'ru'" class="lang-content">
+                <div class="form-group">
+                  <label class="label">Название товара (Русский) *</label>
+                  <input v-model="form.name_ru" required class="input" placeholder="например, Ray-Ban Wayfarer" />
+                </div>
+
+                <div class="form-group">
+                  <label class="label">Описание (Русский) *</label>
+                  <textarea v-model="form.description_ru" rows="4" required class="input"
+                    placeholder="Описание товара..."></textarea>
+                </div>
+
+                <div class="form-group">
+                  <label class="label">Категория (Русский) *</label>
+                  <input v-model="form.category_ru" required class="input" placeholder="например, Очки" />
+                </div>
+
+                <div class="form-group">
+                  <label class="label">Бренд (Русский) *</label>
+                  <input v-model="form.brand_ru" required class="input" placeholder="например, Ray-Ban" />
+                </div>
+              </div>
+
+              <!-- English Fields -->
+              <div v-show="currentLang === 'en'" class="lang-content">
+                <div class="form-group">
+                  <label class="label">Product Name (English) *</label>
+                  <input v-model="form.name_en" required class="input" placeholder="e.g., Ray-Ban Wayfarer" />
+                </div>
+
+                <div class="form-group">
+                  <label class="label">Description (English) *</label>
+                  <textarea v-model="form.description_en" rows="4" required class="input"
+                    placeholder="Product description..."></textarea>
+                </div>
+
+                <div class="form-group">
+                  <label class="label">Category (English) *</label>
+                  <input v-model="form.category_en" required class="input" placeholder="e.g., Sunglasses" />
+                </div>
+
+                <div class="form-group">
+                  <label class="label">Brand (English) *</label>
+                  <input v-model="form.brand_en" required class="input" placeholder="e.g., Ray-Ban" />
+                </div>
+              </div>
+
+              <div class="form-row">
                 <div class="form-group">
                   <label class="label">Цена ($)</label>
-                  <input v-model.number="form.price" type="number" step="0.01" required class="input" placeholder="0.00" />
+                  <input v-model.number="form.price" type="number" step="0.01" required class="input"
+                    placeholder="0.00" />
                 </div>
-                
+
                 <div class="form-group">
                   <label class="label">Скидка (%)</label>
-                  <input v-model.number="form.discount" type="number" step="0.1" min="0" max="100" class="input" placeholder="0" />
+                  <input v-model.number="form.discount" type="number" step="0.1" min="0" max="100" class="input"
+                    placeholder="0" />
                   <p class="help-text-small">Введите процент скидки (0-100)</p>
                 </div>
-              </div>
-
-              <div class="form-row">
-                <div class="form-group">
-                  <label class="label">Бренд</label>
-                  <select v-model="form.brand" required class="input" :disabled="!brands || brands.length === 0">
-                    <option value="">{{ brands && brands.length > 0 ? 'Выберите бренд' : 'Загрузка брендов...' }}</option>
-                    <option v-for="brand in brands" :key="brand.id" :value="brand.name">{{ brand.name }}</option>
-                  </select>
-                  <p v-if="brandsError" class="error-text">Ошибка загрузки брендов.</p>
-                </div>
-                
-                <div class="form-group">
-                  <label class="label">Категория</label>
-                  <select v-model="form.category" required class="input" :disabled="!categories || categories.length === 0">
-                    <option value="">{{ categories && categories.length > 0 ? 'Выберите категорию' : 'Загрузка категорий...' }}</option>
-                    <option v-for="category in categories" :key="category.id" :value="category.name">{{ category.name }}</option>
-                  </select>
-                  <p v-if="categoriesError" class="error-text">Ошибка загрузки категорий.</p>
-                </div>
-              </div>
-
-              <div class="form-group">
-                <label class="label">Описание</label>
-                <textarea v-model="form.description" rows="4" required class="input" placeholder="Описание товара..."></textarea>
               </div>
             </div>
 
             <div class="form-section">
               <h2 class="section-title">Изображения</h2>
-              
+
               <div class="images-upload-area">
                 <div class="images-preview" v-if="uploadedImages.length > 0">
-                  <div 
-                    v-for="(img, index) in uploadedImages" 
-                    :key="index" 
-                    class="image-preview-item"
-                    :class="{ 'main-image': index === 0 }"
-                  >
+                  <div v-for="(img, index) in uploadedImages" :key="index" class="image-preview-item"
+                    :class="{ 'main-image': index === 0 }">
                     <img :src="img" alt="Product image" />
                     <div class="image-actions">
-                      <button v-if="index !== 0" type="button" @click="setMainImage(index)" class="btn-set-main" title="Сделать главным">
+                      <button v-if="index !== 0" type="button" @click="setMainImage(index)" class="btn-set-main"
+                        title="Сделать главным">
                         ⭐
                       </button>
                       <button type="button" @click="removeImage(index)" class="btn-remove-image" title="Удалить">
@@ -111,18 +157,13 @@
                     <span v-if="index === 0" class="main-badge">Главное</span>
                   </div>
                 </div>
-                
+
                 <div class="upload-zone" @click="triggerFileInput" @dragover.prevent @drop.prevent="handleDrop">
-                  <input 
-                    ref="fileInput" 
-                    type="file" 
-                    accept="image/*" 
-                    multiple 
-                    @change="handleFileSelect" 
-                    class="hidden-input" 
-                  />
+                  <input ref="fileInput" type="file" accept="image/*" multiple @change="handleFileSelect"
+                    class="hidden-input" />
                   <div class="upload-content">
-                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                      stroke-width="1.5">
                       <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                       <polyline points="17 8 12 3 7 8"></polyline>
                       <line x1="12" y1="3" x2="12" y2="15"></line>
@@ -136,28 +177,30 @@
                   <span class="divider-text">или добавьте по URL</span>
                   <div class="url-input-row">
                     <input v-model="imageUrl" class="input" placeholder="https://example.com/image.jpg" />
-                    <button type="button" @click="addImageUrl" class="btn-add-url" :disabled="!imageUrl">Добавить</button>
+                    <button type="button" @click="addImageUrl" class="btn-add-url"
+                      :disabled="!imageUrl">Добавить</button>
                   </div>
                 </div>
               </div>
-              
+
               <p v-if="uploadingImages" class="uploading-text">Загрузка изображений...</p>
             </div>
 
             <div class="form-section">
               <h2 class="section-title">Варианты товара</h2>
               <p class="help-text">Добавьте комбинации размера и цвета с количеством на складе</p>
-              
+
               <div class="variants-list">
                 <div v-for="(variant, index) in variants" :key="index" class="variant-row">
                   <input v-model="variant.size" class="input variant-size-input" placeholder="Размер" />
                   <input v-model="variant.color" class="input variant-color-input" placeholder="Цвет" />
                   <input v-model="variant.colorHex" type="color" class="color-picker" title="Выбрать цвет" />
-                  <input v-model.number="variant.stock" type="number" min="0" class="input stock-input" placeholder="Склад" />
+                  <input v-model.number="variant.stock" type="number" min="0" class="input stock-input"
+                    placeholder="Склад" />
                   <button type="button" @click="removeVariant(index)" class="btn-remove">✕</button>
                 </div>
               </div>
-              
+
               <button type="button" @click="addVariant" class="btn-add">
                 + Добавить вариант
               </button>
@@ -206,13 +249,23 @@ const uploadedImages = ref([])
 const imageUrl = ref('')
 const variants = ref([{ size: '', color: '', colorHex: '#000000', stock: 0 }])
 
+const currentLang = ref('uz')
+
 const form = reactive({
-  name: '',
-  brand: '',
-  category: '',
+  name_uz: '',
+  name_ru: '',
+  name_en: '',
+  description_uz: '',
+  description_ru: '',
+  description_en: '',
+  category_uz: '',
+  category_ru: '',
+  category_en: '',
+  brand_uz: '',
+  brand_ru: '',
+  brand_en: '',
   price: 0,
-  discount: 0,
-  description: ''
+  discount: 0
 })
 
 const handleLogout = () => {
@@ -222,21 +275,33 @@ const handleLogout = () => {
 
 onMounted(async () => {
   if (!shopSlug.value || !productId.value) return
-  
+
   try {
     // 1. Fetch product data
     const product = await $fetch(`http://localhost:8000/products/${productId.value}`, {
       headers: { Authorization: `Bearer ${token.value}` }
     })
-    
-    // Fill form
-    form.name = product.name
-    form.brand = product.brand
-    form.category = product.category
+
+    // Fill form with multilingual fields
+    form.name_uz = product.name_uz || product.name || ''
+    form.name_ru = product.name_ru || product.name || ''
+    form.name_en = product.name_en || product.name || ''
+
+    form.description_uz = product.description_uz || product.description || ''
+    form.description_ru = product.description_ru || product.description || ''
+    form.description_en = product.description_en || product.description || ''
+
+    form.category_uz = product.category_uz || product.category || ''
+    form.category_ru = product.category_ru || product.category || ''
+    form.category_en = product.category_en || product.category || ''
+
+    form.brand_uz = product.brand_uz || product.brand || ''
+    form.brand_ru = product.brand_ru || product.brand || ''
+    form.brand_en = product.brand_en || product.brand || ''
+
     form.price = product.price
     form.discount = product.discount
-    form.description = product.description
-    
+
     // Handle images
     if (product.images) {
       try {
@@ -247,7 +312,7 @@ onMounted(async () => {
     } else {
       uploadedImages.value = [product.image_url]
     }
-    
+
     // Handle variants
     if (product.variants) {
       try {
@@ -258,9 +323,9 @@ onMounted(async () => {
     } else {
       variants.value = [{ size: '', color: '', colorHex: '#000000', stock: product.stock || 0 }]
     }
-    
+
     productLoading.value = false
-    
+
     // 2. Fetch brands and categories
     const [brandsData, categoriesData] = await Promise.all([
       $fetch(`http://localhost:8000/brands?shop_slug=${shopSlug.value}`, {
@@ -270,7 +335,7 @@ onMounted(async () => {
         headers: { Authorization: `Bearer ${token.value}` }
       })
     ])
-    
+
     brands.value = brandsData || []
     categories.value = categoriesData || []
   } catch (e) {
@@ -350,10 +415,10 @@ const handleSubmit = async () => {
     toast.warning('Пожалуйста, добавьте хотя бы одно изображение')
     return
   }
-  
+
   const validVariants = variants.value.filter(v => v.size?.trim() && v.color?.trim())
   const totalStock = validVariants.reduce((acc, v) => acc + (v.stock || 0), 0)
-  
+
   loading.value = true
   try {
     const productData = {
@@ -365,13 +430,13 @@ const handleSubmit = async () => {
       colors: null,
       stock: validVariants.length > 0 ? totalStock : variants.value[0].stock || 0
     }
-    
+
     await $fetch(`http://localhost:8000/products/${productId.value}`, {
       method: 'PUT',
       headers: { Authorization: `Bearer ${token.value}` },
       body: productData
     })
-    
+
     toast.success('Товар успешно обновлен!')
     navigateTo(`/shop/${shopSlug.value}/admin/products`)
   } catch (e) {
@@ -439,7 +504,7 @@ const handleSubmit = async () => {
   .mobile-header {
     display: flex;
   }
-  
+
   .admin-main {
     margin-left: 0;
     padding: 70px 12px 20px;
@@ -527,7 +592,7 @@ const handleSubmit = async () => {
   background: white;
   border-radius: 24px;
   padding: 40px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .form-section {
@@ -654,7 +719,8 @@ const handleSubmit = async () => {
   gap: 5px;
 }
 
-.btn-remove-image, .btn-set-main {
+.btn-remove-image,
+.btn-set-main {
   width: 30px;
   height: 30px;
   border-radius: 8px;
@@ -665,8 +731,14 @@ const handleSubmit = async () => {
   justify-content: center;
 }
 
-.btn-remove-image { background: #FEE2E2; color: #DC2626; }
-.btn-set-main { background: #FEF3C7; }
+.btn-remove-image {
+  background: #FEE2E2;
+  color: #DC2626;
+}
+
+.btn-set-main {
+  background: #FEF3C7;
+}
 
 .upload-zone {
   border: 2px dashed #E5E7EB;
@@ -677,7 +749,9 @@ const handleSubmit = async () => {
   margin-bottom: 20px;
 }
 
-.hidden-input { display: none; }
+.hidden-input {
+  display: none;
+}
 
 .url-input-row {
   display: flex;
@@ -703,5 +777,52 @@ const handleSubmit = async () => {
   font-size: 0.6rem;
   padding: 2px 6px;
   border-radius: 4px;
+}
+
+/* Language Tabs */
+.language-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  border-bottom: 2px solid #E5E7EB;
+  padding-bottom: 0;
+}
+
+.lang-tab {
+  padding: 12px 20px;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  font-weight: 600;
+  color: #9CA3AF;
+  transition: all 0.2s;
+  font-size: 0.9375rem;
+}
+
+.lang-tab:hover {
+  color: #111;
+  background: #F9FAFB;
+}
+
+.lang-tab.active {
+  color: #111;
+  border-bottom-color: #111;
+}
+
+.lang-content {
+  animation: fadeIn 0.2s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 </style>

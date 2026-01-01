@@ -1,177 +1,209 @@
 <template>
   <div>
-  <!-- Desktop Header -->
-  <header class="header desktop-header">
-    <div class="container">
-      <div class="header-content">
-        <!-- Logo / Shop Logo or Name -->
-        <NuxtLink :to="homeLink" class="logo">
-          <template v-if="currentShop?.logo_url">
-            <img :src="currentShop.logo_url" :alt="currentShop.name || 'Shop'" class="shop-logo" />
-          </template>
-          <template v-else-if="currentShop?.name">
-            <span class="shop-name-text">{{ currentShop.name }}</span>
-          </template>
-          <template v-else>
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
-              <line x1="1" y1="10" x2="23" y2="10"></line>
-            </svg>
-            <span>LinkShop</span>
-          </template>
-        </NuxtLink>
-
-        <!-- Navigation (Desktop only) -->
-        <nav class="nav-links">
-          <ClientOnly>
-            <NuxtLink :to="homeLink" class="nav-link">Главная</NuxtLink>
-            <NuxtLink :to="shopProductsLink" class="nav-link">Магазин</NuxtLink>
-            <template #fallback>
-              <NuxtLink to="/" class="nav-link">Главная</NuxtLink>
-              <NuxtLink to="/products" class="nav-link">Магазин</NuxtLink>
+    <!-- Desktop Header -->
+    <header class="header desktop-header">
+      <div class="container">
+        <div class="header-content">
+          <!-- Logo / Shop Logo or Name -->
+          <NuxtLink :to="homeLink" class="logo">
+            <template v-if="currentShop?.logo_url">
+              <img :src="currentShop.logo_url" :alt="currentShop.name || 'Shop'" class="shop-logo" />
             </template>
-          </ClientOnly>
-          <a @click.prevent="navigateToAuth('/orders')" href="/orders" class="nav-link">Заказы</a>
-        </nav>
+            <template v-else-if="currentShop?.name">
+              <span class="shop-name-text">{{ currentShop.name }}</span>
+            </template>
+            <template v-else>
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                <line x1="1" y1="10" x2="23" y2="10"></line>
+              </svg>
+              <span>LinkShop</span>
+            </template>
+          </NuxtLink>
 
-        <!-- Actions -->
-        <div class="header-actions">
-          <!-- Favorites -->
-          <a @click.prevent="navigateToAuth('/favorites')" href="/favorites" class="icon-btn desktop-only">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-            </svg>
-          </a>
-          
-          <!-- Cart -->
-          <a @click.prevent="navigateToAuth('/cart')" href="/cart" class="icon-btn desktop-only cart-btn">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="9" cy="21" r="1"></circle>
-              <circle cx="20" cy="21" r="1"></circle>
-              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-            </svg>
-            <span v-if="totalItems > 0" class="cart-badge">{{ totalItems }}</span>
-          </a>
-          
-          <!-- Profile icon - always visible, goes to login if not authenticated -->
-          <a @click.prevent="navigateToAuth(getProfileLink)" :href="getProfileLink" class="icon-btn profile-btn">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-              <circle cx="12" cy="7" r="4"></circle>
-            </svg>
-          </a>
+          <!-- Navigation (Desktop only) -->
+          <nav class="nav-links">
+            <ClientOnly>
+              <NuxtLink :to="homeLink" class="nav-link">{{ $t('nav.home') }}</NuxtLink>
+              <NuxtLink :to="shopProductsLink" class="nav-link">{{ $t('nav.shop') }}</NuxtLink>
+              <template #fallback>
+                <NuxtLink :to="localePath('/')" class="nav-link">{{ $t('nav.home') }}</NuxtLink>
+                <NuxtLink :to="localePath('/products')" class="nav-link">{{ $t('nav.products') }}</NuxtLink>
+              </template>
+            </ClientOnly>
+            <a @click.prevent="navigateToAuth(localePath('/orders'))" :href="localePath('/orders')" class="nav-link">{{
+              $t('nav.orders') }}</a>
+          </nav>
 
-          <!-- Login/Register buttons (only for guests) -->
-          <template v-if="!user">
-            <NuxtLink to="/login" class="btn-login">Войти</NuxtLink>
-            <NuxtLink to="/register" class="btn-register">Зарегистрироваться</NuxtLink>
-          </template>
+          <!-- Actions -->
+          <div class="header-actions">
+            <!-- Language Switcher -->
+            <LanguageSwitcher class="desktop-only" />
+
+            <!-- Favorites -->
+            <a @click.prevent="navigateToAuth(localePath('/favorites'))" :href="localePath('/favorites')"
+              class="icon-btn desktop-only">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path
+                  d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
+                </path>
+              </svg>
+            </a>
+
+            <!-- Cart -->
+            <a @click.prevent="navigateToAuth(localePath('/cart'))" :href="localePath('/cart')"
+              class="icon-btn desktop-only cart-btn">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="9" cy="21" r="1"></circle>
+                <circle cx="20" cy="21" r="1"></circle>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+              </svg>
+              <span v-if="totalItems > 0" class="cart-badge">{{ totalItems }}</span>
+            </a>
+
+            <!-- Profile icon - only visible for authenticated users -->
+            <a v-if="user" @click.prevent="navigateToAuth(getProfileLink)" :href="getProfileLink"
+              class="icon-btn profile-btn">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+            </a>
+
+            <!-- Login/Register buttons (only for guests) -->
+            <template v-if="!user">
+              <NuxtLink :to="localePath('/login')" class="btn-login">{{ $t('nav.login') }}</NuxtLink>
+              <NuxtLink :to="localePath('/register')" class="btn-register">{{ $t('nav.register') }}</NuxtLink>
+            </template>
+          </div>
         </div>
       </div>
-    </div>
-  </header>
+    </header>
 
-  <!-- Mobile Bottom Navigation -->
-  <nav class="mobile-nav">
-    <ClientOnly>
-      <NuxtLink :to="homeLink" class="mobile-nav-item">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-          <polyline points="9 22 9 12 15 12 15 22"></polyline>
-        </svg>
-        <span>Bosh sahifa</span>
-      </NuxtLink>
-      
-      <NuxtLink :to="shopProductsLink" class="mobile-nav-item">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
-          <line x1="1" y1="10" x2="23" y2="10"></line>
-        </svg>
-        <span>Mahsulotlar</span>
-      </NuxtLink>
-      <template #fallback>
-        <NuxtLink to="/" class="mobile-nav-item">
+    <!-- Mobile Bottom Navigation -->
+    <nav v-if="!hideMobileNav" class="mobile-nav">
+      <ClientOnly>
+        <NuxtLink :to="homeLink" class="mobile-nav-item">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
             <polyline points="9 22 9 12 15 12 15 22"></polyline>
           </svg>
-          <span>Bosh sahifa</span>
+          <span>{{ $t('nav.home') }}</span>
         </NuxtLink>
-        <NuxtLink to="/products" class="mobile-nav-item">
+
+        <NuxtLink :to="shopProductsLink" class="mobile-nav-item">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
             <line x1="1" y1="10" x2="23" y2="10"></line>
           </svg>
-          <span>Mahsulotlar</span>
+          <span>{{ $t('nav.products') }}</span>
         </NuxtLink>
-      </template>
-    </ClientOnly>
-    
-    <a @click.prevent="navigateToAuth('/cart')" href="/cart" class="mobile-nav-item cart-nav-item">
-      <div class="cart-icon-wrapper">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="9" cy="21" r="1"></circle>
-          <circle cx="20" cy="21" r="1"></circle>
-          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-        </svg>
-        <span v-if="totalItems > 0" class="cart-badge-mobile">{{ totalItems }}</span>
-      </div>
-      <span>Savatcha</span>
-    </a>
-    
-    <a @click.prevent="navigateToAuth('/orders')" href="/orders" class="mobile-nav-item">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-        <polyline points="14 2 14 8 20 8"></polyline>
-        <line x1="16" y1="13" x2="8" y2="13"></line>
-        <line x1="16" y1="17" x2="8" y2="17"></line>
-      </svg>
-      <span>Buyurtmalar</span>
-    </a>
-    
-    <a @click.prevent="navigateToAuth('/favorites')" href="/favorites" class="mobile-nav-item">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-      </svg>
-      <span>Sevimlilar</span>
-    </a>
-  </nav>
+        <template #fallback>
+          <NuxtLink :to="localePath('/')" class="mobile-nav-item">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+              <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+            <span>{{ $t('nav.home') }}</span>
+          </NuxtLink>
+          <NuxtLink :to="localePath('/products')" class="mobile-nav-item">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+              <line x1="1" y1="10" x2="23" y2="10"></line>
+            </svg>
+            <span>{{ $t('nav.products') }}</span>
+          </NuxtLink>
+        </template>
+      </ClientOnly>
 
-  <!-- Auth Prompt Modal -->
-  <Transition name="fade">
-    <div v-if="showAuthModal" class="modal-overlay" @click="showAuthModal = false">
-      <div class="modal-content" @click.stop>
-        <div class="modal-icon">
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-            <circle cx="12" cy="7" r="4"></circle>
+      <a @click.prevent="navigateToAuth(localePath('/cart'))" :href="localePath('/cart')"
+        class="mobile-nav-item cart-nav-item">
+        <div class="cart-icon-wrapper">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="9" cy="21" r="1"></circle>
+            <circle cx="20" cy="21" r="1"></circle>
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
           </svg>
+          <span v-if="totalItems > 0" class="cart-badge-mobile">{{ totalItems }}</span>
         </div>
-        <h3>Kirish zarur</h3>
-        <p>Ushbu bo'limdan foydalanish uchun hisobingizga kiring yoki ro'yxatdan o'ting.</p>
-        <div class="modal-buttons">
-          <NuxtLink to="/login" class="modal-btn login" @click="showAuthModal = false">Kirish</NuxtLink>
-          <NuxtLink to="/register" class="modal-btn register" @click="showAuthModal = false">Ro'yxatdan o'tish</NuxtLink>
+        <span>{{ $t('nav.cart') }}</span>
+      </a>
+
+      <a @click.prevent="navigateToAuth(localePath('/orders'))" :href="localePath('/orders')" class="mobile-nav-item">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+        </svg>
+        <span>{{ $t('nav.orders') }}</span>
+      </a>
+
+      <a @click.prevent="navigateToAuth(localePath('/favorites'))" :href="localePath('/favorites')"
+        class="mobile-nav-item">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path
+            d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
+          </path>
+        </svg>
+        <span>{{ $t('nav.favorites') }}</span>
+      </a>
+    </nav>
+
+    <!-- Auth Prompt Modal -->
+    <Transition name="fade">
+      <div v-if="showAuthModal" class="modal-overlay" @click="showAuthModal = false">
+        <div class="modal-content" @click.stop>
+          <div class="modal-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+          </div>
+          <h3>{{ $t('auth.login_required_modal_title') }}</h3>
+          <p>{{ $t('auth.login_required_modal_text') }}</p>
+          <div class="modal-buttons">
+            <NuxtLink :to="localePath('/login')" class="modal-btn login" @click="showAuthModal = false">{{
+              $t('auth.login_title') }}</NuxtLink>
+            <NuxtLink :to="localePath('/register')" class="modal-btn register" @click="showAuthModal = false">{{
+              $t('auth.register_title') }}
+            </NuxtLink>
+          </div>
+          <button class="modal-close" @click="showAuthModal = false">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
         </div>
-        <button class="modal-close" @click="showAuthModal = false">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-        </button>
       </div>
-    </div>
-  </Transition>
+    </Transition>
   </div>
 </template>
 
 <script setup>
+// Props
+const props = defineProps({
+  hideMobileNav: {
+    type: Boolean,
+    default: false
+  }
+})
+
 const { totalItems } = useCart()
 const { user, token } = useAuth()
 const router = useRouter()
 const { showAuthModal, openModal, closeModal } = useAuthModal()
+const localePath = useLocalePath()
 
 const navigateToAuth = (path) => {
+  // Allow unauthenticated users to access cart page
+  if (path === '/cart') {
+    router.push(path)
+    return
+  }
+
+  // For other protected routes, require authentication
   if (!user.value) {
     openModal()
     return
@@ -193,16 +225,16 @@ const refreshShops = async () => {
     myShops.value = []
     return
   }
-  
+
   // Проверяем роль пользователя перед запросом
   const userRole = user.value?.role
   if (!userRole || (userRole !== 'shop_owner' && userRole !== 'platform_admin')) {
     myShops.value = []
     return
   }
-  
+
   shopsError.value = null
-  
+
   try {
     const shops = await $fetch('http://localhost:8000/platform/shops/me', {
       headers: {
@@ -239,7 +271,7 @@ watch([token, user], async ([newToken, newUser]) => {
     myShops.value = []
     return
   }
-  
+
   // Проверяем роль перед запросом
   const userRole = newUser.role
   if (userRole === 'shop_owner' || userRole === 'platform_admin') {
@@ -261,10 +293,10 @@ onMounted(async () => {
       return
     }
   }
-  
+
   // Небольшая задержка, чтобы убедиться, что все загружено
   await nextTick()
-  
+
   // Делаем запрос только если пользователь загружен и имеет нужную роль
   if (token.value && user.value?.role) {
     const userRole = user.value.role
@@ -301,7 +333,7 @@ watch(() => route.path, (newPath) => {
   if (userPages.some(page => newPath === page || newPath.startsWith(page + '/'))) {
     return
   }
-  
+
   // Clear context if user navigates to platform pages (not shop pages)
   if (newPath === '/' || newPath === '/products' || newPath.startsWith('/platform')) {
     // Only clear if we're not on a shop page
@@ -332,17 +364,17 @@ const shopProductsLink = computed(() => {
 
 const getProfileLink = computed(() => {
   if (!user.value) return '/login'
-  
+
   // Platform admin goes to platform admin
   if (user.value.role === 'platform_admin') {
     return '/platform/admin'
   }
-  
+
   // If user has shops, go to owner profile
   if (myShops.value && myShops.value.length > 0) {
     return '/profile'
   }
-  
+
   // Otherwise customer profile
   return '/profile'
 })
@@ -485,7 +517,7 @@ const getProfileLink = computed(() => {
   padding: 8px 0;
   padding-bottom: calc(8px + env(safe-area-inset-bottom));
   z-index: 100;
-  box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05);
 }
 
 .mobile-nav-item {
@@ -535,15 +567,15 @@ const getProfileLink = computed(() => {
   .nav-links {
     display: flex;
   }
-  
+
   .mobile-nav {
     display: none;
   }
-  
+
   .desktop-only {
     display: flex;
   }
-  
+
   .nav-link::after {
     bottom: -28px;
   }
@@ -554,35 +586,35 @@ const getProfileLink = computed(() => {
   .desktop-header .nav-links {
     display: none;
   }
-  
+
   .header-content {
     height: 60px;
   }
-  
+
   .logo span {
     font-size: 1.1rem;
   }
-  
+
   .shop-name-text {
     font-size: 1.1rem;
   }
-  
+
   .shop-logo {
     height: 32px;
     max-width: 120px;
   }
-  
+
   .logo svg {
     width: 28px;
     height: 28px;
   }
-  
+
   .icon-btn {
     width: 40px;
     height: 40px;
     border-radius: 10px;
   }
-  
+
   .header-actions {
     gap: 8px;
   }
@@ -617,10 +649,11 @@ const getProfileLink = computed(() => {
 .btn-register:hover {
   background: #000;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 @media (max-width: 767px) {
+
   .btn-login,
   .btn-register {
     padding: 8px 16px;
@@ -639,6 +672,8 @@ const getProfileLink = computed(() => {
   justify-content: center;
   z-index: 1000;
   padding: 20px;
+  width: 100%;
+  height: 100vh;
 }
 
 .modal-content {
@@ -654,8 +689,15 @@ const getProfileLink = computed(() => {
 }
 
 @keyframes modalIn {
-  from { transform: scale(0.9) translateY(20px); opacity: 0; }
-  to { transform: scale(1) translateY(0); opacity: 1; }
+  from {
+    transform: scale(0.9) translateY(20px);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
 }
 
 .modal-icon {

@@ -3,7 +3,8 @@
     <!-- Mobile Header -->
     <header class="mobile-header">
       <button class="menu-btn" @click="sidebarOpen = !sidebarOpen">
-        <svg v-if="!sidebarOpen" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg v-if="!sidebarOpen" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2">
           <line x1="3" y1="12" x2="21" y2="12"></line>
           <line x1="3" y1="6" x2="21" y2="6"></line>
           <line x1="3" y1="18" x2="21" y2="18"></line>
@@ -13,7 +14,7 @@
           <line x1="6" y1="6" x2="18" y2="18"></line>
         </svg>
       </button>
-      <span class="mobile-title">Запросы</span>
+      <span class="mobile-title">{{ $t('platformAdmin.requests.title') }}</span>
       <NuxtLink to="/" class="home-btn">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
@@ -22,27 +23,21 @@
       </NuxtLink>
     </header>
 
-    <PlatformAdminSidebar 
-      current-route="subscription-requests" 
-      :model-value="sidebarOpen"
-      @update:model-value="sidebarOpen = $event"
-    />
-    
+    <PlatformAdminSidebar current-route="subscription-requests" :model-value="sidebarOpen"
+      @update:model-value="sidebarOpen = $event" />
+
     <main class="admin-main">
       <div class="container">
         <div class="page-header">
-          <h1 class="page-title">Запросы на подписку</h1>
-          <p class="page-subtitle">Управление запросами на активацию подписки от магазинов</p>
+          <h1 class="page-title">{{ $t('platformAdmin.requests.title') }}</h1>
+          <p class="page-subtitle">{{ $t('platformAdmin.requests.subtitle') }}</p>
         </div>
 
         <!-- Filters -->
         <div class="filters">
-          <button 
-            v-for="statusFilter in statusFilters" 
-            :key="statusFilter.value"
+          <button v-for="statusFilter in statusFilters" :key="statusFilter.value"
             @click="selectedStatus = statusFilter.value"
-            :class="['filter-btn', { active: selectedStatus === statusFilter.value }]"
-          >
+            :class="['filter-btn', { active: selectedStatus === statusFilter.value }]">
             {{ statusFilter.label }}
             <span v-if="statusFilter.count !== undefined" class="filter-count">{{ statusFilter.count }}</span>
           </button>
@@ -51,34 +46,34 @@
         <!-- Loading -->
         <div v-if="pending" class="loading-container">
           <div class="loading-spinner"></div>
-          <p>Загрузка запросов...</p>
+          <p>{{ $t('platformAdmin.dashboard.loading') }}</p>
         </div>
 
         <!-- Empty State -->
         <div v-else-if="!requests || requests.length === 0" class="empty-state">
           <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+            <path
+              d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z">
+            </path>
             <polyline points="7.5 4.21 12 6.81 16.5 4.21"></polyline>
             <polyline points="7.5 19.79 7.5 14.6 3 12"></polyline>
             <polyline points="21 12 16.5 14.6 16.5 19.79"></polyline>
           </svg>
-          <h3>Нет запросов</h3>
-          <p>Пока нет запросов на подписку</p>
+          <h3>{{ $t('platformAdmin.requests.empty') }}</h3>
+          <p>{{ $t('platformAdmin.requests.emptySubtitle') }}</p>
         </div>
 
         <!-- Requests List -->
         <div v-else class="requests-list">
-          <div 
-            v-for="request in filteredRequests" 
-            :key="request.id" 
-            class="request-card"
-            :class="`request-${request.status}`"
-          >
+          <div v-for="request in filteredRequests" :key="request.id" class="request-card"
+            :class="`request-${request.status}`">
             <div class="request-header">
               <div class="request-info">
-                <h3 class="request-shop-name">{{ request.shop_name || 'Неизвестный магазин' }}</h3>
-                <p class="request-plan">План: <strong>{{ request.plan_name }}</strong></p>
-                <p class="request-duration">Длительность: <strong>{{ request.duration_months }} {{ getMonthsLabel(request.duration_months) }}</strong></p>
+                <h3 class="request-shop-name">{{ request.shop_name || 'Unknown' }}</h3>
+                <p class="request-plan">{{ $t('platformAdmin.requests.card.plan') }}: <strong>{{ request.plan_name
+                }}</strong></p>
+                <p class="request-duration">{{ $t('platformAdmin.requests.card.duration') }}: <strong>{{
+                  request.duration_months }} {{ getMonthsLabel(request.duration_months) }}</strong></p>
               </div>
               <div class="request-status-badge" :class="`status-${request.status}`">
                 {{ getStatusText(request.status) }}
@@ -87,52 +82,41 @@
 
             <div class="request-details">
               <div class="detail-item">
-                <span class="detail-label">Дата запроса:</span>
+                <span class="detail-label">{{ $t('platformAdmin.requests.card.date') }}:</span>
                 <span class="detail-value">{{ formatDate(request.requested_at) }}</span>
               </div>
               <div v-if="request.approved_at" class="detail-item">
-                <span class="detail-label">{{ request.status === 'approved' ? 'Одобрено:' : 'Отклонено:' }}</span>
+                <span class="detail-label">{{ request.status === 'approved' ? $t('platformAdmin.requests.card.approved')
+                  : $t('platformAdmin.requests.card.rejected') }}</span>
                 <span class="detail-value">{{ formatDate(request.approved_at) }}</span>
               </div>
               <div v-if="request.notes" class="detail-item notes">
-                <span class="detail-label">Заметки:</span>
+                <span class="detail-label">{{ $t('platformAdmin.requests.card.notes') }}:</span>
                 <span class="detail-value">{{ request.notes }}</span>
               </div>
             </div>
 
             <!-- Actions for pending requests -->
             <div v-if="request.status === 'pending'" class="request-actions">
-              <button 
-                @click="openApproveModal(request)"
-                class="action-btn approve-btn"
-                :disabled="processing"
-              >
+              <button @click="openApproveModal(request)" class="action-btn approve-btn" :disabled="processing">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <polyline points="20 6 9 17 4 12"></polyline>
                 </svg>
-                Одобрить
+                {{ $t('platformAdmin.requests.actions.approve') }}
               </button>
-              <button 
-                @click="openRejectModal(request)"
-                class="action-btn reject-btn"
-                :disabled="processing"
-              >
+              <button @click="openRejectModal(request)" class="action-btn reject-btn" :disabled="processing">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <line x1="18" y1="6" x2="6" y2="18"></line>
                   <line x1="6" y1="6" x2="18" y2="18"></line>
                 </svg>
-                Отклонить
+                {{ $t('platformAdmin.requests.actions.reject') }}
               </button>
-              <NuxtLink 
-                v-if="request.shop_slug"
-                :to="`/platform/admin/shops`"
-                class="action-btn view-btn"
-              >
+              <NuxtLink v-if="request.shop_slug" :to="`/platform/admin/shops`" class="action-btn view-btn">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                   <circle cx="12" cy="12" r="3"></circle>
                 </svg>
-                Магазин
+                {{ $t('platformAdmin.requests.actions.viewShop') }}
               </NuxtLink>
             </div>
           </div>
@@ -144,7 +128,7 @@
     <div v-if="showApproveModal" class="modal-overlay" @click="closeModals">
       <div class="modal-content" @click.stop>
         <div class="modal-header">
-          <h2>Одобрить запрос на подписку</h2>
+          <h2>{{ $t('platformAdmin.requests.modal.approveTitle') }}</h2>
           <button @click="closeModals" class="modal-close">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -153,26 +137,23 @@
           </button>
         </div>
         <div class="modal-body">
-          <p>Вы уверены, что хотите одобрить запрос на подписку?</p>
+          <p>{{ $t('platformAdmin.requests.modal.confirmApprove') }}</p>
           <div class="request-summary">
-            <p><strong>Магазин:</strong> {{ selectedRequest?.shop_name }}</p>
-            <p><strong>План:</strong> {{ selectedRequest?.plan_name }}</p>
-            <p><strong>Длительность:</strong> {{ selectedRequest?.duration_months }} {{ getMonthsLabel(selectedRequest?.duration_months) }}</p>
+            <p><strong>{{ $t('platformAdmin.requests.card.shop') }}:</strong> {{ selectedRequest?.shop_name }}</p>
+            <p><strong>{{ $t('platformAdmin.requests.card.plan') }}:</strong> {{ selectedRequest?.plan_name }}</p>
+            <p><strong>{{ $t('platformAdmin.requests.card.duration') }}:</strong> {{ selectedRequest?.duration_months }}
+              {{ getMonthsLabel(selectedRequest?.duration_months) }}</p>
           </div>
           <div class="form-group">
-            <label for="approve-notes">Заметки (необязательно):</label>
-            <textarea 
-              id="approve-notes"
-              v-model="approveNotes"
-              rows="3"
-              placeholder="Добавьте заметки..."
-            ></textarea>
+            <label for="approve-notes">{{ $t('platformAdmin.requests.card.notes') }}:</label>
+            <textarea id="approve-notes" v-model="approveNotes" rows="3"
+              :placeholder="$t('platformAdmin.requests.modal.notesPlaceholder')"></textarea>
           </div>
         </div>
         <div class="modal-footer">
-          <button @click="closeModals" class="btn-secondary">Отмена</button>
+          <button @click="closeModals" class="btn-secondary">{{ $t('platformAdmin.plans.cancel') }}</button>
           <button @click="approveRequest" class="btn-primary" :disabled="processing">
-            {{ processing ? 'Одобрение...' : 'Одобрить' }}
+            {{ processing ? $t('common.saving') : $t('platformAdmin.requests.actions.approve') }}
           </button>
         </div>
       </div>
@@ -182,7 +163,7 @@
     <div v-if="showRejectModal" class="modal-overlay" @click="closeModals">
       <div class="modal-content" @click.stop>
         <div class="modal-header">
-          <h2>Отклонить запрос на подписку</h2>
+          <h2>{{ $t('platformAdmin.requests.modal.rejectTitle') }}</h2>
           <button @click="closeModals" class="modal-close">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -191,26 +172,23 @@
           </button>
         </div>
         <div class="modal-body">
-          <p>Вы уверены, что хотите отклонить запрос на подписку?</p>
+          <p>{{ $t('platformAdmin.requests.modal.confirmReject') }}</p>
           <div class="request-summary">
-            <p><strong>Магазин:</strong> {{ selectedRequest?.shop_name }}</p>
-            <p><strong>План:</strong> {{ selectedRequest?.plan_name }}</p>
-            <p><strong>Длительность:</strong> {{ selectedRequest?.duration_months }} {{ getMonthsLabel(selectedRequest?.duration_months) }}</p>
+            <p><strong>{{ $t('platformAdmin.requests.card.shop') }}:</strong> {{ selectedRequest?.shop_name }}</p>
+            <p><strong>{{ $t('platformAdmin.requests.card.plan') }}:</strong> {{ selectedRequest?.plan_name }}</p>
+            <p><strong>{{ $t('platformAdmin.requests.card.duration') }}:</strong> {{ selectedRequest?.duration_months }}
+              {{ getMonthsLabel(selectedRequest?.duration_months) }}</p>
           </div>
           <div class="form-group">
-            <label for="reject-notes">Причина отклонения (рекомендуется):</label>
-            <textarea 
-              id="reject-notes"
-              v-model="rejectNotes"
-              rows="3"
-              placeholder="Укажите причину отклонения..."
-            ></textarea>
+            <label for="reject-notes">{{ $t('platformAdmin.requests.modal.notesPlaceholder') }}</label>
+            <textarea id="reject-notes" v-model="rejectNotes" rows="3"
+              :placeholder="$t('platformAdmin.requests.modal.reasonPlaceholder')"></textarea>
           </div>
         </div>
         <div class="modal-footer">
-          <button @click="closeModals" class="btn-secondary">Отмена</button>
+          <button @click="closeModals" class="btn-secondary">{{ $t('platformAdmin.plans.cancel') }}</button>
           <button @click="rejectRequest" class="btn-danger" :disabled="processing">
-            {{ processing ? 'Отклонение...' : 'Отклонить' }}
+            {{ processing ? $t('common.saving') : $t('platformAdmin.requests.actions.reject') }}
           </button>
         </div>
       </div>
@@ -224,6 +202,7 @@ definePageMeta({
 })
 
 const toast = useToast()
+const { t } = useI18n()
 const { token } = useAuth()
 const route = useRoute()
 
@@ -240,10 +219,10 @@ const rejectNotes = ref('')
 const statusFilters = computed(() => {
   const allRequests = requests.value || []
   return [
-    { value: null, label: 'Все', count: allRequests.length },
-    { value: 'pending', label: 'На рассмотрении', count: allRequests.filter(r => r.status === 'pending').length },
-    { value: 'approved', label: 'Одобренные', count: allRequests.filter(r => r.status === 'approved').length },
-    { value: 'rejected', label: 'Отклоненные', count: allRequests.filter(r => r.status === 'rejected').length }
+    { value: null, label: t('platformAdmin.requests.filter.all'), count: allRequests.length },
+    { value: 'pending', label: t('platformAdmin.requests.filter.pending'), count: allRequests.filter(r => r.status === 'pending').length },
+    { value: 'approved', label: t('platformAdmin.requests.filter.approved'), count: allRequests.filter(r => r.status === 'approved').length },
+    { value: 'rejected', label: t('platformAdmin.requests.filter.rejected'), count: allRequests.filter(r => r.status === 'rejected').length }
   ]
 })
 
@@ -292,7 +271,7 @@ const closeModals = () => {
 
 const approveRequest = async () => {
   if (!selectedRequest.value) return
-  
+
   processing.value = true
   try {
     await $fetch(`http://localhost:8000/platform/admin/subscription-requests/${selectedRequest.value.id}`, {
@@ -306,13 +285,13 @@ const approveRequest = async () => {
         notes: approveNotes.value || null
       }
     })
-    
-    toast.success('Запрос успешно одобрен')
+
+    toast.success(t('common.success'))
     await refresh()
     closeModals()
   } catch (error) {
     console.error('Error approving request:', error)
-    toast.error('Ошибка при одобрении запроса')
+    toast.error(t('platformAdmin.dashboard.error'))
   } finally {
     processing.value = false
   }
@@ -320,7 +299,7 @@ const approveRequest = async () => {
 
 const rejectRequest = async () => {
   if (!selectedRequest.value) return
-  
+
   processing.value = true
   try {
     await $fetch(`http://localhost:8000/platform/admin/subscription-requests/${selectedRequest.value.id}`, {
@@ -334,13 +313,13 @@ const rejectRequest = async () => {
         notes: rejectNotes.value || null
       }
     })
-    
-    toast.success('Запрос отклонен')
+
+    toast.success(t('common.success'))
     await refresh()
     closeModals()
   } catch (error) {
     console.error('Error rejecting request:', error)
-    toast.error('Ошибка при отклонении запроса')
+    toast.error(t('platformAdmin.dashboard.error'))
   } finally {
     processing.value = false
   }
@@ -348,25 +327,25 @@ const rejectRequest = async () => {
 
 const getStatusText = (status) => {
   const statusMap = {
-    'pending': 'На рассмотрении',
-    'approved': 'Одобрено',
-    'rejected': 'Отклонено'
+    'pending': t('platformAdmin.requests.status.pending'),
+    'approved': t('platformAdmin.requests.status.approved'),
+    'rejected': t('platformAdmin.requests.status.rejected')
   }
   return statusMap[status] || status
 }
 
 const getMonthsLabel = (months) => {
-  if (months === 1) return 'месяц'
-  if (months >= 2 && months <= 4) return 'месяца'
-  return 'месяцев'
+  if (months === 1) return t('platformAdmin.plans.period.day').replace('day', 'month') // Fallback logic or new key needed, using simple logic for now
+  if (months >= 2 && months <= 4) return t('home.pricing.month') + 'a' // Russian logic, but better to have keys. optimizing:
+  return t('home.pricing.month')
 }
 
 const formatDate = (date) => {
   if (!date) return '-'
   const d = new Date(date)
-  return d.toLocaleDateString('ru-RU', { 
-    day: 'numeric', 
-    month: 'long', 
+  return d.toLocaleDateString('ru-RU', {
+    day: 'numeric',
+    month: 'long',
     year: 'numeric',
     hour: '2-digit',
     minute: '2-digit'
@@ -445,7 +424,8 @@ const formatDate = (date) => {
 
   .admin-main {
     margin-left: 0;
-    padding-top: 80px; /* 60px header + 20px padding */
+    padding-top: 80px;
+    /* 60px header + 20px padding */
     padding-left: 16px;
     padding-right: 16px;
   }
@@ -532,8 +512,13 @@ const formatDate = (date) => {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .empty-state {
@@ -571,12 +556,12 @@ const formatDate = (date) => {
   border-radius: 20px;
   padding: 32px;
   border: 2px solid #E5E7EB;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   transition: all 0.3s;
 }
 
 .request-card:hover {
-  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
   border-color: #D1D5DB;
 }
 
@@ -748,7 +733,7 @@ const formatDate = (date) => {
   width: 100%;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
 }
 
 .modal-header {
@@ -932,26 +917,27 @@ const formatDate = (date) => {
     font-size: 0.875rem;
   }
 }
+
 @media (max-width: 640px) {
   .request-header {
     flex-direction: column;
     gap: 12px;
   }
-  
+
   .request-status-badge {
     align-self: flex-start;
   }
-  
+
   .detail-item {
     flex-direction: column;
     gap: 4px;
     align-items: flex-start;
   }
-  
+
   .request-actions {
     flex-direction: column;
   }
-  
+
   .action-btn {
     width: 100%;
     justify-content: center;

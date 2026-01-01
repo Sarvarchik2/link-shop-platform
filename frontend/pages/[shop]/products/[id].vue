@@ -1,34 +1,29 @@
 <template>
   <div class="product-page">
     <AppHeader />
-    
+
     <main class="container py-8">
       <div v-if="pending" class="text-center py-12">
         <div class="loading-spinner"></div>
-        <p class="mt-4 text-gray-400">Yuklanmoqda...</p>
+        <p class="mt-4 text-gray-400">{{ $t('product.loading') }}</p>
       </div>
 
       <div v-else-if="product" class="product-content">
         <div class="product-gallery">
           <div class="main-image">
-            <img :src="selectedImage || product.image_url" :alt="product.name" />
+            <img :src="selectedImage || product.image_url" :alt="getField(product, 'name')" />
           </div>
           <div v-if="productImages.length > 1" class="thumbnail-images">
-            <div 
-              v-for="(img, index) in productImages" 
-              :key="index" 
-              class="thumbnail"
-              :class="{ active: selectedImage === img }"
-              @click="selectedImage = img"
-            >
-              <img :src="img" :alt="`${product.name} ${index + 1}`" />
+            <div v-for="(img, index) in productImages" :key="index" class="thumbnail"
+              :class="{ active: selectedImage === img }" @click="selectedImage = img">
+              <img :src="img" :alt="`${getField(product, 'name')} ${index + 1}`" />
             </div>
           </div>
         </div>
 
         <div class="product-details">
-          <div class="product-category">{{ product.category }}</div>
-          <h1 class="product-title">{{ product.name }}</h1>
+          <div class="product-category">{{ getField(product, 'category') }}</div>
+          <h1 class="product-title">{{ getField(product, 'name') }}</h1>
 
           <div class="product-price-section">
             <div class="price-container">
@@ -41,40 +36,42 @@
             </div>
             <!-- Stock badge based on selected variant -->
             <template v-if="productVariants.length > 0">
-              <div v-if="totalColorStock === 0" class="stock-badge out-of-stock">TUGADI</div>
+              <div v-if="totalColorStock === 0" class="stock-badge out-of-stock">{{ $t('product.outOfStock') }}</div>
               <div v-else-if="selectedColor && selectedSize && selectedVariant">
-                <div v-if="selectedVariant.stock === 0" class="stock-badge out-of-stock">{{ selectedSize }} / {{ selectedColor.name }} - TUGADI</div>
-                <div v-else-if="selectedVariant.stock <= 5" class="stock-badge low-stock">{{ selectedSize }} / {{ selectedColor.name }}: Faqat {{ selectedVariant.stock }} ta qoldi!</div>
-                <div v-else class="stock-badge in-stock">{{ selectedSize }} / {{ selectedColor.name }}: Mavjud ({{ selectedVariant.stock }})</div>
+                <div v-if="selectedVariant.stock === 0" class="stock-badge out-of-stock">{{ selectedSize }} / {{
+                  selectedColor.name }} - {{ $t('product.outOfStock') }}</div>
+                <div v-else-if="selectedVariant.stock <= 5" class="stock-badge low-stock">{{ selectedSize }} / {{
+                  selectedColor.name }}: {{ $t('product.lowStock', { count: selectedVariant.stock }) }}</div>
+                <div v-else class="stock-badge in-stock">{{ selectedSize }} / {{ selectedColor.name }}: {{
+                  $t('product.inStock', { count: selectedVariant.stock }) }}</div>
               </div>
-              <div v-else-if="selectedColor && !selectedSize" class="stock-badge select-color">Mavjudligini ko'rish uchun o'lchamni tanlang</div>
-              <div v-else-if="!selectedColor && selectedSize" class="stock-badge select-color">Mavjudligini ko'rish uchun rangni tanlang</div>
-              <div v-else class="stock-badge select-color">Mavjudligini ko'rish uchun o'lcham va rangni tanlang</div>
+              <div v-else-if="selectedColor && !selectedSize" class="stock-badge select-color">{{
+                $t('product.selectVariant') }}</div>
+              <div v-else-if="!selectedColor && selectedSize" class="stock-badge select-color">{{
+                $t('product.selectVariant') }}</div>
+              <div v-else class="stock-badge select-color">{{ $t('product.selectVariant') }}</div>
             </template>
             <!-- Stock badge for products without variants -->
             <template v-else>
-            <div v-if="product.stock === 0" class="stock-badge out-of-stock">TUGADI</div>
-            <div v-else-if="product.stock <= 5" class="stock-badge low-stock">Faqat {{ product.stock }} ta qoldi!</div>
-            <div v-else class="stock-badge in-stock">Mavjud ({{ product.stock }})</div>
+              <div v-if="product.stock === 0" class="stock-badge out-of-stock">{{ $t('product.outOfStock') }}</div>
+              <div v-else-if="product.stock <= 5" class="stock-badge low-stock">{{ $t('product.lowStock', {
+                count:
+                  product.stock
+              }) }}</div>
+              <div v-else class="stock-badge in-stock">{{ $t('product.inStock', { count: product.stock }) }}</div>
             </template>
           </div>
 
           <div v-if="productColors.length > 0" class="color-selector">
             <h3 class="section-title">
-              Rangni tanlang
+              {{ $t('product.selectColor') }}
               <span v-if="productSizes.length > 0" class="required-badge">*</span>
             </h3>
             <div class="colors">
-              <button 
-                v-for="color in productColors" 
-                :key="color.name" 
-                class="color-btn"
+              <button v-for="color in productColors" :key="color.name" class="color-btn"
                 :class="{ active: selectedColor?.name === color.name, 'out-of-stock': color.stock === 0 }"
-                :style="{ '--color': color.hex }"
-                @click="selectColor(color)"
-                :disabled="color.stock === 0"
-                :title="color.stock === 0 ? 'Tugagan' : `${color.name} (${color.stock} ta mavjud)`"
-              >
+                :style="{ '--color': color.hex }" @click="selectColor(color)" :disabled="color.stock === 0"
+                :title="color.stock === 0 ? $t('product.outOfStock') : `${color.name} (${$t('product.inStock', { count: color.stock })})`">
                 <span class="color-swatch"></span>
                 <span class="color-name">{{ color.name }}</span>
                 <span v-if="color.stock === 0" class="color-oos">✕</span>
@@ -84,19 +81,14 @@
 
           <div v-if="productSizes.length > 0" class="size-selector">
             <h3 class="section-title">
-              O'lchamni tanlang
+              {{ $t('product.selectSize') }}
               <span v-if="productColors.length > 0" class="required-badge">*</span>
             </h3>
             <div class="sizes">
-              <button 
-                v-for="size in productSizes" 
-                :key="size.name || size" 
-                class="size-btn"
+              <button v-for="size in productSizes" :key="size.name || size" class="size-btn"
                 :class="{ active: selectedSize === (size.name || size), 'out-of-stock': size.stock === 0 }"
-                @click="selectSize(size)"
-                :disabled="size.stock === 0"
-                :title="size.stock === 0 ? 'Tugagan' : `${size.name || size} (${size.stock || 'mavjud'})`"
-              >
+                @click="selectSize(size)" :disabled="size.stock === 0"
+                :title="size.stock === 0 ? $t('product.outOfStock') : `${size.name || size} (${size.stock || $t('status.active')})`">
                 {{ size.name || size }}
                 <span v-if="size.stock === 0" class="size-oos">✕</span>
               </button>
@@ -104,28 +96,24 @@
           </div>
 
           <div class="product-description">
-            <h3 class="section-title">Tavsif</h3>
+            <h3 class="section-title">{{ $t('product.description') }}</h3>
             <p>{{ product.description }}</p>
           </div>
 
           <div class="product-meta">
             <div class="meta-item">
-              <span class="meta-label">Brend:</span>
+              <span class="meta-label">{{ $t('product.brand') }}:</span>
               <span class="meta-value">{{ product.brand }}</span>
             </div>
             <div class="meta-item">
-              <span class="meta-label">Kategoriya:</span>
+              <span class="meta-label">{{ $t('product.category') }}:</span>
               <span class="meta-value">{{ product.category }}</span>
             </div>
           </div>
 
           <div class="product-actions">
-            <button 
-              v-if="canAddToCart || !user"
-              @click="addToCart" 
-              class="btn-add-cart"
-              :disabled="user && !canAddToCart"
-            >
+            <button v-if="canAddToCart || !user" @click="addToCart" class="btn-add-cart"
+              :disabled="user && !canAddToCart">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="9" cy="21" r="1"></circle>
                 <circle cx="20" cy="21" r="1"></circle>
@@ -133,57 +121,58 @@
               </svg>
               {{ buttonText }}
             </button>
-            <button 
-              v-else-if="showPreorderButton || (!user && product?.is_preorder_enabled && totalColorStock === 0)"
-              @click="openPreorderModal" 
-              class="btn-preorder"
-            >
+            <button v-else-if="showPreorderButton || (!user && product?.is_preorder_enabled && totalColorStock === 0)"
+              @click="openPreorderModal" class="btn-preorder">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
                 <path d="M2 17l10 5 10-5"></path>
                 <path d="M2 12l10 5 10-5"></path>
               </svg>
-              Предзаказ
+              {{ $t('product.preorder') }}
             </button>
             <button @click="toggleFavorite" class="btn-favorite" :class="{ active: product.is_favorite }">
-              <svg width="20" height="20" viewBox="0 0 24 24" :fill="product.is_favorite ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2">
-                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+              <svg width="20" height="20" viewBox="0 0 24 24" :fill="product.is_favorite ? 'currentColor' : 'none'"
+                stroke="currentColor" stroke-width="2">
+                <path
+                  d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
+                </path>
               </svg>
             </button>
           </div>
-          
+
           <!-- Pre-order Modal -->
           <div v-if="showPreorderModal" class="modal-overlay" @click="closePreorderModal">
             <div class="modal-content" @click.stop>
               <div class="modal-header">
-                <h2>Предзаказ</h2>
+                <h2>{{ $t('product.preorder') }}</h2>
                 <button @click="closePreorderModal" class="modal-close">×</button>
               </div>
               <div class="modal-body">
                 <p class="preorder-description">
-                  Товар временно отсутствует в наличии. Оставьте предзаказ, и мы уведомим вас, когда товар поступит.
+                  {{ $t('product.preorderDesc') }}
                 </p>
                 <div class="form-group">
-                  <label>Имя</label>
-                  <input v-model="preorderForm.name" type="text" placeholder="Ваше имя" />
+                  <label>{{ $t('product.form.name') }}</label>
+                  <input v-model="preorderForm.name" type="text" :placeholder="$t('product.form.name')" />
                 </div>
                 <div class="form-group">
-                  <label>Телефон *</label>
+                  <label>{{ $t('product.form.phone') }} *</label>
                   <input v-model="preorderForm.phone" type="tel" placeholder="+998901234567" required />
                 </div>
                 <div v-if="productVariants.length > 0" class="form-group">
                   <p class="form-info">
-                    <strong>Выбранная конфигурация:</strong><br>
-                    <span v-if="selectedColor">Цвет: {{ selectedColor.name }}</span>
+                    <strong>{{ $t('product.preorderConfig') }}</strong><br>
+                    <span v-if="selectedColor">{{ $t('admin.color') }}: {{ selectedColor.name }}</span>
                     <span v-if="selectedColor && selectedSize">, </span>
-                    <span v-if="selectedSize">Размер: {{ selectedSize }}</span>
+                    <span v-if="selectedSize">{{ $t('admin.size') }}: {{ selectedSize }}</span>
                   </p>
                 </div>
               </div>
               <div class="modal-footer">
-                <button @click="closePreorderModal" class="btn-cancel">Отмена</button>
-                <button @click="submitPreorder" class="btn-submit" :disabled="!preorderForm.phone || isSubmittingPreorder">
-                  {{ isSubmittingPreorder ? 'Отправка...' : 'Оставить предзаказ' }}
+                <button @click="closePreorderModal" class="btn-cancel">{{ $t('common.cancel') }}</button>
+                <button @click="submitPreorder" class="btn-submit"
+                  :disabled="!preorderForm.phone || isSubmittingPreorder">
+                  {{ isSubmittingPreorder ? $t('common.sending') : $t('product.submitPreorder') }}
                 </button>
               </div>
             </div>
@@ -199,9 +188,12 @@ const route = useRoute()
 const shopSlug = route.params.shop
 const { addItem } = useCart()
 const { user } = useAuth()
+const { getField } = useMultilingual()
+const { t } = useI18n()
 const { openModal } = useAuthModal()
+const config = useRuntimeConfig()
 
-const { data: product, pending, refresh } = await useFetch(`http://localhost:8000/products/${route.params.id}`, {
+const { data: product, pending, refresh } = await useFetch(`${config.public.apiBase}/products/${route.params.id}`, {
   server: false
 })
 
@@ -239,7 +231,7 @@ const productVariants = computed(() => {
     // Legacy format: sizes + colors
     const hasSizes = product.value.sizes && product.value.sizes.trim()
     const hasColors = product.value.colors && product.value.colors.trim()
-    
+
     if (hasSizes && hasColors) {
       // Both sizes and colors
       const sizes = JSON.parse(product.value.sizes)
@@ -345,11 +337,11 @@ const getDefaultColorHex = (colorName) => {
 // Get selected variant (based on selected size and color)
 const selectedVariant = computed(() => {
   if (productVariants.value.length === 0) return null
-  
+
   // If product has both sizes and colors, both must be selected
   if (productSizes.value.length > 0 && productColors.value.length > 0) {
     if (!selectedColor.value || !selectedSize.value) return null
-    return productVariants.value.find(v => 
+    return productVariants.value.find(v =>
       v.color === selectedColor.value.name && v.size === selectedSize.value
     )
   }
@@ -365,7 +357,7 @@ const selectedVariant = computed(() => {
     // Find variant with this size (color can be null or any)
     return productVariants.value.find(v => v.size === selectedSize.value)
   }
-  
+
   return null
 })
 
@@ -429,9 +421,9 @@ const selectSize = (size) => {
 
 const canAddToCart = computed(() => {
   // Removed mandatory login check for button visibility
-  
+
   if (!product.value) return false
-  
+
   // If product has variants
   if (productVariants.value.length > 0) {
     // If product has both sizes and colors, both must be selected
@@ -448,11 +440,11 @@ const canAddToCart = computed(() => {
     }
     // If product has variants but no sizes and no colors, check variant stock
     // This case is rare but handle it
-    
+
     // Check if selected variant has stock
     const variant = selectedVariant.value
     if (variant && (variant.stock || 0) === 0) return false
-    
+
     // If we have colors/sizes but no variant found, can't add
     if ((productSizes.value.length > 0 || productColors.value.length > 0) && !variant) return false
   }
@@ -460,43 +452,43 @@ const canAddToCart = computed(() => {
   else {
     if (product.value.stock === 0) return false
   }
-  
+
   return true
 })
 
 const buttonText = computed(() => {
-  if (!product.value) return 'Yuklanmoqda...'
-  
+  if (!product.value) return t('product.loading')
+
   // Check if user is logged in
   if (!user.value) {
-    return 'SAVATGA QO\'SHISH' // Show the normal text even if not logged in
+    return t('product.addToCart') // Show the normal text even if not logged in
   }
-  
+
   // If product has variants
   if (productVariants.value.length > 0) {
     // If product has both sizes and colors
     if (productSizes.value.length > 0 && productColors.value.length > 0) {
-      if (!selectedColor.value) return 'Rangni tanlang'
-      if (!selectedSize.value) return 'O\'lchamni tanlang'
+      if (!selectedColor.value) return t('product.selectColor')
+      if (!selectedSize.value) return t('product.selectSize')
     }
     // If product has only colors (no sizes)
     else if (productColors.value.length > 0 && productSizes.value.length === 0) {
-      if (!selectedColor.value) return 'Rangni tanlang'
+      if (!selectedColor.value) return t('product.selectColor')
     }
     // If product has only sizes (no colors)
     else if (productSizes.value.length > 0 && productColors.value.length === 0) {
-      if (!selectedSize.value) return 'O\'lchamni tanlang'
+      if (!selectedSize.value) return t('product.selectSize')
     }
-    
+
     const variant = selectedVariant.value
-    if (variant && (variant.stock || 0) === 0) return 'Tugagan'
+    if (variant && (variant.stock || 0) === 0) return t('product.outOfStock')
   }
   // No variants - check general stock
   else if (product.value.stock === 0) {
-    return 'Tugagan'
+    return t('product.outOfStock')
   }
-  
-  return 'SAVATGA QO\'SHISH'
+
+  return t('product.addToCart')
 })
 
 const toast = useToast()
@@ -513,13 +505,13 @@ const preorderForm = ref({
 const showPreorderButton = computed(() => {
   if (!product.value) return false
   if (!product.value.is_preorder_enabled) return false
-  
+
   // Check if product is out of stock
   if (productVariants.value.length > 0) {
     // Check if we need to select variants
     const needsColor = productColors.value.length > 0
     const needsSize = productSizes.value.length > 0
-    
+
     // If we need both but haven't selected them, don't show pre-order button yet
     if (needsColor && needsSize && (!selectedColor.value || !selectedSize.value)) {
       return false
@@ -532,7 +524,7 @@ const showPreorderButton = computed(() => {
     if (!needsColor && needsSize && !selectedSize.value) {
       return false
     }
-    
+
     const variant = selectedVariant.value
     if (variant && (variant.stock || 0) > 0) return false
     // If variant selected but out of stock, or no variant selected but all out of stock
@@ -547,13 +539,13 @@ const openPreorderModal = () => {
     openModal()
     return
   }
-  
+
   // Pre-fill user data if available
   if (user.value) {
     preorderForm.value.name = `${user.value.first_name || ''} ${user.value.last_name || ''}`.trim()
     preorderForm.value.phone = user.value.phone || ''
   }
-  
+
   showPreorderModal.value = true
 }
 
@@ -564,20 +556,20 @@ const closePreorderModal = () => {
 
 const submitPreorder = async () => {
   if (!preorderForm.value.phone) {
-    toast.error('Пожалуйста, укажите номер телефона')
+    toast.error(t('validation.phoneRequired'))
     return
   }
-  
+
   if (!user.value) {
-    toast.warning('Для предзаказа необходимо войти в систему')
+    toast.warning(t('validation.loginRequired'))
     return
   }
-  
+
   isSubmittingPreorder.value = true
-  
+
   try {
     const { token } = useAuth()
-    await $fetch(`http://localhost:8000/products/${route.params.id}/preorder`, {
+    await $fetch(`${config.public.apiBase}/products/${route.params.id}/preorder`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token.value}`
@@ -590,15 +582,15 @@ const submitPreorder = async () => {
         name: preorderForm.value.name || null
       }
     })
-    
-    toast.success('Предзаказ успешно оформлен! Мы уведомим вас, когда товар поступит в продажу.')
+
+    toast.success(t('product.preorderSuccess'))
     closePreorderModal()
   } catch (e) {
     console.error('Preorder error:', e)
     if (e?.data?.detail) {
       toast.error(e.data.detail)
     } else {
-      toast.error('Ошибка при оформлении предзаказа. Попробуйте еще раз.')
+      toast.error(t('product.preorderError'))
     }
   } finally {
     isSubmittingPreorder.value = false
@@ -611,44 +603,44 @@ const addToCart = () => {
     openModal()
     return
   }
-  
+
   if (!canAddToCart.value) {
     // If product has both sizes and colors
     if (productSizes.value.length > 0 && productColors.value.length > 0) {
       if (!selectedColor.value) {
-        toast.warning('Iltimos, rangni tanlang')
+        toast.warning(t('product.selectColor'))
         return
       }
       if (selectedColor.value.stock === 0) {
-        toast.error('Bu rang tugagan')
+        toast.error(t('product.outOfStock'))
         return
       }
       if (!selectedSize.value) {
-        toast.warning('Iltimos, o\'lchamni tanlang')
+        toast.warning(t('product.selectSize'))
         return
       }
     }
     // If product has only sizes (no colors)
     else if (productSizes.value.length > 0 && productColors.value.length === 0) {
       if (!selectedSize.value) {
-        toast.warning('Iltimos, o\'lchamni tanlang')
+        toast.warning(t('product.selectSize'))
         return
       }
     }
     // If product has only colors (no sizes)
     else if (productColors.value.length > 0 && productSizes.value.length === 0) {
       if (!selectedColor.value) {
-        toast.warning('Iltimos, rangni tanlang')
+        toast.warning(t('product.selectColor'))
         return
       }
       if (selectedColor.value.stock === 0) {
-        toast.error('Bu rang tugagan')
+        toast.error(t('product.outOfStock'))
         return
       }
     }
     return
   }
-  
+
   addItem({
     ...product.value,
     price: finalPrice.value,  // Add discounted price
@@ -658,7 +650,7 @@ const addToCart = () => {
     selectedSize: selectedSize.value || null,
     shopSlug: shopSlug
   })
-  toast.success('Savatga qo\'shildi!')
+  toast.success(t('product.addedToCart'))
 }
 
 const toggleFavorite = async () => {
@@ -666,9 +658,9 @@ const toggleFavorite = async () => {
     openModal()
     return
   }
-  
+
   try {
-    await $fetch(`http://localhost:8000/products/${route.params.id}/favorite`, { method: 'POST' })
+    await $fetch(`${config.public.apiBase}/products/${route.params.id}/favorite`, { method: 'POST' })
     refresh()
   } catch (e) {
     console.error(e)
@@ -701,7 +693,7 @@ const toggleFavorite = async () => {
   background: white;
   border-radius: 24px;
   padding: 40px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   aspect-ratio: 1;
   display: flex;
   align-items: center;
@@ -887,7 +879,7 @@ const toggleFavorite = async () => {
   height: 24px;
   border-radius: 50%;
   background: var(--color);
-  border: 2px solid rgba(0,0,0,0.1);
+  border: 2px solid rgba(0, 0, 0, 0.1);
 }
 
 .color-name {
@@ -1065,15 +1057,20 @@ const toggleFavorite = async () => {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 @media (min-width: 768px) {
   .product-content {
     grid-template-columns: 1fr 1fr;
   }
-  
+
   .product-title {
     font-size: 3rem;
   }
@@ -1260,23 +1257,22 @@ const toggleFavorite = async () => {
   .main-image {
     padding: 24px;
   }
-  
+
   .product-title {
     font-size: 1.75rem;
   }
-  
+
   .product-price {
     font-size: 2rem;
   }
-  
+
   .btn-add-cart,
   .btn-preorder {
     padding: 14px 24px;
   }
-  
+
   .modal-content {
     margin: 20px;
   }
 }
 </style>
-

@@ -3,7 +3,8 @@
     <!-- Mobile Header -->
     <header class="mobile-header">
       <button class="menu-btn" @click="sidebarOpen = !sidebarOpen">
-        <svg v-if="!sidebarOpen" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg v-if="!sidebarOpen" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2">
           <line x1="3" y1="12" x2="21" y2="12"></line>
           <line x1="3" y1="6" x2="21" y2="6"></line>
           <line x1="3" y1="18" x2="21" y2="18"></line>
@@ -13,7 +14,7 @@
           <line x1="6" y1="6" x2="18" y2="18"></line>
         </svg>
       </button>
-      <span class="mobile-title">Офферы</span>
+      <span class="mobile-title">{{ $t('platformAdmin.offers.title') }}</span>
       <NuxtLink to="/" class="home-btn">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
@@ -22,27 +23,23 @@
       </NuxtLink>
     </header>
 
-    <PlatformAdminSidebar 
-      :current-route="currentRoute"
-      :model-value="sidebarOpen"
-      @update:model-value="sidebarOpen = $event"
-      @logout="handleLogout" 
-    />
+    <PlatformAdminSidebar :current-route="currentRoute" :model-value="sidebarOpen"
+      @update:model-value="sidebarOpen = $event" @logout="handleLogout" />
 
     <!-- Main Content -->
     <main class="admin-main">
       <div class="admin-header">
         <div class="header-content">
           <div>
-            <h1 class="admin-title">Управление офферами</h1>
-            <p class="admin-subtitle">Создавайте и управляйте специальными предложениями (WhiteLabel и др.)</p>
+            <h1 class="admin-title">{{ $t('platformAdmin.offers.title') }}</h1>
+            <p class="admin-subtitle">{{ $t('platformAdmin.offers.subtitle') }}</p>
           </div>
           <button @click="openCreateModal" class="create-btn">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="12" y1="5" x2="12" y2="19"></line>
               <line x1="5" y1="12" x2="19" y2="12"></line>
             </svg>
-            <span>Добавить оффер</span>
+            <span>{{ $t('platformAdmin.offers.add') }}</span>
           </button>
         </div>
       </div>
@@ -55,14 +52,14 @@
             <line x1="12" y1="8" x2="12" y2="12"></line>
             <line x1="12" y1="16" x2="12.01" y2="16"></line>
           </svg>
-          <p class="error-message">Ошибка загрузки данных: {{ error.message || 'Неизвестная ошибка' }}</p>
-          <button @click="refresh" class="retry-btn">Повторить</button>
+          <p class="error-message">{{ $t('platformAdmin.dashboard.error') }}: {{ error.message || 'Unknown' }}</p>
+          <button @click="refresh" class="retry-btn">{{ $t('platformAdmin.dashboard.refresh') }}</button>
         </div>
-        
+
         <!-- Loading State -->
         <div v-else-if="pending" class="loading-state">
           <div class="loading-spinner"></div>
-          <p>Загрузка офферов...</p>
+          <p>{{ $t('platformAdmin.dashboard.loading') }}</p>
         </div>
 
         <!-- Offers Grid -->
@@ -72,7 +69,8 @@
               <div class="offer-title-section">
                 <h3 class="offer-name">{{ offer.title }}</h3>
                 <div class="offer-badges">
-                  <span v-if="!offer.is_active" class="badge inactive-badge">Неактивен</span>
+                  <span v-if="!offer.is_active" class="badge inactive-badge">{{ $t('platformAdmin.plans.card.inactive')
+                    }}</span>
                 </div>
               </div>
               <div class="offer-actions">
@@ -98,7 +96,7 @@
               <div v-else-if="offer.price_text" class="offer-price-text">
                 {{ offer.price_text }}
               </div>
-              <div v-else class="offer-price-text">Цена по запросу</div>
+              <div v-else class="offer-price-text">{{ $t('platformAdmin.offers.card.priceByRequest') }}</div>
             </div>
 
             <p class="offer-description">{{ offer.description }}</p>
@@ -113,7 +111,9 @@
               </div>
               <div v-if="offer.contact_phone" class="contact-info-item">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                  <path
+                    d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
+                  </path>
                 </svg>
                 <span>{{ offer.contact_phone }}</span>
               </div>
@@ -121,10 +121,10 @@
 
             <div class="offer-footer">
               <div class="offer-meta">
-                <span>Порядок: {{ offer.display_order }}</span>
+                <span>{{ $t('platformAdmin.plans.card.order') }} {{ offer.display_order }}</span>
               </div>
               <button @click="toggleActive(offer)" :class="['toggle-btn', offer.is_active ? 'active' : 'inactive']">
-                {{ offer.is_active ? 'Активен' : 'Неактивен' }}
+                {{ offer.is_active ? $t('platformAdmin.plans.card.active') : $t('platformAdmin.plans.card.inactive') }}
               </button>
             </div>
           </div>
@@ -136,9 +136,9 @@
               <path d="M2 17l10 5 10-5"></path>
               <path d="M2 12l10 5 10-5"></path>
             </svg>
-            <p>Офферов пока нет</p>
-            <p class="empty-subtitle">Создайте первый оффер</p>
-            <button @click="openCreateModal" class="create-first-btn">Создать оффер</button>
+            <p>{{ $t('platformAdmin.offers.empty') }}</p>
+            <p class="empty-subtitle">{{ $t('platformAdmin.offers.emptySubtitle') }}</p>
+            <button @click="openCreateModal" class="create-first-btn">{{ $t('platformAdmin.offers.create') }}</button>
           </div>
         </div>
 
@@ -146,67 +146,73 @@
         <div v-if="showModal" class="modal-overlay" @click="closeModal">
           <div class="modal-content" @click.stop>
             <div class="modal-header">
-              <h2 class="modal-title">{{ editingOffer ? 'Редактировать оффер' : 'Создать новый оффер' }}</h2>
+              <h2 class="modal-title">{{ editingOffer ? $t('platformAdmin.offers.edit') :
+                $t('platformAdmin.offers.create') }}</h2>
               <button @click="closeModal" class="modal-close">×</button>
             </div>
 
             <form @submit.prevent="saveOffer" class="modal-form">
               <div class="form-grid">
                 <div class="form-group full-width">
-                  <label>Заголовок *</label>
-                  <input v-model="offerForm.title" type="text" class="form-input" required placeholder="Например: WhiteLabel решение" />
+                  <label>{{ $t('platformAdmin.offers.form.title') }} *</label>
+                  <input v-model="offerForm.title" type="text" class="form-input" required
+                    :placeholder="$t('platformAdmin.offers.form.title')" />
                 </div>
 
                 <div class="form-group full-width">
-                  <label>Описание *</label>
-                  <textarea v-model="offerForm.description" class="form-input" rows="4" required placeholder="Подробное описание оффера"></textarea>
+                  <label>{{ $t('platformAdmin.offers.form.description') }} *</label>
+                  <textarea v-model="offerForm.description" class="form-input" rows="4" required
+                    :placeholder="$t('platformAdmin.offers.form.description')"></textarea>
                 </div>
 
                 <div class="form-group">
-                  <label>Цена ($)</label>
-                  <input v-model.number="offerForm.price" type="number" step="0.01" min="0" class="form-input" placeholder="0.00" />
-                  <small class="form-hint">Оставьте пустым, если цена "по запросу"</small>
+                  <label>{{ $t('platformAdmin.offers.form.price') }}</label>
+                  <input v-model.number="offerForm.price" type="number" step="0.01" min="0" class="form-input"
+                    placeholder="0.00" />
+                  <small class="form-hint">{{ $t('platformAdmin.offers.form.hints.price') }}</small>
                 </div>
 
                 <div class="form-group">
-                  <label>Текст цены</label>
-                  <input v-model="offerForm.price_text" type="text" class="form-input" placeholder="Например: По запросу" />
-                  <small class="form-hint">Альтернатива числовой цене</small>
+                  <label>{{ $t('platformAdmin.offers.form.priceText') }}</label>
+                  <input v-model="offerForm.price_text" type="text" class="form-input" placeholder="" />
+                  <small class="form-hint"></small>
                 </div>
 
                 <div class="form-group full-width">
-                  <label>Текст для связи</label>
-                  <input v-model="offerForm.contact_text" type="text" class="form-input" placeholder="Свяжитесь с нами для покупки" />
+                  <label>{{ $t('platformAdmin.offers.form.contactText') }}</label>
+                  <input v-model="offerForm.contact_text" type="text" class="form-input" placeholder="" />
                 </div>
 
                 <div class="form-group">
-                  <label>Email для связи</label>
-                  <input v-model="offerForm.contact_email" type="email" class="form-input" placeholder="sales@example.com" />
+                  <label>{{ $t('platformAdmin.offers.form.email') }}</label>
+                  <input v-model="offerForm.contact_email" type="email" class="form-input" placeholder="" />
                 </div>
 
                 <div class="form-group">
-                  <label>Телефон для связи</label>
-                  <input v-model="offerForm.contact_phone" type="tel" class="form-input" placeholder="+998901234567" />
+                  <label>{{ $t('platformAdmin.offers.form.phone') }}</label>
+                  <input v-model="offerForm.contact_phone" type="tel" class="form-input" placeholder="" />
                 </div>
 
                 <div class="form-group">
                   <label class="checkbox-label">
                     <input v-model="offerForm.is_active" type="checkbox" class="checkbox-input" />
-                    <span>Активен</span>
+                    <span>{{ $t('platformAdmin.plans.form.isActive') }}</span>
                   </label>
                 </div>
 
                 <div class="form-group">
-                  <label>Порядок отображения</label>
+                  <label>{{ $t('platformAdmin.plans.form.order') }}</label>
                   <input v-model.number="offerForm.display_order" type="number" min="0" class="form-input" />
-                  <small class="form-hint">Меньше число = выше в списке</small>
+                  <small class="form-hint">{{ $t('platformAdmin.plans.form.hints.order') }}</small>
                 </div>
               </div>
 
               <div class="modal-actions">
-                <button type="button" @click="closeModal" class="btn-secondary">Отмена</button>
+                <button type="button" @click="closeModal" class="btn-secondary">{{ $t('platformAdmin.plans.cancel')
+                  }}</button>
                 <button type="submit" class="btn-primary" :disabled="saving">
-                  {{ saving ? 'Сохранение...' : (editingOffer ? 'Сохранить' : 'Создать') }}
+                  {{ saving ? $t('common.saving') : (editingOffer ? $t('platformAdmin.plans.save') :
+                    $t('platformAdmin.plans.create')) }}
                 </button>
               </div>
             </form>
@@ -226,10 +232,11 @@ const route = useRoute()
 const sidebarOpen = ref(false)
 const { token, logout } = useAuth()
 const toast = useToast()
+const { t } = useI18n()
 
 const handleLogout = () => {
   logout()
-  toast.success('Вы вышли из аккаунта')
+  toast.success(t('common.logout'))
 }
 
 const currentRoute = computed(() => {
@@ -317,7 +324,7 @@ const saveOffer = async () => {
         },
         body: payload
       })
-      toast.success('Оффер обновлен')
+      toast.success(t('common.saved'))
     } else {
       await $fetch('http://localhost:8000/platform/admin/offers', {
         method: 'POST',
@@ -326,13 +333,13 @@ const saveOffer = async () => {
         },
         body: payload
       })
-      toast.success('Оффер создан')
+      toast.success(t('common.saved'))
     }
-    
+
     closeModal()
     refresh()
   } catch (e) {
-    toast.error(e.data?.detail || 'Ошибка при сохранении оффера')
+    toast.error(e.data?.detail || t('platformAdmin.dashboard.error'))
   } finally {
     saving.value = false
   }
@@ -349,15 +356,15 @@ const toggleActive = async (offer) => {
         is_active: !offer.is_active
       }
     })
-    toast.success(`Оффер ${!offer.is_active ? 'активирован' : 'деактивирован'}`)
+    toast.success(t('common.saved'))
     refresh()
   } catch (e) {
-    toast.error(e.data?.detail || 'Ошибка при изменении статуса')
+    toast.error(e.data?.detail || t('platformAdmin.dashboard.error'))
   }
 }
 
 const deleteOffer = async (offer) => {
-  if (!confirm(`Вы уверены, что хотите удалить оффер "${offer.title}"?`)) {
+  if (!confirm(`${t('platformAdmin.offers.delete')} "${offer.title}"?`)) {
     return
   }
 
@@ -368,10 +375,10 @@ const deleteOffer = async (offer) => {
         'Authorization': `Bearer ${token.value}`
       }
     })
-    toast.success('Оффер удален')
+    toast.success(t('common.deleted'))
     refresh()
   } catch (e) {
-    toast.error(e.data?.detail || 'Ошибка при удалении оффера')
+    toast.error(e.data?.detail || t('platformAdmin.dashboard.error'))
   }
 }
 </script>
@@ -458,7 +465,7 @@ const deleteOffer = async (offer) => {
     flex-direction: column;
     gap: 16px;
   }
-  
+
   .create-btn {
     width: 100%;
     justify-content: center;
@@ -477,11 +484,11 @@ const deleteOffer = async (offer) => {
     font-size: 1.25rem !important;
     line-height: 1.2 !important;
   }
-  
+
   .admin-header {
     padding: 20px !important;
   }
-  
+
   .admin-content {
     padding: 16px !important;
   }
@@ -539,7 +546,7 @@ const deleteOffer = async (offer) => {
   background: white;
   border-radius: 20px;
   padding: 24px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   border: 2px solid #E5E7EB;
   display: flex;
   flex-direction: column;
@@ -547,7 +554,7 @@ const deleteOffer = async (offer) => {
 }
 
 .offer-card:hover {
-  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
   transform: translateY(-2px);
 }
 
@@ -760,8 +767,13 @@ const deleteOffer = async (offer) => {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .retry-btn {
@@ -793,7 +805,7 @@ const deleteOffer = async (offer) => {
   width: 100%;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
 }
 
 @media (max-width: 768px) {
@@ -806,7 +818,7 @@ const deleteOffer = async (offer) => {
   .form-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .modal-header,
   .modal-form,
   .modal-actions {
@@ -958,11 +970,11 @@ const deleteOffer = async (offer) => {
   .admin-main {
     margin-left: 0;
   }
-  
+
   .mobile-header {
     display: flex;
   }
-  
+
   .offers-grid {
     grid-template-columns: 1fr;
   }
@@ -972,20 +984,20 @@ const deleteOffer = async (offer) => {
   .admin-content {
     padding: 20px;
   }
-  
+
   .form-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .admin-header {
     padding: 24px 20px;
   }
-  
+
   .header-content {
     flex-direction: column;
     gap: 20px;
   }
-  
+
   .create-btn {
     width: 100%;
     justify-content: center;
@@ -1000,23 +1012,23 @@ const deleteOffer = async (offer) => {
     flex-direction: column;
     gap: 12px;
   }
-  
+
   .offer-badges {
     margin-top: 8px;
   }
-  
+
   .offer-actions {
     margin-top: 0;
     justify-content: flex-end;
     width: 100%;
   }
-  
+
   .offer-footer {
     flex-direction: column;
     gap: 16px;
     align-items: flex-start;
   }
-  
+
   .toggle-btn {
     width: 100%;
   }

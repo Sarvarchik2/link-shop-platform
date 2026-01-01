@@ -1,16 +1,16 @@
 <template>
   <div class="cart-page">
     <!-- Desktop Header -->
-    <AppHeader class="desktop-header" />
-    
+    <AppHeader class="desktop-header" :hideMobileNav="true" />
+
     <!-- Mobile Header -->
     <header class="cart-header mobile-header">
-        <button @click="$router.back()" class="back-btn">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M19 12H5M12 19l-7-7 7-7"/>
-          </svg>
-        </button>
-      <h1 class="cart-title">Savatcha</h1>
+      <button @click="$router.back()" class="back-btn">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M19 12H5M12 19l-7-7 7-7" />
+        </svg>
+      </button>
+      <h1 class="cart-title">{{ $t('cart.title') }}</h1>
       <div class="header-spacer"></div>
     </header>
 
@@ -23,25 +23,17 @@
             <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
           </svg>
         </div>
-        <h2 class="empty-title">Savatchangiz bo'sh</h2>
-        <p class="empty-text">Boshlash uchun mahsulotlar qo'shing</p>
-        <NuxtLink to="/products" class="btn-shop">Xaridni davom ettirish</NuxtLink>
+        <h2 class="empty-title">{{ $t('cart.empty_title') }}</h2>
+        <p class="empty-text">{{ $t('cart.empty_text') }}</p>
+        <NuxtLink :to="localePath('/products')" class="btn-shop">{{ $t('cart.continue_shopping') }}</NuxtLink>
       </div>
 
       <div v-else class="cart-items">
-        <div 
-          v-for="item in items" 
-          :key="item.cartKey" 
-          class="cart-item"
-          :class="{ swiped: swipedItem === item.cartKey }"
-        >
-          <div 
-            class="item-content" 
-            @touchstart="handleTouchStart($event, item.cartKey)"
-            @touchmove="handleTouchMove($event, item.cartKey)"
-            @touchend="handleTouchEnd"
-            :style="getSwipeStyle(item.cartKey)"
-          >
+        <div v-for="item in items" :key="item.cartKey" class="cart-item"
+          :class="{ swiped: swipedItem === item.cartKey }">
+          <div class="item-content" @touchstart="handleTouchStart($event, item.cartKey)"
+            @touchmove="handleTouchMove($event, item.cartKey)" @touchend="handleTouchEnd"
+            :style="getSwipeStyle(item.cartKey)">
             <div class="item-image">
               <img :src="item.image_url" :alt="item.name" />
             </div>
@@ -58,16 +50,16 @@
               <div class="item-quantity">
                 <button class="qty-btn" @click="updateQuantity(item.cartKey, -1)">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="10"/>
-                    <line x1="8" y1="12" x2="16" y2="12"/>
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="8" y1="12" x2="16" y2="12" />
                   </svg>
                 </button>
                 <span class="qty-value">{{ item.quantity }}</span>
                 <button class="qty-btn" @click="updateQuantity(item.cartKey, 1)">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="10"/>
-                    <line x1="12" y1="8" x2="12" y2="16"/>
-                    <line x1="8" y1="12" x2="16" y2="12"/>
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="12" y1="8" x2="12" y2="16" />
+                    <line x1="8" y1="12" x2="16" y2="12" />
                   </svg>
                 </button>
               </div>
@@ -93,10 +85,10 @@
 
     <footer v-if="items.length > 0" class="cart-footer">
       <div class="total-section">
-        <span class="total-label">Jami</span>
+        <span class="total-label">{{ $t('cart.total') }}</span>
         <span class="total-price">${{ totalPrice.toFixed(2) }}</span>
       </div>
-      <button @click="handleCheckout" class="btn-checkout">BUYURTMA BERISH</button>
+      <button @click="handleCheckout" class="btn-checkout">{{ $t('cart.checkout') }}</button>
     </footer>
 
     <!-- Mobile Bottom Navigation -->
@@ -107,6 +99,14 @@
 <script setup>
 const { items, removeItem, updateQuantity, totalPrice, clearCart } = useCart()
 const { token } = useAuth()
+const { t } = useI18n()
+const localePath = useLocalePath()
+
+// Close auth modal when cart page is mounted (cart doesn't require auth)
+const { closeModal } = useAuthModal()
+onMounted(() => {
+  closeModal()
+})
 
 const swipedItem = ref(null)
 const swipeOffset = ref({})
@@ -118,7 +118,7 @@ const handleTouchStart = (e, cartKey) => {
   touchStartX = e.touches[0].clientX
   currentTouchX = touchStartX
   isSwiping = true
-  
+
   // If another item is swiped, close it
   if (swipedItem.value && swipedItem.value !== cartKey) {
     swipedItem.value = null
@@ -128,10 +128,10 @@ const handleTouchStart = (e, cartKey) => {
 
 const handleTouchMove = (e, cartKey) => {
   if (!isSwiping) return
-  
+
   currentTouchX = e.touches[0].clientX
   const diff = touchStartX - currentTouchX
-  
+
   // Only allow left swipe (positive diff)
   if (diff > 0) {
     // Limit the swipe distance
@@ -146,10 +146,10 @@ const handleTouchMove = (e, cartKey) => {
 const handleTouchEnd = () => {
   if (!isSwiping) return
   isSwiping = false
-  
+
   const diff = touchStartX - currentTouchX
   const currentKey = Object.keys(swipeOffset.value)[0]
-  
+
   if (diff > 40) {
     // Snap to open
     swipedItem.value = currentKey
@@ -180,7 +180,7 @@ const toast = useToast()
 
 const handleCheckout = () => {
   if (!token.value) {
-    toast.warning('Buyurtma berish uchun tizimga kiring')
+    toast.warning(t('cart.login_required'))
     // Save returnUrl - check if we have shop context
     const { getShopSlug } = useShopContext()
     const shopSlug = getShopSlug()
@@ -190,10 +190,10 @@ const handleCheckout = () => {
   }
 
   if (items.value.length === 0) {
-    toast.warning('Savatchangiz bo\'sh')
+    toast.warning(t('cart.empty_title'))
     return
   }
-  
+
   navigateTo('/checkout')
 }
 </script>
@@ -267,11 +267,13 @@ const handleCheckout = () => {
 /* Add padding for mobile bottom nav */
 @media (max-width: 767px) {
   .cart-content {
-    padding-bottom: calc(100px + 80px); /* Footer height + bottom nav height */
+    padding-bottom: calc(100px + 80px);
+    /* Footer height + bottom nav height */
   }
-  
+
   .cart-footer {
-    bottom: 80px; /* Height of mobile bottom nav */
+    bottom: 80px;
+    /* Height of mobile bottom nav */
   }
 }
 
@@ -285,6 +287,8 @@ const handleCheckout = () => {
 
 .empty-icon {
   color: #D1D5DB;
+  display: flex;
+  justify-content: center;
   margin-bottom: 24px;
 }
 
@@ -361,7 +365,7 @@ const handleCheckout = () => {
   .delete-btn-mobile {
     display: none;
   }
-  
+
   .item-content {
     transform: none !important;
   }
@@ -494,9 +498,10 @@ const handleCheckout = () => {
 /* Adjust footer position on mobile to be above bottom nav */
 @media (max-width: 767px) {
   .cart-footer {
-    bottom: 80px; /* Height of mobile bottom nav */
+    bottom: 80px;
+    /* Height of mobile bottom nav */
     border-radius: 20px 20px 0 0;
-    box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
   }
 }
 
@@ -540,53 +545,54 @@ const handleCheckout = () => {
   .desktop-header {
     display: block;
   }
-  
+
   .mobile-header {
     display: none;
   }
-  
+
   .cart-page {
     padding-bottom: 0;
   }
-  
+
   .cart-content {
     padding: 40px;
     padding-bottom: 140px;
     max-width: 900px;
   }
-  
+
   .cart-footer {
     padding: 24px 40px;
     max-width: 940px;
     left: 50%;
     transform: translateX(-50%);
     border-radius: 20px 20px 0 0;
-    box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
-    bottom: 0; /* Reset bottom position on desktop */
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+    bottom: 0;
+    /* Reset bottom position on desktop */
   }
-  
+
   .item-content {
     padding: 20px;
     gap: 24px;
   }
-  
+
   .item-image {
     width: 100px;
     height: 100px;
   }
-  
+
   .item-name {
     font-size: 1.125rem;
   }
-  
+
   .cart-item {
     transition: box-shadow 0.2s;
   }
-  
+
   .cart-item:hover {
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   }
-  
+
   .empty-cart {
     margin-top: 40px;
     padding: 80px 40px;
@@ -608,10 +614,19 @@ const handleCheckout = () => {
     opacity: 0;
     animation: swipeHint 2s ease-in-out 1s;
   }
-  
+
   @keyframes swipeHint {
-    0%, 100% { opacity: 0; transform: translateY(-50%) translateX(0); }
-    50% { opacity: 1; transform: translateY(-50%) translateX(-10px); }
+
+    0%,
+    100% {
+      opacity: 0;
+      transform: translateY(-50%) translateX(0);
+    }
+
+    50% {
+      opacity: 1;
+      transform: translateY(-50%) translateX(-10px);
+    }
   }
 }
 </style>
