@@ -34,13 +34,13 @@
 
       <div class="max-w-5xl mx-auto px-6 text-center z-10 relative">
         <div :class="['reveal', { active: heroRevealed }]">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-50 border border-zinc-200 text-xs font-medium text-zinc-600 mb-8 animate-float">
+          <!-- <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-50 border border-zinc-200 text-xs font-medium text-zinc-600 mb-8 animate-float">
             <span class="relative flex h-2 w-2">
               <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
               <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
             </span>
             LinkShop 2.0 уже доступен
-          </div>
+          </div> -->
 
           <h1 class="text-5xl md:text-7xl font-semibold tracking-tight text-zinc-900 mb-8 leading-[1.1]">
             Ваш магазин. Мгновенно. <br>
@@ -319,7 +319,7 @@
             :style="{ height: timelineProgress + '%' }"></div>
 
           <!-- Step 1 -->
-          <div class="relative flex flex-col md:flex-row items-center gap-8 md:gap-24 mb-32 group reveal" :class="{ active: timelineRevealed }">
+          <div class="relative flex flex-col md:flex-row items-center  md:gap-24 mb-32 group reveal" :class="{ active: timelineRevealed }">
             <div class="md:w-1/2 text-left md:text-right order-2 md:order-1">
               <h3 class="text-2xl font-semibold mb-2">Создайте аккаунт</h3>
               <p class="text-zinc-500">Зарегистрируйтесь за 30 секунд. Кредитная карта не требуется.</p>
@@ -331,7 +331,7 @@
           </div>
 
           <!-- Step 2 -->
-          <div class="relative flex flex-col md:flex-row items-center gap-8 md:gap-24 mb-32 group reveal" :class="{ active: timelineRevealed }">
+          <div class="relative flex flex-col md:flex-row items-center  md:gap-24 mb-32 group reveal" :class="{ active: timelineRevealed }">
             <div class="md:w-1/2 order-2 md:order-1"></div>
             <div class="absolute left-8 md:left-1/2 -translate-x-1/2 w-16 h-16 bg-white border border-zinc-200 rounded-full flex items-center justify-center z-10 shadow-lg group-hover:scale-110 transition-transform duration-300 order-1 md:order-2">
               <iconify-icon icon="lucide:upload-cloud" width="24"></iconify-icon>
@@ -343,7 +343,7 @@
           </div>
 
           <!-- Step 3 -->
-          <div class="relative flex flex-col md:flex-row items-center gap-8 md:gap-24 group reveal" :class="{ active: timelineRevealed }">
+          <div class="relative flex flex-col md:flex-row items-center  md:gap-24 group reveal" :class="{ active: timelineRevealed }">
             <div class="md:w-1/2 text-left md:text-right order-2 md:order-1">
               <h3 class="text-2xl font-semibold mb-2">Начните продавать</h3>
               <p class="text-zinc-500">Опубликуйте магазин и принимайте первые заказы мгновенно.</p>

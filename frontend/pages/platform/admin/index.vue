@@ -3,7 +3,8 @@
     <!-- Mobile Header -->
     <header class="mobile-header">
       <button class="menu-btn" @click="sidebarOpen = !sidebarOpen">
-        <svg v-if="!sidebarOpen" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg v-if="!sidebarOpen" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2">
           <line x1="3" y1="12" x2="21" y2="12"></line>
           <line x1="3" y1="6" x2="21" y2="6"></line>
           <line x1="3" y1="18" x2="21" y2="18"></line>
@@ -22,23 +23,20 @@
       </NuxtLink>
     </header>
 
-    <PlatformAdminSidebar 
-      :current-route="currentRoute" 
-      :model-value="sidebarOpen"
-      @update:model-value="sidebarOpen = $event"
-      @logout="handleLogout" 
-    />
+    <PlatformAdminSidebar :current-route="currentRoute" :model-value="sidebarOpen"
+      @update:model-value="sidebarOpen = $event" @logout="handleLogout" />
 
     <!-- Main Content -->
     <main class="admin-main">
       <div class="admin-header">
         <div class="header-content">
-        <div>
-          <h1 class="admin-title">Панель управления платформой</h1>
+          <div>
+            <h1 class="admin-title">Панель управления платформой</h1>
             <p class="admin-subtitle">Добро пожаловать! Обзор статистики вашей платформы.</p>
           </div>
           <button @click="refresh" class="refresh-btn" :disabled="pending">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" :class="{ spinning: pending }">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              :class="{ spinning: pending }">
               <polyline points="23 4 23 10 17 10"></polyline>
               <polyline points="1 20 1 14 7 14"></polyline>
               <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
@@ -59,7 +57,7 @@
             <p class="error-message">Ошибка загрузки данных: {{ error.message || 'Неизвестная ошибка' }}</p>
             <button @click="refresh" class="retry-btn">Повторить</button>
           </div>
-          
+
           <div v-else-if="pending" class="loading-state">
             <div class="loading-spinner"></div>
             <p>Загрузка данных...</p>
@@ -67,29 +65,28 @@
 
           <div v-else class="dashboard-content">
             <!-- Period Selector -->
-          <div class="period-selector">
-            <button 
-              v-for="period in periods" 
-              :key="period.key"
-              @click="selectedPeriod = period.key"
-              :class="['period-btn', { active: selectedPeriod === period.key }]"
-            >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <div class="period-selector">
+              <button v-for="period in periods" :key="period.key" @click="selectedPeriod = period.key"
+                :class="['period-btn', { active: selectedPeriod === period.key }]">
+                <svg class="period-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  stroke-width="2">
                   <circle cx="12" cy="12" r="10"></circle>
                   <polyline points="12 6 12 12 16 14"></polyline>
                 </svg>
                 <span>{{ period.label }}</span>
-            </button>
-          </div>
+              </button>
+            </div>
             <!-- Main KPI Cards -->
-          <div class="stats-grid">
-            <div class="stat-card primary">
+            <div class="stats-grid">
+              <div class="stat-card primary">
                 <div class="stat-icon-wrapper shop-icon">
                   <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M20 7h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v3H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2z"></path>
+                    <path
+                      d="M20 7h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v3H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2z">
+                    </path>
                   </svg>
                 </div>
-              <div class="stat-info">
+                <div class="stat-info">
                   <div class="stat-value">{{ subscriptionStats.totalShops }}</div>
                   <div class="stat-label">Всего магазинов</div>
                   <div class="stat-change positive" v-if="shopsRecentlyAdded > 0">
@@ -98,24 +95,24 @@
                     <span v-else-if="selectedPeriod === 'month'">+{{ shopsRecentlyAdded }} в месяце</span>
                     <span v-else>+{{ shopsRecentlyAdded }} за месяц</span>
                   </div>
+                </div>
               </div>
-            </div>
-            
-            <div class="stat-card">
+
+              <div class="stat-card">
                 <div class="stat-icon-wrapper success-icon">
                   <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <polyline points="20 6 9 17 4 12"></polyline>
                   </svg>
                 </div>
-              <div class="stat-info">
+                <div class="stat-info">
                   <div class="stat-value">{{ subscriptionStats.activeShops }}</div>
                   <div class="stat-label">Активных магазинов</div>
                   <div class="stat-percentage">
                     {{ activeShopsPercentage }}% от общего числа
                   </div>
+                </div>
               </div>
-            </div>
-            
+
               <div class="stat-card revenue-card">
                 <div class="stat-icon-wrapper revenue-icon">
                   <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -123,7 +120,7 @@
                     <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
                   </svg>
                 </div>
-              <div class="stat-info">
+                <div class="stat-info">
                   <div class="stat-value">${{ subscriptionStats.monthlyRevenue.toFixed(0) }}</div>
                   <div class="stat-label">
                     <span v-if="selectedPeriod === 'today'">Доход с подписок (сегодня)</span>
@@ -137,10 +134,10 @@
                   <div class="stat-yearly" v-else-if="periodStats?.sales">
                     Продажи: ${{ periodStats.sales.toFixed(0) }}
                   </div>
+                </div>
               </div>
-            </div>
-            
-            <div class="stat-card">
+
+              <div class="stat-card">
                 <div class="stat-icon-wrapper users-icon">
                   <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
@@ -149,215 +146,210 @@
                     <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
                   </svg>
                 </div>
-              <div class="stat-info">
+                <div class="stat-info">
                   <div class="stat-value">{{ periodStats?.users || stats?.total_users || 0 }}</div>
                   <div class="stat-label">Пользователей</div>
-                  <div class="stat-products" v-if="periodStats?.products !== null && periodStats?.products !== undefined">
+                  <div class="stat-products"
+                    v-if="periodStats?.products !== null && periodStats?.products !== undefined">
                     {{ periodStats.products }} товаров
                   </div>
                   <div class="stat-products" v-else-if="selectedPeriod === 'all' && stats?.total_products">
                     {{ stats.total_products }} товаров на платформе
                   </div>
+                </div>
               </div>
             </div>
-          </div>
 
             <!-- Two Column Layout -->
-            <div class="two-column-grid">
-              <!-- Left Column -->
-              <div class="left-column">
-                <!-- Subscription Statistics -->
-          <div class="section">
-                  <div class="section-header">
-                    <h2 class="section-title">
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                        <line x1="16" y1="2" x2="16" y2="6"></line>
-                        <line x1="8" y1="2" x2="8" y2="6"></line>
-                        <line x1="3" y1="10" x2="21" y2="10"></line>
-                      </svg>
-                      Статистика подписок
-                    </h2>
-                    <button @click="toggleSortExpiry" class="sort-btn">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M3 6h18M7 12h10M11 18h2"></path>
-                      </svg>
-                      <span>Сортировать по сроку</span>
-                    </button>
-              </div>
-                  
-                  <!-- Pie Chart -->
-                  <div class="chart-container">
-                    <div class="pie-chart-wrapper">
-                      <svg viewBox="0 0 200 200" class="pie-chart">
-                        <circle cx="100" cy="100" r="80" fill="none" stroke="#F3F4F6" stroke-width="40" />
-                        <circle 
-                          cx="100" cy="100" r="80" 
-                          fill="none" 
-                          :stroke="getSubscriptionColor('trial')" 
-                          stroke-width="40"
-                          :stroke-dasharray="getSubscriptionArc(subscriptionStats.byStatus.trial, subscriptionStats.totalShops)"
-                          :stroke-dashoffset="0"
-                          transform="rotate(-90 100 100)"
-                        />
-                        <circle 
-                          cx="100" cy="100" r="80" 
-                          fill="none" 
-                          :stroke="getSubscriptionColor('active')" 
-                          stroke-width="40"
-                          :stroke-dasharray="getSubscriptionArc(subscriptionStats.byStatus.active, subscriptionStats.totalShops)"
-                          :stroke-dashoffset="getSubscriptionOffset('trial', subscriptionStats)"
-                          transform="rotate(-90 100 100)"
-                        />
-                        <circle 
-                          cx="100" cy="100" r="80" 
-                          fill="none" 
-                          :stroke="getSubscriptionColor('expired')" 
-                          stroke-width="40"
-                          :stroke-dasharray="getSubscriptionArc(subscriptionStats.byStatus.expired, subscriptionStats.totalShops)"
-                          :stroke-dashoffset="getSubscriptionOffset('active', subscriptionStats)"
-                          transform="rotate(-90 100 100)"
-                        />
-                        <circle 
-                          cx="100" cy="100" r="80" 
-                          fill="none" 
-                          :stroke="getSubscriptionColor('cancelled')" 
-                          stroke-width="40"
-                          :stroke-dasharray="getSubscriptionArc(subscriptionStats.byStatus.cancelled, subscriptionStats.totalShops)"
-                          :stroke-dashoffset="getSubscriptionOffset('expired', subscriptionStats)"
-                          transform="rotate(-90 100 100)"
-                        />
-                      </svg>
-                      <div class="pie-chart-center">
-                        <div class="pie-chart-total">{{ subscriptionStats.totalShops }}</div>
-                        <div class="pie-chart-label">магазинов</div>
-              </div>
-              </div>
-                    <div class="chart-legend">
-                      <div class="legend-item" v-for="(item, key) in subscriptionStats.byStatus" :key="key">
-                        <div class="legend-color" :style="{ backgroundColor: getSubscriptionColor(key) }"></div>
-                        <div class="legend-label">{{ getStatusLabel(key) }}</div>
-                        <div class="legend-value">{{ item }}</div>
-              </div>
-              </div>
-                  </div>
-                  
-                  <div class="status-cards">
-                    <div class="status-card trial">
-                      <div class="status-icon-wrapper">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                          <circle cx="12" cy="12" r="10"></circle>
-                          <path d="M12 6v6l4 2"></path>
-                        </svg>
-                      </div>
-                      <div class="status-content">
-                        <div class="status-value">{{ subscriptionStats.byStatus.trial }}</div>
-                        <div class="status-label">Пробный период</div>
-            </div>
-          </div>
+            <!-- Left Column -->
+            <div class="left-column">
+              <!-- Subscription Statistics -->
+              <div class="section">
+                <div class="section-header">
+                  <h2 class="section-title">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                      <line x1="16" y1="2" x2="16" y2="6"></line>
+                      <line x1="8" y1="2" x2="8" y2="6"></line>
+                      <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
+                    Статистика подписок
+                  </h2>
+                  <button @click="toggleSortExpiry" class="sort-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M3 6h18M7 12h10M11 18h2"></path>
+                    </svg>
+                    <span>Сортировать по сроку</span>
+                  </button>
+                </div>
 
-                    <div class="status-card active">
-                      <div class="status-icon-wrapper">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                          <polyline points="20 6 9 17 4 12"></polyline>
-                        </svg>
-                      </div>
-                      <div class="status-content">
-                        <div class="status-value">{{ subscriptionStats.byStatus.active }}</div>
-                        <div class="status-label">Активные</div>
-                      </div>
+                <!-- Pie Chart -->
+                <div class="chart-container">
+                  <div class="pie-chart-wrapper">
+                    <svg viewBox="0 0 200 200" class="pie-chart">
+                      <circle cx="100" cy="100" r="80" fill="none" stroke="#F3F4F6" stroke-width="40" />
+                      <circle cx="100" cy="100" r="80" fill="none" :stroke="getSubscriptionColor('trial')"
+                        stroke-width="40"
+                        :stroke-dasharray="getSubscriptionArc(subscriptionStats.byStatus.trial, subscriptionStats.totalShops)"
+                        :stroke-dashoffset="0" transform="rotate(-90 100 100)" />
+                      <circle cx="100" cy="100" r="80" fill="none" :stroke="getSubscriptionColor('active')"
+                        stroke-width="40"
+                        :stroke-dasharray="getSubscriptionArc(subscriptionStats.byStatus.active, subscriptionStats.totalShops)"
+                        :stroke-dashoffset="getSubscriptionOffset('trial', subscriptionStats)"
+                        transform="rotate(-90 100 100)" />
+                      <circle cx="100" cy="100" r="80" fill="none" :stroke="getSubscriptionColor('expired')"
+                        stroke-width="40"
+                        :stroke-dasharray="getSubscriptionArc(subscriptionStats.byStatus.expired, subscriptionStats.totalShops)"
+                        :stroke-dashoffset="getSubscriptionOffset('active', subscriptionStats)"
+                        transform="rotate(-90 100 100)" />
+                      <circle cx="100" cy="100" r="80" fill="none" :stroke="getSubscriptionColor('cancelled')"
+                        stroke-width="40"
+                        :stroke-dasharray="getSubscriptionArc(subscriptionStats.byStatus.cancelled, subscriptionStats.totalShops)"
+                        :stroke-dashoffset="getSubscriptionOffset('expired', subscriptionStats)"
+                        transform="rotate(-90 100 100)" />
+                    </svg>
+                    <div class="pie-chart-center">
+                      <div class="pie-chart-total">{{ subscriptionStats.totalShops }}</div>
+                      <div class="pie-chart-label">магазинов</div>
                     </div>
-                    
-                    <div class="status-card expired">
-                      <div class="status-icon-wrapper">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                          <circle cx="12" cy="12" r="10"></circle>
-                          <polyline points="12 6 12 12 16 14"></polyline>
-                        </svg>
-                      </div>
-                      <div class="status-content">
-                        <div class="status-value">{{ subscriptionStats.byStatus.expired }}</div>
-                        <div class="status-label">Истекшие</div>
-                      </div>
-                    </div>
-                    
-                    <div class="status-card cancelled">
-                      <div class="status-icon-wrapper">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                          <line x1="18" y1="6" x2="6" y2="18"></line>
-                          <line x1="6" y1="6" x2="18" y2="18"></line>
-                        </svg>
-                      </div>
-                      <div class="status-content">
-                        <div class="status-value">{{ subscriptionStats.byStatus.cancelled }}</div>
-                        <div class="status-label">Отмененные</div>
-                      </div>
-                    </div>
-                    
-                    <div class="status-card payment">
-                      <div class="status-icon-wrapper">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                          <line x1="12" y1="1" x2="12" y2="23"></line>
-                          <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-                        </svg>
-                      </div>
-                      <div class="status-content">
-                        <div class="status-value">{{ subscriptionStats.totalPayments }}</div>
-                        <div class="status-label">Оплат получено</div>
-                      </div>
+                  </div>
+                  <div class="chart-legend">
+                    <div class="legend-item" v-for="(item, key) in subscriptionStats.byStatus" :key="key">
+                      <div class="legend-color" :style="{ backgroundColor: getSubscriptionColor(key) }"></div>
+                      <div class="legend-label">{{ getStatusLabel(key) }}</div>
+                      <div class="legend-value">{{ item }}</div>
                     </div>
                   </div>
                 </div>
 
+                <div class="status-cards">
+                  <div class="status-card trial">
+                    <div class="status-icon-wrapper">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M12 6v6l4 2"></path>
+                      </svg>
+                    </div>
+                    <div class="status-content">
+                      <div class="status-value">{{ subscriptionStats.byStatus.trial }}</div>
+                      <div class="status-label">Пробный период</div>
+                    </div>
+                  </div>
+
+                  <div class="status-card active">
+                    <div class="status-icon-wrapper">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                      </svg>
+                    </div>
+                    <div class="status-content">
+                      <div class="status-value">{{ subscriptionStats.byStatus.active }}</div>
+                      <div class="status-label">Активные</div>
+                    </div>
+                  </div>
+
+                  <div class="status-card expired">
+                    <div class="status-icon-wrapper">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                      </svg>
+                    </div>
+                    <div class="status-content">
+                      <div class="status-value">{{ subscriptionStats.byStatus.expired }}</div>
+                      <div class="status-label">Истекшие</div>
+                    </div>
+                  </div>
+
+                  <div class="status-card cancelled">
+                    <div class="status-icon-wrapper">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                      </svg>
+                    </div>
+                    <div class="status-content">
+                      <div class="status-value">{{ subscriptionStats.byStatus.cancelled }}</div>
+                      <div class="status-label">Отмененные</div>
+                    </div>
+                  </div>
+
+                  <div class="status-card payment">
+                    <div class="status-icon-wrapper">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <line x1="12" y1="1" x2="12" y2="23"></line>
+                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                      </svg>
+                    </div>
+                    <div class="status-content">
+                      <div class="status-value">{{ subscriptionStats.totalPayments }}</div>
+                      <div class="status-label">Оплат получено</div>
+                    </div>
+                  </div>
+                </div>
+                <!-- </div> -->
+
                 <!-- Shop Owners Info -->
-          <div class="section">
+                <div class="section">
                   <div class="section-header">
                     <h2 class="section-title">
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
                         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                         <circle cx="12" cy="7" r="4"></circle>
                       </svg>
                       Владельцы магазинов
                     </h2>
-                </div>
+                  </div>
                   <div class="owners-info-grid">
                     <div class="owner-stat-card">
                       <div class="owner-icon">
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                          stroke-width="2">
                           <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
                           <circle cx="9" cy="7" r="4"></circle>
                           <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
                           <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
                         </svg>
-                  </div>
+                      </div>
                       <div class="owner-stat-value">{{ uniqueOwners }}</div>
                       <div class="owner-stat-label">Уникальных владельцев</div>
-                  </div>
-                    
+                    </div>
+
                     <div class="owner-stat-card">
                       <div class="owner-icon">
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                          stroke-width="2">
                           <polyline points="20 6 9 17 4 12"></polyline>
                         </svg>
-                </div>
+                      </div>
                       <div class="owner-stat-value">{{ shopsWithActiveSubscriptions }}</div>
                       <div class="owner-stat-label">С активными подписками</div>
-              </div>
-              
+                    </div>
+
                     <div class="owner-stat-card warning" v-if="shopsNeedingRenewal > 0">
                       <div class="owner-icon">
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                          stroke-width="2">
+                          <path
+                            d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z">
+                          </path>
                           <line x1="12" y1="9" x2="12" y2="13"></line>
                           <line x1="12" y1="17" x2="12.01" y2="17"></line>
                         </svg>
-                </div>
+                      </div>
                       <div class="owner-stat-value">{{ shopsNeedingRenewal }}</div>
                       <div class="owner-stat-label">Требуют продления</div>
-                  </div>
+                    </div>
                     <div class="owner-stat-card" v-else>
                       <div class="owner-icon">
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                          stroke-width="2">
                           <polyline points="20 6 9 17 4 12"></polyline>
                         </svg>
                       </div>
@@ -367,15 +359,18 @@
                   </div>
                 </div>
               </div>
-              
+
               <!-- Right Column -->
               <div class="right-column">
                 <!-- Shops Needing Attention -->
                 <div class="section" v-if="shopsExpiringSoon.length > 0">
                   <div class="section-header">
                     <h2 class="section-title">
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <path
+                          d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z">
+                        </path>
                         <line x1="12" y1="9" x2="12" y2="13"></line>
                         <line x1="12" y1="17" x2="12.01" y2="17"></line>
                       </svg>
@@ -387,7 +382,7 @@
                       <div class="attention-shop-info">
                         <div class="attention-shop-name">{{ shop.name }}</div>
                         <div class="attention-shop-meta">{{ shop.owner_name || 'Владелец не указан' }}</div>
-                  </div>
+                      </div>
                       <div class="attention-days">
                         <span class="days-badge" :class="getDaysBadgeClass(getDaysUntilExpiry(shop))">
                           {{ getDaysUntilExpiry(shop) }} дн.
@@ -398,29 +393,30 @@
                   <NuxtLink to="/platform/admin/shops" class="view-all-link">
                     Посмотреть все магазины →
                   </NuxtLink>
-              </div>
-              
+                </div>
+
                 <!-- Recent Shops -->
                 <div class="section">
                   <div class="section-header">
                     <h2 class="section-title">
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
                         <circle cx="12" cy="12" r="10"></circle>
                         <polyline points="12 6 12 12 16 14"></polyline>
                       </svg>
                       Недавно зарегистрированные
                     </h2>
-                </div>
+                  </div>
                   <div class="recent-list">
                     <div v-for="shop in recentShops" :key="shop.id" class="recent-item">
                       <div class="recent-shop-logo">
                         <span v-if="!shop.logo_url">{{ shop.name.charAt(0).toUpperCase() }}</span>
                         <img v-else :src="shop.logo_url" :alt="shop.name">
-                  </div>
+                      </div>
                       <div class="recent-shop-info">
                         <div class="recent-shop-name">{{ shop.name }}</div>
                         <div class="recent-shop-date">{{ formatDate(shop.created_at) }}</div>
-                  </div>
+                      </div>
                       <div class="recent-status" :class="getStatusClass(shop.subscription_status)">
                         {{ getStatusText(shop.subscription_status) }}
                       </div>
@@ -428,10 +424,10 @@
                     <NuxtLink to="/platform/admin/shops" class="view-all-link">
                       Посмотреть все магазины →
                     </NuxtLink>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
           </div>
         </ClientOnly>
       </div>
@@ -537,18 +533,18 @@ const subscriptionStats = computed(() => {
 
   // Use backend stats if available and period is 'all'
   if (selectedPeriod.value === 'all' && stats.value && stats.value.subscriptions_mrr !== undefined) {
-      return {
-          totalShops: stats.value.total_shops || 0,
-          activeShops: stats.value.active_shops || 0,
-          monthlyRevenue: stats.value.subscriptions_mrr || 0,
-          byStatus: {
-              trial: stats.value.subscriptions_trial || 0,
-              active: stats.value.subscriptions_active || 0,
-              expired: stats.value.subscriptions_expired || 0,
-              cancelled: 0 // Backend might not track explicitly if not in enum, or we assume 0 for now
-          },
-          totalPayments: stats.value.subscriptions_active || 0
-      }
+    return {
+      totalShops: stats.value.total_shops || 0,
+      activeShops: stats.value.active_shops || 0,
+      monthlyRevenue: stats.value.subscriptions_mrr || 0,
+      byStatus: {
+        trial: stats.value.subscriptions_trial || 0,
+        active: stats.value.subscriptions_active || 0,
+        expired: stats.value.subscriptions_expired || 0,
+        cancelled: 0 // Backend might not track explicitly if not in enum, or we assume 0 for now
+      },
+      totalPayments: stats.value.subscriptions_active || 0
+    }
   }
 
   if (!shopsToUse || shopsToUse.length === 0) {
@@ -566,9 +562,9 @@ const subscriptionStats = computed(() => {
     }
   }
 
-  const activeShops = shopsToUse.filter(s => s.is_active && 
+  const activeShops = shopsToUse.filter(s => s.is_active &&
     (s.subscription_status === 'active' || s.subscription_status === 'trial'))
-  
+
   const byStatus = {
     trial: shopsToUse.filter(s => s.subscription_status === 'trial').length,
     active: shopsToUse.filter(s => s.subscription_status === 'active').length,
@@ -686,7 +682,7 @@ const recentShops = computed(() => {
 const shopsRecentlyAdded = computed(() => {
   const shopsToUse = filteredShops.value
   if (!shopsToUse) return 0
-  
+
   const { startDate } = getPeriodRange()
   if (!startDate) {
     // For "all time", show last month
@@ -694,7 +690,7 @@ const shopsRecentlyAdded = computed(() => {
     monthAgo.setMonth(monthAgo.getMonth() - 1)
     return shopsToUse.filter(s => new Date(s.created_at) >= monthAgo).length
   }
-  
+
   return shopsToUse.length
 })
 
@@ -747,16 +743,16 @@ const toggleSortExpiry = () => {
 // Sort shops by expiry date
 const sortedShopsByExpiry = computed(() => {
   if (!shops.value || !sortByExpiry.value) return filteredShops.value
-  
+
   const now = new Date()
   return [...filteredShops.value].sort((a, b) => {
     const expiryA = a.subscription_expires_at ? new Date(a.subscription_expires_at) : null
     const expiryB = b.subscription_expires_at ? new Date(b.subscription_expires_at) : null
-    
+
     if (!expiryA && !expiryB) return 0
     if (!expiryA) return 1
     if (!expiryB) return -1
-    
+
     return expiryA.getTime() - expiryB.getTime()
   })
 })
@@ -795,17 +791,17 @@ const getSubscriptionOffset = (status, stats) => {
   const order = ['trial', 'active', 'expired', 'cancelled']
   const currentIndex = order.indexOf(status)
   if (currentIndex === 0) return 0
-  
+
   const circumference = 2 * Math.PI * 80
   let offset = 0
-  
+
   for (let i = 0; i < currentIndex; i++) {
     const prevStatus = order[i]
     const prevValue = stats.byStatus[prevStatus] || 0
     const prevPercentage = prevValue / stats.totalShops
     offset += prevPercentage * circumference
   }
-  
+
   return -offset
 }
 </script>
@@ -872,22 +868,22 @@ const getSubscriptionOffset = (status, stats) => {
   .mobile-header {
     display: flex;
   }
-  
+
   .admin-main {
     margin-left: 0;
     padding: 60px 0 0 0;
     width: 100%;
     min-width: 0;
   }
-  
+
   .admin-header {
     padding: 16px 20px !important;
   }
-  
+
   .admin-content {
     padding: 16px 20px !important;
   }
-  
+
   .admin-title {
     font-size: 1.75rem !important;
   }
@@ -917,11 +913,11 @@ const getSubscriptionOffset = (status, stats) => {
     font-size: 1.25rem !important;
     line-height: 1.2 !important;
   }
-  
+
   .admin-header {
     padding: 20px !important;
   }
-  
+
   .admin-content {
     padding: 16px !important;
   }
@@ -982,7 +978,7 @@ const getSubscriptionOffset = (status, stats) => {
   background: white;
   padding: 8px;
   border-radius: 16px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   border: 1px solid #E5E7EB;
   width: fit-content;
   max-width: 100%;
@@ -992,14 +988,30 @@ const getSubscriptionOffset = (status, stats) => {
 @media (max-width: 640px) {
   .period-selector {
     width: 100%;
-    justify-content: stretch;
+    padding: 4px;
+    border-radius: 12px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    flex-wrap: nowrap;
+    gap: 4px;
   }
-  
+
+  .period-selector::-webkit-scrollbar {
+    display: none;
+  }
+
   .period-btn {
-    flex: 1;
-    min-width: 0;
-    font-size: 0.75rem;
-    padding: 8px 12px;
+    flex: 0 0 auto;
+    min-width: fit-content;
+    font-size: 0.8125rem;
+    padding: 12px 16px;
+    min-height: 44px;
+    white-space: nowrap;
+  }
+
+  .period-icon {
+    display: none;
   }
 }
 
@@ -1087,8 +1099,13 @@ const getSubscriptionOffset = (status, stats) => {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Stats Grid */
@@ -1119,13 +1136,13 @@ const getSubscriptionOffset = (status, stats) => {
   display: flex;
   align-items: flex-start;
   gap: 20px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   border: 1px solid #E5E7EB;
   transition: all 0.2s;
 }
 
 .stat-card:hover {
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   transform: translateY(-2px);
 }
 
@@ -1218,7 +1235,7 @@ const getSubscriptionOffset = (status, stats) => {
     grid-template-columns: 1fr;
     grid-template-rows: auto auto;
   }
-  
+
   .left-column,
   .right-column {
     width: 100%;
@@ -1237,7 +1254,7 @@ const getSubscriptionOffset = (status, stats) => {
   background: white;
   border-radius: 20px;
   padding: 28px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   border: 1px solid #E5E7EB;
 }
 
@@ -1292,7 +1309,7 @@ const getSubscriptionOffset = (status, stats) => {
     flex-direction: column;
     align-items: center;
   }
-  
+
   .chart-legend {
     width: 100%;
     align-items: flex-start;
@@ -1730,33 +1747,35 @@ const getSubscriptionOffset = (status, stats) => {
   .mobile-header {
     display: flex;
   }
-  
+
   .admin-main {
     margin-left: 0;
     padding-top: 60px;
   }
-  
+
   .chart-container {
     grid-template-columns: 1fr;
     gap: 24px;
   }
-  
+
   .pie-chart-wrapper {
+    width: 100%;
+    height: auto;
     margin: 0 auto;
   }
-  
+
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   .two-column-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .status-cards {
     grid-template-columns: repeat(3, 1fr);
   }
-  
+
   .owners-info-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -1767,26 +1786,26 @@ const getSubscriptionOffset = (status, stats) => {
     margin-left: 0;
     padding-top: 60px;
   }
-  
+
   .stats-grid,
   .status-cards,
   .owners-info-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .admin-header {
     padding: 24px;
   }
-  
+
   .header-content {
     flex-direction: column;
     gap: 16px;
   }
-  
+
   .admin-title {
     font-size: 2rem;
   }
-  
+
   .admin-content {
     padding: 20px;
   }

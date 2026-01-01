@@ -3,7 +3,8 @@
     <!-- Mobile Header -->
     <header class="mobile-header">
       <button class="menu-btn" @click="sidebarOpen = !sidebarOpen">
-        <svg v-if="!sidebarOpen" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg v-if="!sidebarOpen" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2">
           <line x1="3" y1="12" x2="21" y2="12"></line>
           <line x1="3" y1="6" x2="21" y2="6"></line>
           <line x1="3" y1="18" x2="21" y2="18"></line>
@@ -22,11 +23,7 @@
       </NuxtLink>
     </header>
 
-    <ShopAdminSidebar 
-      :shop-slug="shopSlug" 
-      :current-route="currentRoute"
-      v-model="sidebarOpen"
-    />
+    <ShopAdminSidebar :shop-slug="shopSlug" :current-route="currentRoute" v-model="sidebarOpen" />
 
     <!-- Main Content -->
     <main class="admin-main">
@@ -41,7 +38,9 @@
               <span v-if="shop" :class="['status-badge', getStatusClass(shop?.subscription_status)]">
                 {{ getStatusText(shop?.subscription_status) }}
               </span>
-              <NuxtLink v-if="shop && (shop?.subscription_status === 'trial' || shop?.subscription_status === 'expired')" :to="`/shop/${shopSlug}/subscription`" class="upgrade-btn">
+              <NuxtLink
+                v-if="shop && (shop?.subscription_status === 'trial' || shop?.subscription_status === 'expired')"
+                :to="`/shop/${shopSlug}/subscription`" class="upgrade-btn">
                 Выбрать подписку
               </NuxtLink>
             </div>
@@ -53,277 +52,275 @@
           </div>
 
           <div v-else class="dashboard-content">
-            
-      <!-- Plan Usage Section -->
-      <div v-if="stats?.plan_name" class="section plan-section">
-         <div class="plan-header">
-            <div>
-               <h3 class="section-title mb-1">Ваш тариф: {{ stats.plan_name }}</h3>
-               <p class="text-sm text-gray-500">Использование лимитов</p>
-            </div>
-            <NuxtLink :to="`/shop/${shopSlug}/subscription`" class="upgrade-link">
-               Улучшить тариф
-            </NuxtLink>
-         </div>
 
-         <div class="limit-bar-container">
-            <div class="limit-info">
-               <span class="limit-label">Товары</span>
-               <span class="limit-value">
-                  {{ stats.total_products }} / {{ stats.plan_limit_products || '∞' }}
-               </span>
-            </div>
-            <div class="progress-bg">
-               <div class="progress-fill" :class="{ 'danger': stats.products_usage_percent >= 90 }" :style="{ width: `${stats.products_usage_percent || 0}%` }"></div>
-            </div>
-            <p v-if="stats.products_usage_percent >= 90" class="limit-warning">
-               Вы почти достигли лимита! Обновите тариф для добавления новых товаров.
-            </p>
-         </div>
-      </div>
-
-      <!-- Period Selector -->
-      <div class="period-selector">
-        <button 
-          v-for="period in periods" 
-          :key="period.key"
-          @click="selectedPeriod = period.key"
-          class="period-btn"
-          :class="{ active: selectedPeriod === period.key }"
-        >
-          {{ period.label }}
-        </button>
-      </div>
-
-      <!-- Main Stats Cards -->
-      <div class="stats-grid">
-        <div class="stat-card revenue-card">
-          <div class="stat-header">
-            <div class="stat-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="12" y1="1" x2="12" y2="23"></line>
-                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-              </svg>
-            </div>
-            <div class="stat-comparison" v-if="getPeriodOrders() > 0">
-              <span class="comparison-value">{{ getPeriodOrders() }} заказов</span>
-            </div>
-          </div>
-          <div class="stat-value">${{ getPeriodSales().toFixed(2) }}</div>
-          <div class="stat-label">{{ periodLabel }} выручка</div>
-          <div class="stat-note" v-if="stats?.orders_by_status?.cancelled > 0">
-            {{ stats.orders_by_status.cancelled }} отмененных не учтено
-          </div>
-        </div>
-
-        <div class="stat-card orders-card">
-          <div class="stat-header">
-            <div class="stat-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="9" cy="21" r="1"></circle>
-                <circle cx="20" cy="21" r="1"></circle>
-                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-              </svg>
-            </div>
-          </div>
-          <div class="stat-value">{{ stats?.total_orders || 0 }}</div>
-          <div class="stat-label">Всего заказов</div>
-          <div class="stat-breakdown">
-            <span class="breakdown-item pending" v-if="stats?.orders_by_status?.pending">
-              {{ stats.orders_by_status.pending }} ожидают
-            </span>
-          </div>
-        </div>
-
-        <div class="stat-card users-card">
-          <div class="stat-header">
-            <div class="stat-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                <circle cx="9" cy="7" r="4"></circle>
-              </svg>
-            </div>
-          </div>
-          <div class="stat-value">{{ stats?.total_users || 0 }}</div>
-          <div class="stat-label">Клиентов</div>
-        </div>
-
-        <div class="stat-card products-card">
-          <div class="stat-header">
-            <div class="stat-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-                <line x1="3" y1="6" x2="21" y2="6"></line>
-                <path d="M16 10a4 4 0 0 1-8 0"></path>
-              </svg>
-            </div>
-          </div>
-          <div class="stat-value">{{ stats?.total_products || 0 }}</div>
-          <div class="stat-label">Товаров</div>
-        </div>
-      </div>
-
-      <!-- Orders by Status -->
-      <div class="section orders-section">
-        <h2 class="section-title">Заказы по статусу</h2>
-        <div class="status-grid">
-          <div class="status-card pending">
-            <div class="status-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"></circle>
-                <polyline points="12 6 12 12 16 14"></polyline>
-              </svg>
-            </div>
-            <div class="status-info">
-              <span class="status-count">{{ stats?.orders_by_status?.pending || 0 }}</span>
-              <span class="status-label">Ожидают</span>
-            </div>
-            <div class="status-bar">
-              <div class="status-fill" :style="{ width: getStatusPercent('pending') + '%' }"></div>
-            </div>
-          </div>
-
-          <div class="status-card processing">
-            <div class="status-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="3"></circle>
-                <path d="M12 1v6m0 6v6M5.64 5.64l4.24 4.24m4.24 4.24l4.24 4.24M1 12h6m6 0h6M5.64 18.36l4.24-4.24m4.24-4.24l4.24-4.24"></path>
-              </svg>
-            </div>
-            <div class="status-info">
-              <span class="status-count">{{ stats?.orders_by_status?.processing || 0 }}</span>
-              <span class="status-label">В обработке</span>
-            </div>
-            <div class="status-bar">
-              <div class="status-fill" :style="{ width: getStatusPercent('processing') + '%' }"></div>
-            </div>
-          </div>
-
-          <div class="status-card shipping">
-            <div class="status-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="1" y="3" width="15" height="13"></rect>
-                <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
-                <circle cx="5.5" cy="18.5" r="2.5"></circle>
-                <circle cx="18.5" cy="18.5" r="2.5"></circle>
-              </svg>
-            </div>
-            <div class="status-info">
-              <span class="status-count">{{ stats?.orders_by_status?.shipping || 0 }}</span>
-              <span class="status-label">Доставляются</span>
-            </div>
-            <div class="status-bar">
-              <div class="status-fill" :style="{ width: getStatusPercent('shipping') + '%' }"></div>
-            </div>
-          </div>
-
-          <div class="status-card delivered">
-            <div class="status-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                <polyline points="22 4 12 14.01 9 11.01"></polyline>
-              </svg>
-            </div>
-            <div class="status-info">
-              <span class="status-count">{{ stats?.orders_by_status?.delivered || 0 }}</span>
-              <span class="status-label">Доставлены</span>
-            </div>
-            <div class="status-bar">
-              <div class="status-fill" :style="{ width: getStatusPercent('delivered') + '%' }"></div>
-            </div>
-          </div>
-
-          <div class="status-card cancelled">
-            <div class="status-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"></circle>
-                <line x1="15" y1="9" x2="9" y2="15"></line>
-                <line x1="9" y1="9" x2="15" y2="15"></line>
-              </svg>
-            </div>
-            <div class="status-info">
-              <span class="status-count">{{ stats?.orders_by_status?.cancelled || 0 }}</span>
-              <span class="status-label">Отменены</span>
-            </div>
-            <div class="status-bar">
-              <div class="status-fill" :style="{ width: getStatusPercent('cancelled') + '%' }"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Period Comparison -->
-      <div class="section comparison-section">
-        <h2 class="section-title">Общие показатели</h2>
-        <div class="comparison-grid">
-          <div class="comparison-card">
-            <div class="comparison-header">
-              <span class="comparison-title">Сегодня</span>
-              <span class="comparison-badge today">LIVE</span>
-            </div>
-            <div class="comparison-stats">
-              <div class="comparison-stat">
-                <span class="comp-value">${{ stats?.today_sales?.toFixed(2) || '0.00' }}</span>
-                <span class="comp-label">Выручка</span>
+            <!-- Plan Usage Section -->
+            <div v-if="stats?.plan_name" class="section plan-section">
+              <div class="plan-header">
+                <div>
+                  <h3 class="section-title mb-1">Ваш тариф: {{ stats.plan_name }}</h3>
+                  <p class="text-sm text-gray-500">Использование лимитов</p>
+                </div>
+                <NuxtLink :to="`/shop/${shopSlug}/subscription`" class="upgrade-link">
+                  Улучшить тариф
+                </NuxtLink>
               </div>
-              <div class="comparison-stat">
-                <span class="comp-value">{{ stats?.today_orders || 0 }}</span>
-                <span class="comp-label">Заказы</span>
+
+              <div class="limit-bar-container">
+                <div class="limit-info">
+                  <span class="limit-label">Товары</span>
+                  <span class="limit-value">
+                    {{ stats.total_products }} / {{ stats.plan_limit_products || '∞' }}
+                  </span>
+                </div>
+                <div class="progress-bg">
+                  <div class="progress-fill" :class="{ 'danger': stats.products_usage_percent >= 90 }"
+                    :style="{ width: `${stats.products_usage_percent || 0}%` }"></div>
+                </div>
+                <p v-if="stats.products_usage_percent >= 90" class="limit-warning">
+                  Вы почти достигли лимита! Обновите тариф для добавления новых товаров.
+                </p>
               </div>
             </div>
-          </div>
 
-          <div class="comparison-card">
-            <div class="comparison-header">
-              <span class="comparison-title">Эта неделя</span>
+            <!-- Period Selector -->
+            <div class="period-selector">
+              <button v-for="period in periods" :key="period.key" @click="selectedPeriod = period.key"
+                class="period-btn" :class="{ active: selectedPeriod === period.key }">
+                {{ period.label }}
+              </button>
             </div>
-            <div class="comparison-stats">
-              <div class="comparison-stat">
-                <span class="comp-value">${{ stats?.week_sales?.toFixed(2) || '0.00' }}</span>
-                <span class="comp-label">Выручка</span>
-              </div>
-              <div class="comparison-stat">
-                <span class="comp-value">{{ stats?.week_orders || 0 }}</span>
-                <span class="comp-label">Заказы</span>
-              </div>
-            </div>
-          </div>
 
-          <div class="comparison-card">
-            <div class="comparison-header">
-              <span class="comparison-title">Этот месяц</span>
-            </div>
-            <div class="comparison-stats">
-              <div class="comparison-stat">
-                <span class="comp-value">${{ stats?.month_sales?.toFixed(2) || '0.00' }}</span>
-                <span class="comp-label">Выручка</span>
+            <!-- Main Stats Cards -->
+            <div class="stats-grid">
+              <div class="stat-card revenue-card">
+                <div class="stat-header">
+                  <div class="stat-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <line x1="12" y1="1" x2="12" y2="23"></line>
+                      <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                    </svg>
+                  </div>
+                  <div class="stat-comparison" v-if="getPeriodOrders() > 0">
+                    <span class="comparison-value">{{ getPeriodOrders() }} заказов</span>
+                  </div>
+                </div>
+                <div class="stat-value">${{ getPeriodSales().toFixed(2) }}</div>
+                <div class="stat-label">{{ periodLabel }} выручка</div>
+                <div class="stat-note" v-if="stats?.orders_by_status?.cancelled > 0">
+                  {{ stats.orders_by_status.cancelled }} отмененных не учтено
+                </div>
               </div>
-              <div class="comparison-stat">
-                <span class="comp-value">{{ stats?.month_orders || 0 }}</span>
-                <span class="comp-label">Заказы</span>
-              </div>
-            </div>
-          </div>
 
-          <div class="comparison-card total-card">
-            <div class="comparison-header">
-              <span class="comparison-title">Все время</span>
-              <span class="comparison-badge total">ВСЕГО</span>
-            </div>
-            <div class="comparison-stats">
-              <div class="comparison-stat">
-                <span class="comp-value">${{ stats?.total_sales?.toFixed(2) || '0.00' }}</span>
-                <span class="comp-label">Выручка</span>
+              <div class="stat-card orders-card">
+                <div class="stat-header">
+                  <div class="stat-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="9" cy="21" r="1"></circle>
+                      <circle cx="20" cy="21" r="1"></circle>
+                      <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                    </svg>
+                  </div>
+                </div>
+                <div class="stat-value">{{ stats?.total_orders || 0 }}</div>
+                <div class="stat-label">Всего заказов</div>
+                <div class="stat-breakdown">
+                  <span class="breakdown-item pending" v-if="stats?.orders_by_status?.pending">
+                    {{ stats.orders_by_status.pending }} ожидают
+                  </span>
+                </div>
               </div>
-              <div class="comparison-stat">
-                <span class="comp-value">{{ stats?.total_orders || 0 }}</span>
-                <span class="comp-label">Заказы</span>
+
+              <div class="stat-card users-card">
+                <div class="stat-header">
+                  <div class="stat-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                      <circle cx="9" cy="7" r="4"></circle>
+                    </svg>
+                  </div>
+                </div>
+                <div class="stat-value">{{ stats?.total_users || 0 }}</div>
+                <div class="stat-label">Клиентов</div>
+              </div>
+
+              <div class="stat-card products-card">
+                <div class="stat-header">
+                  <div class="stat-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                      <line x1="3" y1="6" x2="21" y2="6"></line>
+                      <path d="M16 10a4 4 0 0 1-8 0"></path>
+                    </svg>
+                  </div>
+                </div>
+                <div class="stat-value">{{ stats?.total_products || 0 }}</div>
+                <div class="stat-label">Товаров</div>
+              </div>
+            </div>
+
+            <!-- Orders by Status -->
+            <div class="section orders-section">
+              <h2 class="section-title">Заказы по статусу</h2>
+              <div class="status-grid">
+                <div class="status-card pending">
+                  <div class="status-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                  </div>
+                  <div class="status-info">
+                    <span class="status-count">{{ stats?.orders_by_status?.pending || 0 }}</span>
+                    <span class="status-label">Ожидают</span>
+                  </div>
+                  <div class="status-bar">
+                    <div class="status-fill" :style="{ width: getStatusPercent('pending') + '%' }"></div>
+                  </div>
+                </div>
+
+                <div class="status-card processing">
+                  <div class="status-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="12" cy="12" r="3"></circle>
+                      <path
+                        d="M12 1v6m0 6v6M5.64 5.64l4.24 4.24m4.24 4.24l4.24 4.24M1 12h6m6 0h6M5.64 18.36l4.24-4.24m4.24-4.24l4.24-4.24">
+                      </path>
+                    </svg>
+                  </div>
+                  <div class="status-info">
+                    <span class="status-count">{{ stats?.orders_by_status?.processing || 0 }}</span>
+                    <span class="status-label">В обработке</span>
+                  </div>
+                  <div class="status-bar">
+                    <div class="status-fill" :style="{ width: getStatusPercent('processing') + '%' }"></div>
+                  </div>
+                </div>
+
+                <div class="status-card shipping">
+                  <div class="status-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="1" y="3" width="15" height="13"></rect>
+                      <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+                      <circle cx="5.5" cy="18.5" r="2.5"></circle>
+                      <circle cx="18.5" cy="18.5" r="2.5"></circle>
+                    </svg>
+                  </div>
+                  <div class="status-info">
+                    <span class="status-count">{{ stats?.orders_by_status?.shipping || 0 }}</span>
+                    <span class="status-label">Доставляются</span>
+                  </div>
+                  <div class="status-bar">
+                    <div class="status-fill" :style="{ width: getStatusPercent('shipping') + '%' }"></div>
+                  </div>
+                </div>
+
+                <div class="status-card delivered">
+                  <div class="status-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                      <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                    </svg>
+                  </div>
+                  <div class="status-info">
+                    <span class="status-count">{{ stats?.orders_by_status?.delivered || 0 }}</span>
+                    <span class="status-label">Доставлены</span>
+                  </div>
+                  <div class="status-bar">
+                    <div class="status-fill" :style="{ width: getStatusPercent('delivered') + '%' }"></div>
+                  </div>
+                </div>
+
+                <div class="status-card cancelled">
+                  <div class="status-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <line x1="15" y1="9" x2="9" y2="15"></line>
+                      <line x1="9" y1="9" x2="15" y2="15"></line>
+                    </svg>
+                  </div>
+                  <div class="status-info">
+                    <span class="status-count">{{ stats?.orders_by_status?.cancelled || 0 }}</span>
+                    <span class="status-label">Отменены</span>
+                  </div>
+                  <div class="status-bar">
+                    <div class="status-fill" :style="{ width: getStatusPercent('cancelled') + '%' }"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Period Comparison -->
+            <div class="section comparison-section">
+              <h2 class="section-title">Общие показатели</h2>
+              <div class="comparison-grid">
+                <div class="comparison-card">
+                  <div class="comparison-header">
+                    <span class="comparison-title">Сегодня</span>
+                    <span class="comparison-badge today">LIVE</span>
+                  </div>
+                  <div class="comparison-stats">
+                    <div class="comparison-stat">
+                      <span class="comp-value">${{ stats?.today_sales?.toFixed(2) || '0.00' }}</span>
+                      <span class="comp-label">Выручка</span>
+                    </div>
+                    <div class="comparison-stat">
+                      <span class="comp-value">{{ stats?.today_orders || 0 }}</span>
+                      <span class="comp-label">Заказы</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="comparison-card">
+                  <div class="comparison-header">
+                    <span class="comparison-title">Эта неделя</span>
+                  </div>
+                  <div class="comparison-stats">
+                    <div class="comparison-stat">
+                      <span class="comp-value">${{ stats?.week_sales?.toFixed(2) || '0.00' }}</span>
+                      <span class="comp-label">Выручка</span>
+                    </div>
+                    <div class="comparison-stat">
+                      <span class="comp-value">{{ stats?.week_orders || 0 }}</span>
+                      <span class="comp-label">Заказы</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="comparison-card">
+                  <div class="comparison-header">
+                    <span class="comparison-title">Этот месяц</span>
+                  </div>
+                  <div class="comparison-stats">
+                    <div class="comparison-stat">
+                      <span class="comp-value">${{ stats?.month_sales?.toFixed(2) || '0.00' }}</span>
+                      <span class="comp-label">Выручка</span>
+                    </div>
+                    <div class="comparison-stat">
+                      <span class="comp-value">{{ stats?.month_orders || 0 }}</span>
+                      <span class="comp-label">Заказы</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="comparison-card total-card">
+                  <div class="comparison-header">
+                    <span class="comparison-title">Все время</span>
+                    <span class="comparison-badge total">ВСЕГО</span>
+                  </div>
+                  <div class="comparison-stats">
+                    <div class="comparison-stat">
+                      <span class="comp-value">${{ stats?.total_sales?.toFixed(2) || '0.00' }}</span>
+                      <span class="comp-label">Выручка</span>
+                    </div>
+                    <div class="comparison-stat">
+                      <span class="comp-value">{{ stats?.total_orders || 0 }}</span>
+                      <span class="comp-label">Заказы</span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-          </div>
-        </div>
-      </div>
           <template #fallback>
             <div class="loading-state">
               <div class="spinner"></div>
@@ -490,8 +487,15 @@ const getStatusPercent = (status) => {
   font-size: 0.875rem;
 }
 
-.limit-label { font-weight: 500; color: #374151; }
-.limit-value { font-weight: 700; color: #111; }
+.limit-label {
+  font-weight: 500;
+  color: #374151;
+}
+
+.limit-value {
+  font-weight: 700;
+  color: #111;
+}
 
 .progress-bg {
   width: 100%;
@@ -508,7 +512,9 @@ const getStatusPercent = (status) => {
   transition: width 0.3s ease;
 }
 
-.progress-fill.danger { background: #EF4444; }
+.progress-fill.danger {
+  background: #EF4444;
+}
 
 .limit-warning {
   color: #EF4444;
@@ -604,7 +610,7 @@ const getStatusPercent = (status) => {
   font-size: 0.875rem;
   font-weight: 700;
   backdrop-filter: blur(10px);
-  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
 .status-trial {
@@ -635,12 +641,12 @@ const getStatusPercent = (status) => {
   font-weight: 700;
   text-decoration: none;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
 .upgrade-btn:hover {
   transform: translateY(-3px);
-  box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
   background: #000;
 }
 
@@ -661,8 +667,13 @@ const getStatusPercent = (status) => {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .dashboard-content {
@@ -692,12 +703,14 @@ const getStatusPercent = (status) => {
   transition: all 0.2s;
 }
 
-.period-btn:hover { color: #111; }
+.period-btn:hover {
+  color: #111;
+}
 
 .period-btn.active {
   background: white;
   color: #111;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .stats-grid {
@@ -710,14 +723,14 @@ const getStatusPercent = (status) => {
   background: white;
   border-radius: 24px;
   padding: 24px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 10px 40px rgba(0,0,0,0.02);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 10px 40px rgba(0, 0, 0, 0.02);
   border: 1px solid #f1f1f1;
   transition: all 0.3s;
 }
 
 .stat-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 24px rgba(0,0,0,0.08);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
 }
 
 .revenue-card {
@@ -725,7 +738,9 @@ const getStatusPercent = (status) => {
   color: white;
 }
 
-.revenue-card .stat-icon { background: rgba(255,255,255,0.2); }
+.revenue-card .stat-icon {
+  background: rgba(255, 255, 255, 0.2);
+}
 
 .stat-header {
   display: flex;
@@ -747,7 +762,7 @@ const getStatusPercent = (status) => {
 
 .comparison-value {
   font-size: 0.75rem;
-  color: rgba(255,255,255,0.7);
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .stat-value {
@@ -763,12 +778,14 @@ const getStatusPercent = (status) => {
   color: #6B7280;
 }
 
-.revenue-card .stat-label { color: rgba(255,255,255,0.8); }
+.revenue-card .stat-label {
+  color: rgba(255, 255, 255, 0.8);
+}
 
 .stat-note {
   margin-top: 12px;
   font-size: 0.7rem;
-  color: rgba(255,255,255,0.5);
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .stat-breakdown {
@@ -794,7 +811,7 @@ const getStatusPercent = (status) => {
   background: white;
   border-radius: 24px;
   padding: 28px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 10px 40px rgba(0,0,0,0.02);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 10px 40px rgba(0, 0, 0, 0.02);
   border: 1px solid #f1f1f1;
 }
 
@@ -863,11 +880,25 @@ const getStatusPercent = (status) => {
   transition: width 0.5s ease-out;
 }
 
-.status-card.pending .status-fill { background: #F59E0B; }
-.status-card.processing .status-fill { background: #3B82F6; }
-.status-card.shipping .status-fill { background: #6366F1; }
-.status-card.delivered .status-fill { background: #10B981; }
-.status-card.cancelled .status-fill { background: #EF4444; }
+.status-card.pending .status-fill {
+  background: #F59E0B;
+}
+
+.status-card.processing .status-fill {
+  background: #3B82F6;
+}
+
+.status-card.shipping .status-fill {
+  background: #6366F1;
+}
+
+.status-card.delivered .status-fill {
+  background: #10B981;
+}
+
+.status-card.cancelled .status-fill {
+  background: #EF4444;
+}
 
 .comparison-grid {
   display: grid;
@@ -899,7 +930,9 @@ const getStatusPercent = (status) => {
   color: #6B7280;
 }
 
-.total-card .comparison-title { color: rgba(255,255,255,0.8); }
+.total-card .comparison-title {
+  color: rgba(255, 255, 255, 0.8);
+}
 
 .comparison-badge {
   font-size: 0.625rem;
@@ -915,7 +948,7 @@ const getStatusPercent = (status) => {
 }
 
 .comparison-badge.total {
-  background: rgba(255,255,255,0.2);
+  background: rgba(255, 255, 255, 0.2);
   color: white;
 }
 
@@ -937,20 +970,24 @@ const getStatusPercent = (status) => {
   color: #111;
 }
 
-.total-card .comp-value { color: white; }
+.total-card .comp-value {
+  color: white;
+}
 
 .comp-label {
   font-size: 0.75rem;
   color: #9CA3AF;
 }
 
-.total-card .comp-label { color: rgba(255,255,255,0.6); }
+.total-card .comp-label {
+  color: rgba(255, 255, 255, 0.6);
+}
 
 @media (max-width: 1024px) {
   .mobile-header {
     display: flex;
   }
-  
+
   .admin-main {
     margin-left: 0;
     padding-top: 60px;
@@ -958,66 +995,124 @@ const getStatusPercent = (status) => {
     width: 100%;
     min-width: 0;
   }
-  
-  .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-  .status-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-  .comparison-grid { grid-template-columns: 1fr; gap: 12px; }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .status-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .comparison-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
 }
 
 @media (max-width: 768px) {
   .admin-main {
     padding: 70px 10px 20px 10px;
   }
-  
-  .dashboard-header { 
-    flex-direction: column; 
-    gap: 12px; 
+
+  .dashboard-header {
+    flex-direction: column;
+    gap: 12px;
     padding: 12px 0;
     align-items: flex-start;
   }
-  
-  .page-title { font-size: 1.5rem; }
-  .header-right { 
+
+  .page-title {
+    font-size: 1.5rem;
+  }
+
+  .header-right {
     width: 100%;
-    align-self: flex-start; 
-    flex-direction: column; 
+    align-self: flex-start;
+    flex-direction: column;
     align-items: flex-start;
     gap: 10px;
   }
-  
+
   .period-selector {
     width: 100%;
     background: #F3F4F6;
     padding: 4px;
-    border-radius: 8px;
+    border-radius: 12px;
     display: flex;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
+    flex-wrap: nowrap;
+    gap: 4px;
   }
-  .period-selector::-webkit-scrollbar { display: none; }
-  
+
+  .period-selector::-webkit-scrollbar {
+    display: none;
+  }
+
   .period-btn {
-    flex: 1;
-    padding: 8px 12px;
+    flex: 0 0 auto;
+    padding: 12px 16px;
     white-space: nowrap;
     font-size: 0.8125rem;
     text-align: center;
+    min-height: 44px;
+    min-width: fit-content;
   }
-  
-  .stats-grid { grid-template-columns: 1fr; gap: 10px; }
-  .stat-card { padding: 16px; border-radius: 12px; }
-  .stat-value { font-size: 1.5rem; }
-  
-  .section { padding: 16px; border-radius: 12px; margin-bottom: 20px; }
-  .section-title { font-size: 1rem; margin-bottom: 12px; }
-  
-  .status-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-  .status-card { padding: 12px; border-radius: 10px; }
-  .status-card:last-child { grid-column: span 2; }
-  .status-count { font-size: 1.125rem; }
-  
-  .comparison-grid { grid-template-columns: 1fr; gap: 10px; }
-  .comparison-card { padding: 12px; }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .stat-card {
+    padding: 16px;
+    border-radius: 12px;
+  }
+
+  .stat-value {
+    font-size: 1.5rem;
+  }
+
+  .section {
+    padding: 16px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+  }
+
+  .section-title {
+    font-size: 1rem;
+    margin-bottom: 12px;
+  }
+
+  .status-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .status-card {
+    padding: 12px;
+    border-radius: 10px;
+  }
+
+  .status-card:last-child {
+    grid-column: span 2;
+  }
+
+  .status-count {
+    font-size: 1.125rem;
+  }
+
+  .comparison-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .comparison-card {
+    padding: 12px;
+  }
 }
 </style>

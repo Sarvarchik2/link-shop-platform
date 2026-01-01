@@ -713,6 +713,7 @@ const toggleFavorite = async () => {
   height: 100%;
   object-fit: contain;
   mix-blend-mode: multiply;
+  border-radius: 20px;
 }
 
 .thumbnail-images {
