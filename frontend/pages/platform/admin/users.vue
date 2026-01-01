@@ -3,7 +3,8 @@
     <!-- Mobile Header -->
     <header class="mobile-header">
       <button class="menu-btn" @click="sidebarOpen = !sidebarOpen">
-        <svg v-if="!sidebarOpen" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg v-if="!sidebarOpen" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2">
           <line x1="3" y1="12" x2="21" y2="12"></line>
           <line x1="3" y1="6" x2="21" y2="6"></line>
           <line x1="3" y1="18" x2="21" y2="18"></line>
@@ -22,12 +23,8 @@
       </NuxtLink>
     </header>
 
-    <PlatformAdminSidebar 
-      :current-route="currentRoute" 
-      :model-value="sidebarOpen"
-      @update:model-value="sidebarOpen = $event"
-      @logout="handleLogout" 
-    />
+    <PlatformAdminSidebar :current-route="currentRoute" :model-value="sidebarOpen"
+      @update:model-value="sidebarOpen = $event" @logout="handleLogout" />
 
     <!-- Main Content -->
     <main class="admin-main">
@@ -38,7 +35,8 @@
             <p class="admin-subtitle">Все зарегистрированные пользователи платформы</p>
           </div>
           <button @click="refresh" class="refresh-btn" :disabled="pending">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" :class="{ spinning: pending }">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              :class="{ spinning: pending }">
               <polyline points="23 4 23 10 17 10"></polyline>
               <polyline points="1 20 1 14 7 14"></polyline>
               <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
@@ -65,7 +63,7 @@
               <div class="stat-label">Всего пользователей</div>
             </div>
           </div>
-          
+
           <div class="stat-card">
             <div class="stat-icon admin">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -79,11 +77,13 @@
               <div class="stat-label">Админов платформы</div>
             </div>
           </div>
-          
+
           <div class="stat-card">
             <div class="stat-icon owner">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20 7h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v3H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2z"></path>
+                <path
+                  d="M20 7h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v3H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2z">
+                </path>
               </svg>
             </div>
             <div class="stat-content">
@@ -91,7 +91,7 @@
               <div class="stat-label">Владельцев магазинов</div>
             </div>
           </div>
-          
+
           <div class="stat-card">
             <div class="stat-icon user">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -113,14 +113,9 @@
               <circle cx="11" cy="11" r="8"></circle>
               <path d="m21 21-4.35-4.35"></path>
             </svg>
-            <input 
-              v-model="searchQuery" 
-              type="text" 
-              placeholder="Поиск по имени, телефону..." 
-              class="search-input"
-            />
+            <input v-model="searchQuery" type="text" placeholder="Поиск по имени, телефону..." class="search-input" />
           </div>
-          
+
           <div class="filters-group">
             <select v-model="filterRole" class="filter-select">
               <option value="">Все роли</option>
@@ -128,7 +123,7 @@
               <option value="shop_owner">Владелец магазина</option>
               <option value="user">Пользователь</option>
             </select>
-            
+
             <button @click="clearFilters" class="clear-filters-btn">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -149,7 +144,7 @@
           <p class="error-message">Ошибка загрузки данных: {{ error.message || 'Неизвестная ошибка' }}</p>
           <button @click="refresh" class="retry-btn">Повторить</button>
         </div>
-        
+
         <!-- Loading State -->
         <div v-else-if="pending" class="loading-state">
           <div class="loading-spinner"></div>
@@ -181,7 +176,8 @@
                   <th @click="sortBy('id')" class="sortable">
                     <div class="th-content">
                       ID
-                      <svg v-if="sortField === 'id'" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" :class="{ reverse: sortOrder === 'desc' }">
+                      <svg v-if="sortField === 'id'" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" :class="{ reverse: sortOrder === 'desc' }">
                         <polyline points="18 15 12 9 6 15"></polyline>
                       </svg>
                     </div>
@@ -189,7 +185,8 @@
                   <th @click="sortBy('name')" class="sortable">
                     <div class="th-content">
                       Имя
-                      <svg v-if="sortField === 'name'" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" :class="{ reverse: sortOrder === 'desc' }">
+                      <svg v-if="sortField === 'name'" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" :class="{ reverse: sortOrder === 'desc' }">
                         <polyline points="18 15 12 9 6 15"></polyline>
                       </svg>
                     </div>
@@ -197,7 +194,8 @@
                   <th @click="sortBy('phone')" class="sortable">
                     <div class="th-content">
                       Телефон
-                      <svg v-if="sortField === 'phone'" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" :class="{ reverse: sortOrder === 'desc' }">
+                      <svg v-if="sortField === 'phone'" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" :class="{ reverse: sortOrder === 'desc' }">
                         <polyline points="18 15 12 9 6 15"></polyline>
                       </svg>
                     </div>
@@ -205,7 +203,8 @@
                   <th @click="sortBy('role')" class="sortable">
                     <div class="th-content">
                       Роль
-                      <svg v-if="sortField === 'role'" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" :class="{ reverse: sortOrder === 'desc' }">
+                      <svg v-if="sortField === 'role'" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" :class="{ reverse: sortOrder === 'desc' }">
                         <polyline points="18 15 12 9 6 15"></polyline>
                       </svg>
                     </div>
@@ -213,7 +212,8 @@
                   <th @click="sortBy('shops')" class="sortable">
                     <div class="th-content">
                       Магазинов
-                      <svg v-if="sortField === 'shops'" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" :class="{ reverse: sortOrder === 'desc' }">
+                      <svg v-if="sortField === 'shops'" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" :class="{ reverse: sortOrder === 'desc' }">
                         <polyline points="18 15 12 9 6 15"></polyline>
                       </svg>
                     </div>
@@ -221,7 +221,8 @@
                   <th @click="sortBy('orders')" class="sortable">
                     <div class="th-content">
                       Заказов
-                      <svg v-if="sortField === 'orders'" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" :class="{ reverse: sortOrder === 'desc' }">
+                      <svg v-if="sortField === 'orders'" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" :class="{ reverse: sortOrder === 'desc' }">
                         <polyline points="18 15 12 9 6 15"></polyline>
                       </svg>
                     </div>
@@ -229,7 +230,8 @@
                   <th @click="sortBy('created_at')" class="sortable">
                     <div class="th-content">
                       Дата регистрации
-                      <svg v-if="sortField === 'created_at'" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" :class="{ reverse: sortOrder === 'desc' }">
+                      <svg v-if="sortField === 'created_at'" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" :class="{ reverse: sortOrder === 'desc' }">
                         <polyline points="18 15 12 9 6 15"></polyline>
                       </svg>
                     </div>
@@ -253,8 +255,11 @@
                   </td>
                   <td>
                     <div class="phone-cell">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <path
+                          d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
+                        </path>
                       </svg>
                       {{ user.phone }}
                     </div>
@@ -282,12 +287,9 @@
                   </td>
                   <td>
                     <div class="actions">
-                      <button 
-                        @click="viewUserDetails(user)"
-                        class="action-btn btn-icon"
-                        title="Подробнее"
-                      >
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <button @click="viewUserDetails(user)" class="action-btn btn-icon" title="Подробнее">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                          stroke-width="2">
                           <circle cx="12" cy="12" r="10"></circle>
                           <line x1="12" y1="16" x2="12" y2="12"></line>
                           <line x1="12" y1="8" x2="12.01" y2="8"></line>
@@ -298,7 +300,7 @@
                 </tr>
               </tbody>
             </table>
-            
+
             <!-- Empty State -->
             <div v-if="displayedUsers.length === 0" class="empty-state">
               <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -310,46 +312,100 @@
             </div>
           </div>
 
+          <!-- Mobile Cards View -->
+          <div class="mobile-users-list">
+            <div v-for="user in paginatedUsers" :key="user.id" class="user-mobile-card">
+              <!-- User Header -->
+              <div class="mobile-card-header">
+                <div class="user-info-mobile">
+                  <div class="user-avatar-mobile" :class="getRoleClass(user.role)">
+                    {{ getUserInitials(user) }}
+                  </div>
+                  <div class="user-details-mobile">
+                    <h3 class="user-name-mobile">{{ getUserName(user) }}</h3>
+                    <div class="user-phone-mobile">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <path
+                          d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
+                        </path>
+                      </svg>
+                      {{ user.phone }}
+                    </div>
+                  </div>
+                </div>
+                <span :class="['role-badge-mobile', getRoleClass(user.role)]">
+                  {{ getRoleText(user.role) }}
+                </span>
+              </div>
+
+              <!-- User Info Grid -->
+              <div class="mobile-card-info">
+                <div class="info-row">
+                  <span class="info-label">ID:</span>
+                  <span class="info-value">{{ user.id }}</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Магазинов:</span>
+                  <span class="info-value">{{ getUserShopsCount(user.id) }}</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Заказов:</span>
+                  <span class="info-value">{{ getUserOrdersCount(user.id) }}</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Регистрация:</span>
+                  <span class="info-value">{{ formatDate(user.created_at) }}</span>
+                </div>
+              </div>
+
+              <!-- Actions -->
+              <div class="mobile-card-actions">
+                <button @click="viewUserDetails(user)" class="mobile-action-btn btn-details">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="16" x2="12" y2="12"></line>
+                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                  </svg>
+                  Подробнее
+                </button>
+              </div>
+            </div>
+
+            <!-- Empty State for Mobile -->
+            <div v-if="displayedUsers.length === 0" class="empty-state-mobile">
+              <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+              <p>Пользователи не найдены</p>
+            </div>
+          </div>
+
           <!-- Pagination -->
           <div v-if="totalPages > 1" class="pagination">
-            <button 
-              @click="currentPage = 1" 
-              :disabled="currentPage === 1"
-              class="pagination-btn"
-            >
+            <button @click="currentPage = 1" :disabled="currentPage === 1" class="pagination-btn">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polyline points="11 17 6 12 11 7"></polyline>
                 <polyline points="18 17 13 12 18 7"></polyline>
               </svg>
             </button>
-            <button 
-              @click="currentPage--" 
-              :disabled="currentPage === 1"
-              class="pagination-btn"
-            >
+            <button @click="currentPage--" :disabled="currentPage === 1" class="pagination-btn">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polyline points="15 18 9 12 15 6"></polyline>
               </svg>
             </button>
-            
+
             <div class="pagination-info">
               Страница {{ currentPage }} из {{ totalPages }}
             </div>
-            
-            <button 
-              @click="currentPage++" 
-              :disabled="currentPage === totalPages"
-              class="pagination-btn"
-            >
+
+            <button @click="currentPage++" :disabled="currentPage === totalPages" class="pagination-btn">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polyline points="9 18 15 12 9 6"></polyline>
               </svg>
             </button>
-            <button 
-              @click="currentPage = totalPages" 
-              :disabled="currentPage === totalPages"
-              class="pagination-btn"
-            >
+            <button @click="currentPage = totalPages" :disabled="currentPage === totalPages" class="pagination-btn">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polyline points="13 17 18 12 13 7"></polyline>
                 <polyline points="6 17 11 12 6 7"></polyline>
@@ -454,9 +510,9 @@ const getUserOrdersCount = (userId) => {
 // Filtered and sorted users
 const displayedUsers = computed(() => {
   if (!users.value) return []
-  
+
   let filtered = [...users.value]
-  
+
   // Search filter
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase()
@@ -466,16 +522,16 @@ const displayedUsers = computed(() => {
       return fullName.includes(query) || phone.includes(query)
     })
   }
-  
+
   // Role filter
   if (filterRole.value) {
     filtered = filtered.filter(user => user.role === filterRole.value)
   }
-  
+
   // Sorting
   filtered.sort((a, b) => {
     let aVal, bVal
-    
+
     switch (sortField.value) {
       case 'id':
         aVal = a.id
@@ -508,12 +564,12 @@ const displayedUsers = computed(() => {
       default:
         return 0
     }
-    
+
     if (aVal < bVal) return sortOrder.value === 'asc' ? -1 : 1
     if (aVal > bVal) return sortOrder.value === 'asc' ? 1 : -1
     return 0
   })
-  
+
   return filtered
 })
 
@@ -604,7 +660,7 @@ const exportData = () => {
       formatDate(user.created_at)
     ])
   ].map(row => row.join(',')).join('\n')
-  
+
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
   const link = document.createElement('a')
   link.href = URL.createObjectURL(blob)
@@ -666,7 +722,7 @@ const exportData = () => {
 }
 
 .admin-main {
-  flex: 1;
+  width: 100%;
   margin-left: 280px;
   min-height: 100vh;
 }
@@ -697,20 +753,6 @@ const exportData = () => {
   letter-spacing: -0.02em;
 }
 
-@media (max-width: 640px) {
-  .admin-title {
-    font-size: 1.25rem !important;
-    line-height: 1.2 !important;
-  }
-  
-  .admin-header {
-    padding: 20px !important;
-  }
-  
-  .admin-content {
-    padding: 16px !important;
-  }
-}
 
 .admin-subtitle {
   font-size: 1rem;
@@ -749,11 +791,21 @@ const exportData = () => {
   padding: 32px;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
+  .admin-main {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .admin-header {
+    padding: 20px 16px;
+  }
+
   .admin-content {
-    padding: 16px !important;
+    padding: 0;
   }
 }
+
 
 /* Statistics Overview */
 .stats-overview {
@@ -783,13 +835,13 @@ const exportData = () => {
   display: flex;
   align-items: center;
   gap: 16px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   border: 1px solid #E5E7EB;
   transition: all 0.2s;
 }
 
 .stat-card:hover {
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   transform: translateY(-2px);
 }
 
@@ -844,7 +896,7 @@ const exportData = () => {
   border-radius: 16px;
   padding: 20px;
   margin-bottom: 24px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   border: 1px solid #E5E7EB;
   display: flex;
   gap: 16px;
@@ -857,16 +909,16 @@ const exportData = () => {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .filters-group {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .search-box {
     min-width: 0;
   }
-  
+
   .filter-select,
   .clear-filters-btn {
     width: 100%;
@@ -952,7 +1004,7 @@ const exportData = () => {
   background: white;
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   border: 1px solid #E5E7EB;
 }
 
@@ -1279,7 +1331,7 @@ const exportData = () => {
   text-align: center;
   background: white;
   border-radius: 16px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   border: 1px solid #E5E7EB;
 }
 
@@ -1324,32 +1376,194 @@ const exportData = () => {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
-/* Responsive */
+/* Mobile Users Cards Styles */
+.mobile-users-list {
+  display: none;
+}
+
+.user-mobile-card {
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  border: 1px solid #E5E7EB;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.mobile-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+  gap: 12px;
+}
+
+.user-info-mobile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.user-avatar-mobile {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 16px;
+  color: white;
+  flex-shrink: 0;
+}
+
+.user-avatar-mobile.role-admin {
+  background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%);
+}
+
+.user-avatar-mobile.role-owner {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.user-avatar-mobile.role-user {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.user-details-mobile {
+  min-width: 0;
+  flex: 1;
+}
+
+.user-name-mobile {
+  font-size: 16px;
+  font-weight: 700;
+  color: #111;
+  margin: 0 0 4px 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-phone-mobile {
+  font-size: 12px;
+  color: #6B7280;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.role-badge-mobile {
+  flex-shrink: 0;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.role-badge-mobile.role-admin {
+  background: #FEE2E2;
+  color: #991B1B;
+}
+
+.role-badge-mobile.role-owner {
+  background: #E0E7FF;
+  color: #3730A3;
+}
+
+.role-badge-mobile.role-user {
+  background: #DBEAFE;
+  color: #1E40AF;
+}
+
+.mobile-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 12px 0;
+  border-top: 1px solid #F3F4F6;
+  border-bottom: 1px solid #F3F4F6;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+}
+
+.info-label {
+  color: #6B7280;
+  font-weight: 500;
+}
+
+.info-value {
+  color: #111;
+  font-weight: 600;
+  text-align: right;
+}
+
+.mobile-card-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.mobile-action-btn {
+  flex: 1;
+  min-width: fit-content;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.mobile-action-btn.btn-details {
+  background: #F3F4F6;
+  color: #111;
+}
+
+.mobile-action-btn.btn-details:active {
+  background: #E5E7EB;
+}
+
+.empty-state-mobile {
+  text-align: center;
+  padding: 60px 20px;
+  color: #6B7280;
+}
+
+.empty-state-mobile svg {
+  margin: 0 auto 16px;
+  opacity: 0.3;
+}
+
+.empty-state-mobile p {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+}
+
 @media (max-width: 1024px) {
   .mobile-header {
     display: flex;
-  }
-  
-  .admin-main {
-    margin-left: 0;
-    padding-top: 60px;
-  }
-  
-  .stats-overview {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  
-  .filters-section {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  
-  .search-box {
-    min-width: auto;
   }
 }
 
@@ -1358,32 +1572,35 @@ const exportData = () => {
     margin-left: 0;
     padding-top: 60px;
   }
-  
+
   .stats-overview {
     grid-template-columns: 1fr;
   }
-  
+
   .users-table-wrapper {
-    overflow-x: scroll;
+    display: none;
   }
-  
-  .users-table {
-    min-width: 1000px;
+
+  .mobile-users-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 12px;
   }
-  
+
   .admin-header {
     padding: 24px;
   }
-  
+
   .header-content {
     flex-direction: column;
     gap: 16px;
   }
-  
+
   .admin-title {
     font-size: 2rem;
   }
-  
+
   .admin-content {
     padding: 20px;
   }

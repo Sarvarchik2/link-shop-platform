@@ -3,7 +3,8 @@
     <!-- Mobile Header -->
     <header class="mobile-header">
       <button class="menu-btn" @click="sidebarOpen = !sidebarOpen">
-        <svg v-if="!sidebarOpen" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg v-if="!sidebarOpen" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2">
           <line x1="3" y1="12" x2="21" y2="12"></line>
           <line x1="3" y1="6" x2="21" y2="6"></line>
           <line x1="3" y1="18" x2="21" y2="18"></line>
@@ -22,12 +23,8 @@
       </NuxtLink>
     </header>
 
-    <PlatformAdminSidebar 
-      :current-route="currentRoute" 
-      :model-value="sidebarOpen"
-      @update:model-value="sidebarOpen = $event"
-      @logout="handleLogout" 
-    />
+    <PlatformAdminSidebar :current-route="currentRoute" :model-value="sidebarOpen"
+      @update:model-value="sidebarOpen = $event" @logout="handleLogout" />
 
     <!-- Main Content -->
     <main class="admin-main">
@@ -38,7 +35,8 @@
             <p class="admin-subtitle">Все зарегистрированные магазины на платформе</p>
           </div>
           <button @click="refresh" class="refresh-btn" :disabled="pending">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" :class="{ spinning: pending }">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              :class="{ spinning: pending }">
               <polyline points="23 4 23 10 17 10"></polyline>
               <polyline points="1 20 1 14 7 14"></polyline>
               <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
@@ -54,7 +52,9 @@
           <div class="stat-card">
             <div class="stat-icon">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20 7h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v3H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2z"></path>
+                <path
+                  d="M20 7h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v3H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2z">
+                </path>
               </svg>
             </div>
             <div class="stat-content">
@@ -62,7 +62,7 @@
               <div class="stat-label">Всего магазинов</div>
             </div>
           </div>
-          
+
           <div class="stat-card">
             <div class="stat-icon active">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -74,7 +74,7 @@
               <div class="stat-label">Активных</div>
             </div>
           </div>
-          
+
           <div class="stat-card">
             <div class="stat-icon trial">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -87,7 +87,7 @@
               <div class="stat-label">Пробный период</div>
             </div>
           </div>
-          
+
           <div class="stat-card">
             <div class="stat-icon expired">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -109,14 +109,10 @@
               <circle cx="11" cy="11" r="8"></circle>
               <path d="m21 21-4.35-4.35"></path>
             </svg>
-            <input 
-              v-model="searchQuery" 
-              type="text" 
-              placeholder="Поиск по названию, slug, владельцу..." 
-              class="search-input"
-            />
+            <input v-model="searchQuery" type="text" placeholder="Поиск по названию, slug, владельцу..."
+              class="search-input" />
           </div>
-          
+
           <div class="filters-group">
             <select v-model="filterStatus" class="filter-select">
               <option value="">Все статусы</option>
@@ -125,13 +121,13 @@
               <option value="expired">Истекшие</option>
               <option value="cancelled">Отмененные</option>
             </select>
-            
+
             <select v-model="filterActive" class="filter-select">
               <option value="">Все магазины</option>
               <option value="true">Только активные</option>
               <option value="false">Только неактивные</option>
             </select>
-            
+
             <button @click="clearFilters" class="clear-filters-btn">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -152,7 +148,7 @@
           <p class="error-message">Ошибка загрузки данных: {{ error.message || 'Неизвестная ошибка' }}</p>
           <button @click="refresh" class="retry-btn">Повторить</button>
         </div>
-        
+
         <!-- Loading State -->
         <div v-else-if="pending" class="loading-state">
           <div class="loading-spinner"></div>
@@ -184,7 +180,8 @@
                   <th @click="sortBy('id')" class="sortable">
                     <div class="th-content">
                       ID
-                      <svg v-if="sortField === 'id'" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" :class="{ reverse: sortOrder === 'desc' }">
+                      <svg v-if="sortField === 'id'" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" :class="{ reverse: sortOrder === 'desc' }">
                         <polyline points="18 15 12 9 6 15"></polyline>
                       </svg>
                     </div>
@@ -192,7 +189,8 @@
                   <th @click="sortBy('name')" class="sortable">
                     <div class="th-content">
                       Название
-                      <svg v-if="sortField === 'name'" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" :class="{ reverse: sortOrder === 'desc' }">
+                      <svg v-if="sortField === 'name'" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" :class="{ reverse: sortOrder === 'desc' }">
                         <polyline points="18 15 12 9 6 15"></polyline>
                       </svg>
                     </div>
@@ -201,7 +199,8 @@
                   <th @click="sortBy('owner')" class="sortable">
                     <div class="th-content">
                       Владелец
-                      <svg v-if="sortField === 'owner'" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" :class="{ reverse: sortOrder === 'desc' }">
+                      <svg v-if="sortField === 'owner'" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" :class="{ reverse: sortOrder === 'desc' }">
                         <polyline points="18 15 12 9 6 15"></polyline>
                       </svg>
                     </div>
@@ -210,7 +209,8 @@
                   <th @click="sortBy('subscription_status')" class="sortable">
                     <div class="th-content">
                       Статус подписки
-                      <svg v-if="sortField === 'subscription_status'" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" :class="{ reverse: sortOrder === 'desc' }">
+                      <svg v-if="sortField === 'subscription_status'" width="12" height="12" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" :class="{ reverse: sortOrder === 'desc' }">
                         <polyline points="18 15 12 9 6 15"></polyline>
                       </svg>
                     </div>
@@ -218,7 +218,8 @@
                   <th @click="sortBy('expires_at')" class="sortable">
                     <div class="th-content">
                       Истекает
-                      <svg v-if="sortField === 'expires_at'" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" :class="{ reverse: sortOrder === 'desc' }">
+                      <svg v-if="sortField === 'expires_at'" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" :class="{ reverse: sortOrder === 'desc' }">
                         <polyline points="18 15 12 9 6 15"></polyline>
                       </svg>
                     </div>
@@ -226,7 +227,8 @@
                   <th @click="sortBy('created_at')" class="sortable">
                     <div class="th-content">
                       Дата создания
-                      <svg v-if="sortField === 'created_at'" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" :class="{ reverse: sortOrder === 'desc' }">
+                      <svg v-if="sortField === 'created_at'" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" :class="{ reverse: sortOrder === 'desc' }">
                         <polyline points="18 15 12 9 6 15"></polyline>
                       </svg>
                     </div>
@@ -234,7 +236,8 @@
                   <th @click="sortBy('is_active')" class="sortable">
                     <div class="th-content">
                       Активен
-                      <svg v-if="sortField === 'is_active'" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" :class="{ reverse: sortOrder === 'desc' }">
+                      <svg v-if="sortField === 'is_active'" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" :class="{ reverse: sortOrder === 'desc' }">
                         <polyline points="18 15 12 9 6 15"></polyline>
                       </svg>
                     </div>
@@ -247,18 +250,14 @@
                   <td>{{ shop.id }}</td>
                   <td>
                     <div class="shop-info">
-                      <img 
-                        v-if="shop.logo_url" 
-                        :src="shop.logo_url" 
-                        :alt="shop.name"
-                        class="shop-logo"
-                      />
+                      <img v-if="shop.logo_url" :src="shop.logo_url" :alt="shop.name" class="shop-logo" />
                       <div class="shop-logo-placeholder" v-else>
                         {{ shop.name.charAt(0).toUpperCase() }}
                       </div>
                       <div class="shop-details">
                         <span class="shop-name">{{ shop.name }}</span>
-                        <span v-if="shop.description" class="shop-description">{{ truncateText(shop.description, 40) }}</span>
+                        <span v-if="shop.description" class="shop-description">{{ truncateText(shop.description, 40)
+                        }}</span>
                       </div>
                     </div>
                   </td>
@@ -269,8 +268,11 @@
                     <div class="owner-info">
                       <div class="owner-name">{{ shop.owner_name || `ID: ${shop.owner_id}` }}</div>
                       <div class="owner-phone" v-if="shop.owner_phone">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                          stroke-width="2">
+                          <path
+                            d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
+                          </path>
                         </svg>
                         {{ shop.owner_phone }}
                       </div>
@@ -283,7 +285,8 @@
                     <span :class="['status-badge', getStatusClass(shop.subscription_status)]">
                       {{ getStatusText(shop.subscription_status) }}
                     </span>
-                    <div v-if="shop.subscription_expires_at" class="days-remaining" :class="getDaysRemainingClass(shop)">
+                    <div v-if="shop.subscription_expires_at" class="days-remaining"
+                      :class="getDaysRemainingClass(shop)">
                       {{ getDaysRemaining(shop) }}
                     </div>
                   </td>
@@ -310,29 +313,21 @@
                   </td>
                   <td>
                     <div class="actions">
-                      <button 
-                        @click="openShopDetails(shop)"
-                        class="action-btn btn-icon"
-                        title="Подробнее"
-                      >
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <button @click="openShopDetails(shop)" class="action-btn btn-icon" title="Подробнее">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                          stroke-width="2">
                           <circle cx="12" cy="12" r="10"></circle>
                           <line x1="12" y1="16" x2="12" y2="12"></line>
                           <line x1="12" y1="8" x2="12.01" y2="8"></line>
                         </svg>
                       </button>
-                      <button 
-                        @click="toggleActive(shop)"
+                      <button @click="toggleActive(shop)"
                         :class="['action-btn', shop.is_active ? 'btn-danger' : 'btn-success']"
-                        :title="shop.is_active ? 'Деактивировать' : 'Активировать'"
-                      >
+                        :title="shop.is_active ? 'Деактивировать' : 'Активировать'">
                         {{ shop.is_active ? 'Деакт.' : 'Актив.' }}
                       </button>
-                      <button 
-                        @click="openSubscriptionModal(shop)"
-                        class="action-btn btn-primary"
-                        title="Управление подпиской"
-                      >
+                      <button @click="openSubscriptionModal(shop)" class="action-btn btn-primary"
+                        title="Управление подпиской">
                         Подписка
                       </button>
                     </div>
@@ -340,57 +335,127 @@
                 </tr>
               </tbody>
             </table>
-            
+
             <!-- Empty State -->
             <div v-if="displayedShops.length === 0" class="empty-state">
               <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20 7h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v3H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2z"></path>
+                <path
+                  d="M20 7h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v3H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2z">
+                </path>
               </svg>
               <p>Магазины не найдены</p>
               <p class="empty-subtitle">Попробуйте изменить фильтры поиска</p>
             </div>
           </div>
 
+          <!-- Mobile Cards View -->
+          <div class="mobile-shops-list">
+            <div v-for="shop in paginatedShops" :key="shop.id" class="shop-mobile-card">
+              <!-- Shop Header -->
+              <div class="mobile-card-header">
+                <div class="shop-info-mobile">
+                  <img v-if="shop.logo_url" :src="shop.logo_url" :alt="shop.name" class="shop-logo-mobile" />
+                  <div class="shop-logo-placeholder-mobile" v-else>{{ shop.name.charAt(0).toUpperCase() }}</div>
+                  <div class="shop-details-mobile">
+                    <h3 class="shop-name-mobile">{{ shop.name }}</h3>
+                    <code class="shop-slug-mobile">{{ shop.slug }}</code>
+                  </div>
+                </div>
+                <span :class="['status-badge-mobile', getStatusClass(shop.subscription_status)]">
+                  {{ getStatusText(shop.subscription_status) }}
+                </span>
+              </div>
+
+              <!-- Shop Info Grid -->
+              <div class="mobile-card-info">
+                <div class="info-row">
+                  <span class="info-label">ID:</span>
+                  <span class="info-value">{{ shop.id }}</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Владелец:</span>
+                  <span class="info-value">{{ shop.owner_name || `ID: ${shop.owner_id}` }}</span>
+                </div>
+                <div class="info-row" v-if="shop.subscription_plan_name">
+                  <span class="info-label">План:</span>
+                  <span class="info-value">{{ shop.subscription_plan_name }}</span>
+                </div>
+                <div class="info-row" v-if="shop.subscription_expires_at">
+                  <span class="info-label">Истекает:</span>
+                  <span class="info-value">
+                    {{ formatDate(shop.subscription_expires_at) }}
+                    <span :class="['days-badge-mobile', getDaysRemainingClass(shop)]">
+                      {{ getDaysRemaining(shop) }}
+                    </span>
+                  </span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Создан:</span>
+                  <span class="info-value">{{ formatDate(shop.created_at) }}</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Активен:</span>
+                  <span :class="['status-badge-small', shop.is_active ? 'status-active' : 'status-cancelled']">
+                    {{ shop.is_active ? 'Да' : 'Нет' }}
+                  </span>
+                </div>
+              </div>
+
+              <!-- Actions -->
+              <div class="mobile-card-actions">
+                <button @click="openShopDetails(shop)" class="mobile-action-btn btn-details">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="16" x2="12" y2="12"></line>
+                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                  </svg>
+                  Подробнее
+                </button>
+                <button @click="toggleActive(shop)"
+                  :class="['mobile-action-btn', shop.is_active ? 'btn-danger' : 'btn-success']">
+                  {{ shop.is_active ? 'Деактивировать' : 'Активировать' }}
+                </button>
+                <button @click="openSubscriptionModal(shop)" class="mobile-action-btn btn-primary">
+                  Подписка
+                </button>
+              </div>
+            </div>
+
+            <!-- Empty State for Mobile -->
+            <div v-if="displayedShops.length === 0" class="empty-state-mobile">
+              <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path
+                  d="M20 7h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v3H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2z">
+                </path>
+              </svg>
+              <p>Магазины не найдены</p>
+            </div>
+          </div>
+
           <!-- Pagination -->
           <div v-if="totalPages > 1" class="pagination">
-            <button 
-              @click="currentPage = 1" 
-              :disabled="currentPage === 1"
-              class="pagination-btn"
-            >
+            <button @click="currentPage = 1" :disabled="currentPage === 1" class="pagination-btn">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polyline points="11 17 6 12 11 7"></polyline>
                 <polyline points="18 17 13 12 18 7"></polyline>
               </svg>
             </button>
-            <button 
-              @click="currentPage--" 
-              :disabled="currentPage === 1"
-              class="pagination-btn"
-            >
+            <button @click="currentPage--" :disabled="currentPage === 1" class="pagination-btn">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polyline points="15 18 9 12 15 6"></polyline>
               </svg>
             </button>
-            
+
             <div class="pagination-info">
               Страница {{ currentPage }} из {{ totalPages }}
             </div>
-            
-            <button 
-              @click="currentPage++" 
-              :disabled="currentPage === totalPages"
-              class="pagination-btn"
-            >
+
+            <button @click="currentPage++" :disabled="currentPage === totalPages" class="pagination-btn">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polyline points="9 18 15 12 9 6"></polyline>
               </svg>
             </button>
-            <button 
-              @click="currentPage = totalPages" 
-              :disabled="currentPage === totalPages"
-              class="pagination-btn"
-            >
+            <button @click="currentPage = totalPages" :disabled="currentPage === totalPages" class="pagination-btn">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polyline points="13 17 18 12 13 7"></polyline>
                 <polyline points="6 17 11 12 6 7"></polyline>
@@ -406,7 +471,7 @@
               <h2 class="modal-title">Управление подпиской</h2>
               <button @click="closeModal" class="modal-close">×</button>
             </div>
-            
+
             <div class="modal-shop-info">
               <h3>{{ selectedShop.name }}</h3>
               <p class="shop-slug-text">{{ selectedShop.slug }}</p>
@@ -415,7 +480,9 @@
                 <span class="owner-value">{{ selectedShop.owner_name || `ID: ${selectedShop.owner_id}` }}</span>
                 <span v-if="selectedShop.owner_phone" class="owner-phone">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                    <path
+                      d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
+                    </path>
                   </svg>
                   {{ selectedShop.owner_phone }}
                 </span>
@@ -440,19 +507,20 @@
 
             <!-- История подписок -->
             <div class="subscription-history-section" v-if="subscriptionHistory.length > 0">
-               <h3>История запросов</h3>
-               <div class="history-list">
-                 <div v-for="req in subscriptionHistory" :key="req.id" class="history-item">
-                   <div class="history-main">
-                     <span class="history-plan">{{ req.plan_name }}</span>
-                     <span :class="['history-status', `status-${req.status}`]">{{ getRequestStatusText(req.status) }}</span>
-                   </div>
-                   <div class="history-meta">
-                     <span>{{ formatDate(req.requested_at) }}</span>
-                     <span>{{ req.duration_months }} мес.</span>
-                   </div>
-                 </div>
-               </div>
+              <h3>История запросов</h3>
+              <div class="history-list">
+                <div v-for="req in subscriptionHistory" :key="req.id" class="history-item">
+                  <div class="history-main">
+                    <span class="history-plan">{{ req.plan_name }}</span>
+                    <span :class="['history-status', `status-${req.status}`]">{{ getRequestStatusText(req.status)
+                    }}</span>
+                  </div>
+                  <div class="history-meta">
+                    <span>{{ formatDate(req.requested_at) }}</span>
+                    <span>{{ req.duration_months }} мес.</span>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <form @submit.prevent="updateSubscription" class="modal-form">
@@ -467,11 +535,7 @@
               </div>
               <div class="form-group">
                 <label>Дата истечения</label>
-                <input 
-                  v-model="subscriptionForm.expires_at" 
-                  type="datetime-local" 
-                  class="form-input"
-                />
+                <input v-model="subscriptionForm.expires_at" type="datetime-local" class="form-input" />
                 <div class="quick-actions">
                   <button type="button" @click="setExpiry(1)" class="quick-btn">+1 месяц</button>
                   <button type="button" @click="setExpiry(3)" class="quick-btn">+3 месяца</button>
@@ -480,9 +544,12 @@
                 </div>
               </div>
               <div class="modal-actions">
-                <button type="button" @click="closeModal" class="btn-secondary">Отмена</button>
-                <button type="submit" class="btn-primary">Активировать подписку</button>
+                <button type="button" @click="closeModal" class="btn-secondary" :disabled="isUpdating">Отмена</button>
+                <button type="submit" class="btn-primary" :disabled="isUpdating" :class="{ 'opacity-50': isUpdating }">
+                  {{ isUpdating ? 'Сохранение...' : 'Активировать подписку' }}
+                </button>
               </div>
+
             </form>
           </div>
         </div>
@@ -544,6 +611,8 @@ const subscriptionForm = reactive({
   status: 'trial',
   expires_at: ''
 })
+const isUpdating = ref(false)
+
 
 // Computed stats
 const activeShopsCount = computed(() => {
@@ -564,35 +633,35 @@ const expiredShopsCount = computed(() => {
 // Filtered and sorted shops
 const displayedShops = computed(() => {
   if (!shops.value) return []
-  
+
   let filtered = [...shops.value]
-  
+
   // Search filter
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase()
-    filtered = filtered.filter(shop => 
+    filtered = filtered.filter(shop =>
       shop.name?.toLowerCase().includes(query) ||
       shop.slug?.toLowerCase().includes(query) ||
       shop.owner_name?.toLowerCase().includes(query) ||
       shop.owner_phone?.includes(query)
     )
   }
-  
+
   // Status filter
   if (filterStatus.value) {
     filtered = filtered.filter(shop => shop.subscription_status === filterStatus.value)
   }
-  
+
   // Active filter
   if (filterActive.value !== '') {
     const isActive = filterActive.value === 'true'
     filtered = filtered.filter(shop => shop.is_active === isActive)
   }
-  
+
   // Sorting
   filtered.sort((a, b) => {
     let aVal, bVal
-    
+
     switch (sortField.value) {
       case 'id':
         aVal = a.id
@@ -625,12 +694,12 @@ const displayedShops = computed(() => {
       default:
         return 0
     }
-    
+
     if (aVal < bVal) return sortOrder.value === 'asc' ? -1 : 1
     if (aVal > bVal) return sortOrder.value === 'asc' ? 1 : -1
     return 0
   })
-  
+
   return filtered
 })
 
@@ -701,7 +770,7 @@ const getDaysRemaining = (shop) => {
   const now = new Date()
   const expiresAt = new Date(shop.subscription_expires_at)
   const days = Math.ceil((expiresAt - now) / (1000 * 60 * 60 * 24))
-  
+
   if (days < 0) return 'Истекла'
   if (days === 0) return 'Истекает сегодня'
   if (days === 1) return 'Истекает завтра'
@@ -713,7 +782,7 @@ const getDaysRemainingClass = (shop) => {
   const now = new Date()
   const expiresAt = new Date(shop.subscription_expires_at)
   const days = Math.ceil((expiresAt - now) / (1000 * 60 * 60 * 24))
-  
+
   if (days <= 0) return 'days-expired'
   if (days <= 3) return 'days-critical'
   if (days <= 7) return 'days-warning'
@@ -753,7 +822,7 @@ const exportData = () => {
       formatDate(shop.created_at)
     ])
   ].map(row => row.join(',')).join('\n')
-  
+
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
   const link = document.createElement('a')
   link.href = URL.createObjectURL(blob)
@@ -775,14 +844,14 @@ const openSubscriptionModal = async (shop) => {
   selectedShop.value = shop
   subscriptionForm.status = shop.subscription_status
   subscriptionForm.expires_at = shop.subscription_expires_at ? new Date(shop.subscription_expires_at).toISOString().slice(0, 16) : ''
-  
+
   // Fetch history
   try {
     const { data } = await useFetch(`http://localhost:8000/platform/admin/subscription-requests`, {
-       query: { shop_id: shop.id },
-       headers: {
-          'Authorization': `Bearer ${token.value}`
-       }
+      query: { shop_id: shop.id },
+      headers: {
+        'Authorization': `Bearer ${token.value}`
+      }
     })
     subscriptionHistory.value = data.value || []
   } catch (e) {
@@ -813,6 +882,9 @@ const updateSubscription = async () => {
     return
   }
 
+  if (isUpdating.value) return // Prevent duplicate submissions
+
+  isUpdating.value = true
   try {
     const body = {
       subscription_status: subscriptionForm.status
@@ -820,7 +892,7 @@ const updateSubscription = async () => {
     if (subscriptionForm.expires_at) {
       body.expires_at = new Date(subscriptionForm.expires_at).toISOString()
     }
-    
+
     await $fetch(`http://localhost:8000/platform/admin/shops/${selectedShop.value.id}/subscription`, {
       method: 'PUT',
       headers: {
@@ -828,13 +900,15 @@ const updateSubscription = async () => {
       },
       body: body
     })
-    
+
     const planName = subscriptionForm.status === 'active' ? 'Подписка активирована' : 'Подписка обновлена'
     toast.success(planName)
     closeModal()
     refresh()
   } catch (e) {
     toast.error(e.data?.detail || 'Ошибка при обновлении подписки')
+  } finally {
+    isUpdating.value = false
   }
 }
 
@@ -945,11 +1019,11 @@ const toggleActive = async (shop) => {
     font-size: 1.25rem !important;
     line-height: 1.2 !important;
   }
-  
+
   .admin-header {
     padding: 20px !important;
   }
-  
+
   .admin-content {
     padding: 16px !important;
   }
@@ -1026,13 +1100,13 @@ const toggleActive = async (shop) => {
   display: flex;
   align-items: center;
   gap: 16px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   border: 1px solid #E5E7EB;
   transition: all 0.2s;
 }
 
 .stat-card:hover {
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   transform: translateY(-2px);
 }
 
@@ -1087,7 +1161,7 @@ const toggleActive = async (shop) => {
   border-radius: 16px;
   padding: 20px;
   margin-bottom: 24px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   border: 1px solid #E5E7EB;
   display: flex;
   gap: 16px;
@@ -1100,16 +1174,16 @@ const toggleActive = async (shop) => {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .filters-group {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .search-box {
     min-width: 0;
   }
-  
+
   .filter-select,
   .clear-filters-btn {
     width: 100%;
@@ -1195,7 +1269,7 @@ const toggleActive = async (shop) => {
   background: white;
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   border: 1px solid #E5E7EB;
 }
 
@@ -1584,7 +1658,7 @@ const toggleActive = async (shop) => {
   text-align: center;
   background: white;
   border-radius: 16px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   border: 1px solid #E5E7EB;
 }
 
@@ -1629,8 +1703,13 @@ const toggleActive = async (shop) => {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Modal Styles */
@@ -1640,7 +1719,7 @@ const toggleActive = async (shop) => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1870,45 +1949,114 @@ const toggleActive = async (shop) => {
   background: #E5E7EB;
 }
 
+.opacity-50 {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+
 /* Responsive */
 @media (max-width: 1024px) {
   .mobile-header {
     display: flex;
   }
-  
+
   .admin-main {
     margin-left: 0;
     padding-top: 60px;
   }
-  
+
   .stats-overview {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   .filters-section {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .search-box {
     min-width: auto;
   }
 }
+
+/* Modal Mobile Responsive */
+@media (max-width: 640px) {
+  .modal-content {
+    width: calc(100% - 24px);
+    padding: 20px 16px;
+    max-height: 95vh;
+    border-radius: 16px;
+  }
+
+  .modal-header {
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+  }
+
+  .modal-title {
+    font-size: 1.25rem;
+  }
+
+  .modal-shop-info {
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+
+  .modal-shop-info h3 {
+    font-size: 1.125rem;
+  }
+
+  .current-status-section {
+    padding: 12px;
+    margin-bottom: 16px;
+  }
+
+  .subscription-history-section {
+    padding: 12px;
+    margin-bottom: 16px;
+  }
+
+  .modal-form {
+    gap: 16px;
+  }
+
+  .quick-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .quick-btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .modal-actions {
+    flex-direction: column-reverse;
+    gap: 8px;
+  }
+
+  .modal-actions button {
+    width: 100%;
+  }
+}
+
 
 @media (max-width: 768px) {
   .admin-main {
     margin-left: 0;
     padding-top: 60px;
   }
-  
+
   .stats-overview {
     grid-template-columns: 1fr;
   }
-  
+
   .shops-table-wrapper {
     overflow-x: scroll;
   }
-  
+
   .shops-table {
     min-width: 1200px;
   }
@@ -1971,9 +2119,20 @@ const toggleActive = async (shop) => {
   text-transform: uppercase;
 }
 
-.status-pending { background-color: #fff7ed; color: #c2410c; }
-.status-approved { background-color: #f0fdf4; color: #15803d; }
-.status-rejected { background-color: #fef2f2; color: #b91c1c; }
+.status-pending {
+  background-color: #fff7ed;
+  color: #c2410c;
+}
+
+.status-approved {
+  background-color: #f0fdf4;
+  color: #15803d;
+}
+
+.status-rejected {
+  background-color: #fef2f2;
+  color: #b91c1c;
+}
 
 .history-meta {
   display: flex;
@@ -1981,5 +2140,281 @@ const toggleActive = async (shop) => {
   align-items: flex-end;
   font-size: 12px;
   color: var(--text-secondary);
+}
+
+/* Mobile Cards Styles */
+.mobile-shops-list {
+  display: none;
+}
+
+.shop-mobile-card {
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  border: 1px solid #E5E7EB;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.mobile-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+  gap: 12px;
+}
+
+.shop-info-mobile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.shop-logo-mobile {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.shop-logo-placeholder-mobile {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  background: #F3F4F6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 20px;
+  color: #6B7280;
+  flex-shrink: 0;
+}
+
+.shop-details-mobile {
+  min-width: 0;
+  flex: 1;
+}
+
+.shop-name-mobile {
+  font-size: 16px;
+  font-weight: 700;
+  color: #111;
+  margin: 0 0 4px 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.shop-slug-mobile {
+  font-size: 12px;
+  color: #6B7280;
+  background: #F3F4F6;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.status-badge-mobile {
+  flex-shrink: 0;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.mobile-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 12px 0;
+  border-top: 1px solid #F3F4F6;
+  border-bottom: 1px solid #F3F4F6;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+}
+
+.info-label {
+  color: #6B7280;
+  font-weight: 500;
+}
+
+.info-value {
+  color: #111;
+  font-weight: 600;
+  text-align: right;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.days-badge-mobile {
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.days-badge-mobile.days-critical {
+  background: #FEE2E2;
+  color: #991B1B;
+}
+
+.days-badge-mobile.days-warning {
+  background: #FEF3C7;
+  color: #92400E;
+}
+
+.days-badge-mobile.days-normal {
+  background: #D1FAE5;
+  color: #059669;
+}
+
+.status-badge-small {
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.mobile-card-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.mobile-action-btn {
+  flex: 1;
+  min-width: fit-content;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.mobile-action-btn.btn-details {
+  background: #F3F4F6;
+  color: #111;
+}
+
+.mobile-action-btn.btn-details:active {
+  background: #E5E7EB;
+}
+
+.mobile-action-btn.btn-danger {
+  background: #FEE2E2;
+  color: #991B1B;
+}
+
+.mobile-action-btn.btn-danger:active {
+  background: #FEF2F2;
+}
+
+.mobile-action-btn.btn-success {
+  background: #D1FAE5;
+  color: #059669;
+}
+
+.mobile-action-btn.btn-success:active {
+  background: #ECFDF5;
+}
+
+.mobile-action-btn.btn-primary {
+  background: #111;
+  color: white;
+}
+
+.mobile-action-btn.btn-primary:active {
+  background: #000;
+}
+
+.empty-state-mobile {
+  text-align: center;
+  padding: 60px 20px;
+  color: #6B7280;
+}
+
+.empty-state-mobile svg {
+  margin: 0 auto 16px;
+  opacity: 0.3;
+}
+
+.empty-state-mobile p {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* Enhanced Mobile Responsive */
+@media (max-width: 768px) {
+  .admin-main {
+    margin-left: 0;
+    padding-top: 60px;
+    /* padding-left: 12px; */
+    /* padding-right: 12px; */
+  }
+
+  .admin-header {
+    padding: 16px 12px;
+  }
+
+  .admin-content {
+    padding: 0;
+  }
+
+  .admin-title {
+    font-size: 1.5rem;
+  }
+
+  .stats-overview {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .stat-card {
+    padding: 16px;
+  }
+
+  .filters-section {
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .table-header {
+    padding: 12px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .shops-table-wrapper {
+    display: none;
+  }
+
+  .mobile-shops-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .pagination {
+    padding: 12px;
+  }
 }
 </style>
