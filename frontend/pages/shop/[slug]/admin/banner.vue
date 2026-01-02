@@ -3,7 +3,8 @@
     <!-- Mobile Header -->
     <header class="mobile-header">
       <button class="menu-btn" @click="sidebarOpen = !sidebarOpen">
-        <svg v-if="!sidebarOpen" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg v-if="!sidebarOpen" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2">
           <line x1="3" y1="12" x2="21" y2="12"></line>
           <line x1="3" y1="6" x2="21" y2="6"></line>
           <line x1="3" y1="18" x2="21" y2="18"></line>
@@ -13,7 +14,7 @@
           <line x1="6" y1="6" x2="18" y2="18"></line>
         </svg>
       </button>
-      <span class="mobile-title">Баннер</span>
+      <span class="mobile-title">{{ $t('bannerPage.title') }}</span>
       <NuxtLink :to="`/${shopSlug}`" class="home-btn">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
@@ -22,96 +23,93 @@
       </NuxtLink>
     </header>
 
-    <ShopAdminSidebar 
-      :shop-slug="shopSlug"
-      current-route="banner"
-      v-model="sidebarOpen"
-    />
+    <ShopAdminSidebar :shop-slug="shopSlug" current-route="banner" v-model="sidebarOpen" />
 
     <!-- Main Content -->
     <main class="admin-main">
       <div class="container">
         <div class="page-header">
-          <h1 class="page-title">Баннер</h1>
-          <p class="page-subtitle">Настройка баннера магазина</p>
+          <h1 class="page-title">{{ $t('bannerPage.title') }}</h1>
+          <p class="page-subtitle">{{ $t('bannerPage.subtitle') }}</p>
         </div>
 
         <div class="admin-content">
-        <div class="banner-editor">
-          <!-- Preview -->
-          <div class="preview-section">
-            <h2 class="section-title">Предпросмотр</h2>
-            <div class="banner-preview">
-              <div class="preview-content">
-                <div class="preview-badge">{{ form.badge_text }}</div>
-                <h3 class="preview-title" v-html="form.title.replace(/\\n/g, '<br/>')"></h3>
-                <p class="preview-subtitle">{{ form.subtitle }}</p>
-                <span class="preview-btn">{{ form.button_text }}</span>
+          <div class="banner-editor">
+            <!-- Preview -->
+            <div class="preview-section">
+              <h2 class="section-title">{{ $t('bannerPage.preview') }}</h2>
+              <div class="banner-preview">
+                <div class="preview-content">
+                  <div class="preview-badge">{{ form.badge_text }}</div>
+                  <h3 class="preview-title" v-html="form.title.replace(/\\n/g, '<br/>')"></h3>
+                  <p class="preview-subtitle">{{ form.subtitle }}</p>
+                  <span class="preview-btn">{{ form.button_text }}</span>
+                </div>
+                <div class="preview-image">
+                  <img :src="form.image_url || '/placeholder.png'" alt="Banner" />
+                </div>
               </div>
-              <div class="preview-image">
-                <img :src="form.image_url || '/placeholder.png'" alt="Banner" />
+            </div>
+
+            <!-- Form -->
+            <div class="form-section">
+              <h2 class="section-title">{{ $t('bannerPage.edit') }}</h2>
+
+              <div class="form-group">
+                <label>{{ $t('bannerPage.badgeLabel') }}</label>
+                <input v-model="form.badge_text" type="text" :placeholder="$t('bannerPage.badgePlaceholder')" />
               </div>
-            </div>
-          </div>
 
-          <!-- Form -->
-          <div class="form-section">
-            <h2 class="section-title">Редактирование баннера</h2>
-            
-            <div class="form-group">
-              <label>Текст бейджа</label>
-              <input v-model="form.badge_text" type="text" placeholder="НОВИНКА" />
-            </div>
+              <div class="form-group">
+                <label>{{ $t('bannerPage.titleLabel') }}</label>
+                <input v-model="form.title" type="text" placeholder="Ray-Ban Meta Smart Glasses" />
+              </div>
 
-            <div class="form-group">
-              <label>Заголовок (\n для новой строки)</label>
-              <input v-model="form.title" type="text" placeholder="Ray-Ban Meta Smart Glasses" />
-            </div>
+              <div class="form-group">
+                <label>{{ $t('bannerPage.subtitleLabel') }}</label>
+                <input v-model="form.subtitle" type="text" :placeholder="$t('bannerPage.subtitlePlaceholder')" />
+              </div>
 
-            <div class="form-group">
-              <label>Подзаголовок</label>
-              <input v-model="form.subtitle" type="text" placeholder="$299 от" />
-            </div>
+              <div class="form-group">
+                <label>{{ $t('bannerPage.btnTextLabel') }}</label>
+                <input v-model="form.button_text" type="text" :placeholder="$t('bannerPage.btnTextPlaceholder')" />
+              </div>
 
-            <div class="form-group">
-              <label>Текст кнопки</label>
-              <input v-model="form.button_text" type="text" placeholder="Купить" />
-            </div>
+              <div class="form-group">
+                <label>{{ $t('bannerPage.btnLinkLabel') }}</label>
+                <input v-model="form.button_link" type="text" placeholder="/products" />
+              </div>
 
-            <div class="form-group">
-              <label>Ссылка кнопки</label>
-              <input v-model="form.button_link" type="text" placeholder="/products" />
-            </div>
+              <div class="form-group">
+                <label>{{ $t('bannerPage.imageUrlLabel') }}</label>
+                <input v-model="form.image_url" type="text" placeholder="https://..." />
+              </div>
 
-            <div class="form-group">
-              <label>URL изображения</label>
-              <input v-model="form.image_url" type="text" placeholder="https://..." />
-            </div>
+              <div class="form-group">
+                <label>{{ $t('bannerPage.uploadLabel') }}</label>
+                <input type="file" accept="image/*" @change="uploadImage" />
+              </div>
 
-            <div class="form-group">
-              <label>Или загрузите изображение</label>
-              <input type="file" accept="image/*" @change="uploadImage" />
-            </div>
+              <div class="form-group checkbox-group">
+                <label>
+                  <input type="checkbox" v-model="form.is_active" />
+                  <span>{{ $t('bannerPage.activeLabel') }}</span>
+                </label>
+              </div>
 
-            <div class="form-group checkbox-group">
-              <label>
-                <input type="checkbox" v-model="form.is_active" />
-                <span>Баннер активен</span>
-              </label>
+              <button @click="saveBanner" class="save-btn" :disabled="saving">
+                {{ saving ? $t('bannerPage.saving') : $t('bannerPage.saveBtn') }}
+              </button>
             </div>
-
-            <button @click="saveBanner" class="save-btn" :disabled="saving">
-              {{ saving ? 'Сохранение...' : 'Сохранить баннер' }}
-            </button>
           </div>
         </div>
       </div>
-    </div>
-  </main>
-</div>
+    </main>
+  </div>
 </template>
 
 <script setup>
+const { t } = useI18n()
 definePageMeta({
   middleware: ['auth', 'shop-owner']
 })
@@ -168,9 +166,9 @@ const uploadImage = async (event) => {
       body: formData
     })
     form.value.image_url = result.url
-    useToast().success('Изображение загружено!')
+    useToast().success(t('alerts.shop.imageUploaded'))
   } catch (e) {
-    useToast().error('Ошибка при загрузке изображения')
+    useToast().error(t('alerts.shop.imageError'))
   }
 }
 
@@ -182,9 +180,9 @@ const saveBanner = async () => {
       headers: { Authorization: `Bearer ${token.value}` },
       body: form.value
     })
-    useToast().success('Баннер сохранен!')
+    useToast().success(t('bannerPage.saved'))
   } catch (e) {
-    useToast().error('Ошибка при сохранении баннера')
+    useToast().error(t('alerts.shop.errorSaving'))
   } finally {
     saving.value = false
   }
@@ -295,7 +293,7 @@ const saveBanner = async () => {
   background: white;
   border-radius: 24px;
   padding: 40px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 10px 40px rgba(0,0,0,0.02);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 10px 40px rgba(0, 0, 0, 0.02);
   border: 1px solid #f1f1f1;
 }
 
@@ -317,7 +315,7 @@ const saveBanner = async () => {
 }
 
 .preview-badge {
-  background: rgba(255,255,255,0.15);
+  background: rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(10px);
   color: white;
   padding: 8px 16px;
@@ -326,7 +324,7 @@ const saveBanner = async () => {
   font-weight: 700;
   display: inline-block;
   margin-bottom: 16px;
-  border: 1px solid rgba(255,255,255,0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   letter-spacing: 1px;
 }
 
@@ -374,7 +372,7 @@ const saveBanner = async () => {
   background: white;
   border-radius: 24px;
   padding: 40px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 10px 40px rgba(0,0,0,0.02);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 10px 40px rgba(0, 0, 0, 0.02);
   border: 1px solid #f1f1f1;
 }
 
@@ -453,7 +451,7 @@ const saveBanner = async () => {
     width: 100%;
     min-width: 0;
   }
-  
+
   .container {
     padding: 0;
   }
@@ -465,7 +463,7 @@ const saveBanner = async () => {
     border-bottom: 1px solid #eee;
   }
 
-  .page-title, 
+  .page-title,
   .page-subtitle {
     display: none;
   }
@@ -473,7 +471,7 @@ const saveBanner = async () => {
   .mobile-header {
     display: flex;
   }
-  
+
   .banner-editor {
     grid-template-columns: 1fr;
     padding: 0 16px 40px;
@@ -493,7 +491,7 @@ const saveBanner = async () => {
   .admin-content {
     padding: 0;
   }
-  
+
   .banner-preview {
     padding: 24px;
     min-height: 220px;
@@ -520,8 +518,21 @@ const saveBanner = async () => {
     opacity: 0.2;
   }
 }
-@keyframes spin { to { transform: rotate(360deg); } }
-.btn-spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.8s linear infinite; }
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.btn-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
 
 .loading-container {
   display: flex;
@@ -541,4 +552,3 @@ const saveBanner = async () => {
   margin-bottom: 16px;
 }
 </style>
-

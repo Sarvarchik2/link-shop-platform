@@ -72,6 +72,8 @@ const loading = ref(false)
 const { register } = useAuth()
 const toast = useToast()
 
+const storageReturnUrl = ref<string | null>(null)
+
 // Save returnUrl when page loads
 onMounted(() => {
   let returnUrl: string | null = null;
@@ -97,6 +99,9 @@ onMounted(() => {
       localStorage.setItem('returnUrl', '/')
     }
   }
+
+  // Update reactive state from localStorage after mount
+  storageReturnUrl.value = localStorage.getItem('returnUrl')
 })
 
 // Preserve returnUrl when linking to login
@@ -109,7 +114,7 @@ const loginLink = computed(() => {
     queryReturnUrl = route.query.returnUrl
   }
 
-  const returnUrl = queryReturnUrl || (import.meta.client ? localStorage.getItem('returnUrl') : null)
+  const returnUrl = queryReturnUrl || storageReturnUrl.value
   if (returnUrl) {
     return `/login?returnUrl=${encodeURIComponent(returnUrl)}`
   }

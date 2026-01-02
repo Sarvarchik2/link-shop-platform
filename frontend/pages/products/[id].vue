@@ -547,7 +547,7 @@ const showPreorderButton = computed(() => {
 
 const openPreorderModal = () => {
   if (!user.value) {
-    toast.warning('Для предзаказа необходимо войти в систему')
+    toast.warning(t('alerts.preorder.loginRequired'))
     const returnUrl = `/products/${route.params.id}`
     navigateTo(`/login?returnUrl=${encodeURIComponent(returnUrl)}`)
     return
@@ -569,12 +569,12 @@ const closePreorderModal = () => {
 
 const submitPreorder = async () => {
   if (!preorderForm.value.phone) {
-    toast.error('Пожалуйста, укажите номер телефона')
+    toast.error(t('alerts.preorder.phoneRequired'))
     return
   }
 
   if (!user.value) {
-    toast.warning('Для предзаказа необходимо войти в систему')
+    toast.warning(t('alerts.preorder.loginRequired'))
     return
   }
 
@@ -596,14 +596,14 @@ const submitPreorder = async () => {
       }
     })
 
-    toast.success('Предзаказ успешно оформлен! Мы уведомим вас, когда товар поступит в продажу.')
+    toast.success(t('alerts.preorder.success'))
     closePreorderModal()
   } catch (e) {
     console.error('Preorder error:', e)
     if (e?.data?.detail) {
       toast.error(e.data.detail)
     } else {
-      toast.error('Ошибка при оформлении предзаказа. Попробуйте еще раз.')
+      toast.error(t('alerts.preorder.error'))
     }
   } finally {
     isSubmittingPreorder.value = false
@@ -613,7 +613,7 @@ const submitPreorder = async () => {
 const addToCart = () => {
   // Check if user is logged in
   if (!user.value) {
-    toast.warning('Savatga qo\'shish uchun tizimga kiring')
+    toast.warning(t('alerts.cart.loginRequired'))
     // Save returnUrl - return to current product page
     const returnUrl = `/products/${route.params.id}`
     navigateTo(`/login?returnUrl=${encodeURIComponent(returnUrl)}`)
@@ -624,33 +624,33 @@ const addToCart = () => {
     // If product has both sizes and colors
     if (productSizes.value.length > 0 && productColors.value.length > 0) {
       if (!selectedColor.value) {
-        toast.warning('Iltimos, rangni tanlang')
+        toast.warning(t('alerts.cart.selectColor'))
         return
       }
       if (selectedColor.value.stock === 0) {
-        toast.error('Bu rang tugagan')
+        toast.error(t('alerts.cart.colorOutOfStock'))
         return
       }
       if (!selectedSize.value) {
-        toast.warning('Iltimos, o\'lchamni tanlang')
+        toast.warning(t('alerts.cart.selectSize'))
         return
       }
     }
     // If product has only sizes (no colors)
     else if (productSizes.value.length > 0 && productColors.value.length === 0) {
       if (!selectedSize.value) {
-        toast.warning('Iltimos, o\'lchamni tanlang')
+        toast.warning(t('alerts.cart.selectSize'))
         return
       }
     }
     // If product has only colors (no sizes)
     else if (productColors.value.length > 0 && productSizes.value.length === 0) {
       if (!selectedColor.value) {
-        toast.warning('Iltimos, rangni tanlang')
+        toast.warning(t('alerts.cart.selectColor'))
         return
       }
       if (selectedColor.value.stock === 0) {
-        toast.error('Bu rang tugagan')
+        toast.error(t('alerts.cart.colorOutOfStock'))
         return
       }
     }
@@ -665,12 +665,12 @@ const addToCart = () => {
     selectedColor: selectedColor.value || null,
     selectedSize: selectedSize.value || null
   })
-  toast.success('Savatga qo\'shildi!')
+  toast.success(t('alerts.cart.success'))
 }
 
 const toggleFavorite = async () => {
   if (!user.value) {
-    toast.warning('Sevimlilar ro\'yxatiga qo\'shish uchun tizimga kiring')
+    toast.warning(t('alerts.favorites.loginRequired'))
     // Save returnUrl - return to current product page
     const returnUrl = `/products/${route.params.id}`
     navigateTo(`/login?returnUrl=${encodeURIComponent(returnUrl)}`)

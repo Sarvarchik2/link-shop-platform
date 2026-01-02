@@ -1,109 +1,184 @@
 <template>
   <div class="register-shop-page">
     <div class="container py-8">
-      <div class="register-card">
-        <div class="register-header">
-          <h1 class="page-title">{{ $t('shopRegistration.title') }}</h1>
-          <p class="page-subtitle">{{ $t('shopRegistration.subtitle') }}</p>
+      <div v-if="!user" class="max-w-md mx-auto auth-notice">
+        <p>{{ $t('shopRegistration.authNotice.text') }}</p>
+        <div class="auth-actions">
+          <NuxtLink :to="`/login?returnUrl=${route.fullPath}`" class="btn-primary">{{
+            $t('shopRegistration.authNotice.login') }}</NuxtLink>
+          <NuxtLink :to="`/register?returnUrl=${route.fullPath}`" class="btn-secondary">{{
+            $t('shopRegistration.authNotice.register') }}</NuxtLink>
         </div>
+      </div>
 
-        <div v-if="!user" class="auth-notice">
-          <p>{{ $t('shopRegistration.authNotice.text') }}</p>
-          <div class="auth-actions">
-            <NuxtLink to="/login" class="btn-primary">{{ $t('shopRegistration.authNotice.login') }}</NuxtLink>
-            <NuxtLink to="/register" class="btn-secondary">{{ $t('shopRegistration.authNotice.register') }}</NuxtLink>
-          </div>
+      <div v-else-if="checkingShops" class="max-w-md mx-auto auth-notice">
+        <p>{{ $t('platformAdmin.dashboard.loading') }}</p>
+      </div>
+
+      <div v-else-if="myShops && myShops.length > 0" class="max-w-md mx-auto auth-notice already-has-shop">
+        <div class="notice-icon">⚠️</div>
+        <h3>{{ $t('shopRegistration.existingShop.title') }}</h3>
+        <p>{{ $t('shopRegistration.existingShop.desc') }}</p>
+        <div class="auth-actions">
+          <NuxtLink :to="`/shop/${myShops[0].slug}/admin`" class="btn-primary">{{
+            $t('shopRegistration.existingShop.admin') }}</NuxtLink>
+          <NuxtLink to="/profile" class="btn-secondary">{{ $t('shopRegistration.existingShop.profile') }}</NuxtLink>
         </div>
+      </div>
 
-        <div v-else-if="checkingShops" class="auth-notice">
-          <p>{{ $t('platformAdmin.dashboard.loading') }}</p>
-        </div>
-
-        <div v-else-if="myShops && myShops.length > 0" class="auth-notice already-has-shop">
-          <div class="notice-icon">⚠️</div>
-          <h3>{{ $t('shopRegistration.existingShop.title') }}</h3>
-          <p>{{ $t('shopRegistration.existingShop.desc') }}</p>
-          <div class="auth-actions">
-            <NuxtLink :to="`/shop/${myShops[0].slug}/admin`" class="btn-primary">{{
-              $t('shopRegistration.existingShop.admin') }}</NuxtLink>
-            <NuxtLink to="/profile" class="btn-secondary">{{ $t('shopRegistration.existingShop.profile') }}</NuxtLink>
-          </div>
-        </div>
-
-        <form v-else @submit.prevent="registerShop" class="register-form">
-          <div class="form-group">
-            <label for="name">{{ $t('shopRegistration.form.name') }} *</label>
-            <input id="name" v-model="form.name" type="text" required
-              :placeholder="$t('shopRegistration.form.namePlaceholder')" class="form-input" />
-          </div>
-
-          <div class="form-group">
-            <label for="slug">{{ $t('shopRegistration.form.slug') }} *</label>
-            <div class="slug-input-wrapper">
-              <span class="slug-prefix">link-platform-shop.uz/</span>
-              <input id="slug" v-model="form.slug" type="text" required
-                :placeholder="$t('shopRegistration.form.slugPlaceholder')" class="form-input slug-input"
-                @input="formatSlug" />
+      <div v-else class="max-w-4xl mx-auto">
+        <!-- Step Indicator -->
+        <div class="mb-8 flex justify-center">
+          <div class="flex items-center gap-4">
+            <div class="flex items-center gap-2">
+              <div :class="['step-circle', { active: currentStep === 1, completed: currentStep > 1 }]">1</div>
+              <span :class="['step-label', { active: currentStep === 1, completed: currentStep > 1 }]">Tariff</span>
             </div>
-            <p class="form-hint">{{ $t('shopRegistration.form.slugHint') }}</p>
+            <div class="step-line border-t-2 border-dashed border-zinc-200 w-16"></div>
+            <div class="flex items-center gap-2">
+              <div :class="['step-circle', { active: currentStep === 2 }]">2</div>
+              <span :class="['step-label', { active: currentStep === 2 }]">Shop Details</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 1: Plan Selection -->
+        <div v-if="currentStep === 1" class="register-card fade-in">
+          <div class="text-center mb-8">
+            <h1 class="page-title">Choose Your Plan</h1>
+            <p class="page-subtitle">Select the best plan for your business</p>
           </div>
 
-          <div class="form-group">
-            <label for="description">{{ $t('shopRegistration.form.desc') }} ({{ $t('common.optional') }})</label>
-            <textarea id="description" v-model="form.description" rows="4"
-              :placeholder="$t('shopRegistration.form.descPlaceholder')" class="form-input" />
+          <div v-if="plansPending" class="text-center py-12">
+            <div class="loading-spinner"></div>
           </div>
 
-          <div class="form-group">
-            <label>{{ $t('shopRegistration.form.logo') }}</label>
-            <div class="logo-upload-container">
-              <div class="logo-input-wrapper">
-                <input v-model="form.logo_url" type="url" class="form-input"
-                  :placeholder="$t('shopRegistration.form.logoUrlPlaceholder')" />
-                <span class="input-divider">{{ $t('common.or') }}</span>
-                <button type="button" class="btn-upload" @click="$refs.logoInput.click()" :disabled="uploading">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                    <polyline points="17 8 12 3 7 8"></polyline>
-                    <line x1="12" y1="3" x2="12" y2="15"></line>
-                  </svg>
-                  {{ uploading ? '...' : $t('common.upload') }}
-                </button>
-                <input type="file" ref="logoInput" style="display: none" accept="image/*" @change="handleLogoUpload" />
-              </div>
-              <small class="form-hint">{{ $t('shopRegistration.form.logoHint') }}</small>
-
-              <div v-if="form.logo_url" class="logo-preview">
-                <div class="preview-header">
-                  <span class="preview-label">{{ $t('shopRegistration.form.preview') }}:</span>
-                  <button type="button" class="btn-remove-logo" @click="form.logo_url = ''">{{ $t('common.delete')
-                    }}</button>
+          <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div v-for="plan in plans" :key="plan.id"
+              class="plan-card p-6 rounded-2xl border-2 transition-all cursor-pointer hover-lift"
+              :class="selectedPlan?.id === plan.id ? 'border-black bg-zinc-50 shadow-lg' : 'border-zinc-100 hover:border-zinc-300'"
+              @click="selectPlan(plan)">
+              <div class="flex justify-between items-start mb-4">
+                <div>
+                  <h3 class="font-bold text-lg">{{ plan.name }}</h3>
+                  <p class="text-zinc-500 text-sm">{{ plan.description }}</p>
                 </div>
-                <img :src="form.logo_url" alt="Logo" class="preview-image" @error="logoError = true" />
-                <p v-if="logoError" class="preview-error">{{ $t('shopRegistration.form.uploadError') }}</p>
+                <div v-if="selectedPlan?.id === plan.id"
+                  class="w-6 h-6 bg-black rounded-full flex items-center justify-center text-white">
+                  <iconify-icon icon="lucide:check" width="14"></iconify-icon>
+                </div>
               </div>
+              <div class="mb-6">
+                <span class="text-3xl font-bold">${{ plan.price }}</span>
+                <span class="text-zinc-500">/{{ $t('home.pricing.month') }}</span>
+              </div>
+              <ul class="space-y-3 mb-6">
+                <li v-for="(feature, i) in plan.features_list" :key="i"
+                  class="flex items-start gap-2 text-sm text-zinc-600">
+                  <iconify-icon icon="lucide:check" class="mt-0.5 text-green-500 flex-shrink-0"></iconify-icon>
+                  <span>{{ feature }}</span>
+                </li>
+              </ul>
+              <button class="w-full py-3 rounded-xl font-semibold transition-all"
+                :class="selectedPlan?.id === plan.id ? 'bg-black text-white shadow-md' : 'bg-zinc-100 text-zinc-900 hover:bg-zinc-200'">
+                {{ selectedPlan?.id === plan.id ? 'Selected' : 'Select Plan' }}
+              </button>
             </div>
           </div>
 
-          <div v-if="error" class="error-message">
-            {{ error }}
+          <div class="mt-8 flex justify-end">
+            <button class="btn-primary flex items-center gap-2" :disabled="!selectedPlan" @click="currentStep = 2">
+              Next Step
+              <iconify-icon icon="lucide:arrow-right" width="18"></iconify-icon>
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 2: Shop Details -->
+        <div v-else class="register-card fade-in">
+          <div class="register-header">
+            <h1 class="page-title">{{ $t('shopRegistration.title') }}</h1>
+            <p class="page-subtitle">{{ $t('shopRegistration.subtitle') }}</p>
           </div>
 
-          <button type="submit" :disabled="loading" class="submit-button">
-            <span v-if="loading">{{ $t('shopRegistration.form.creating') }}</span>
-            <span v-else>{{ $t('shopRegistration.form.submit') }}</span>
-          </button>
-        </form>
+          <form @submit.prevent="registerShop" class="register-form">
+            <div class="form-group">
+              <label for="name">{{ $t('shopRegistration.form.name') }} *</label>
+              <input id="name" v-model="form.name" type="text" required
+                :placeholder="$t('shopRegistration.form.namePlaceholder')" class="form-input transition-smooth" />
+            </div>
 
-        <div class="info-box">
-          <h3>{{ $t('shopRegistration.info.title') }}</h3>
-          <ul>
-            <li>{{ $t('shopRegistration.info.point1') }}</li>
-            <li>{{ $t('shopRegistration.info.point2') }} <strong>link-platform-shop.uz/{{ form.slug || 'your-slug'
-                }}</strong></li>
-            <li>{{ $t('shopRegistration.info.point3') }}</li>
-            <li>{{ $t('shopRegistration.info.point4') }}</li>
-          </ul>
+            <div class="form-group">
+              <label for="slug">{{ $t('shopRegistration.form.slug') }} *</label>
+              <div class="slug-input-wrapper transition-smooth">
+                <span class="slug-prefix">link-platform-shop.uz/</span>
+                <input id="slug" v-model="form.slug" type="text" required
+                  :placeholder="$t('shopRegistration.form.slugPlaceholder')" class="form-input slug-input"
+                  @input="formatSlug" />
+              </div>
+              <p class="form-hint">{{ $t('shopRegistration.form.slugHint') }}</p>
+            </div>
+
+            <div class="form-group">
+              <label for="description">{{ $t('shopRegistration.form.desc') }} ({{ $t('common.optional') }})</label>
+              <textarea id="description" v-model="form.description" rows="4"
+                :placeholder="$t('shopRegistration.form.descPlaceholder')" class="form-input transition-smooth" />
+            </div>
+
+            <div class="form-group">
+              <label>{{ $t('shopRegistration.form.logo') }}</label>
+              <div class="logo-upload-container">
+                <div class="logo-input-wrapper">
+                  <input v-model="form.logo_url" type="url" class="form-input transition-smooth"
+                    :placeholder="$t('shopRegistration.form.logoUrlPlaceholder')" />
+                  <span class="input-divider">{{ $t('common.or') }}</span>
+                  <button type="button" class="btn-upload transition-smooth" @click="$refs.logoInput.click()"
+                    :disabled="uploading">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                      <polyline points="17 8 12 3 7 8"></polyline>
+                      <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    {{ uploading ? '...' : $t('common.upload') }}
+                  </button>
+                  <input type="file" ref="logoInput" style="display: none" accept="image/*"
+                    @change="handleLogoUpload" />
+                </div>
+                <small class="form-hint">{{ $t('shopRegistration.form.logoHint') }}</small>
+
+                <div v-if="form.logo_url" class="logo-preview">
+                  <div class="preview-header">
+                    <span class="preview-label">{{ $t('shopRegistration.form.preview') }}:</span>
+                    <button type="button" class="btn-remove-logo" @click="form.logo_url = ''">{{ $t('common.delete')
+                    }}</button>
+                  </div>
+                  <img :src="form.logo_url" alt="Logo" class="preview-image" @error="logoError = true" />
+                  <p v-if="logoError" class="preview-error">{{ $t('shopRegistration.form.uploadError') }}</p>
+                </div>
+              </div>
+            </div>
+
+            <div v-if="error" class="error-message">
+              {{ error }}
+            </div>
+
+            <div class="flex gap-4">
+              <button type="button" class="btn-secondary w-full" @click="currentStep = 1">Back</button>
+              <button type="submit" :disabled="loading" class="submit-button w-full">
+                <span v-if="loading">{{ $t('shopRegistration.form.creating') }}</span>
+                <span v-else>{{ $t('shopRegistration.form.submit') }}</span>
+              </button>
+            </div>
+          </form>
+
+          <div class="info-box mt-8">
+            <h3>{{ $t('shopRegistration.info.title') }}</h3>
+            <ul>
+              <li>Plan: <strong>{{ selectedPlan?.name }}</strong></li>
+              <li>{{ $t('shopRegistration.info.point2') }} <strong>link-platform-shop.uz/{{ form.slug || 'your-slug'
+              }}</strong></li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
@@ -118,9 +193,50 @@ definePageMeta({
 const { token, user } = useAuth()
 const { t } = useI18n()
 const router = useRouter()
+const route = useRoute()
 const toast = useToast()
 const config = useRuntimeConfig()
 
+// Stepper State
+const currentStep = ref(1)
+const selectedPlan = ref(null)
+
+// Step 1: Fetch Plans
+const { data: plans, pending: plansPending } = await useFetch('http://localhost:8000/subscription-plans', {
+  server: false,
+  transform: (data) => {
+    const filteredPlans = data
+      ?.filter(plan => plan.is_active)
+      ?.sort((a, b) => (a.display_order || 0) - (b.display_order || 0)) || []
+
+    return filteredPlans.map(plan => {
+      if (plan.features && !plan.features_list) {
+        try {
+          plan.features_list = JSON.parse(plan.features)
+        } catch (e) {
+          plan.features_list = []
+        }
+      }
+      return plan
+    })
+  }
+})
+
+// Auto-select plan from query param
+watch(plans, (newPlans) => {
+  if (newPlans && route.query.plan) {
+    const preselected = newPlans.find(p => p.slug === route.query.plan)
+    if (preselected) {
+      selectedPlan.value = preselected
+    }
+  }
+}, { immediate: true })
+
+const selectPlan = (plan) => {
+  selectedPlan.value = plan
+}
+
+// Step 2: Shop Form
 const form = reactive({
   name: '',
   slug: '',
@@ -168,6 +284,7 @@ const handleLogoUpload = async (event) => {
     event.target.value = ''
   }
 }
+
 const myShops = ref([])
 const checkingShops = ref(true)
 
@@ -186,7 +303,9 @@ const checkExistingShop = async () => {
     return
   }
 
-  // Check user role
+  // Use current route returnUrl for auth redirects
+  if (!user.value) return
+
   const userRole = user.value?.role || (user.value?.roles?.includes('shop_owner') ? 'shop_owner' : 'user')
 
   if (userRole === 'shop_owner' || userRole === 'platform_admin' || user.value?.roles?.includes('admin')) {
@@ -207,14 +326,12 @@ const checkExistingShop = async () => {
   checkingShops.value = false
 }
 
-// Check on mount
 onMounted(async () => {
   if (user.value) {
     await checkExistingShop()
   }
 })
 
-// Check on user change
 watch(() => user.value, async (newUser) => {
   if (newUser) {
     await checkExistingShop()
@@ -226,7 +343,13 @@ watch(() => user.value, async (newUser) => {
 
 const registerShop = async () => {
   if (!token.value) {
-    router.push('/login')
+    router.push(`/login?returnUrl=${route.fullPath}`)
+    return
+  }
+
+  if (!selectedPlan.value) {
+    toast.error('Please select a plan first')
+    currentStep.value = 1
     return
   }
 
@@ -244,11 +367,10 @@ const registerShop = async () => {
 
     toast.success(t('shopRegistration.success.created'))
 
-    // Small delay for processing
     await new Promise(resolve => setTimeout(resolve, 500))
 
-    // Navigate to subscription page
-    await navigateTo(`/shop/${data.slug}/subscription`)
+    // Navigate to subscription page with selected plan param
+    await navigateTo(`/shop/${data.slug}/subscription?plan=${selectedPlan.value.slug}`)
   } catch (e) {
     error.value = e.data?.detail || t('shopRegistration.error.createFailed')
     toast.error(error.value)
@@ -266,14 +388,73 @@ const registerShop = async () => {
 }
 
 .register-card {
-  max-width: 600px;
-  margin: 0 auto;
   background: white;
   border-radius: 24px;
   padding: 48px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
+.step-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #f4f4f5;
+  color: #71717a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.875rem;
+  transition: all 0.3s;
+}
+
+.step-circle.active {
+  background: #18181b;
+  color: white;
+  box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.05);
+}
+
+.step-circle.completed {
+  background: #22c55e;
+  color: white;
+}
+
+.step-label {
+  font-size: 0.875rem;
+  color: #71717a;
+  font-weight: 500;
+}
+
+.step-label.active {
+  color: #18181b;
+  font-weight: 600;
+}
+
+.step-label.completed {
+  color: #22c55e;
+}
+
+.plan-card:hover {
+  border-color: #18181b;
+}
+
+.fade-in {
+  animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Original Styles... */
 .register-header {
   text-align: center;
   margin-bottom: 32px;
@@ -615,6 +796,10 @@ const registerShop = async () => {
 
   .auth-actions {
     flex-direction: column;
+  }
+
+  .grid-cols-2 {
+    grid-template-columns: 1fr;
   }
 }
 </style>

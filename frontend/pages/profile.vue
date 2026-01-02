@@ -134,7 +134,7 @@
                     date:
                       formatDate(shop.subscription_expires_at)
                   })
-                  }}</span>
+                    }}</span>
                   <span class="value">{{ getDaysLeftText(shop.subscription_expires_at) }}</span>
                 </div>
                 <div class="progress-bar">
@@ -154,8 +154,8 @@
             </div>
           </section>
 
-          <!-- Shop Owner Teaser (for non-owners) -->
-          <section v-if="!isShopOwner" class="promo-card">
+          <!-- Shop Owner Teaser (for non-owners) - HIDDEN as per request -->
+          <section v-if="false" class="promo-card">
             <div class="promo-content">
               <h2>{{ $t('profile.shopPromo.title') }}</h2>
               <p>{{ $t('profile.shopPromo.desc') }}</p>
@@ -192,7 +192,7 @@
                 <div class="form-group">
                   <label>{{ $t('profile.info.phone') }}</label>
                   <input v-model="form.phone" type="tel" readonly disabled />
-                  <span class="field-hint">Telefon raqamni o'zgartirib bo'lmaydi</span>
+                  <span class="field-hint">{{ $t('profile.info.phoneChangeHint') }}</span>
                 </div>
               </div>
 
@@ -249,6 +249,7 @@ const userInitials = computed(() => {
 
 const isAdmin = computed(() => user.value?.role === 'platform_admin' || user.value?.roles?.includes('admin'))
 const isShopOwner = computed(() =>
+  shops.value.length > 0 ||
   user.value?.role === 'shop_owner' ||
   user.value?.roles?.includes('shop_owner') ||
   user.value?.roles?.includes('admin')
@@ -258,9 +259,6 @@ const isShopOwner = computed(() =>
 const shops = ref([])
 const fetchShops = async () => {
   if (!user.value || !token.value) return
-
-  // Only fetch if shop owner or admin
-  if (!isShopOwner.value && !isAdmin.value) return
 
   try {
     const data = await $fetch(`${config.public.apiBase}/platform/shops/me`, {
@@ -332,7 +330,8 @@ const getShopStatusText = (status) => {
 
 const formatDate = (dateString) => {
   if (!dateString) return ''
-  return new Date(dateString).toLocaleDateString('uz-UZ', {
+  const locale = useI18n().locale.value
+  return new Date(dateString).toLocaleDateString(locale, {
     day: 'numeric',
     month: 'long',
     year: 'numeric'
@@ -372,7 +371,7 @@ const getProgressWidth = (shop) => {
 .profile-page {
   min-height: 100vh;
   background: #f5f7fa;
-  padding: 24px 0;
+  /* padding: 24px 0; */
 }
 
 .container {
@@ -689,7 +688,7 @@ const getProgressWidth = (shop) => {
   border: 1px solid #e5e7eb;
 }
 
-.status-card.trial {
+/* .status-card.trial {
   border-left: 4px solid #f59e0b;
 }
 
@@ -699,7 +698,7 @@ const getProgressWidth = (shop) => {
 
 .status-card.expired {
   border-left: 4px solid #ef4444;
-}
+} */
 
 .card-header {
   display: flex;

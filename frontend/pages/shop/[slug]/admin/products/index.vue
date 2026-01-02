@@ -3,7 +3,8 @@
     <!-- Mobile Header -->
     <header class="mobile-header">
       <button class="menu-btn" @click="sidebarOpen = !sidebarOpen">
-        <svg v-if="!sidebarOpen" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg v-if="!sidebarOpen" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2">
           <line x1="3" y1="12" x2="21" y2="12"></line>
           <line x1="3" y1="6" x2="21" y2="6"></line>
           <line x1="3" y1="18" x2="21" y2="18"></line>
@@ -13,7 +14,7 @@
           <line x1="6" y1="6" x2="18" y2="18"></line>
         </svg>
       </button>
-      <span class="mobile-title">Товары</span>
+      <span class="mobile-title">{{ $t('productsPage.title') }}</span>
       <NuxtLink :to="`/${shopSlug}`" class="home-btn">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
@@ -22,80 +23,78 @@
       </NuxtLink>
     </header>
 
-    <ShopAdminSidebar 
-      :shop-slug="shopSlug" 
-      :current-route="currentRoute"
-      v-model="sidebarOpen"
-    />
+    <ShopAdminSidebar :shop-slug="shopSlug" :current-route="currentRoute" v-model="sidebarOpen" />
 
     <!-- Main Content -->
     <main class="admin-main">
       <div class="container">
         <div class="page-header">
           <div>
-            <h1 class="page-title">Товары</h1>
-            <p class="page-subtitle">Управление товарами магазина</p>
+            <h1 class="page-title">{{ $t('productsPage.title') }}</h1>
+            <p class="page-subtitle">{{ $t('productsPage.subtitle') }}</p>
           </div>
           <NuxtLink :to="`/shop/${shopSlug}/admin/products/new`" class="btn btn-primary">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="12" y1="5" x2="12" y2="19"></line>
               <line x1="5" y1="12" x2="19" y2="12"></line>
             </svg>
-            <span class="btn-text">Добавить товар</span>
+            <span class="btn-text">{{ $t('productsPage.titleNew') }}</span>
           </NuxtLink>
         </div>
 
         <div class="admin-content">
-        <div v-if="!products || products.length === 0" class="empty-state">
-          <div class="empty-icon">
-            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-              <line x1="3" y1="6" x2="21" y2="6"></line>
-              <path d="M16 10a4 4 0 0 1-8 0"></path>
-            </svg>
-          </div>
-          <h3>Товаров пока нет</h3>
-          <p>Добавьте первый товар в ваш магазин</p>
-          <NuxtLink :to="`/shop/${shopSlug}/admin/products/new`" class="btn btn-primary">Добавить товар</NuxtLink>
-        </div>
-        
-        <div v-else class="products-grid">
-          <div v-for="product in products" :key="product.id" class="product-card">
-            <div class="product-image">
-              <img :src="product.image_url" :alt="product.name" />
-              <div class="product-actions">
-                <NuxtLink :to="`/shop/${shopSlug}/admin/products/edit/${product.id}`" class="btn-action btn-edit">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                  </svg>
-                </NuxtLink>
-                <button @click="deleteProduct(product.id)" class="btn-action btn-delete">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="3 6 5 6 21 6"></polyline>
-                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                  </svg>
-                </button>
-              </div>
+          <div v-if="!products || products.length === 0" class="empty-state">
+            <div class="empty-icon">
+              <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <path d="M16 10a4 4 0 0 1-8 0"></path>
+              </svg>
             </div>
-            <div class="product-info">
-              <div class="product-category">{{ product.category }}</div>
-              <h3 class="product-name">{{ product.name }}</h3>
-              <div class="product-brand">{{ product.brand }}</div>
-              <div class="product-footer">
-                <div class="product-price">${{ product.price.toFixed(2) }}</div>
-                <div class="product-meta">
-                  <div class="product-sold" v-if="product.sold_count > 0">
-                    🔥 {{ product.sold_count }} продано
-                  </div>
-                  <div class="product-stock" :class="{ 'out-of-stock': product.stock === 0 }">
-                    {{ product.stock > 0 ? `${product.stock} в наличии` : 'Нет в наличии' }}
+            <h3>{{ $t('productsPage.emptyTitle') }}</h3>
+            <p>{{ $t('productsPage.emptyDesc') }}</p>
+            <NuxtLink :to="`/shop/${shopSlug}/admin/products/new`" class="btn btn-primary">{{
+              $t('productsPage.titleNew') }}</NuxtLink>
+          </div>
+
+          <div v-else class="products-grid">
+            <div v-for="product in products" :key="product.id" class="product-card">
+              <div class="product-image">
+                <img :src="product.image_url" :alt="product.name" />
+                <div class="product-actions">
+                  <NuxtLink :to="`/shop/${shopSlug}/admin/products/edit/${product.id}`" class="btn-action btn-edit">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                    </svg>
+                  </NuxtLink>
+                  <button @click="deleteProduct(product.id)" class="btn-action btn-delete">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="3 6 5 6 21 6"></polyline>
+                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <div class="product-info">
+                <div class="product-category">{{ product.category }}</div>
+                <h3 class="product-name">{{ product.name }}</h3>
+                <div class="product-brand">{{ product.brand }}</div>
+                <div class="product-footer">
+                  <div class="product-price">${{ product.price.toFixed(2) }}</div>
+                  <div class="product-meta">
+                    <div class="product-sold" v-if="product.sold_count > 0">
+                      🔥 {{ product.sold_count }} {{ $t('productsPage.sold') }}
+                    </div>
+                    <div class="product-stock" :class="{ 'out-of-stock': product.stock === 0 }">
+                      {{ product.stock > 0 ? `${product.stock} ${$t('productsPage.inStock')}` :
+                        $t('productsPage.outOfStock') }}
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
         </div>
       </div>
     </main>
@@ -110,6 +109,7 @@ definePageMeta({
 const route = useRoute()
 const shopSlug = route.params.slug
 const { token, logout } = useAuth()
+const { t } = useI18n()
 
 const sidebarOpen = ref(false)
 
@@ -130,17 +130,17 @@ watch(error, (newError) => {
 })
 
 const deleteProduct = async (id) => {
-  if (!confirm('Вы уверены, что хотите удалить этот товар?')) return
+  if (!confirm(t('productsPage.deleteConfirm'))) return
   try {
     await $fetch(`http://localhost:8000/products/${id}`, {
       method: 'DELETE',
       headers: { Authorization: `Bearer ${token.value}` }
     })
     refresh()
-    useToast().success('Товар удален')
+    useToast().success(t('alerts.shop.productDeleted'))
   } catch (e) {
     console.error('[Products List] Ошибка при удалении товара:', e)
-    useToast().error(e.data?.detail || e.message || 'Ошибка при удалении товара')
+    useToast().error(e.data?.detail || e.message || t('alerts.shop.deleteError'))
   }
 }
 </script>
@@ -303,13 +303,13 @@ const deleteProduct = async (id) => {
   border-radius: 24px;
   overflow: hidden;
   transition: all 0.3s;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 10px 40px rgba(0,0,0,0.02);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 10px 40px rgba(0, 0, 0, 0.02);
   border: 1px solid #f1f1f1;
 }
 
 .product-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
 }
 
 .product-image {
@@ -360,7 +360,7 @@ const deleteProduct = async (id) => {
 .btn-edit {
   background: white;
   color: #3B82F6;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .btn-edit:hover {
@@ -371,7 +371,7 @@ const deleteProduct = async (id) => {
 .btn-delete {
   background: white;
   color: #EF4444;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .btn-delete:hover {
@@ -459,13 +459,13 @@ const deleteProduct = async (id) => {
   .mobile-header {
     display: flex;
   }
-  
+
   /* Hide large title/subtitle on mobile since we have the Mobile Header */
-  .page-title, 
+  .page-title,
   .page-subtitle {
     display: none;
   }
-  
+
   .admin-main {
     margin-left: 0;
     padding: 60px 0 0 0;
@@ -492,15 +492,14 @@ const deleteProduct = async (id) => {
     padding: 14px;
     border-radius: 12px;
   }
-  
+
   .products-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 12px;
   }
-  
+
   .product-actions {
     opacity: 1;
   }
 }
 </style>
-

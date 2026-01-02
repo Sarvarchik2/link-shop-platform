@@ -10,7 +10,7 @@
           </path>
         </svg>
       </button>
-      <div v-if="totalStock === 0" class="sold-out-badge">SOLD OUT</div>
+      <div v-if="totalStock === 0" class="sold-out-badge">{{ $t('product.soldOut') }}</div>
       <img :src="product.image_url" :alt="getField(product, 'name')" :class="{ 'out-of-stock': totalStock === 0 }" />
     </div>
     <div class="product-info">
@@ -153,7 +153,7 @@ const toggleFav = async () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  /* padding: 20px; */
   overflow: hidden;
 }
 

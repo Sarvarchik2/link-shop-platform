@@ -157,7 +157,7 @@
           <div class="table-header">
             <div class="table-info">
               <span>{{ $t('common.showing') }} {{ displayedUsers.length }} {{ $t('common.of') }} {{ users?.length || 0
-              }}</span>
+                }}</span>
             </div>
             <div class="table-actions">
               <button @click="exportData" class="export-btn">
@@ -647,7 +647,7 @@ const formatTime = (dateString) => {
 
 const viewUserDetails = (user) => {
   // Можно добавить модальное окно с деталями
-  toast.info(`Пользователь: ${getUserName(user)}`)
+  toast.info(t('platformAdmin.users.userInfo', { name: getUserName(user) }))
 }
 
 const exportData = () => {

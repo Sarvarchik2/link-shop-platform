@@ -221,12 +221,12 @@ const handleLogoUpload = async (event) => {
 
   // Validation
   if (!file.type.startsWith('image/')) {
-    toast.error('Пожалуйста, выберите изображение')
+    toast.error(t('alerts.shop.logoRequired'))
     return
   }
 
   if (file.size > 2 * 1024 * 1024) {
-    toast.error('Размер файла не должен превышать 2МБ')
+    toast.error(t('alerts.shop.fileSize'))
     return
   }
 
@@ -242,10 +242,10 @@ const handleLogoUpload = async (event) => {
 
     form.logo_url = response.url
     logoError.value = false
-    toast.success('Логотип успешно загружен')
+    toast.success(t('alerts.shop.logoUploaded'))
   } catch (e) {
     console.error('Upload error:', e)
-    toast.error('Ошибка при загрузке логотипа')
+    toast.error(t('alerts.shop.logoError'))
   } finally {
     uploading.value = false
     // Clear input
@@ -305,7 +305,7 @@ const handleSubmit = async () => {
     await refresh()
   } catch (e) {
     console.error('Error updating shop info:', e)
-    toast.error(e.data?.detail || 'Ошибка при сохранении информации')
+    toast.error(e.data?.detail || t('alerts.shop.errorSaving'))
   } finally {
     loading.value = false
   }

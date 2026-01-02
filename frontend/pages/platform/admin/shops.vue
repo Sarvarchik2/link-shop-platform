@@ -119,7 +119,7 @@
               <option value="trial">{{ $t('platformAdmin.shops.trial') }}</option>
               <option value="active">{{ $t('platformAdmin.shops.active') }}</option>
               <option value="expired">{{ $t('platformAdmin.shops.expired') }}</option>
-              <option value="cancelled">Cancelled</option>
+              <option value="cancelled">{{ $t('platformAdmin.shops.cancelled') }}</option>
             </select>
 
             <select v-model="filterActive" class="filter-select">
@@ -159,7 +159,8 @@
         <div v-else class="table-container">
           <div class="table-header">
             <div class="table-info">
-              <span>Показано: {{ displayedShops.length }} из {{ shops?.length || 0 }}</span>
+              <span>{{ $t('common.showing') }} {{ displayedShops.length }} {{ $t('common.of') }} {{ shops?.length || 0
+              }}</span>
             </div>
             <div class="table-actions">
               <button @click="exportData" class="export-btn">
@@ -257,7 +258,7 @@
                       <div class="shop-details">
                         <span class="shop-name">{{ shop.name }}</span>
                         <span v-if="shop.description" class="shop-description">{{ truncateText(shop.description, 40)
-                          }}</span>
+                        }}</span>
                       </div>
                     </div>
                   </td>
@@ -313,7 +314,8 @@
                   </td>
                   <td>
                     <div class="actions">
-                      <button @click="openShopDetails(shop)" class="action-btn btn-icon" title="Подробнее">
+                      <button @click="openShopDetails(shop)" class="action-btn btn-icon"
+                        :title="$t('platformAdmin.shops.details')">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                           stroke-width="2">
                           <circle cx="12" cy="12" r="10"></circle>
@@ -323,12 +325,12 @@
                       </button>
                       <button @click="toggleActive(shop)"
                         :class="['action-btn', shop.is_active ? 'btn-danger' : 'btn-success']"
-                        :title="shop.is_active ? 'Деактивировать' : 'Активировать'">
-                        {{ shop.is_active ? 'Деакт.' : 'Актив.' }}
+                        :title="shop.is_active ? $t('platformAdmin.shops.deactivate') : $t('platformAdmin.shops.activate')">
+                        {{ shop.is_active ? $t('platformAdmin.shops.deactivate') : $t('platformAdmin.shops.activate') }}
                       </button>
                       <button @click="openSubscriptionModal(shop)" class="action-btn btn-primary"
-                        title="Управление подпиской">
-                        Подписка
+                        :title="$t('platformAdmin.shops.subscriptionManagement')">
+                        {{ $t('platformAdmin.shops.subscription') }}
                       </button>
                     </div>
                   </td>
@@ -373,15 +375,15 @@
                   <span class="info-value">{{ shop.id }}</span>
                 </div>
                 <div class="info-row">
-                  <span class="info-label">Владелец:</span>
+                  <span class="info-label">{{ $t('platformAdmin.shops.table.owner') }}:</span>
                   <span class="info-value">{{ shop.owner_name || `ID: ${shop.owner_id}` }}</span>
                 </div>
                 <div class="info-row" v-if="shop.subscription_plan_name">
-                  <span class="info-label">План:</span>
+                  <span class="info-label">{{ $t('platformAdmin.shops.table.plan') }}:</span>
                   <span class="info-value">{{ shop.subscription_plan_name }}</span>
                 </div>
                 <div class="info-row" v-if="shop.subscription_expires_at">
-                  <span class="info-label">Истекает:</span>
+                  <span class="info-label">{{ $t('platformAdmin.shops.table.expires') }}:</span>
                   <span class="info-value">
                     {{ formatDate(shop.subscription_expires_at) }}
                     <span :class="['days-badge-mobile', getDaysRemainingClass(shop)]">
@@ -390,13 +392,13 @@
                   </span>
                 </div>
                 <div class="info-row">
-                  <span class="info-label">Создан:</span>
+                  <span class="info-label">{{ $t('platformAdmin.shops.table.created') }}:</span>
                   <span class="info-value">{{ formatDate(shop.created_at) }}</span>
                 </div>
                 <div class="info-row">
-                  <span class="info-label">Активен:</span>
+                  <span class="info-label">{{ $t('platformAdmin.shops.table.isActive') }}:</span>
                   <span :class="['status-badge-small', shop.is_active ? 'status-active' : 'status-cancelled']">
-                    {{ shop.is_active ? 'Да' : 'Нет' }}
+                    {{ shop.is_active ? $t('common.yes') : $t('common.no') }}
                   </span>
                 </div>
               </div>
@@ -409,14 +411,14 @@
                     <line x1="12" y1="16" x2="12" y2="12"></line>
                     <line x1="12" y1="8" x2="12.01" y2="8"></line>
                   </svg>
-                  Подробнее
+                  {{ $t('platformAdmin.shops.details') }}
                 </button>
                 <button @click="toggleActive(shop)"
                   :class="['mobile-action-btn', shop.is_active ? 'btn-danger' : 'btn-success']">
-                  {{ shop.is_active ? 'Деактивировать' : 'Активировать' }}
+                  {{ shop.is_active ? $t('platformAdmin.shops.deactivate') : $t('platformAdmin.shops.activate') }}
                 </button>
                 <button @click="openSubscriptionModal(shop)" class="mobile-action-btn btn-primary">
-                  Подписка
+                  {{ $t('platformAdmin.shops.subscription') }}
                 </button>
               </div>
             </div>
@@ -428,7 +430,7 @@
                   d="M20 7h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v3H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2z">
                 </path>
               </svg>
-              <p>Магазины не найдены</p>
+              <p>{{ $t('platformAdmin.shops.notFound') }}</p>
             </div>
           </div>
 
@@ -447,7 +449,7 @@
             </button>
 
             <div class="pagination-info">
-              Страница {{ currentPage }} из {{ totalPages }}
+              {{ $t('common.page') }} {{ currentPage }} {{ $t('common.of') }} {{ totalPages }}
             </div>
 
             <button @click="currentPage++" :disabled="currentPage === totalPages" class="pagination-btn">
@@ -468,7 +470,7 @@
         <div v-if="showModal && selectedShop" class="modal-overlay" @click="closeModal">
           <div class="modal-content" @click.stop>
             <div class="modal-header">
-              <h2 class="modal-title">Управление подпиской</h2>
+              <h2 class="modal-title">{{ $t('platformAdmin.shops.subscriptionManagement') }}</h2>
               <button @click="closeModal" class="modal-close">×</button>
             </div>
 
@@ -476,7 +478,7 @@
               <h3>{{ selectedShop.name }}</h3>
               <p class="shop-slug-text">{{ selectedShop.slug }}</p>
               <div class="owner-info">
-                <span class="owner-label">Владелец:</span>
+                <span class="owner-label">{{ $t('platformAdmin.shops.table.owner') }}:</span>
                 <span class="owner-value">{{ selectedShop.owner_name || `ID: ${selectedShop.owner_id}` }}</span>
                 <span v-if="selectedShop.owner_phone" class="owner-phone">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -490,15 +492,16 @@
             </div>
 
             <div class="current-status-section">
-              <label class="status-label">Текущий тарифный план:</label>
-              <div class="current-plan-name">{{ selectedShop.subscription_plan_name || 'Не выбран' }}</div>
+              <label class="status-label">{{ $t('platformAdmin.shops.currentPlan') }}:</label>
+              <div class="current-plan-name">{{ selectedShop.subscription_plan_name ||
+                $t('platformAdmin.plans.card.inactive') }}</div>
 
-              <label class="status-label">Текущий статус:</label>
+              <label class="status-label">{{ $t('platformAdmin.shops.currentStatus') }}:</label>
               <span :class="['current-status-badge', getStatusClass(selectedShop.subscription_status)]">
                 {{ getStatusText(selectedShop.subscription_status) }}
               </span>
               <div v-if="selectedShop.subscription_expires_at" class="expires-info">
-                Истекает: {{ formatDate(selectedShop.subscription_expires_at) }}
+                {{ $t('platformAdmin.shops.table.expires') }}: {{ formatDate(selectedShop.subscription_expires_at) }}
                 <span class="days-warning" :class="getDaysRemainingClass(selectedShop)">
                   ({{ getDaysRemaining(selectedShop) }})
                 </span>
@@ -507,7 +510,7 @@
 
             <!-- История подписок -->
             <div class="subscription-history-section" v-if="subscriptionHistory.length > 0">
-              <h3>История запросов</h3>
+              <h3>{{ $t('platformAdmin.shops.history') }}</h3>
               <div class="history-list">
                 <div v-for="req in subscriptionHistory" :key="req.id" class="history-item">
                   <div class="history-main">
@@ -517,7 +520,7 @@
                   </div>
                   <div class="history-meta">
                     <span>{{ formatDate(req.requested_at) }}</span>
-                    <span>{{ req.duration_months }} мес.</span>
+                    <span>{{ req.duration_months }} {{ $t('platformAdmin.plans.period.days').substring(0, 3) }}.</span>
                   </div>
                 </div>
               </div>
@@ -525,28 +528,33 @@
 
             <form @submit.prevent="updateSubscription" class="modal-form">
               <div class="form-group">
-                <label>Статус подписки</label>
+                <label>{{ $t('platformAdmin.shops.table.status') }}</label>
                 <select v-model="subscriptionForm.status" class="form-input">
-                  <option value="trial">Пробный период</option>
-                  <option value="active">Активна</option>
-                  <option value="expired">Истекла</option>
-                  <option value="cancelled">Отменена</option>
+                  <option value="trial">{{ $t('platformAdmin.shops.trial') }}</option>
+                  <option value="active">{{ $t('platformAdmin.shops.active') }}</option>
+                  <option value="expired">{{ $t('platformAdmin.shops.expired') }}</option>
+                  <option value="cancelled">{{ $t('platformAdmin.shops.cancelled') }}</option>
                 </select>
               </div>
               <div class="form-group">
-                <label>Дата истечения</label>
+                <label>{{ $t('platformAdmin.shops.table.expires') }}</label>
                 <input v-model="subscriptionForm.expires_at" type="datetime-local" class="form-input" />
                 <div class="quick-actions">
-                  <button type="button" @click="setExpiry(1)" class="quick-btn">+1 месяц</button>
-                  <button type="button" @click="setExpiry(3)" class="quick-btn">+3 месяца</button>
-                  <button type="button" @click="setExpiry(6)" class="quick-btn">+6 месяцев</button>
-                  <button type="button" @click="setExpiry(12)" class="quick-btn">+1 год</button>
+                  <button type="button" @click="setExpiry(1)" class="quick-btn">{{
+                    $t('platformAdmin.shops.quickActions.month1') }}</button>
+                  <button type="button" @click="setExpiry(3)" class="quick-btn">{{
+                    $t('platformAdmin.shops.quickActions.month3') }}</button>
+                  <button type="button" @click="setExpiry(6)" class="quick-btn">{{
+                    $t('platformAdmin.shops.quickActions.month6') }}</button>
+                  <button type="button" @click="setExpiry(12)" class="quick-btn">{{
+                    $t('platformAdmin.shops.quickActions.year1') }}</button>
                 </div>
               </div>
               <div class="modal-actions">
-                <button type="button" @click="closeModal" class="btn-secondary" :disabled="isUpdating">Отмена</button>
+                <button type="button" @click="closeModal" class="btn-secondary" :disabled="isUpdating">{{
+                  $t('common.cancel') }}</button>
                 <button type="submit" class="btn-primary" :disabled="isUpdating" :class="{ 'opacity-50': isUpdating }">
-                  {{ isUpdating ? 'Сохранение...' : 'Активировать подписку' }}
+                  {{ isUpdating ? $t('common.saving') : $t('platformAdmin.plans.card.activate') }}
                 </button>
               </div>
 
@@ -573,7 +581,7 @@ const sidebarOpen = ref(false)
 
 const handleLogout = () => {
   logout()
-  useToast().success('Вы вышли из аккаунта')
+  useToast().success(t('alerts.shop.loggedOut'))
 }
 
 const currentRoute = computed(() => {
@@ -749,7 +757,7 @@ const getStatusText = (status) => {
     'trial': t('platformAdmin.shops.trial'),
     'active': t('platformAdmin.shops.active'),
     'expired': t('platformAdmin.shops.expired'),
-    'cancelled': 'Cancelled'
+    'cancelled': t('platformAdmin.shops.cancelled')
   }
   return statusMap[status] || status
 }
@@ -772,10 +780,10 @@ const getDaysRemaining = (shop) => {
   const expiresAt = new Date(shop.subscription_expires_at)
   const days = Math.ceil((expiresAt - now) / (1000 * 60 * 60 * 24))
 
-  if (days < 0) return 'Истекла'
-  if (days === 0) return 'Истекает сегодня'
-  if (days === 1) return 'Истекает завтра'
-  return `${days} дн.`
+  if (days < 0) return t('platformAdmin.shops.status.expired') // Or just 'expired' logic
+  if (days === 0) return t('platformAdmin.shops.expiresToday')
+  if (days === 1) return t('platformAdmin.shops.expiresTomorrow')
+  return t('platformAdmin.shops.daysLeft', { days })
 }
 
 const getDaysRemainingClass = (shop) => {
@@ -829,7 +837,7 @@ const exportData = () => {
   link.href = URL.createObjectURL(blob)
   link.download = `shops-${new Date().toISOString().split('T')[0]}.csv`
   link.click()
-  toast.success('Данные экспортированы')
+  toast.success(t('alerts.shop.exported'))
 }
 
 const getRequestStatusText = (status) => {
@@ -879,7 +887,7 @@ const setExpiry = (months) => {
 
 const updateSubscription = async () => {
   if (!subscriptionForm.expires_at && subscriptionForm.status === 'active') {
-    toast.warning('Укажите дату истечения для активной подписки')
+    toast.warning(t('alerts.shop.expiryRequired'))
     return
   }
 
@@ -902,7 +910,7 @@ const updateSubscription = async () => {
       body: body
     })
 
-    const planName = subscriptionForm.status === 'active' ? 'Подписка активирована' : 'Подписка обновлена'
+    const planName = subscriptionForm.status === 'active' ? t('alerts.shop.subscriptionActivated') : t('alerts.shop.subscriptionUpdated')
     toast.success(planName)
     closeModal()
     refresh()
@@ -924,7 +932,7 @@ const toggleActive = async (shop) => {
         is_active: !shop.is_active
       }
     })
-    toast.success(`Магазин ${shop.is_active ? 'деактивирован' : 'активирован'}`)
+    toast.success(t('alerts.shop.statusChanged', { status: shop.is_active ? t('common.deactivated') : t('common.activated') }))
     refresh()
   } catch (e) {
     toast.error(e.data?.detail || 'Ошибка при изменении статуса')
@@ -1559,6 +1567,8 @@ const toggleActive = async (shop) => {
 .btn-primary {
   background: #111;
   color: white;
+  padding: 10px;
+  border-radius: 14px;
 }
 
 .btn-primary:hover {

@@ -3,7 +3,8 @@
     <!-- Mobile Header -->
     <header class="mobile-header">
       <button class="menu-btn" @click="sidebarOpen = !sidebarOpen">
-        <svg v-if="!sidebarOpen" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg v-if="!sidebarOpen" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2">
           <line x1="3" y1="12" x2="21" y2="12"></line>
           <line x1="3" y1="6" x2="21" y2="6"></line>
           <line x1="3" y1="18" x2="21" y2="18"></line>
@@ -13,7 +14,7 @@
           <line x1="6" y1="6" x2="18" y2="18"></line>
         </svg>
       </button>
-      <span class="mobile-title">Добавить бренд</span>
+      <span class="mobile-title">{{ $t('brandsPage.add') }}</span>
       <NuxtLink :to="`/shop/${shopSlug}`" class="home-btn">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
@@ -22,11 +23,7 @@
       </NuxtLink>
     </header>
 
-    <ShopAdminSidebar 
-      :shop-slug="shopSlug" 
-      current-route="brands" 
-      v-model="sidebarOpen"
-    />
+    <ShopAdminSidebar :shop-slug="shopSlug" current-route="brands" v-model="sidebarOpen" />
 
     <!-- Main Content -->
     <main class="admin-main">
@@ -34,78 +31,63 @@
         <div class="page-header">
           <NuxtLink :to="`/shop/${shopSlug}/admin/brands`" class="back-link">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M19 12H5M12 19l-7-7 7-7"/>
+              <path d="M19 12H5M12 19l-7-7 7-7" />
             </svg>
-            Назад
+            {{ $t('common.back') }}
           </NuxtLink>
-          <h1 class="page-title">Добавить бренд</h1>
+          <h1 class="page-title">{{ $t('brandsPage.add') }}</h1>
         </div>
-        
+
         <div class="form-card">
-      <form @submit.prevent="handleSubmit">
-        <div class="form-group">
-          <label class="label">Название бренда</label>
-          <input v-model="form.name" required class="input" placeholder="например, Ray-Ban" />
-        </div>
-
-        <div class="form-group">
-          <label class="label">Логотип бренда</label>
-          
-          <!-- Image Preview -->
-          <div v-if="logoUrl" class="image-preview">
-            <img :src="logoUrl" alt="Logo preview" />
-            <button type="button" @click="logoUrl = ''" class="remove-btn">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
-              </svg>
-            </button>
-          </div>
-
-          <!-- Upload Area -->
-          <div v-else class="upload-area">
-            <div 
-              class="drop-zone"
-              :class="{ 'drag-over': isDragging }"
-              @dragover.prevent="isDragging = true"
-              @dragleave.prevent="isDragging = false"
-              @drop.prevent="handleDrop"
-              @click="$refs.fileInput.click()"
-            >
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                <polyline points="17 8 12 3 7 8"></polyline>
-                <line x1="12" y1="3" x2="12" y2="15"></line>
-              </svg>
-              <p>Перетащите изображение или нажмите для загрузки</p>
-              <span class="upload-hint">PNG, JPG до 5MB</span>
+          <form @submit.prevent="handleSubmit">
+            <div class="form-group">
+              <label class="label">{{ $t('brandsPage.nameLabel') }}</label>
+              <input v-model="form.name" required class="input" :placeholder="$t('brandsPage.namePlaceholder')" />
             </div>
-            <input 
-              ref="fileInput" 
-              type="file" 
-              accept="image/*" 
-              @change="handleFileChange" 
-              hidden 
-            />
-            
-            <div class="url-input">
-              <span class="or-divider">или введите URL</span>
-              <input 
-                v-model="logoUrl" 
-                class="input" 
-                placeholder="https://example.com/logo.png" 
-              />
-            </div>
-          </div>
-        </div>
 
-        <div class="form-actions">
-          <NuxtLink :to="`/shop/${shopSlug}/admin/brands`" class="btn btn-outline">Отмена</NuxtLink>
-          <button type="submit" class="btn btn-primary" :disabled="loading || !form.name || !logoUrl">
-            {{ loading ? 'Создание...' : 'Создать бренд' }}
-          </button>
-        </div>
-      </form>
+            <div class="form-group">
+              <label class="label">{{ $t('brandsPage.logoLabel') }}</label>
+
+              <!-- Image Preview -->
+              <div v-if="logoUrl" class="image-preview">
+                <img :src="logoUrl" alt="Logo preview" />
+                <button type="button" @click="logoUrl = ''" class="remove-btn">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                </button>
+              </div>
+
+              <!-- Upload Area -->
+              <div v-else class="upload-area">
+                <div class="drop-zone" :class="{ 'drag-over': isDragging }" @dragover.prevent="isDragging = true"
+                  @dragleave.prevent="isDragging = false" @drop.prevent="handleDrop" @click="$refs.fileInput.click()">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="17 8 12 3 7 8"></polyline>
+                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                  </svg>
+                  <p>{{ $t('categoriesPage.imageHelp') }}</p>
+                  <span class="upload-hint">{{ $t('admin.uploadHint') }}</span>
+                </div>
+                <input ref="fileInput" type="file" accept="image/*" @change="handleFileChange" hidden />
+
+                <div class="url-input">
+                  <span class="or-divider">{{ $t('brandsPage.orUrl') }}</span>
+                  <input v-model="logoUrl" class="input" placeholder="https://example.com/logo.png" />
+                </div>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <NuxtLink :to="`/shop/${shopSlug}/admin/brands`" class="btn btn-outline">{{ $t('common.cancel') }}
+              </NuxtLink>
+              <button type="submit" class="btn btn-primary" :disabled="loading || !form.name || !logoUrl">
+                {{ loading ? $t('admin.creating') : $t('brandsPage.createBtn') }}
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </main>
@@ -129,6 +111,7 @@ console.log('[Add Brand] Token:', token.value ? 'есть' : 'нет')
 
 const sidebarOpen = ref(false)
 
+const { t } = useI18n()
 const toast = useToast()
 const loading = ref(false)
 const isDragging = ref(false)
@@ -156,14 +139,14 @@ const handleDrop = async (event) => {
   if (file && file.type.startsWith('image/')) {
     await uploadFile(file)
   } else {
-    toast.error('Пожалуйста, загрузите изображение')
+    toast.error(t('alerts.shop.imageRequired'))
   }
 }
 
 const uploadFile = async (file) => {
   const formData = new FormData()
   formData.append('file', file)
-  
+
   try {
     console.log('[Add Brand] Загрузка изображения:', file.name)
     const response = await $fetch('http://localhost:8000/upload', {
@@ -172,7 +155,7 @@ const uploadFile = async (file) => {
     })
     console.log('[Add Brand] Изображение загружено:', response.url)
     logoUrl.value = response.url
-    toast.success('Изображение загружено!')
+    toast.success(t('alerts.shop.imageUploaded'))
   } catch (e) {
     console.error('[Add Brand] Ошибка загрузки изображения:', e)
     console.error('[Add Brand] Детали ошибки:', {
@@ -180,20 +163,20 @@ const uploadFile = async (file) => {
       statusCode: e.statusCode,
       data: e.data
     })
-    toast.error('Ошибка при загрузке изображения')
+    toast.error(t('alerts.shop.imageError'))
   }
 }
 
 const handleSubmit = async () => {
   if (!form.name || !logoUrl.value) {
-    toast.warning('Пожалуйста, заполните все поля')
+    toast.warning(t('alerts.shop.fillAll'))
     return
   }
-  
+
   loading.value = true
   try {
     console.log('[Add Brand] Отправка данных:', { name: form.name, logo_url: logoUrl.value, shop_slug: shopSlug })
-    
+
     const response = await $fetch(`http://localhost:8000/brands?shop_slug=${shopSlug}`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${token.value}` },
@@ -202,9 +185,9 @@ const handleSubmit = async () => {
         logo_url: logoUrl.value
       }
     })
-    
+
     console.log('[Add Brand] Бренд создан успешно:', response)
-    toast.success('Бренд успешно создан!')
+    toast.success(t('alerts.shop.brandCreated'))
     navigateTo(`/shop/${shopSlug}/admin/brands`)
   } catch (e) {
     console.error('[Add Brand] Ошибка при создании бренда:', e)
@@ -214,7 +197,7 @@ const handleSubmit = async () => {
       statusMessage: e.statusMessage,
       data: e.data
     })
-    toast.error(e.data?.detail || e.message || 'Ошибка при создании бренда')
+    toast.error(e.data?.detail || e.message || t('alerts.shop.brandCreationError'))
   } finally {
     loading.value = false
   }
@@ -274,7 +257,7 @@ const handleSubmit = async () => {
   background: white;
   padding: 32px;
   border-radius: 20px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
 }
 
 .form-group {
@@ -383,7 +366,7 @@ const handleSubmit = async () => {
   width: 32px;
   height: 32px;
   border-radius: 8px;
-  background: rgba(0,0,0,0.7);
+  background: rgba(0, 0, 0, 0.7);
   color: white;
   border: none;
   cursor: pointer;
@@ -493,7 +476,7 @@ const handleSubmit = async () => {
     margin-left: 0;
     padding-top: 60px;
   }
- 
+
   .mobile-header {
     display: flex;
   }
@@ -503,24 +486,23 @@ const handleSubmit = async () => {
   .admin-main {
     margin-left: 0;
   }
-  
+
   .add-brand-page {
     padding: 20px;
   }
-  
+
   .form-card {
     padding: 20px;
   }
-  
+
   .form-actions {
     flex-direction: column;
   }
-  
+
   .btn {
     width: 100%;
     text-align: center;
     justify-content: center;
   }
 }
-
 </style>

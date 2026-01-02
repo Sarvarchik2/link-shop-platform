@@ -14,7 +14,7 @@
           <line x1="6" y1="6" x2="18" y2="18"></line>
         </svg>
       </button>
-      <span class="mobile-title">{{ $t('admin.addProduct') }}</span>
+      <span class="mobile-title">{{ $t('productsPage.titleNew') }}</span>
     </header>
 
     <ShopAdminSidebar :shop-slug="shopSlug" current-route="products" v-model="sidebarOpen" />
@@ -29,123 +29,132 @@
               <polyline points="12 19 5 12 12 5"></polyline>
             </svg>
           </NuxtLink>
-          <h1 class="page-title">{{ $t('admin.addProduct') }}</h1>
+          <h1 class="page-title">{{ $t('productsPage.titleNew') }}</h1>
         </div>
 
         <!-- Limit Warning -->
         <div v-if="limitReached" class="limit-warning">
           <div class="warning-icon">⚠️</div>
           <div class="warning-content">
-            <h3>Лимит товаров исчерпан</h3>
-            <p>Вы достигли максимального количества товаров для вашего тарифного плана ({{ stats?.plan_limit_products
-            }}). Пожалуйста, удалите старые товары или обновите подписку, чтобы добавить новые.</p>
-            <NuxtLink :to="`/shop/${shopSlug}/subscription`" class="btn-upgrade">Улучшить тариф</NuxtLink>
+            <h3>{{ $t('productsPage.limitReachedTitle') }}</h3>
+            <p>{{ $t('productsPage.limitReachedDesc', { limit: stats?.plan_limit_products }) }}</p>
+            <NuxtLink :to="`/shop/${shopSlug}/subscription`" class="btn-upgrade">{{ $t('productsPage.upgradePlan') }}
+            </NuxtLink>
           </div>
         </div>
 
         <div class="form-card">
           <form @submit.prevent="handleSubmit">
             <div class="form-section">
-              <h2 class="section-title">{{ $t('admin.basicInfo') }}</h2>
+              <h2 class="section-title">{{ $t('productsPage.basicInfo') }}</h2>
 
               <!-- Language Tabs -->
               <div class="language-tabs">
                 <button type="button" v-for="lang in ['uz', 'ru', 'en']" :key="lang" @click="currentLang = lang"
                   class="lang-tab" :class="{ active: currentLang === lang }">
-                  {{ lang === 'uz' ? '🇺🇿 O\'zbek' : lang === 'ru' ? '🇷🇺 Русский' : '🇬🇧 English' }}
+                  {{ getLanguageLabel(lang) }}
                 </button>
               </div>
 
               <!-- Uzbek Fields -->
               <div v-show="currentLang === 'uz'" class="lang-content">
                 <div class="form-group">
-                  <label class="label">Название товара (O'zbekcha) *</label>
-                  <input v-model="form.name_uz" required class="input" placeholder="masalan, Ray-Ban Wayfarer" />
+                  <label class="label">{{ $t('productsPage.nameLabel') }} ({{ $t('languages.uz') }}) *</label>
+                  <input v-model="form.name_uz" required class="input"
+                    :placeholder="$t('productsPage.example') + ', Ray-Ban Wayfarer'" />
                 </div>
 
                 <div class="form-group">
-                  <label class="label">Описание (O'zbekcha) *</label>
+                  <label class="label">{{ $t('productsPage.descriptionLabel') }} ({{ $t('languages.uz') }}) *</label>
                   <textarea v-model="form.description_uz" rows="4" required class="input"
-                    placeholder="Mahsulot tavsifi..."></textarea>
+                    :placeholder="$t('productsPage.descriptionPlaceholder')"></textarea>
                 </div>
 
                 <div class="form-group">
-                  <label class="label">Kategoriya (O'zbekcha) *</label>
-                  <input v-model="form.category_uz" required class="input" placeholder="masalan, Ko'zoynak" />
+                  <label class="label">{{ $t('productsPage.categoryLabel') }} ({{ $t('languages.uz') }}) *</label>
+                  <input v-model="form.category_uz" required class="input"
+                    :placeholder="$t('productsPage.example') + ', Ko\'zoynak'" />
                 </div>
 
                 <div class="form-group">
-                  <label class="label">Brend (O'zbekcha) *</label>
-                  <input v-model="form.brand_uz" required class="input" placeholder="masalan, Ray-Ban" />
+                  <label class="label">{{ $t('productsPage.brandLabel') }} ({{ $t('languages.uz') }}) *</label>
+                  <input v-model="form.brand_uz" required class="input"
+                    :placeholder="$t('productsPage.example') + ', Ray-Ban'" />
                 </div>
               </div>
 
               <!-- Russian Fields -->
               <div v-show="currentLang === 'ru'" class="lang-content">
                 <div class="form-group">
-                  <label class="label">Название товара (Русский) *</label>
-                  <input v-model="form.name_ru" required class="input" placeholder="например, Ray-Ban Wayfarer" />
+                  <label class="label">{{ $t('productsPage.nameLabel') }} ({{ $t('languages.ru') }}) *</label>
+                  <input v-model="form.name_ru" required class="input"
+                    :placeholder="$t('productsPage.example') + ', Ray-Ban Wayfarer'" />
                 </div>
 
                 <div class="form-group">
-                  <label class="label">Описание (Русский) *</label>
+                  <label class="label">{{ $t('productsPage.descriptionLabel') }} ({{ $t('languages.ru') }}) *</label>
                   <textarea v-model="form.description_ru" rows="4" required class="input"
-                    placeholder="Описание товара..."></textarea>
+                    :placeholder="$t('productsPage.descriptionPlaceholder')"></textarea>
                 </div>
 
                 <div class="form-group">
-                  <label class="label">Категория (Русский) *</label>
-                  <input v-model="form.category_ru" required class="input" placeholder="например, Очки" />
+                  <label class="label">{{ $t('productsPage.categoryLabel') }} ({{ $t('languages.ru') }}) *</label>
+                  <input v-model="form.category_ru" required class="input"
+                    :placeholder="$t('productsPage.example') + ', Очки'" />
                 </div>
 
                 <div class="form-group">
-                  <label class="label">Бренд (Русский) *</label>
-                  <input v-model="form.brand_ru" required class="input" placeholder="например, Ray-Ban" />
+                  <label class="label">{{ $t('productsPage.brandLabel') }} ({{ $t('languages.ru') }}) *</label>
+                  <input v-model="form.brand_ru" required class="input"
+                    :placeholder="$t('productsPage.example') + ', Ray-Ban'" />
                 </div>
               </div>
 
               <!-- English Fields -->
               <div v-show="currentLang === 'en'" class="lang-content">
                 <div class="form-group">
-                  <label class="label">Product Name (English) *</label>
-                  <input v-model="form.name_en" required class="input" placeholder="e.g., Ray-Ban Wayfarer" />
+                  <label class="label">{{ $t('productsPage.nameLabel') }} ({{ $t('languages.en') }}) *</label>
+                  <input v-model="form.name_en" required class="input"
+                    :placeholder="$t('productsPage.example') + ', Ray-Ban Wayfarer'" />
                 </div>
 
                 <div class="form-group">
-                  <label class="label">Description (English) *</label>
+                  <label class="label">{{ $t('productsPage.descriptionLabel') }} ({{ $t('languages.en') }}) *</label>
                   <textarea v-model="form.description_en" rows="4" required class="input"
-                    placeholder="Product description..."></textarea>
+                    :placeholder="$t('productsPage.descriptionPlaceholder')"></textarea>
                 </div>
 
                 <div class="form-group">
-                  <label class="label">Category (English) *</label>
-                  <input v-model="form.category_en" required class="input" placeholder="e.g., Sunglasses" />
+                  <label class="label">{{ $t('productsPage.categoryLabel') }} ({{ $t('languages.en') }}) *</label>
+                  <input v-model="form.category_en" required class="input"
+                    :placeholder="$t('productsPage.example') + ', Sunglasses'" />
                 </div>
 
                 <div class="form-group">
-                  <label class="label">Brand (English) *</label>
-                  <input v-model="form.brand_en" required class="input" placeholder="e.g., Ray-Ban" />
+                  <label class="label">{{ $t('productsPage.brandLabel') }} ({{ $t('languages.en') }}) *</label>
+                  <input v-model="form.brand_en" required class="input"
+                    :placeholder="$t('productsPage.example') + ', Ray-Ban'" />
                 </div>
               </div>
 
               <div class="form-row">
                 <div class="form-group">
-                  <label class="label">{{ $t('admin.price') }} ($)</label>
+                  <label class="label">{{ $t('productsPage.priceLabel') }} ($)</label>
                   <input v-model.number="form.price" type="number" step="0.01" required class="input"
                     placeholder="0.00" />
                 </div>
 
                 <div class="form-group">
-                  <label class="label">{{ $t('admin.discount') }} (%)</label>
+                  <label class="label">{{ $t('productsPage.discountLabel') }} (%)</label>
                   <input v-model.number="form.discount" type="number" step="0.1" min="0" max="100" class="input"
                     placeholder="0" />
-                  <p class="help-text-small">{{ $t('admin.discountHint') }}</p>
+                  <p class="help-text-small">{{ $t('productsPage.discountHelp') }}</p>
                 </div>
               </div>
             </div>
 
             <div class="form-section">
-              <h2 class="section-title">{{ $t('admin.images') }}</h2>
+              <h2 class="section-title">{{ $t('productsPage.imagesTitle') }}</h2>
 
               <!-- Image Upload Area -->
               <div class="images-upload-area">
@@ -156,15 +165,15 @@
                     <img :src="img" alt="Product image" />
                     <div class="image-actions">
                       <button v-if="index !== 0" type="button" @click="setMainImage(index)" class="btn-set-main"
-                        :title="$t('admin.setAsMain')">
+                        :title="$t('productsPage.makeMain')">
                         ⭐
                       </button>
                       <button type="button" @click="removeImage(index)" class="btn-remove-image"
-                        :title="$t('common.delete')">
+                        :title="$t('productsPage.remove')">
                         ✕
                       </button>
                     </div>
-                    <span v-if="index === 0" class="main-badge">{{ $t('admin.mainImage') }}</span>
+                    <span v-if="index === 0" class="main-badge">{{ $t('productsPage.mainBadge') }}</span>
                   </div>
                 </div>
 
@@ -179,18 +188,18 @@
                       <polyline points="17 8 12 3 7 8"></polyline>
                       <line x1="12" y1="3" x2="12" y2="15"></line>
                     </svg>
-                    <span class="upload-text">{{ $t('admin.uploadImages') }}</span>
-                    <span class="upload-hint">{{ $t('admin.uploadHint') }}</span>
+                    <span class="upload-text">{{ $t('productsPage.uploadText') }}</span>
+                    <span class="upload-hint">{{ $t('productsPage.uploadHint') }}</span>
                   </div>
                 </div>
 
                 <!-- OR URL Input -->
                 <div class="url-input-section">
-                  <span class="divider-text">{{ $t('admin.orAddUrl') }}</span>
+                  <span class="divider-text">{{ $t('productsPage.orUrl') }}</span>
                   <div class="url-input-row">
                     <input v-model="imageUrl" class="input" placeholder="https://example.com/image.jpg" />
                     <button type="button" @click="addImageUrl" class="btn-add-url" :disabled="!imageUrl">{{
-                      $t('admin.addUrl') }}</button>
+                      $t('productsPage.addBtn') }}</button>
                   </div>
                 </div>
               </div>
@@ -200,38 +209,40 @@
                   <circle cx="12" cy="12" r="10"></circle>
                   <polyline points="12 6 12 12 16 14"></polyline>
                 </svg>
-                Загрузка изображений...
+                {{ $t('productsPage.uploading') }}
               </p>
             </div>
 
             <div class="form-section">
-              <h2 class="section-title">Варианты товара</h2>
-              <p class="help-text">Добавьте комбинации размера и цвета с количеством на складе</p>
+              <h2 class="section-title">{{ $t('productsPage.variantsTitle') }}</h2>
+              <p class="help-text">{{ $t('productsPage.variantsHelp') }}</p>
 
               <div class="variants-list">
                 <div v-for="(variant, index) in variants" :key="index" class="variant-row">
                   <input v-model="variant.size" class="input variant-size-input"
-                    placeholder="Размер (например, M, L)" />
+                    :placeholder="$t('productsPage.sizePlaceholder')" />
                   <input v-model="variant.color" class="input variant-color-input"
-                    placeholder="Цвет (например, Черный)" />
-                  <input v-model="variant.colorHex" type="color" class="color-picker" title="Выбрать цвет" />
+                    :placeholder="$t('productsPage.colorPlaceholder')" />
+                  <input v-model="variant.colorHex" type="color" class="color-picker"
+                    :title="$t('productsPage.colorPlaceholder')" />
                   <input v-model.number="variant.stock" type="number" min="0" class="input stock-input"
-                    placeholder="Склад" />
+                    :placeholder="$t('productsPage.stockPlaceholder')" />
                   <button type="button" @click="removeVariant(index)" class="btn-remove">✕</button>
                 </div>
               </div>
 
               <button type="button" @click="addVariant" class="btn-add">
-                + Добавить вариант
+                {{ $t('productsPage.addVariantBtn') }}
               </button>
               <p class="help-text">Каждый вариант = размер + цвет + количество на складе</p>
             </div>
 
             <div class="form-actions">
-              <NuxtLink :to="`/shop/${shopSlug}/admin/products`" class="btn btn-secondary">Отмена</NuxtLink>
+              <NuxtLink :to="`/shop/${shopSlug}/admin/products`" class="btn btn-secondary">{{ $t('productsPage.cancel')
+                }}</NuxtLink>
               <button type="submit" class="btn btn-primary"
                 :disabled="loading || uploadedImages.length === 0 || limitReached">
-                {{ loading ? 'Создание...' : 'Создать товар' }}
+                {{ loading ? $t('productsPage.creating') : $t('productsPage.createBtn') }}
               </button>
             </div>
           </form>
@@ -240,8 +251,8 @@
     </main>
   </div>
   <div v-else class="error-state">
-    <p>Ошибка: не удалось загрузить информацию о магазине</p>
-    <NuxtLink to="/profile" class="btn btn-primary">Вернуться в профиль</NuxtLink>
+    <p>{{ $t('productsPage.shopInfoError') }}</p>
+    <NuxtLink to="/profile" class="btn btn-primary">{{ $t('productsPage.backToProfile') }}</NuxtLink>
   </div>
 </template>
 
@@ -269,7 +280,7 @@ console.log('[Add Product] Token:', token.value ? 'есть' : 'нет')
 
 const handleLogout = () => {
   logout()
-  useToast().success('Вы вышли из аккаунта')
+  useToast().success(t('alerts.shop.loggedOut'))
 }
 
 // Проверка что все необходимое загружено
@@ -289,6 +300,16 @@ const categories = ref([])
 const brandsError = ref(null)
 const categoriesError = ref(null)
 const toast = useToast()
+const { t } = useI18n()
+
+const getLanguageLabel = (lang) => {
+  switch (lang) {
+    case 'uz': return '🇺🇿 ' + t('languages.uz')
+    case 'ru': return '🇷🇺 ' + t('languages.ru')
+    case 'en': return '🇬🇧 ' + t('languages.en')
+    default: return lang
+  }
+}
 
 const limitReached = computed(() => {
   if (!stats.value || stats.value.plan_limit_products === null) return false
@@ -395,7 +416,7 @@ const uploadFiles = async (files) => {
 
         console.log('[Add Product] Изображение загружено:', response.url)
         uploadedImages.value.push(response.url)
-        toast.success(`Изображение "${file.name}" загружено`)
+        toast.success(t('alerts.shop.imageUploaded'))
       } catch (e) {
         console.error('[Add Product] Ошибка загрузки изображения:', e)
         console.error('[Add Product] Детали ошибки:', {
@@ -403,7 +424,7 @@ const uploadFiles = async (files) => {
           statusCode: e.statusCode,
           data: e.data
         })
-        toast.error(`Ошибка при загрузке "${file.name}"`)
+        toast.error(t('alerts.shop.imageError'))
       }
     }
   }
@@ -448,7 +469,7 @@ const form = reactive({
 
 const handleSubmit = async () => {
   if (uploadedImages.value.length === 0) {
-    toast.warning('Пожалуйста, добавьте хотя бы одно изображение')
+    toast.warning(t('alerts.shop.addOneImage'))
     return
   }
 
@@ -474,7 +495,7 @@ const handleSubmit = async () => {
     console.log('[Add Product] Shop slug:', shopSlug.value)
 
     if (!shopSlug.value) {
-      toast.error('Ошибка: не указан магазин')
+      toast.error(t('common.error'))
       return
     }
 
@@ -485,7 +506,7 @@ const handleSubmit = async () => {
     })
 
     console.log('[Add Product] Товар создан успешно:', response)
-    toast.success('Товар успешно создан!')
+    toast.success(t('alerts.shop.productCreated'))
     navigateTo(`/shop/${shopSlug.value}/admin/products`)
   } catch (e) {
     console.error('[Add Product] Ошибка при создании товара:', e)
@@ -495,7 +516,7 @@ const handleSubmit = async () => {
       statusMessage: e.statusMessage,
       data: e.data
     })
-    toast.error(e.data?.detail || e.message || 'Ошибка при создании товара')
+    toast.error(e.data?.detail || e.message || t('common.error'))
   } finally {
     loading.value = false
   }

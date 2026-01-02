@@ -14,7 +14,7 @@
           <line x1="6" y1="6" x2="18" y2="18"></line>
         </svg>
       </button>
-      <span class="mobile-title">{{ $t('admin.categoriesPage.title') }}</span>
+      <span class="mobile-title">{{ $t('categoriesPage.title') }}</span>
       <NuxtLink :to="`/${shopSlug}`" class="home-btn">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
@@ -30,21 +30,21 @@
       <div class="container">
         <div class="page-header">
           <div>
-            <h1 class="page-title">{{ $t('admin.categoriesPage.title') }}</h1>
-            <p class="page-subtitle">{{ $t('admin.categoriesPage.subtitle') }}</p>
+            <h1 class="page-title">{{ $t('categoriesPage.title') }}</h1>
+            <p class="page-subtitle">{{ $t('categoriesPage.subtitle') }}</p>
           </div>
           <NuxtLink :to="`/shop/${shopSlug}/admin/categories/new`" class="btn btn-primary">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="12" y1="5" x2="12" y2="19"></line>
               <line x1="5" y1="12" x2="19" y2="12"></line>
             </svg>
-            <span class="btn-text">{{ $t('admin.categoriesPage.add') }}</span>
+            <span class="btn-text">{{ $t('categoriesPage.add') }}</span>
           </NuxtLink>
         </div>
 
         <div class="admin-content">
           <div v-if="!categories || categories.length === 0" class="empty-state">
-            <p>{{ $t('admin.categoriesPage.empty') }}</p>
+            <p>{{ $t('categoriesPage.empty') }}</p>
           </div>
 
           <div v-else class="categories-grid">
@@ -106,7 +106,7 @@ watch(error, (newError) => {
 })
 
 const deleteCategory = async (id) => {
-  if (!confirm(t('admin.categoriesPage.deleteConfirm'))) return
+  if (!confirm(t('categoriesPage.deleteConfirm'))) return
   try {
     console.log('[Categories List] Удаление категории:', id)
     await $fetch(`http://localhost:8000/categories/${id}`, {
@@ -115,7 +115,7 @@ const deleteCategory = async (id) => {
     })
     console.log('[Categories List] Категория удалена успешно')
     refresh()
-    useToast().success(t('admin.categoriesPage.deleteSuccess'))
+    useToast().success(t('categoriesPage.deleteSuccess'))
   } catch (e) {
     console.error('[Categories List] Ошибка при удалении категории:', e)
     console.error('[Categories List] Детали ошибки:', {
@@ -123,7 +123,7 @@ const deleteCategory = async (id) => {
       statusCode: e.statusCode,
       data: e.data
     })
-    useToast().error(e.data?.detail || e.message || 'Ошибка при удалении категории')
+    useToast().error(e.data?.detail || e.message || t('common.error'))
   }
 }
 </script>

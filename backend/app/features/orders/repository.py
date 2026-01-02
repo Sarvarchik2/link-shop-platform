@@ -28,7 +28,7 @@ class OrderRepository:
         return db.query(Order).options(joinedload(Order.user)).filter(Order.shop_id == shop_id).order_by(Order.created_at.desc()).all()
 
     def get_all_orders(self, db: Session):
-        return db.query(Order).order_by(Order.created_at.desc()).all()
+        return db.query(Order).options(joinedload(Order.user)).order_by(Order.created_at.desc()).all()
 
     def get_order_items(self, db: Session, order_id: int):
         # Join with Product and Shop to get details

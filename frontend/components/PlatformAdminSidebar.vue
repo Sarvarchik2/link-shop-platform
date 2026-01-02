@@ -21,7 +21,7 @@
     </div>
 
     <nav class="sidebar-nav">
-      <NuxtLink to="/platform/admin" class="nav-item" :class="{ active: currentRoute === 'dashboard' }"
+      <NuxtLink :to="localePath('/platform/admin')" class="nav-item" :class="{ active: currentRoute === 'dashboard' }"
         @click="closeSidebar">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <rect x="3" y="3" width="7" height="7"></rect>
@@ -32,7 +32,7 @@
         <span>{{ $t('platformAdmin.nav.dashboard') }}</span>
       </NuxtLink>
 
-      <NuxtLink to="/platform/admin/shops" class="nav-item" :class="{ active: currentRoute === 'shops' }"
+      <NuxtLink :to="localePath('/platform/admin/shops')" class="nav-item" :class="{ active: currentRoute === 'shops' }"
         @click="closeSidebar">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path
@@ -42,7 +42,7 @@
         <span>{{ $t('platformAdmin.nav.shops') }}</span>
       </NuxtLink>
 
-      <NuxtLink to="/platform/admin/users" class="nav-item" :class="{ active: currentRoute === 'users' }"
+      <NuxtLink :to="localePath('/platform/admin/users')" class="nav-item" :class="{ active: currentRoute === 'users' }"
         @click="closeSidebar">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
@@ -53,17 +53,18 @@
         <span>{{ $t('platformAdmin.nav.users') }}</span>
       </NuxtLink>
 
-      <!-- <NuxtLink to="/platform/admin/orders" class="nav-item" :class="{ active: currentRoute === 'orders' }" @click="closeSidebar">
+      <!-- <NuxtLink :to="localePath('/platform/admin/orders')" class="nav-item" :class="{ active: currentRoute === 'orders' }"
+        @click="closeSidebar">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
           <polyline points="14 2 14 8 20 8"></polyline>
           <line x1="16" y1="13" x2="8" y2="13"></line>
           <line x1="16" y1="17" x2="8" y2="17"></line>
         </svg>
-        <span>Заказы</span>
+        <span>{{ $t('platformAdmin.nav.orders') }}</span>
       </NuxtLink> -->
 
-      <NuxtLink to="/platform/admin/subscription-plans" class="nav-item"
+      <NuxtLink :to="localePath('/platform/admin/subscription-plans')" class="nav-item"
         :class="{ active: currentRoute === 'subscription-plans' }" @click="closeSidebar">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
@@ -75,7 +76,7 @@
         <span>{{ $t('platformAdmin.nav.plans') }}</span>
       </NuxtLink>
 
-      <NuxtLink to="/platform/admin/subscription-requests" class="nav-item"
+      <NuxtLink :to="localePath('/platform/admin/subscription-requests')" class="nav-item"
         :class="{ active: currentRoute === 'subscription-requests' }" @click="closeSidebar">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path
@@ -90,8 +91,8 @@
         <span>{{ $t('platformAdmin.nav.requests') }}</span>
       </NuxtLink>
 
-      <NuxtLink to="/platform/admin/offers" class="nav-item" :class="{ active: currentRoute === 'offers' }"
-        @click="closeSidebar">
+      <NuxtLink :to="localePath('/platform/admin/offers')" class="nav-item"
+        :class="{ active: currentRoute === 'offers' }" @click="closeSidebar">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
           <path d="M2 17l10 5 10-5"></path>
@@ -102,7 +103,10 @@
     </nav>
 
     <div class="sidebar-footer">
-      <NuxtLink to="/" class="back-link" @click="closeSidebar">
+      <div class="language-section">
+        <LanguageSwitcher direction="up" />
+      </div>
+      <NuxtLink :to="localePath('/')" class="back-link" @click="closeSidebar">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <line x1="19" y1="12" x2="5" y2="12"></line>
           <polyline points="12 19 5 12 12 5"></polyline>
@@ -123,6 +127,7 @@
 
 <script setup>
 const { t } = useI18n()
+const localePath = useLocalePath()
 const props = defineProps({
   currentRoute: {
     type: String,
@@ -244,6 +249,12 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+.language-section {
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid #E5E7EB;
 }
 
 .back-link {

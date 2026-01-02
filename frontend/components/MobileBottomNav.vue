@@ -1,7 +1,7 @@
 <template>
   <!-- Mobile Bottom Navigation -->
   <nav class="mobile-nav">
-    <NuxtLink :to="homeLink" class="mobile-nav-item" :class="{ 'is-active': isHomeActive }">
+    <NuxtLink :to="localePath(homeLink)" class="mobile-nav-item" :class="{ 'is-active': isHomeActive }">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
         <polyline points="9 22 9 12 15 12 15 22"></polyline>
@@ -9,7 +9,7 @@
       <span>{{ $t('nav.home') }}</span>
     </NuxtLink>
 
-    <NuxtLink :to="productsLink" class="mobile-nav-item" :class="{ 'is-active': isProductsActive }">
+    <NuxtLink :to="localePath(productsLink)" class="mobile-nav-item" :class="{ 'is-active': isProductsActive }">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
         <line x1="1" y1="10" x2="23" y2="10"></line>

@@ -56,3 +56,7 @@ class ProductService:
             raise HTTPException(status_code=403, detail="Not authorized")
             
         return self.repository.delete(db, product)
+
+    def toggle_favorite(self, db: Session, product_id: int):
+        product = self.get_product(db, product_id)
+        return self.repository.update(db, product, {"is_favorite": not product.is_favorite})

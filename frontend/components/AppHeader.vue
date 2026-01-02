@@ -5,9 +5,9 @@
       <div class="container">
         <div class="header-content">
           <!-- Logo / Shop Logo or Name -->
-          <NuxtLink :to="homeLink" class="logo">
+          <NuxtLink :to="localePath(homeLink)" class="logo">
             <template v-if="currentShop?.logo_url">
-              <img :src="currentShop.logo_url" :alt="currentShop.name || 'Shop'" class="shop-logo" />
+              <img :src="currentShop.logo_url" :alt="currentShop.name || $t('nav.shop')" class="shop-logo" />
             </template>
             <template v-else-if="currentShop?.name">
               <span class="shop-name-text">{{ currentShop.name }}</span>
@@ -24,8 +24,8 @@
           <!-- Navigation (Desktop only) -->
           <nav class="nav-links">
             <ClientOnly>
-              <NuxtLink :to="homeLink" class="nav-link">{{ $t('nav.home') }}</NuxtLink>
-              <NuxtLink :to="shopProductsLink" class="nav-link">{{ $t('nav.shop') }}</NuxtLink>
+              <NuxtLink :to="localePath(homeLink)" class="nav-link">{{ $t('nav.home') }}</NuxtLink>
+              <NuxtLink :to="localePath(shopProductsLink)" class="nav-link">{{ $t('nav.shop') }}</NuxtLink>
               <template #fallback>
                 <NuxtLink :to="localePath('/')" class="nav-link">{{ $t('nav.home') }}</NuxtLink>
                 <NuxtLink :to="localePath('/products')" class="nav-link">{{ $t('nav.products') }}</NuxtLink>
@@ -62,8 +62,8 @@
             </a>
 
             <!-- Profile icon - only visible for authenticated users -->
-            <a v-if="user" @click.prevent="navigateToAuth(getProfileLink)" :href="getProfileLink"
-              class="icon-btn profile-btn">
+            <a v-if="user" @click.prevent="navigateToAuth(localePath(getProfileLink))"
+              :href="localePath(getProfileLink)" class="icon-btn profile-btn">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                 <circle cx="12" cy="7" r="4"></circle>
@@ -83,7 +83,7 @@
     <!-- Mobile Bottom Navigation -->
     <nav v-if="!hideMobileNav" class="mobile-nav">
       <ClientOnly>
-        <NuxtLink :to="homeLink" class="mobile-nav-item">
+        <NuxtLink :to="localePath(homeLink)" class="mobile-nav-item">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
             <polyline points="9 22 9 12 15 12 15 22"></polyline>
@@ -91,7 +91,7 @@
           <span>{{ $t('nav.home') }}</span>
         </NuxtLink>
 
-        <NuxtLink :to="shopProductsLink" class="mobile-nav-item">
+        <NuxtLink :to="localePath(shopProductsLink)" class="mobile-nav-item">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
             <line x1="1" y1="10" x2="23" y2="10"></line>
@@ -396,7 +396,7 @@ const getProfileLink = computed(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 80px;
+  height: 64px;
 }
 
 .logo {
@@ -437,7 +437,7 @@ const getProfileLink = computed(() => {
   font-weight: 600;
   font-size: 0.95rem;
   color: #666;
-  transition: color 0.2s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
 }
 
@@ -472,7 +472,7 @@ const getProfileLink = computed(() => {
   background: #f9f9f9;
   border: none;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   color: #111;
 }
@@ -530,7 +530,9 @@ const getProfileLink = computed(() => {
   color: #999;
   font-size: 0.65rem;
   font-weight: 600;
-  transition: all 0.2s;
+  font-size: 0.65rem;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .mobile-nav-item.router-link-active {
@@ -627,7 +629,9 @@ const getProfileLink = computed(() => {
   font-weight: 600;
   font-size: 0.875rem;
   text-decoration: none;
-  transition: all 0.2s;
+  font-size: 0.875rem;
+  text-decoration: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .btn-login {

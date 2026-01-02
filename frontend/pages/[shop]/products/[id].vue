@@ -179,6 +179,13 @@
           </div>
         </div>
       </div>
+
+      <div v-if="relatedProducts.length > 0" class="related-products">
+        <h2 class="section-title">{{ $t('product.relatedProducts') || 'You might also like' }}</h2>
+        <div class="products-grid">
+          <ProductCard v-for="related in relatedProducts" :key="related.id" :product="related" :shop-slug="shopSlug" />
+        </div>
+      </div>
     </main>
   </div>
 </template>
@@ -193,13 +200,64 @@ const { t } = useI18n()
 const { openModal } = useAuthModal()
 const config = useRuntimeConfig()
 
-const { data: product, pending, refresh } = await useFetch(`${config.public.apiBase}/products/${route.params.id}`, {
+const { data: product, pending, refresh } = await useFetch(() => `${config.public.apiBase}/products/${route.params.id}`, {
   server: false
+})
+
+// Fetch related products (same shop)
+// Prioritize category for related items
+const { data: relatedProductsData } = await useFetch(() => `${config.public.apiBase}/products`, {
+  params: {
+    shop_slug: shopSlug,
+    category: product.value?.category,
+    limit: 10 // Fetch enough to filter out current
+  },
+  server: false,
+  watch: [product] // Re-fetch when product changes
+})
+
+const relatedProducts = computed(() => {
+  if (!relatedProductsData.value) return []
+  // Filter out current product and limit to 3
+  return relatedProductsData.value
+    .filter(p => p.id !== parseInt(route.params.id))
+    .slice(0, 3)
 })
 
 const selectedImage = ref(null)
 const selectedSize = ref(null)
 const selectedColor = ref(null)
+
+// ... (rest of the script)
+
+// Add mobile carousel styles
+const mobileCarouselStyles = `
+@media (max-width: 768px) {
+  .products-grid {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 16px;
+    padding-bottom: 16px; 
+    margin-right: -20px; /* Bleed out right edge */
+    padding-right: 20px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* Firefox */
+  }
+
+  .products-grid::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
+  }
+  
+  .products-grid > * {
+    flex: 0 0 280px; /* Fixed width cards */
+    scroll-snap-align: center;
+  }
+}
+`
+// Wait, I can't inject const styles like that in <script setup> easily without a <style> block update.
+// I will split this into two edits: one for script, one for style.
+
 
 // Calculate final price with discount
 const finalPrice = computed(() => {
@@ -694,7 +752,9 @@ const toggleFavorite = async () => {
   border-radius: 24px;
   padding: 40px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-  aspect-ratio: 1;
+  height: 500px;
+  /* Fixed height */
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1273,6 +1333,44 @@ const toggleFavorite = async () => {
 
   .modal-content {
     margin: 20px;
+  }
+}
+
+.related-products {
+  margin-top: 80px;
+  border-top: 1px solid #E5E7EB;
+  padding-top: 40px;
+}
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+  margin-top: 24px;
+}
+
+@media (max-width: 768px) {
+  .products-grid {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 16px;
+    padding-bottom: 24px;
+    margin-right: -20px;
+    /* Bleed to edge */
+    padding-right: 20px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .products-grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .products-grid>* {
+    flex: 0 0 85%;
+    /* Shows part of next card */
+    min-width: 260px;
+    scroll-snap-align: start;
   }
 }
 </style>

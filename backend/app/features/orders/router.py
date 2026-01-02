@@ -50,12 +50,22 @@ def get_shop_orders(
 ):
     return order_service.get_shop_orders(db, shop_slug, current_user)
 
+import logging
+import traceback
+
+logger = logging.getLogger(__name__)
+
 @router.get("/platform/admin/orders", response_model=List[OrderReadWithItems])
 def get_all_orders_admin(
     db: Session = Depends(get_db),
     admin = Depends(get_current_platform_admin)
 ):
-    return order_service.get_all_orders_for_admin(db)
+    try:
+        return order_service.get_all_orders_for_admin(db)
+    except Exception as e:
+        logger.error(f"Error fetching admin orders: {str(e)}")
+        logger.error(traceback.format_exc())
+        raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")
 
 @router.put("/orders/{order_id}/status", response_model=OrderRead)
 def update_order_status(

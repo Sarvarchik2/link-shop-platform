@@ -2,7 +2,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
     const { token, user, fetchUser } = useAuth()
 
     if (!token.value) {
-        return navigateTo('/login')
+        return navigateTo(`/login?returnUrl=${encodeURIComponent(to.fullPath)}`)
     }
 
     if (!user.value) {
@@ -10,11 +10,11 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
             await fetchUser()
         } catch (e) {
             token.value = null
-            return navigateTo('/login')
+            return navigateTo(`/login?returnUrl=${encodeURIComponent(to.fullPath)}`)
         }
     }
 
     if (!user.value) {
-        return navigateTo('/login')
+        return navigateTo(`/login?returnUrl=${encodeURIComponent(to.fullPath)}`)
     }
 })

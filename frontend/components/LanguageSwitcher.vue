@@ -1,21 +1,22 @@
 <template>
-    <div class="language-switcher" v-click-outside="closeDropdown">
+    <div class="language-switcher" :class="props.direction" v-click-outside="closeDropdown">
         <button @click="toggleDropdown" class="lang-btn">
-            <span class="flag">{{ currentLocale.flag }}</span>
             <span class="code">{{ currentLocale.code.toUpperCase() }}</span>
-            <svg class="chevron" :class="{ rotated: isOpen }" width="16" height="16" viewBox="0 0 24 24" fill="none"
+            <svg class="chevron" :class="{ rotated: isOpen }" width="14" height="14" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <polyline points="6 9 12 15 18 9"></polyline>
             </svg>
         </button>
 
-        <div v-show="isOpen" class="lang-dropdown">
-            <button v-for="locale in availableLocales" :key="locale.code" @click="switchLanguage(locale.code)"
-                class="lang-option" :class="{ active: currentLocale.code === locale.code }">
-                <span class="flag">{{ locale.flag }}</span>
-                <span class="name">{{ locale.name }}</span>
-            </button>
-        </div>
+        <Transition name="fade">
+            <div v-show="isOpen" class="lang-dropdown">
+                <button v-for="locale in availableLocales" :key="locale.code" @click="switchLanguage(locale.code)"
+                    class="lang-option" :class="{ active: currentLocale.code === locale.code }">
+                    <span class="code-sm">{{ locale.code.toUpperCase() }}</span>
+                    <span class="name">{{ locale.name }}</span>
+                </button>
+            </div>
+        </Transition>
     </div>
 </template>
 
@@ -24,10 +25,18 @@ const { locale, setLocale } = useI18n()
 const isOpen = ref(false)
 
 const locales = [
-    { code: 'uz', name: "O'zbek", flag: '🇺🇿' },
-    { code: 'ru', name: 'Русский', flag: '🇷🇺' },
-    { code: 'en', name: 'English', flag: '🇬🇧' }
+    { code: 'uz', name: "O'zbek" },
+    { code: 'ru', name: 'Русский' },
+    { code: 'en', name: 'English' }
 ]
+
+const props = defineProps({
+    direction: {
+        type: String,
+        default: 'down',
+        validator: (value) => ['up', 'down'].includes(value)
+    }
+})
 
 const currentLocale = computed(() => {
     return locales.find(l => l.code === locale.value) || locales[0]
@@ -48,9 +57,6 @@ const closeDropdown = () => {
 const switchLanguage = (code) => {
     setLocale(code)
     isOpen.value = false
-    // Optional: Refresh page if needed mostly for heavy static content, 
-    // but vue-i18n usually handles reactivity well.
-    // location.reload() 
 }
 
 // Directive to close dropdown when clicking outside
@@ -76,33 +82,34 @@ const vClickOutside = {
 }
 
 .lang-btn {
+    height: 44px;
+    padding: 0 12px;
+    border-radius: 12px;
     display: flex;
     align-items: center;
     gap: 6px;
-    background: transparent;
-    border: 1px solid #E5E7EB;
-    padding: 6px 12px;
-    border-radius: 8px;
+    background: #f9f9f9;
+    border: none;
     cursor: pointer;
     transition: all 0.2s;
-    color: #374151;
-    font-weight: 500;
-    font-size: 0.875rem;
+    color: #111;
+    font-weight: 700;
+    font-size: 0.9rem;
 }
 
 .lang-btn:hover {
-    background: #F3F4F6;
-    border-color: #D1D5DB;
-}
-
-.flag {
-    font-size: 1.1em;
-    line-height: 1;
+    background: #111;
+    color: white;
+    transform: translateY(-2px);
 }
 
 .chevron {
     transition: transform 0.2s;
-    opacity: 0.5;
+    opacity: 0.6;
+}
+
+.lang-btn:hover .chevron {
+    opacity: 1;
 }
 
 .chevron.rotated {
@@ -111,29 +118,36 @@ const vClickOutside = {
 
 .lang-dropdown {
     position: absolute;
-    top: 100%;
     right: 0;
-    margin-top: 4px;
     background: white;
     border: 1px solid #E5E7EB;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    padding: 4px;
-    min-width: 140px;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    padding: 6px;
+    min-width: 160px;
     display: flex;
     flex-direction: column;
     gap: 2px;
 }
 
+.language-switcher.down .lang-dropdown {
+    top: calc(100% + 8px);
+}
+
+.language-switcher.up .lang-dropdown {
+    bottom: calc(100% + 8px);
+    top: auto;
+}
+
 .lang-option {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 8px 12px;
+    gap: 10px;
+    padding: 10px 12px;
     border: none;
     background: transparent;
     cursor: pointer;
-    border-radius: 8px;
+    border-radius: 10px;
     text-align: left;
     font-size: 0.875rem;
     color: #374151;
@@ -142,11 +156,36 @@ const vClickOutside = {
 
 .lang-option:hover {
     background: #F3F4F6;
+    color: #111;
 }
 
 .lang-option.active {
     background: #F0F9FF;
     color: #0284C7;
     font-weight: 600;
+}
+
+.code-sm {
+    font-weight: 700;
+    font-size: 0.75rem;
+    color: #9CA3AF;
+    width: 24px;
+    text-align: center;
+}
+
+.lang-option.active .code-sm {
+    color: #0284C7;
+}
+
+/* Transitions */
+.fade-enter-active,
+.fade-leave-active {
+    transition: 0.2s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
+    transform: translateY(-10px);
 }
 </style>

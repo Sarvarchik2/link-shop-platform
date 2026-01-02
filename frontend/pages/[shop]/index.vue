@@ -38,7 +38,7 @@
           </NuxtLink>
         </div>
         <div class="brand-grid">
-          <NuxtLink v-for="brand in brands" :key="brand.id" :to="`/${shopSlug}/products?brand=${brand.name}`"
+          <NuxtLink v-for="brand in displayedBrands" :key="brand.id" :to="`/${shopSlug}/products?brand=${brand.name}`"
             class="brand-card">
             <div class="brand-logo-wrapper">
               <img :src="brand.logo_url" :alt="brand.name" class="brand-logo-img" />
@@ -184,6 +184,12 @@ const { data: products, pending } = await useFetch(`http://localhost:8000/produc
 const featuredProducts = computed(() => {
   if (!products.value) return []
   return products.value.slice(0, 4)
+})
+
+// Show only 6 brands
+const displayedBrands = computed(() => {
+  if (!brands.value) return []
+  return brands.value.slice(0, 6)
 })
 </script>
 
@@ -502,11 +508,26 @@ const featuredProducts = computed(() => {
   }
 
   .brand-grid {
-    grid-template-columns: repeat(2, 1fr);
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
     gap: 12px;
+    padding-bottom: 12px;
+    margin-right: -16px;
+    /* Bleed to edge */
+    padding-right: 16px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .brand-grid::-webkit-scrollbar {
+    display: none;
   }
 
   .brand-card {
+    flex: 0 0 140px;
+    min-width: 140px;
+    scroll-snap-align: start;
     padding: 16px;
     border-radius: 16px;
   }

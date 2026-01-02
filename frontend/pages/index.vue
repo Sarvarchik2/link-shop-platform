@@ -17,6 +17,7 @@
           </div>
         </div>
         <div class="flex items-center gap-4">
+          <LanguageSwitcher />
           <NuxtLink v-if="!user" :to="localePath('/login')"
             class="text-sm font-medium text-zinc-500 hover:text-black transition-colors">{{ $t('nav.login') }}
           </NuxtLink>
@@ -24,7 +25,7 @@
             class="text-sm font-medium text-zinc-500 hover:text-black transition-colors">{{ $t('nav.profile') }}
           </NuxtLink>
           <NuxtLink :to="localePath('/register-shop')"
-            class="bg-black text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-zinc-800 transition-all shadow-lg shadow-zinc-200/50">
+            class="bg-black text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-zinc-800 shadow-lg shadow-zinc-200/50 transition-smooth hover-lift">
             {{ $t('nav.create_shop') }}
           </NuxtLink>
         </div>
@@ -57,13 +58,13 @@
 
           <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-20">
             <NuxtLink :to="localePath('/register-shop')"
-              class="w-full sm:w-auto px-8 py-3.5 bg-black text-white rounded-full font-medium shadow-xl shadow-zinc-900/10 hover:shadow-2xl hover:bg-zinc-800 transition-all flex items-center justify-center gap-2 group">
+              class="w-full sm:w-auto px-8 py-3.5 bg-black text-white rounded-full font-medium shadow-xl shadow-zinc-900/10 hover:shadow-2xl hover:bg-zinc-800 flex items-center justify-center gap-2 group transition-smooth hover-lift">
               {{ $t('home.hero.start_free') }}
               <iconify-icon icon="lucide:arrow-right"
-                class="group-hover:translate-x-1 transition-transform"></iconify-icon>
+                class="group-hover:translate-x-1 transition-smooth"></iconify-icon>
             </NuxtLink>
             <button
-              class="w-full sm:w-auto px-8 py-3.5 bg-white border border-zinc-200 text-zinc-700 rounded-full font-medium hover:bg-zinc-50 hover:border-zinc-300 transition-all flex items-center justify-center gap-2">
+              class="w-full sm:w-auto px-8 py-3.5 bg-white border border-zinc-200 text-zinc-700 rounded-full font-medium hover:bg-zinc-50 hover:border-zinc-300 flex items-center justify-center gap-2 transition-smooth hover-lift">
               <iconify-icon icon="lucide:play-circle" width="18"></iconify-icon>
               {{ $t('home.hero.demo_video') }}
             </button>
@@ -154,10 +155,9 @@
     <section id="features" class="py-32 bg-zinc-50/50">
       <div class="max-w-7xl mx-auto px-6">
         <div class="mb-20 max-w-2xl reveal" :class="{ active: featuresRevealed }">
-          <h2 class="text-3xl md:text-5xl font-semibold tracking-tight text-zinc-900 mb-6">Всё, что нужно для
-            роста. <br>В одной системе.</h2>
-          <p class="text-lg text-zinc-500">Наш набор инструментов покрывает каждый аспект современной электронной
-            коммерции.</p>
+          <h2 class="text-3xl md:text-5xl font-semibold tracking-tight text-zinc-900 mb-6"
+            v-html="$t('home.features_new.title')"></h2>
+          <p class="text-lg text-zinc-500">{{ $t('home.features_new.subtitle') }}</p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[minmax(300px,auto)]">
@@ -168,9 +168,8 @@
               <div class="w-10 h-10 rounded-lg bg-zinc-100 flex items-center justify-center mb-6 text-zinc-700">
                 <iconify-icon icon="lucide:layers" width="20"></iconify-icon>
               </div>
-              <h3 class="text-xl font-semibold mb-2">Умный склад</h3>
-              <p class="text-zinc-500 text-sm max-w-sm">Отслеживание остатков в реальном времени.
-                Автоматические уведомления о низком запасе.</p>
+              <h3 class="text-xl font-semibold mb-2">{{ $t('home.features_new.smart_warehouse.title') }}</h3>
+              <p class="text-zinc-500 text-sm max-w-sm">{{ $t('home.features_new.smart_warehouse.desc') }}</p>
             </div>
 
             <div
@@ -179,9 +178,10 @@
                 <thead class="text-zinc-400 border-b border-zinc-200">
                   <tr>
                     <th class="pb-2 font-medium">SKU</th>
-                    <th class="pb-2 font-medium">Товар</th>
+                    <th class="pb-2 font-medium">{{ $t('home.features_new.smart_warehouse.table.product') }}</th>
                     <th class="pb-2 font-medium">Stock</th>
-                    <th class="pb-2 font-medium text-right">Status</th>
+                    <th class="pb-2 font-medium text-right">{{ $t('home.features_new.smart_warehouse.table.status') }}
+                    </th>
                   </tr>
                 </thead>
                 <tbody class="text-zinc-700">
@@ -221,8 +221,8 @@
               <div class="w-10 h-10 rounded-lg bg-zinc-100 flex items-center justify-center mb-6 text-zinc-700">
                 <iconify-icon icon="lucide:bar-chart-2" width="20"></iconify-icon>
               </div>
-              <h3 class="text-xl font-semibold mb-2">Аналитика</h3>
-              <p class="text-zinc-500 text-sm">Глубокие инсайты.</p>
+              <h3 class="text-xl font-semibold mb-2">{{ $t('home.features_new.analytics.title') }}</h3>
+              <p class="text-zinc-500 text-sm">{{ $t('home.features_new.analytics.desc') }}</p>
             </div>
 
             <div class="absolute bottom-6 left-6 right-6 h-32 group-hover:scale-105 transition-transform duration-500">
@@ -242,8 +242,8 @@
                 class="w-10 h-10 rounded-lg bg-zinc-800 flex items-center justify-center mb-6 text-white border border-zinc-700">
                 <iconify-icon icon="lucide:zap" width="20"></iconify-icon>
               </div>
-              <h3 class="text-xl font-semibold mb-2">Скорость</h3>
-              <p class="text-zinc-400 text-sm">Оптимизирован для молниеносной загрузки.</p>
+              <h3 class="text-xl font-semibold mb-2">{{ $t('home.features_new.speed.title') }}</h3>
+              <p class="text-zinc-400 text-sm">{{ $t('home.features_new.speed.desc') }}</p>
             </div>
             <div
               class="absolute bottom-4 right-4 text-6xl font-bold text-zinc-800 select-none opacity-20 group-hover:opacity-40 transition-opacity">
@@ -259,9 +259,8 @@
               <div class="w-10 h-10 rounded-lg bg-zinc-100 flex items-center justify-center mb-6 text-zinc-700">
                 <iconify-icon icon="lucide:refresh-ccw" width="20"></iconify-icon>
               </div>
-              <h3 class="text-xl font-semibold mb-2">Авто-Синхронизация</h3>
-              <p class="text-zinc-500 text-sm">Изменения на складе мгновенно отражаются в витрине. Никаких
-                задержек.</p>
+              <h3 class="text-xl font-semibold mb-2">{{ $t('home.features_new.sync.title') }}</h3>
+              <p class="text-zinc-500 text-sm">{{ $t('home.features_new.sync.desc') }}</p>
             </div>
 
             <!-- Visual: Sync Animation -->
@@ -293,8 +292,7 @@
     <section id="solutions" class="py-32 bg-white relative">
       <div class="max-w-4xl mx-auto px-6">
         <h2 class="text-center text-3xl md:text-5xl font-semibold tracking-tight text-zinc-900 mb-24 reveal"
-          :class="{ active: timelineRevealed }">Путь к
-          продажам</h2>
+          :class="{ active: timelineRevealed }">{{ $t('home.timeline.title') }}</h2>
 
         <div class="relative">
           <div class="absolute left-8 md:left-1/2 top-0 bottom-0 w-px bg-zinc-100 -translate-x-1/2"></div>
@@ -305,8 +303,8 @@
           <div class="relative flex flex-col md:flex-row items-center  md:gap-24 mb-32 group reveal"
             :class="{ active: timelineRevealed }">
             <div class="md:w-1/2 text-left md:text-right order-2 md:order-1">
-              <h3 class="text-2xl font-semibold mb-2">Создайте аккаунт</h3>
-              <p class="text-zinc-500">Зарегистрируйтесь за 30 секунд. Кредитная карта не требуется.</p>
+              <h3 class="text-2xl font-semibold mb-2">{{ $t('home.timeline.step1.title') }}</h3>
+              <p class="text-zinc-500">{{ $t('home.timeline.step1.desc') }}</p>
             </div>
             <div
               class="absolute left-8 md:left-1/2 -translate-x-1/2 w-16 h-16 bg-white border border-zinc-200 rounded-full flex items-center justify-center z-10 shadow-lg group-hover:scale-110 transition-transform duration-300 order-1 md:order-2">
@@ -323,16 +321,16 @@
               <iconify-icon icon="lucide:upload-cloud" width="24"></iconify-icon>
             </div>
             <div class="md:w-1/2 text-left order-2 md:order-3">
-              <h3 class="text-2xl font-semibold mb-2">Загрузите товары</h3>
-              <p class="text-zinc-500">Импортируйте через Excel или добавьте вручную. Загрузите фото.</p>
+              <h3 class="text-2xl font-semibold mb-2">{{ $t('home.timeline.step2.title') }}</h3>
+              <p class="text-zinc-500">{{ $t('home.timeline.step2.desc') }}</p>
             </div>
           </div>
 
           <div class="relative flex flex-col md:flex-row items-center  md:gap-24 group reveal"
             :class="{ active: timelineRevealed }">
             <div class="md:w-1/2 text-left md:text-right order-2 md:order-1">
-              <h3 class="text-2xl font-semibold mb-2">Начните продавать</h3>
-              <p class="text-zinc-500">Опубликуйте магазин и принимайте первые заказы мгновенно.</p>
+              <h3 class="text-2xl font-semibold mb-2">{{ $t('home.timeline.step3.title') }}</h3>
+              <p class="text-zinc-500">{{ $t('home.timeline.step3.desc') }}</p>
             </div>
             <div
               class="absolute left-8 md:left-1/2 -translate-x-1/2 w-16 h-16 bg-black text-white border border-black rounded-full flex items-center justify-center z-10 shadow-lg group-hover:scale-110 transition-transform duration-300 order-1 md:order-2">
@@ -348,13 +346,13 @@
     <section id="pricing" class="py-32 bg-zinc-50 border-t border-zinc-200">
       <div class="max-w-7xl mx-auto px-6">
         <h2 class="text-3xl md:text-5xl font-semibold tracking-tight text-center mb-6 reveal"
-          :class="{ active: pricingRevealed }">Тарифные планы</h2>
-        <p class="text-center text-zinc-500 mb-20 reveal" :class="{ active: pricingRevealed }">Прозрачное
-          ценообразование. Без скрытых комиссий.</p>
+          :class="{ active: pricingRevealed }">{{ $t('home.pricing.title') }}</h2>
+        <p class="text-center text-zinc-500 mb-20 reveal" :class="{ active: pricingRevealed }">{{
+          $t('home.pricing.subtitle') }}</p>
 
         <div v-if="plansPending" class="text-center py-12">
           <div class="loading-spinner"></div>
-          <p class="mt-4 text-zinc-400">Загрузка тарифов...</p>
+          <p class="mt-4 text-zinc-400">{{ $t('home.pricing.loading') }}</p>
         </div>
 
         <div v-else-if="plans && plans.length > 0" class="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
@@ -372,7 +370,7 @@
             <div class="text-4xl font-bold mb-6">
               <span v-if="plan.price === 0 || plan.is_trial">$0</span>
               <span v-else>${{ plan.price }}</span>
-              <span class="text-base font-normal text-zinc-500">/мес</span>
+              <span class="text-base font-normal text-zinc-500">/{{ $t('home.pricing.month') }}</span>
             </div>
             <p v-if="plan.description" class="text-sm text-zinc-500 mb-8 border-b border-zinc-100 pb-8">{{
               plan.description }}</p>
@@ -397,33 +395,36 @@
               <div class="flex items-center gap-2 text-sm text-zinc-600">
                 <iconify-icon icon="lucide:package" width="16"></iconify-icon>
                 <span>
-                  <strong>{{ plan.max_products === null ? 'Неограниченно' : plan.max_products }}</strong> товаров
+                  <strong>{{ plan.max_products === null ? $t('home.pricing.unlimited') : plan.max_products }}</strong>
+                  {{ $t('home.pricing.products') }}
                 </span>
               </div>
             </div>
 
             <NuxtLink :to="plan.slug === 'business' ? '/register-shop?plan=business' : '/register-shop'"
-              class="w-full py-3 rounded-lg text-sm font-semibold transition-colors block text-center" :class="plan.slug === 'basic' || index === Math.floor(plans.length / 2)
+              class="w-full py-3 rounded-lg text-sm font-semibold block text-center transition-smooth hover-lift"
+              :class="plan.slug === 'basic' || index === Math.floor(plans.length / 2)
                 ? 'bg-black text-white hover:bg-zinc-800 shadow-lg'
                 : 'border border-zinc-200 hover:border-black hover:bg-zinc-50'">
-              <span v-if="plan.slug === 'business'">Связаться с нами</span>
-              <span v-else>Выбрать {{ plan.name }}</span>
+              <span v-if="plan.slug === 'business'">{{ $t('home.pricing.contact') }}</span>
+              <span v-else>{{ $t('home.pricing.select') }} {{ plan.name }}</span>
             </NuxtLink>
           </div>
         </div>
 
         <div v-else class="text-center py-12 text-zinc-400">
-          <p>Тарифные планы временно недоступны</p>
+          <p>{{ $t('home.pricing.unavailable') }}</p>
         </div>
 
         <!-- Offers Section -->
         <div v-if="offers && offers.length > 0" class="mt-20">
-          <h2 class="text-2xl md:text-4xl font-semibold tracking-tight text-center mb-6">Специальные предложения</h2>
-          <p class="text-center text-zinc-500 mb-12">Дополнительные услуги и решения</p>
+          <h2 class="text-2xl md:text-4xl font-semibold tracking-tight text-center mb-6">{{ $t('home.offers.title') }}
+          </h2>
+          <p class="text-center text-zinc-500 mb-12">{{ $t('home.offers.subtitle') }}</p>
 
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div v-for="offer in offers" :key="offer.id"
-              class="bg-white rounded-2xl p-8 border-2 border-zinc-900 shadow-lg hover:shadow-xl transition-all">
+              class="bg-white rounded-2xl p-8 border-2 border-zinc-900 shadow-lg hover:shadow-xl transition-smooth hover-lift">
               <div class="flex justify-between items-start mb-4">
                 <h3 class="text-xl font-semibold">{{ offer.title }}</h3>
                 <div v-if="offer.price || offer.price_text" class="text-right">
@@ -437,11 +438,11 @@
                 <div class="flex gap-3">
                   <a v-if="offer.contact_email" :href="`mailto:${offer.contact_email}`"
                     class="flex-1 py-2.5 px-4 bg-zinc-100 hover:bg-zinc-900 hover:text-white rounded-lg text-sm font-semibold transition-colors text-center">
-                    Email
+                    {{ $t('home.offers.email') }}
                   </a>
                   <a v-if="offer.contact_phone" :href="`tel:${offer.contact_phone}`"
                     class="flex-1 py-2.5 px-4 bg-zinc-100 hover:bg-zinc-900 hover:text-white rounded-lg text-sm font-semibold transition-colors text-center">
-                    Телефон
+                    {{ $t('home.offers.phone') }}
                   </a>
                 </div>
               </div>
@@ -463,41 +464,46 @@
               LinkShop
             </NuxtLink>
             <p class="text-zinc-500 text-sm max-w-xs leading-relaxed">
-              Операционная система для современной торговли. Создаем инструменты, которые помогают
-              предпринимателям расти быстрее.
+              {{ $t('footer.desc') }}
             </p>
           </div>
           <div>
-            <h4 class="font-semibold mb-6 text-sm">Продукт</h4>
+            <h4 class="font-semibold mb-6 text-sm">{{ $t('footer.product.title') }}</h4>
             <ul class="space-y-4 text-sm text-zinc-500">
-              <li><a href="#features" class="hover:text-black transition-colors">Функции</a></li>
-              <li><a href="#solutions" class="hover:text-black transition-colors">Интеграции</a></li>
-              <li><a href="#" class="hover:text-black transition-colors">Шаблоны</a></li>
-              <li><a href="#" class="hover:text-black transition-colors">Roadmap</a></li>
+              <li><a href="#features" class="hover:text-black transition-colors">{{ $t('footer.product.features')
+              }}</a></li>
+              <li><a href="#solutions" class="hover:text-black transition-colors">{{
+                $t('footer.product.integrations')
+                  }}</a></li>
+              <li><a href="#" class="hover:text-black transition-colors">{{ $t('footer.product.templates') }}</a>
+              </li>
+              <li><a href="#" class="hover:text-black transition-colors">{{ $t('footer.product.roadmap') }}</a>
+              </li>
             </ul>
           </div>
           <div>
-            <h4 class="font-semibold mb-6 text-sm">Компания</h4>
+            <h4 class="font-semibold mb-6 text-sm">{{ $t('footer.company.title') }}</h4>
             <ul class="space-y-4 text-sm text-zinc-500">
-              <li><a href="#" class="hover:text-black transition-colors">О нас</a></li>
-              <li><a href="#" class="hover:text-black transition-colors">Карьера</a></li>
-              <li><a href="#" class="hover:text-black transition-colors">Блог</a></li>
-              <li><a href="#" class="hover:text-black transition-colors">Бренд</a></li>
+              <li><a href="#" class="hover:text-black transition-colors">{{ $t('footer.company.about') }}</a></li>
+              <li><a href="#" class="hover:text-black transition-colors">{{ $t('footer.company.careers') }}</a>
+              </li>
+              <li><a href="#" class="hover:text-black transition-colors">{{ $t('footer.company.blog') }}</a></li>
+              <li><a href="#" class="hover:text-black transition-colors">{{ $t('footer.company.brand') }}</a></li>
             </ul>
           </div>
           <div>
-            <h4 class="font-semibold mb-6 text-sm">Legal</h4>
+            <h4 class="font-semibold mb-6 text-sm">{{ $t('footer.legal.title') }}</h4>
             <ul class="space-y-4 text-sm text-zinc-500">
-              <li><a href="#" class="hover:text-black transition-colors">Privacy</a></li>
-              <li><a href="#" class="hover:text-black transition-colors">Terms</a></li>
-              <li><a href="#" class="hover:text-black transition-colors">Cookie Policy</a></li>
+              <li><a href="#" class="hover:text-black transition-colors">{{ $t('footer.legal.privacy') }}</a></li>
+              <li><a href="#" class="hover:text-black transition-colors">{{ $t('footer.legal.terms') }}</a></li>
+              <li><a href="#" class="hover:text-black transition-colors">{{ $t('footer.legal.cookie') }}</a></li>
             </ul>
           </div>
         </div>
 
         <div
           class="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-zinc-100 text-sm text-zinc-400">
-          <p>&copy; 2024 LinkShop Technologies Inc. All rights reserved.</p>
+          <p>{{ $t('footer.rights') }}</p>
           <div class="flex gap-6 mt-4 md:mt-0">
             <a href="#" class="hover:text-black transition-colors">
               <iconify-icon icon="lucide:twitter" width="20"></iconify-icon>

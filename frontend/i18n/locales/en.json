@@ -12,7 +12,8 @@
         "products": "Products",
         "orders": "Orders",
         "favorites": "Favorites",
-        "register": "Register"
+        "register": "Register",
+        "shop": "Shop"
     },
     "home": {
         "hero": {
@@ -26,14 +27,87 @@
             "title": "All features of modern e-commerce",
             "subtitle": "Our toolkit covers every aspect of modern e-commerce"
         },
+        "features_new": {
+            "title": "Everything you need to grow. All in one place.",
+            "subtitle": "Our toolkit covers every aspect of modern e-commerce.",
+            "smart_warehouse": {
+                "title": "Smart Warehouse",
+                "desc": "Real-time stock tracking. Automatic low stock notifications.",
+                "table": {
+                    "product": "Product",
+                    "status": "Status"
+                }
+            },
+            "analytics": {
+                "title": "Analytics",
+                "desc": "Deep insights."
+            },
+            "speed": {
+                "title": "Speed",
+                "desc": "Optimized for lightning fast loading."
+            },
+            "sync": {
+                "title": "Auto-Sync",
+                "desc": "Stock changes are instantly reflected in the storefront. No delays."
+            }
+        },
+        "timeline": {
+            "title": "Path to Sales",
+            "step1": {
+                "title": "Create Account",
+                "desc": "Register in 30 seconds. No credit card required."
+            },
+            "step2": {
+                "title": "Upload Products",
+                "desc": "Import via Excel or add manually. Upload photos."
+            },
+            "step3": {
+                "title": "Start Selling",
+                "desc": "Publish your store and accept first orders instantly."
+            }
+        },
         "pricing": {
-            "title": "Choose a convenient plan for your business",
-            "subtitle": "From small business to large enterprise - solutions for companies of any level",
+            "title": "Pricing Plans",
+            "subtitle": "Transparent pricing. No hidden fees.",
+            "unavailable": "Pricing plans temporarily unavailable",
+            "loading": "Loading plans...",
             "month": "mo",
-            "year": "yr",
-            "popular": "Popular",
-            "choose_plan": "Choose Plan",
-            "features": "Features"
+            "select": "Choose",
+            "contact": "Contact Us",
+            "unlimited": "Unlimited",
+            "products": "products"
+        },
+        "offers": {
+            "title": "Special Offers",
+            "subtitle": "Additional services and solutions",
+            "email": "Email",
+            "phone": "Phone"
+        }
+    },
+    "footer": {
+        "contacts": "Contacts",
+        "followUs": "Follow Us",
+        "rights": "© 2024 LinkShop Technologies Inc. All rights reserved.",
+        "desc": "Operating system for modern commerce. We build tools that help entrepreneurs grow faster.",
+        "product": {
+            "title": "Product",
+            "features": "Features",
+            "integrations": "Integrations",
+            "templates": "Templates",
+            "roadmap": "Roadmap"
+        },
+        "company": {
+            "title": "Company",
+            "about": "About Us",
+            "careers": "Careers",
+            "blog": "Blog",
+            "brand": "Brand"
+        },
+        "legal": {
+            "title": "Legal",
+            "privacy": "Privacy",
+            "terms": "Terms",
+            "cookie": "Cookie Policy"
         }
     },
     "cart": {
@@ -43,7 +117,11 @@
         "continue_shopping": "Continue Shopping",
         "total": "Total",
         "checkout": "Checkout",
-        "login_required": "Login to checkout"
+        "login_required": "Login to checkout",
+        "loginRequired": "Login to add to cart",
+        "addedToCart": "Added to cart!",
+        "addedToFavorites": "Added to favorites!",
+        "removedFromFavorites": "Removed from favorites"
     },
     "favorites": {
         "title": "Favorites",
@@ -82,6 +160,8 @@
         }
     },
     "common": {
+        "activated": "activated",
+        "deactivated": "deactivated",
         "loading": "Loading...",
         "error": "An error occurred",
         "success": "Success",
@@ -97,7 +177,14 @@
         "close": "Close",
         "sending": "Sending...",
         "panel": "Control Panel",
-        "analytics": "Analytics"
+        "analytics": "Analytics",
+        "logout": "Logout",
+        "next": "Next",
+        "yes": "Yes",
+        "no": "No",
+        "showing": "Showing",
+        "of": "of",
+        "page": "Page"
     },
     "periods": {
         "today": "Today",
@@ -152,6 +239,91 @@
         "deleteConfirm": "Are you sure you want to delete this category?",
         "deleteSuccess": "Category deleted"
     },
+    "brandsPage": {
+        "title": "Brands",
+        "subtitle": "Manage shop brands",
+        "add": "Add Brand",
+        "empty": "No brands found",
+        "deleteConfirm": "Are you sure you want to delete this brand?",
+        "deleteSuccess": "Brand deleted",
+        "nameLabel": "Brand Name",
+        "namePlaceholder": "e.g. Ray-Ban",
+        "logoLabel": "Brand Logo",
+        "orUrl": "or enter URL",
+        "createBtn": "Create Brand"
+    },
+    "bannerPage": {
+        "title": "Banner",
+        "subtitle": "Shop banner settings",
+        "preview": "Preview",
+        "edit": "Edit Banner",
+        "badgeLabel": "Badge Text",
+        "badgePlaceholder": "NEW",
+        "titleLabel": "Title (\\n for new line)",
+        "subtitleLabel": "Subtitle",
+        "subtitlePlaceholder": "from $299",
+        "btnTextLabel": "Button Text",
+        "btnTextPlaceholder": "Buy Now",
+        "btnLinkLabel": "Button Link",
+        "imageUrlLabel": "Image URL",
+        "uploadLabel": "Or upload image",
+        "activeLabel": "Banner Active",
+        "saveBtn": "Save Banner",
+        "saving": "Saving...",
+        "saved": "Banner saved!"
+    },
+    "languages": {
+        "uz": "Uzbek",
+        "ru": "Russian",
+        "en": "English"
+    },
+    "productsPage": {
+        "title": "Products",
+        "subtitle": "Manage store products",
+        "titleEdit": "Edit Product",
+        "titleNew": "Add Product",
+        "emptyTitle": "No products yet",
+        "emptyDesc": "Add your first product",
+        "sold": "sold",
+        "inStock": "in stock",
+        "outOfStock": "Out of stock",
+        "deleteConfirm": "Are you sure you want to delete this product?",
+        "basicInfo": "Basic Information",
+        "loading": "Loading product data...",
+        "nameLabel": "Product Name",
+        "descriptionLabel": "Description",
+        "categoryLabel": "Category",
+        "brandLabel": "Brand",
+        "priceLabel": "Price ($)",
+        "discountLabel": "Discount (%)",
+        "discountHelp": "Enter discount percentage (0-100)",
+        "imagesTitle": "Images",
+        "variantsTitle": "Product Variants",
+        "variantsHelp": "Add size and color combinations with stock quantity",
+        "sizePlaceholder": "Size",
+        "colorPlaceholder": "Color",
+        "stockPlaceholder": "Stock",
+        "addVariantBtn": "+ Add Variant",
+        "saveBtn": "Save Changes",
+        "createBtn": "Create Product",
+        "saving": "Saving...",
+        "cancel": "Cancel",
+        "backToProfile": "Back to Profile",
+        "shopInfoError": "Error: could not load shop info",
+        "uploadText": "Click or drag images",
+        "uploadHint": "PNG, JPG up to 5MB",
+        "orUrl": "or add by URL",
+        "addBtn": "Add",
+        "mainBadge": "Main",
+        "makeMain": "Make Main",
+        "remove": "Remove",
+        "uploading": "Uploading images...",
+        "example": "e.g.",
+        "descriptionPlaceholder": "Product description...",
+        "limitReachedTitle": "Product limit reached",
+        "limitReachedDesc": "You have reached the maximum number of products ({limit}) for your subscription plan. Please delete old products or upgrade your subscription to add new ones.",
+        "upgradePlan": "Upgrade Plan"
+    },
     "add": "Add",
     "store": {
         "brands": "Brands",
@@ -163,11 +335,6 @@
         "allCategories": "All Categories",
         "allBrands": "All Brands",
         "noProducts": "No products found"
-    },
-    "footer": {
-        "contacts": "Contacts",
-        "followUs": "Follow Us",
-        "rights": "All rights reserved"
     },
     "product": {
         "loading": "Loading product details...",
@@ -185,6 +352,7 @@
         "preorderDesc": "Product is temporarily out of stock. Place a pre-order and we will notify you when it arrives.",
         "preorderConfig": "Selected configuration:",
         "submitPreorder": "Place Pre-order",
+        "relatedProducts": "You might also like",
         "preorderSuccess": "Pre-order placed successfully! We will notify you when the product is available.",
         "preorderError": "Error placing pre-order. Please try again.",
         "brand": "Brand",
@@ -194,11 +362,7 @@
             "name": "Name",
             "phone": "Phone number"
         },
-        "soldOut": "SOLD OUT",
-        "loginRequired": "Login to add to cart",
-        "addedToCart": "Added to cart!",
-        "addedToFavorites": "Added to favorites!",
-        "removedFromFavorites": "Removed from favorites"
+        "soldOut": "SOLD OUT"
     },
     "admin": {
         "intro": "Welcome",
@@ -219,13 +383,18 @@
         "periods": {
             "today": "Today",
             "week": "Week",
-            "month": "Month"
+            "month": "Month",
+            "all": "All Time"
         },
         "status": {
             "active": "Active",
             "trial": "Trial",
             "expired": "Expired",
-            "cancelled": "Cancelled"
+            "cancelled": "Cancelled",
+            "pending": "Pending",
+            "processing": "Processing",
+            "shipping": "Shipping",
+            "delivered": "Delivered"
         },
         "dashboard": "Dashboard",
         "products": "Products",
@@ -279,12 +448,113 @@
         "selectBrand": "Select brand",
         "selectCategory": "Select category",
         "loadingBrands": "Loading brands...",
-        "loadingCategories": "Loading categories..."
+        "loadingCategories": "Loading categories...",
+        "ordersPage": {
+            "title": "Orders",
+            "subtitle": "Manage shop orders",
+            "empty": "No orders yet",
+            "delivery": "Delivery Information",
+            "recipient": "Recipient",
+            "phone": "Phone",
+            "city": "City",
+            "address": "Address",
+            "payment": "Payment Information",
+            "cash": "Cash",
+            "card": "Card",
+            "items": "Order Items",
+            "qty": "Qty",
+            "notes": "Notes",
+            "statusUpdateSuccess": "Order status updated",
+            "statusUpdateError": "Error: Could not update status"
+        },
+        "periodLabel": {
+            "today": "Today's",
+            "week": "Weekly",
+            "month": "Monthly",
+            "total": "Total"
+        },
+        "ordersByStatus": "Orders by Status",
+        "generalStats": "General Statistics",
+        "selectPlan": "Select Plan",
+        "upgrade": "Upgrade",
+        "subscriptionPage": {
+            "title": "Subscription",
+            "pageTitle": "Select Subscription",
+            "pageSubtitle": "Choose a plan that suits your business",
+            "current": "Current Subscription",
+            "requestPending": "Request Pending",
+            "requestSent": "Request Sent",
+            "requestNote": "Your request has been sent to the administrator. Please wait for confirmation and plan activation.",
+            "labels": {
+                "plan": "PLAN",
+                "duration": "DURATION",
+                "sent": "SENT",
+                "price": "PRICE",
+                "expires": "EXPIRES",
+                "daysLeft": "DAYS LEFT",
+                "products": "PRODUCTS"
+            },
+            "actions": {
+                "renew": "Renew Subscription",
+                "cancel": "Cancel Subscription",
+                "upgrade": "Upgrade",
+                "select": "Select Plan",
+                "sending": "Sending..."
+            },
+            "availablePlans": "Available Plans",
+            "availablePlansDesc": "Select a plan and send a request. The platform administrator will contact you for payment and subscription activation.",
+            "popular": "Popular",
+            "month": "/month",
+            "selectDuration": "Select Duration:",
+            "priceFor": "Price for {duration} {unit}:",
+            "discount": "Discount",
+            "total": "Total:",
+            "specialOffers": "Special Offers",
+            "specialOffersDesc": "Additional services and solutions",
+            "contact": {
+                "email": "Email",
+                "call": "Call"
+            },
+            "importantInfo": "Important Information",
+            "infoList": {
+                "trial": "Trial period lasts 30 days from shop creation",
+                "suspension": "Shop will be suspended after trial period ends",
+                "activation": "To activate subscription, send a request for selected plan",
+                "payment": "Platform administrator will contact you for payment",
+                "renewal": "After activation, subscription renews automatically, or you can request manual renewal"
+            },
+            "modals": {
+                "renewTitle": "Renew Subscription",
+                "renewDesc": "Select plan and duration to renew:",
+                "selectPlan": "Subscription Plan",
+                "cancelTitle": "Cancel Subscription",
+                "cancelConfirm": "Are you sure you want to cancel subscription?",
+                "cancelWarning": "Your shop will be deactivated after cancellation.",
+                "reason": "Cancellation reason (optional)",
+                "reasonPlaceholder": "Enter reason...",
+                "confirmCancel": "Confirm Cancellation",
+                "sendRequest": "Send Request",
+                "savings": "You save"
+            },
+            "status": {
+                "trial": "Trial Period",
+                "active": "Active",
+                "expired": "Expired",
+                "cancelled": "Cancelled",
+                "free": "Free"
+            },
+            "months": {
+                "one": "month",
+                "few": "months",
+                "many": "months"
+            }
+        }
     },
     "platformAdmin": {
         "dashboard": {
             "title": "Dashboard",
             "subtitle": "Platform Management",
+            "welcome": "Welcome to Platform Dashboard",
             "refresh": "Refresh",
             "error": "Error occurred",
             "loading": "Loading...",
@@ -299,6 +569,7 @@
             "dashboard": "Dashboard",
             "shops": "Shops",
             "users": "Users",
+            "orders": "Orders",
             "plans": "Subscription Plans",
             "requests": "Subscription Requests",
             "offers": "Offers"
@@ -318,6 +589,24 @@
             "clear": "Clear",
             "notFound": "No shops found",
             "export": "Export",
+            "cancelled": "Cancelled",
+            "details": "Details",
+            "activate": "Activate",
+            "deactivate": "Deactivate",
+            "subscription": "Subscription",
+            "expiresToday": "Expires today",
+            "expiresTomorrow": "Expires tomorrow",
+            "daysLeft": "{days} days",
+            "subscriptionManagement": "Subscription Management",
+            "currentPlan": "Current Plan",
+            "currentStatus": "Current Status",
+            "history": "Request History",
+            "quickActions": {
+                "month1": "+1 Month",
+                "month3": "+3 Months",
+                "month6": "+6 Months",
+                "year1": "+1 Year"
+            },
             "table": {
                 "name": "Name",
                 "slug": "Slug",
@@ -564,7 +853,8 @@
             "title": "Personal Information",
             "firstName": "First Name",
             "lastName": "Last Name",
-            "phone": "Phone"
+            "phone": "Phone",
+            "phoneChangeHint": "Phone number cannot be changed"
         },
         "shops": {
             "title": "My Shops",
@@ -672,10 +962,64 @@
         "notifications": {
             "imageRequired": "Please select an image",
             "sizeLimit": "File size must not exceed 2MB",
-            "success": "Shop created successfully!",
-            "error": "Error creating shop",
-            "logoSuccess": "Logo uploaded successfully",
+            "shopCreated": "Shop created successfully",
+            "brandCreationError": "Error creating brand",
+            "addOneImage": "Please add at least one image",
+            "productUpdated": "Product updated successfully",
+            "errorLoadingData": "Error loading data",
+            "loggedOut": "Logged out successfully",
             "logoError": "Error uploading logo"
+        }
+    },
+    "alerts": {
+        "preorder": {
+            "loginRequired": "Log in to pre-order",
+            "phoneRequired": "Please enter your phone number",
+            "success": "Pre-order placed successfully! We will notify you when the item is in stock.",
+            "error": "Error placing pre-order. Please try again."
+        },
+        "cart": {
+            "loginRequired": "Log in to add to cart",
+            "selectColor": "Please select a color",
+            "colorOutOfStock": "This color is out of stock",
+            "selectSize": "Please select a size",
+            "success": "Added to cart!"
+        },
+        "favorites": {
+            "loginRequired": "Log in to add to favorites"
+        },
+        "shop": {
+            "created": "Shop created successfully!",
+            "exported": "Data exported",
+            "expiryRequired": "Specify expiration date for active subscription",
+            "statusChanged": "Shop {status}",
+            "requestTheSame": "You already have an active request pending",
+            "planRequestSent": "Request for plan \"{plan}\" sent! Administrator will contact you.",
+            "selectPlan": "Select a subscription plan",
+            "renewalSent": "Request to renew subscription to \"{plan}\" sent!",
+            "subscriptionActivated": "Subscription activated",
+            "subscriptionUpdated": "Subscription updated",
+            "subscriptionCancelled": "Subscription successfully cancelled",
+            "requestError": "Error sending request",
+            "renewalError": "Error sending renewal request",
+            "cancellationError": "Error cancelling subscription",
+            "logoRequired": "Please select an image",
+            "fileSize": "File size must not exceed 2MB",
+            "logoUploaded": "Logo uploaded successfully",
+            "logoError": "Error uploading logo",
+            "imageRequired": "Please upload an image",
+            "imageUploaded": "Image uploaded!",
+            "imageError": "Error uploading image",
+            "fillAll": "Please fill in all fields",
+            "brandCreationError": "Error creating brand",
+            "brandCreated": "Brand created successfully!",
+            "categoryCreated": "Category created successfully!",
+            "productCreated": "Product created successfully!",
+            "productUpdated": "Product updated successfully!",
+            "addOneImage": "Please add at least one image",
+            "errorLoadingData": "Error loading product data",
+            "errorSaving": "Error saving data",
+            "loggedOut": "You have logged out"
         }
     }
 }

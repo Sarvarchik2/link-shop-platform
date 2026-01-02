@@ -56,3 +56,10 @@ def delete_product(
     current_user = Depends(get_current_user)
 ):
     return product_service.delete_product(db, product_id, current_user)
+
+@router.post("/products/{product_id}/favorite", response_model=ProductRead)
+def toggle_favorite(
+    product_id: int,
+    db: Session = Depends(get_db)
+):
+    return product_service.toggle_favorite(db, product_id)
