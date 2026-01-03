@@ -154,8 +154,7 @@ def on_startup():
                     password_hash=get_password_hash(admin_password),
                     first_name="Platform",
                     last_name="Admin",
-                    role="platform_admin",
-                    is_active=True
+                    role="platform_admin"
                 )
                 db.add(user)
                 db.commit()
