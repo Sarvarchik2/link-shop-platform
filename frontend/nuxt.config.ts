@@ -10,8 +10,14 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      apiBase: process.env.NUXT_PUBLIC_API_BASE || useRuntimeConfig().public.apiBase + ''
+      apiBase: process.env.NUXT_PUBLIC_API_BASE || 'http://localhost:8000'
     }
+  },
+
+  nitro: {
+    preset: 'node-server',
+    host: '0.0.0.0',
+    port: 3000
   },
 
   css: ['~/assets/css/main.css'],
