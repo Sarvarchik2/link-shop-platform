@@ -370,7 +370,9 @@
             <div class="text-4xl font-bold mb-6">
               <span v-if="plan.price === 0 || plan.is_trial">$0</span>
               <span v-else>${{ plan.price }}</span>
-              <span class="text-base font-normal text-zinc-500">/{{ $t('home.pricing.month') }}</span>
+              <span v-if="plan.is_trial" class="text-base font-normal text-zinc-500">/{{ plan.period_days }} {{
+                $t('home.pricing.days') }}</span>
+              <span v-else class="text-base font-normal text-zinc-500">/{{ $t('home.pricing.month') }}</span>
             </div>
             <p v-if="plan.description" class="text-sm text-zinc-500 mb-8 border-b border-zinc-100 pb-8">{{
               plan.description }}</p>
@@ -471,7 +473,7 @@
             <h4 class="font-semibold mb-6 text-sm">{{ $t('footer.product.title') }}</h4>
             <ul class="space-y-4 text-sm text-zinc-500">
               <li><a href="#features" class="hover:text-black transition-colors">{{ $t('footer.product.features')
-              }}</a></li>
+                  }}</a></li>
               <li><a href="#solutions" class="hover:text-black transition-colors">{{
                 $t('footer.product.integrations')
                   }}</a></li>

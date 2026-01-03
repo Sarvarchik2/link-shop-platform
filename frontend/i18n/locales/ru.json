@@ -75,7 +75,8 @@
             "select": "Выбрать",
             "contact": "Связаться с нами",
             "unlimited": "Неограниченно",
-            "products": "товаров"
+            "products": "товаров",
+            "days": "дней"
         },
         "offers": {
             "title": "Специальные предложения",
@@ -108,7 +109,7 @@
             "terms": "Terms",
             "cookie": "Cookie Policy"
         },
-        "rights": "© 2024 LinkShop Technologies Inc. All rights reserved."
+        "rights": "© 2026 LinkShop Technologies Inc. All rights reserved."
     },
     "cart": {
         "title": "Корзина",

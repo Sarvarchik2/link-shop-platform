@@ -38,7 +38,8 @@
               <div class="form-group">
                 <label class="form-label">{{ $t('checkout.form.phone') }}</label>
                 <input v-model="form.delivery_phone" type="tel" class="form-input"
-                  :placeholder="$t('checkout.form.phonePlaceholder')" required />
+                  :placeholder="$t('checkout.form.phonePlaceholder')" required @input="handlePhoneInput"
+                  maxlength="19" />
               </div>
             </div>
 
@@ -211,6 +212,7 @@
   </div>
 </template>
 
+
 <script setup>
 definePageMeta({
   middleware: 'auth'
@@ -219,6 +221,7 @@ definePageMeta({
 const { t } = useI18n()
 const { items, totalPrice, clearCart } = useCart()
 const { token, user } = useAuth()
+const { formatPhoneNumber, unformatPhoneNumber } = usePhoneFormatter()
 
 const loading = ref(false)
 
@@ -235,12 +238,27 @@ const form = reactive({
 onMounted(() => {
   if (user.value) {
     form.recipient_name = `${user.value.first_name} ${user.value.last_name}`.trim()
-    form.delivery_phone = user.value.phone
+    if (user.value.phone) {
+      // Format the existing phone number if present
+      form.delivery_phone = formatPhoneNumber(user.value.phone)
+    } else {
+      // Default formatted
+      form.delivery_phone = formatPhoneNumber('998')
+    }
+  } else {
+    form.delivery_phone = formatPhoneNumber('998')
   }
 })
 
+const handlePhoneInput = (e) => {
+  const input = e.target
+  const formatted = formatPhoneNumber(input.value)
+  form.delivery_phone = formatted
+}
+
 const isFormValid = computed(() => {
-  return form.recipient_name && form.delivery_phone && form.delivery_city && form.delivery_address && items.value.length > 0
+  return form.recipient_name && form.delivery_phone && form.delivery_city && form.delivery_address && items.value.length >
+    0
 })
 
 const toast = useToast()
@@ -267,13 +285,17 @@ const placeOrder = async () => {
       ? `http://localhost:8000/orders?shop_slug=${shopSlug}`
       : 'http://localhost:8000/orders'
 
+    // Prepare data with unformatted phone
+    const orderData = {
+      items: orderItems,
+      ...form,
+      delivery_phone: unformatPhoneNumber(form.delivery_phone)
+    }
+
     await $fetch(url, {
       method: 'POST',
       headers: { Authorization: `Bearer ${token.value}` },
-      body: {
-        items: orderItems,
-        ...form
-      }
+      body: orderData
     })
 
     clearCart()
@@ -289,7 +311,7 @@ const placeOrder = async () => {
 
 // Redirect if cart is empty
 // if (items.value.length === 0) {
-//   navigateTo('/cart')
+// navigateTo('/cart')
 // }
 </script>
 

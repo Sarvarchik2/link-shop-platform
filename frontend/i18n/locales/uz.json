@@ -75,7 +75,8 @@
             "select": "Tanlash",
             "contact": "Biz bilan bog'lanish",
             "unlimited": "Cheksiz",
-            "products": "ta mahsulot"
+            "products": "ta mahsulot",
+            "days": "kun"
         },
         "offers": {
             "title": "Maxsus takliflar",
@@ -88,7 +89,7 @@
         "contacts": "Aloqa",
         "followUs": "Biz ijtimoiy tarmoqlarda",
         "desc": "Zamonaviy savdo uchun operatsion tizim. Tadbirkorlarga tezroq o'sishga yordam beradigan vositalarni yaratamiz.",
-        "rights": "© 2024 LinkShop Technologies Inc. Barcha huquqlar himoyalangan.",
+        "rights": "© 6 LinkShop Technologies Inc. Barcha huquqlar himoyalangan.",
         "product": {
             "title": "Mahsulot",
             "features": "Imkoniyatlar",

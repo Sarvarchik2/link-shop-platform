@@ -33,7 +33,8 @@
 
           <div class="form-group">
             <label class="form-label">{{ $t('auth.phone_label') }}</label>
-            <input v-model="phone" type="tel" required class="form-input" :placeholder="$t('auth.phone_placeholder')" />
+            <input v-model="phone" type="tel" required class="form-input" :placeholder="$t('auth.phone_placeholder')"
+              @input="handlePhoneInput" maxlength="19" />
           </div>
 
           <div class="form-group">
@@ -57,6 +58,7 @@
   </div>
 </template>
 
+
 <script setup lang="ts">
 definePageMeta({
   layout: false
@@ -71,6 +73,18 @@ const password = ref('')
 const loading = ref(false)
 const { register } = useAuth()
 const toast = useToast()
+const { formatPhoneNumber, unformatPhoneNumber } = usePhoneFormatter()
+
+// Initialize with formatted default
+onMounted(() => {
+  phone.value = formatPhoneNumber('998')
+})
+
+const handlePhoneInput = (e: Event) => {
+  const input = e.target as HTMLInputElement
+  const formatted = formatPhoneNumber(input.value)
+  phone.value = formatted
+}
 
 const storageReturnUrl = ref<string | null>(null)
 
@@ -131,7 +145,8 @@ const handleRegister = async () => {
 
   loading.value = true
   try {
-    await register(phone.value, password.value, firstName.value, lastName.value)
+    const rawPhone = unformatPhoneNumber(phone.value)
+    await register(rawPhone, password.value, firstName.value, lastName.value)
   } catch (e: any) {
     console.error('Register error details:', e)
     let errorMessage = t('auth.validation.register_error')
