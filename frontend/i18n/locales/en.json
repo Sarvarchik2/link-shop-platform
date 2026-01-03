@@ -581,6 +581,38 @@
             "created": "Created At",
             "isActive": "Active",
             "actions": "Actions"
+        },
+        "offers": {
+            "title": "Offer Management",
+            "subtitle": "Create and manage special offers (WhiteLabel, etc.)",
+            "add": "Add Offer",
+            "create": "Create Offer",
+            "edit": "Edit Offer",
+            "delete": "Delete",
+            "empty": "No offers yet",
+            "emptySubtitle": "Create the first offer",
+            "card": {
+                "priceByRequest": "Price by request",
+                "inactive": "Inactive",
+                "order": "Order:",
+                "active": "Active",
+                "activate": "Activate",
+                "deactivate": "Deactivate"
+            },
+            "form": {
+                "title": "Title",
+                "description": "Description",
+                "price": "Price ($)",
+                "priceText": "Price Text",
+                "contactText": "Contact Text",
+                "email": "Contact Email",
+                "phone": "Contact Phone",
+                "isActive": "Active",
+                "order": "Display Order",
+                "hints": {
+                    "price": "Leave empty if price is 'by request'"
+                }
+            }
         }
     },
     "users": {
@@ -644,7 +676,6 @@
             "addFeature": "Add",
             "isTrial": "Trial Period",
             "isActive": "Active",
-            "isActive": "Active",
             "order": "Display Order",
             "periodUnit": {
                 "day": "day",
@@ -660,38 +691,6 @@
             "confirmReject": "Are you sure you want to reject this request?",
             "notesPlaceholder": "Add notes...",
             "reasonPlaceholder": "Reason for rejection..."
-        },
-        "offers": {
-            "title": "Offer Management",
-            "subtitle": "Create and manage special offers (WhiteLabel, etc.)",
-            "add": "Add Offer",
-            "create": "Create Offer",
-            "edit": "Edit Offer",
-            "delete": "Delete",
-            "empty": "No offers yet",
-            "emptySubtitle": "Create the first offer",
-            "card": {
-                "priceByRequest": "Price by request",
-                "inactive": "Inactive",
-                "order": "Order:",
-                "active": "Active",
-                "activate": "Activate",
-                "deactivate": "Deactivate"
-            },
-            "form": {
-                "title": "Title",
-                "description": "Description",
-                "price": "Price ($)",
-                "priceText": "Price Text",
-                "contactText": "Contact Text",
-                "email": "Contact Email",
-                "phone": "Contact Phone",
-                "isActive": "Active",
-                "order": "Display Order",
-                "hints": {
-                    "price": "Leave empty if price is 'by request'"
-                }
-            }
         }
     },
     "shopSettings": {

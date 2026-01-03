@@ -566,6 +566,37 @@
                 "users": "Foydalanuvchilar"
             }
         },
+        "nav": {
+            "dashboard": "Boshqaruv paneli",
+            "shops": "Do'konlar",
+            "users": "Foydalanuvchilar",
+            "orders": "Buyurtmalar",
+            "plans": "Tarif rejalari",
+            "requests": "Ariza va so'rovlar",
+            "offers": "Takliflar"
+        },
+        "offers": {
+            "title": "Maxsus takliflar",
+            "subtitle": "Platforma takliflarini boshqarish",
+            "add": "Taklif qo'shish",
+            "create": "Yaratish",
+            "edit": "Tahrirlash",
+            "empty": "Takliflar mavjud emas",
+            "emptySubtitle": "Yangi taklif yarating",
+            "delete": "O'chirish",
+            "form": {
+                "title": "Sarlavha",
+                "description": "Tavsif",
+                "price": "Narx",
+                "priceText": "Narx matni",
+                "contactText": "Aloqa matni",
+                "email": "Email",
+                "phone": "Telefon"
+            },
+            "card": {
+                "priceByRequest": "Kelishilgan narx"
+            }
+        },
         "requests": {
             "title": "Obuna so'rovlari",
             "empty": "Kutilayotgan so'rovlar yo'q",
