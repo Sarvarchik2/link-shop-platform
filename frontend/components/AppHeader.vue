@@ -295,11 +295,17 @@ const shopSlug = computed(() => getCurrentShopSlug(route))
 
 // Fetch current shop data if on shop page
 const { data: currentShop } = await useFetch(() => {
+  // Only fetch if we have a slug AND we are not on a platform page that might misinterpret slug
   if (!shopSlug.value) return null
+  if (shopSlug.value === 'platform' || shopSlug.value === 'shop' || shopSlug.value === 'undefined') return null
+
   return `${useRuntimeConfig().public.apiBase}/platform/shops/${shopSlug.value}`
 }, {
   server: false,
-  watch: [shopSlug]
+  watch: [shopSlug],
+  onResponseError({ response }) {
+    if (response.status === 404) return // Ignore 404s
+  }
 })
 
 // Clear shop context when explicitly navigating to platform pages (not user pages)

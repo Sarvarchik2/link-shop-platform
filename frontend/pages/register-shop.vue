@@ -150,7 +150,7 @@
                   <div class="preview-header">
                     <span class="preview-label">{{ $t('shopRegistration.form.preview') }}:</span>
                     <button type="button" class="btn-remove-logo" @click="form.logo_url = ''">{{ $t('common.delete')
-                    }}</button>
+                      }}</button>
                   </div>
                   <img :src="form.logo_url" alt="Logo" class="preview-image" @error="logoError = true" />
                   <p v-if="logoError" class="preview-error">{{ $t('shopRegistration.form.uploadError') }}</p>
@@ -176,7 +176,7 @@
             <ul>
               <li>Plan: <strong>{{ selectedPlan?.name }}</strong></li>
               <li>{{ $t('shopRegistration.info.point2') }} <strong>link-platform-shop.uz/{{ form.slug || 'your-slug'
-              }}</strong></li>
+                  }}</strong></li>
             </ul>
           </div>
         </div>
@@ -205,6 +205,8 @@ const selectedPlan = ref(null)
 const { data: plans, pending: plansPending } = await useFetch(useRuntimeConfig().public.apiBase + '/subscription-plans', {
   server: false,
   transform: (data) => {
+    if (!Array.isArray(data)) return []
+
     const filteredPlans = data
       ?.filter(plan => plan.is_active)
       ?.sort((a, b) => (a.display_order || 0) - (b.display_order || 0)) || []
