@@ -5,37 +5,32 @@
 
 export const useShopContext = () => {
   const SHOP_CONTEXT_KEY = 'current_shop_slug'
+  const shopCookie = useCookie(SHOP_CONTEXT_KEY, {
+    maxAge: 60 * 60 * 24 * 7, // 1 week
+    path: '/'
+  })
 
-  // Get shop slug from localStorage
+  // Get shop slug from cookie
   const getShopSlug = (): string | null => {
-    if (process.client) {
-      return localStorage.getItem(SHOP_CONTEXT_KEY)
-    }
-    return null
+    return shopCookie.value || null
   }
 
-  // Save shop slug to localStorage
+  // Save shop slug to cookie
   const setShopSlug = (slug: string | null) => {
-    if (process.client) {
-      if (slug) {
-        localStorage.setItem(SHOP_CONTEXT_KEY, slug)
-      } else {
-        localStorage.removeItem(SHOP_CONTEXT_KEY)
-      }
-    }
+    shopCookie.value = slug
   }
 
-  // Get shop slug from current route or from localStorage
+  // Get shop slug from current route or from cookie
   const getCurrentShopSlug = (route: any): string | null => {
     // First, try to get from route params
     const routeSlug = route.params?.shop || route.params?.slug
     if (routeSlug) {
       // Save it for future use
       setShopSlug(routeSlug)
-      return routeSlug
+      return routeSlug as string
     }
-    
-    // If not in route, try to get from localStorage
+
+    // If not in route, try to get from cookie
     return getShopSlug()
   }
 

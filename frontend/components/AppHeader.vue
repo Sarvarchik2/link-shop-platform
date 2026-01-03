@@ -23,14 +23,8 @@
 
           <!-- Navigation (Desktop only) -->
           <nav class="nav-links">
-            <ClientOnly>
-              <NuxtLink :to="localePath(homeLink)" class="nav-link">{{ $t('nav.home') }}</NuxtLink>
-              <NuxtLink :to="localePath(shopProductsLink)" class="nav-link">{{ $t('nav.shop') }}</NuxtLink>
-              <template #fallback>
-                <NuxtLink :to="localePath('/')" class="nav-link">{{ $t('nav.home') }}</NuxtLink>
-                <NuxtLink :to="localePath('/products')" class="nav-link">{{ $t('nav.products') }}</NuxtLink>
-              </template>
-            </ClientOnly>
+            <NuxtLink :to="localePath(homeLink)" class="nav-link">{{ $t('nav.home') }}</NuxtLink>
+            <NuxtLink :to="localePath(shopProductsLink)" class="nav-link">{{ $t('nav.shop') }}</NuxtLink>
             <a @click.prevent="navigateToAuth(localePath('/orders'))" :href="localePath('/orders')" class="nav-link">{{
               $t('nav.orders') }}</a>
           </nav>
@@ -82,39 +76,21 @@
 
     <!-- Mobile Bottom Navigation -->
     <nav v-if="!hideMobileNav" class="mobile-nav">
-      <ClientOnly>
-        <NuxtLink :to="localePath(homeLink)" class="mobile-nav-item">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-            <polyline points="9 22 9 12 15 12 15 22"></polyline>
-          </svg>
-          <span>{{ $t('nav.home') }}</span>
-        </NuxtLink>
+      <NuxtLink :to="localePath(homeLink)" class="mobile-nav-item">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+        <span>{{ $t('nav.home') }}</span>
+      </NuxtLink>
 
-        <NuxtLink :to="localePath(shopProductsLink)" class="mobile-nav-item">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
-            <line x1="1" y1="10" x2="23" y2="10"></line>
-          </svg>
-          <span>{{ $t('nav.products') }}</span>
-        </NuxtLink>
-        <template #fallback>
-          <NuxtLink :to="localePath('/')" class="mobile-nav-item">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-              <polyline points="9 22 9 12 15 12 15 22"></polyline>
-            </svg>
-            <span>{{ $t('nav.home') }}</span>
-          </NuxtLink>
-          <NuxtLink :to="localePath('/products')" class="mobile-nav-item">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
-              <line x1="1" y1="10" x2="23" y2="10"></line>
-            </svg>
-            <span>{{ $t('nav.products') }}</span>
-          </NuxtLink>
-        </template>
-      </ClientOnly>
+      <NuxtLink :to="localePath(shopProductsLink)" class="mobile-nav-item">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+          <line x1="1" y1="10" x2="23" y2="10"></line>
+        </svg>
+        <span>{{ $t('nav.products') }}</span>
+      </NuxtLink>
 
       <a @click.prevent="navigateToAuth(localePath('/cart'))" :href="localePath('/cart')"
         class="mobile-nav-item cart-nav-item">
