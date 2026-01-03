@@ -181,7 +181,9 @@ const handleSubmit = async () => {
       method: 'POST',
       headers: { Authorization: `Bearer ${token.value}` },
       body: {
-        name: form.name,
+        name_uz: form.name,
+        name_ru: form.name,
+        name_en: form.name,
         image_url: imageUrl.value
       }
     })
