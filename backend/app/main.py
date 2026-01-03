@@ -159,9 +159,11 @@ def on_startup():
                 )
                 db.add(user)
                 db.commit()
-            elif user.role != "platform_admin":
-                 print(f"DTO: Promoting user {admin_phone} to platform_admin")
+            else:
+                 print(f"DTO: Updating admin user {admin_phone}")
                  user.role = "platform_admin"
+                 # Always update password to match env var (in case it changed or was wrong)
+                 user.hashed_password = get_password_hash(admin_password) 
                  db.commit()
             db.close()
         except Exception as e:
