@@ -6,6 +6,7 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     DATABASE_URL: str = "sqlite:///./database.db"
     UPLOAD_DIR: str = "uploads"
+    BASE_URL: str = "http://localhost:8000"
 
     class Config:
         env_file = ".env"

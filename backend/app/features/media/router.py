@@ -17,6 +17,5 @@ async def upload_image(file: UploadFile = File(...)):
     with open(filepath, "wb") as f:
         f.write(content)
     
-    # Return URL (Hardcoded localhost for now as in old main.py)
-    # In production, this should be a configurable base URL
-    return {"url": f"http://localhost:8000/uploads/{filename}"}
+    # Return URL
+    return {"url": f"{settings.BASE_URL}/uploads/{filename}"}
