@@ -17,7 +17,7 @@ export default defineNuxtConfig({
   nitro: {
     preset: 'node-server',
     host: '0.0.0.0',
-    port: 3000
+    port: process.env.PORT ? parseInt(process.env.PORT) : 3000
   },
 
   css: ['~/assets/css/main.css'],
