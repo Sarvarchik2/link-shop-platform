@@ -178,7 +178,7 @@ const queryParams = computed(() => {
   }
 })
 
-const { data: products, error, refresh } = await useFetch('http://localhost:8000/products', {
+const { data: products, error, refresh } = await useFetch(useRuntimeConfig().public.apiBase + '/products', {
   server: false,
   lazy: true,
   query: queryParams,
@@ -196,7 +196,7 @@ watch(error, (newError) => {
 const deleteProduct = async (id) => {
   if (!confirm(t('productsPage.deleteConfirm'))) return
   try {
-    await $fetch(`http://localhost:8000/products/${id}`, {
+    await $fetch(`${useRuntimeConfig().public.apiBase}/products/${id}`, {
       method: 'DELETE',
       headers: { Authorization: `Bearer ${token.value}` }
     })

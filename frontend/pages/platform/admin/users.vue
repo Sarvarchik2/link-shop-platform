@@ -443,7 +443,7 @@ const currentRoute = computed(() => {
   return 'dashboard'
 })
 
-const { data: users, pending, error, refresh } = await useFetch('http://localhost:8000/platform/admin/users', {
+const { data: users, pending, error, refresh } = await useFetch(useRuntimeConfig().public.apiBase + '/platform/admin/users', {
   server: false,
   lazy: true,
   watch: [token],
@@ -453,7 +453,7 @@ const { data: users, pending, error, refresh } = await useFetch('http://localhos
 })
 
 // Fetch shops and orders for stats
-const { data: shops } = await useFetch('http://localhost:8000/platform/shops', {
+const { data: shops } = await useFetch(useRuntimeConfig().public.apiBase + '/platform/shops', {
   server: false,
   lazy: true,
   headers: computed(() => ({
@@ -461,7 +461,7 @@ const { data: shops } = await useFetch('http://localhost:8000/platform/shops', {
   }))
 })
 
-const { data: orders } = await useFetch('http://localhost:8000/platform/admin/orders', {
+const { data: orders } = await useFetch(useRuntimeConfig().public.apiBase + '/platform/admin/orders', {
   server: false,
   lazy: true,
   headers: computed(() => ({

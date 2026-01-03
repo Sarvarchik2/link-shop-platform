@@ -149,7 +149,7 @@ const uploadFile = async (file) => {
 
   try {
     console.log('[Add Brand] Загрузка изображения:', file.name)
-    const response = await $fetch('http://localhost:8000/upload', {
+    const response = await $fetch(useRuntimeConfig().public.apiBase + '/upload', {
       method: 'POST',
       body: formData
     })
@@ -177,7 +177,7 @@ const handleSubmit = async () => {
   try {
     console.log('[Add Brand] Отправка данных:', { name: form.name, logo_url: logoUrl.value, shop_slug: shopSlug })
 
-    const response = await $fetch(`http://localhost:8000/brands?shop_slug=${shopSlug}`, {
+    const response = await $fetch(`${useRuntimeConfig().public.apiBase}/brands?shop_slug=${shopSlug}`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${token.value}` },
       body: {

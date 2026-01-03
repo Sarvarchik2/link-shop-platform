@@ -80,7 +80,7 @@ const shopSlug = route.params.slug
 const { token } = useAuth()
 const sidebarOpen = ref(false)
 
-const { data: brands, error, refresh } = await useFetch(`http://localhost:8000/brands?shop_slug=${shopSlug}`, {
+const { data: brands, error, refresh } = await useFetch(`${useRuntimeConfig().public.apiBase}/brands?shop_slug=${shopSlug}`, {
   server: false,
   lazy: true,
   headers: computed(() => ({
@@ -110,7 +110,7 @@ const deleteBrand = async (id) => {
   if (!confirm(t('brandsPage.deleteConfirm'))) return
   try {
     console.log('[Brands List] Удаление бренда:', id)
-    await $fetch(`http://localhost:8000/brands/${id}`, {
+    await $fetch(`${useRuntimeConfig().public.apiBase}/brands/${id}`, {
       method: 'DELETE',
       headers: { Authorization: `Bearer ${token.value}` }
     })

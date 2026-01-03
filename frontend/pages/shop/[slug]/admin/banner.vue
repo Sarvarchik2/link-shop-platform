@@ -203,7 +203,7 @@ const form = ref({
 })
 
 // Fetch banners
-const { data: banners, refresh } = await useFetch(`http://localhost:8000/banner?shop_slug=${shopSlug}`, {
+const { data: banners, refresh } = await useFetch(`${useRuntimeConfig().public.apiBase}/banner?shop_slug=${shopSlug}`, {
   server: false,
   headers: {
     'Authorization': `Bearer ${token.value}`
@@ -247,7 +247,7 @@ const uploadImage = async (event) => {
   formData.append('file', file)
 
   try {
-    const result = await $fetch('http://localhost:8000/upload', {
+    const result = await $fetch(useRuntimeConfig().public.apiBase + '/upload', {
       method: 'POST',
       body: formData
     })
@@ -263,14 +263,14 @@ const saveBanner = async () => {
   try {
     if (isEditing.value) {
       // Update
-      await $fetch(`http://localhost:8000/banner/${editingId.value}?shop_slug=${shopSlug}`, {
+      await $fetch(`${useRuntimeConfig().public.apiBase}/banner/${editingId.value}?shop_slug=${shopSlug}`, {
         method: 'PUT',
         headers: { Authorization: `Bearer ${token.value}` },
         body: form.value
       })
     } else {
       // Create
-      await $fetch(`http://localhost:8000/banner?shop_slug=${shopSlug}`, {
+      await $fetch(`${useRuntimeConfig().public.apiBase}/banner?shop_slug=${shopSlug}`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token.value}` },
         body: form.value
@@ -294,7 +294,7 @@ const deleteBanner = async (id) => {
   if (!confirm(t('common.confirmDelete') || 'Are you sure?')) return
 
   try {
-    await $fetch(`http://localhost:8000/banner/${id}?shop_slug=${shopSlug}`, {
+    await $fetch(`${useRuntimeConfig().public.apiBase}/banner/${id}?shop_slug=${shopSlug}`, {
       method: 'DELETE',
       headers: { Authorization: `Bearer ${token.value}` }
     })

@@ -297,7 +297,7 @@ const currentRoute = computed(() => {
   return 'dashboard'
 })
 
-const { data: plans, pending, refresh, error } = await useFetch('http://localhost:8000/platform/admin/subscription-plans', {
+const { data: plans, pending, refresh, error } = await useFetch(useRuntimeConfig().public.apiBase + '/platform/admin/subscription-plans', {
   server: false,
   lazy: true,
   watch: [token],
@@ -392,7 +392,7 @@ const savePlan = async () => {
     }
 
     if (editingPlan.value) {
-      await $fetch(`http://localhost:8000/platform/admin/subscription-plans/${editingPlan.value.id}`, {
+      await $fetch(`${useRuntimeConfig().public.apiBase}/platform/admin/subscription-plans/${editingPlan.value.id}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token.value}`
@@ -401,7 +401,7 @@ const savePlan = async () => {
       })
       toast.success(t('common.saved'))
     } else {
-      await $fetch('http://localhost:8000/platform/admin/subscription-plans', {
+      await $fetch(useRuntimeConfig().public.apiBase + '/platform/admin/subscription-plans', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token.value}`
@@ -422,7 +422,7 @@ const savePlan = async () => {
 
 const toggleActive = async (plan) => {
   try {
-    await $fetch(`http://localhost:8000/platform/admin/subscription-plans/${plan.id}`, {
+    await $fetch(`${useRuntimeConfig().public.apiBase}/platform/admin/subscription-plans/${plan.id}`, {
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${token.value}`
@@ -444,7 +444,7 @@ const deletePlan = async (plan) => {
   }
 
   try {
-    await $fetch(`http://localhost:8000/platform/admin/subscription-plans/${plan.id}`, {
+    await $fetch(`${useRuntimeConfig().public.apiBase}/platform/admin/subscription-plans/${plan.id}`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${token.value}`

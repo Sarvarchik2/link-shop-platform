@@ -247,7 +247,7 @@ const currentRoute = computed(() => {
   return 'dashboard'
 })
 
-const { data: offers, pending, error, refresh } = await useFetch('http://localhost:8000/platform/admin/offers', {
+const { data: offers, pending, error, refresh } = await useFetch(useRuntimeConfig().public.apiBase + '/platform/admin/offers', {
   server: false,
   headers: {
     'Authorization': `Bearer ${token.value}`
@@ -317,7 +317,7 @@ const saveOffer = async () => {
     }
 
     if (editingOffer.value) {
-      await $fetch(`http://localhost:8000/platform/admin/offers/${editingOffer.value.id}`, {
+      await $fetch(`${useRuntimeConfig().public.apiBase}/platform/admin/offers/${editingOffer.value.id}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token.value}`
@@ -326,7 +326,7 @@ const saveOffer = async () => {
       })
       toast.success(t('common.saved'))
     } else {
-      await $fetch('http://localhost:8000/platform/admin/offers', {
+      await $fetch(useRuntimeConfig().public.apiBase + '/platform/admin/offers', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token.value}`
@@ -347,7 +347,7 @@ const saveOffer = async () => {
 
 const toggleActive = async (offer) => {
   try {
-    await $fetch(`http://localhost:8000/platform/admin/offers/${offer.id}`, {
+    await $fetch(`${useRuntimeConfig().public.apiBase}/platform/admin/offers/${offer.id}`, {
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${token.value}`
@@ -369,7 +369,7 @@ const deleteOffer = async (offer) => {
   }
 
   try {
-    await $fetch(`http://localhost:8000/platform/admin/offers/${offer.id}`, {
+    await $fetch(`${useRuntimeConfig().public.apiBase}/platform/admin/offers/${offer.id}`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${token.value}`

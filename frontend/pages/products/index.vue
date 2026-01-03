@@ -120,12 +120,12 @@ const selectedBrands = ref([])
 const selectedCategories = ref([])
 
 // Fetch data
-const { data: products, pending } = await useFetch('http://localhost:8000/products', {
+const { data: products, pending } = await useFetch(useRuntimeConfig().public.apiBase + '/products', {
   server: false
 })
 
-const { data: brands } = await useFetch('http://localhost:8000/brands', { server: false })
-const { data: categories } = await useFetch('http://localhost:8000/categories', { server: false })
+const { data: brands } = await useFetch(useRuntimeConfig().public.apiBase + '/brands', { server: false })
+const { data: categories } = await useFetch(useRuntimeConfig().public.apiBase + '/categories', { server: false })
 
 // Check for brand filter in URL query
 watch(() => route.query.brand, (newBrand) => {

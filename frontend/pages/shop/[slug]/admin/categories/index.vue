@@ -81,7 +81,7 @@ const shopSlug = route.params.slug
 const { token } = useAuth()
 const sidebarOpen = ref(false)
 
-const { data: categories, error, refresh } = await useFetch(`http://localhost:8000/categories?shop_slug=${shopSlug}`, {
+const { data: categories, error, refresh } = await useFetch(`${useRuntimeConfig().public.apiBase}/categories?shop_slug=${shopSlug}`, {
   server: false,
   lazy: true,
   headers: computed(() => ({
@@ -109,7 +109,7 @@ const deleteCategory = async (id) => {
   if (!confirm(t('categoriesPage.deleteConfirm'))) return
   try {
     console.log('[Categories List] Удаление категории:', id)
-    await $fetch(`http://localhost:8000/categories/${id}`, {
+    await $fetch(`${useRuntimeConfig().public.apiBase}/categories/${id}`, {
       method: 'DELETE',
       headers: { Authorization: `Bearer ${token.value}` }
     })

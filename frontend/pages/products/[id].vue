@@ -186,7 +186,7 @@ const { user } = useAuth()
 const { getField } = useMultilingual()
 const { t } = useI18n()
 
-const { data: product, pending, refresh } = await useFetch(`http://localhost:8000/products/${route.params.id}`, {
+const { data: product, pending, refresh } = await useFetch(`${useRuntimeConfig().public.apiBase}/products/${route.params.id}`, {
   server: false
 })
 
@@ -582,7 +582,7 @@ const submitPreorder = async () => {
 
   try {
     const { token } = useAuth()
-    await $fetch(`http://localhost:8000/products/${route.params.id}/preorder`, {
+    await $fetch(`${useRuntimeConfig().public.apiBase}/products/${route.params.id}/preorder`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token.value}`
@@ -678,7 +678,7 @@ const toggleFavorite = async () => {
   }
 
   try {
-    await $fetch(`http://localhost:8000/products/${route.params.id}/favorite`, { method: 'POST' })
+    await $fetch(`${useRuntimeConfig().public.apiBase}/products/${route.params.id}/favorite`, { method: 'POST' })
     refresh()
   } catch (e) {
     console.error(e)

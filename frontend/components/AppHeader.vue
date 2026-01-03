@@ -212,7 +212,7 @@ const refreshShops = async () => {
   shopsError.value = null
 
   try {
-    const shops = await $fetch('http://localhost:8000/platform/shops/me', {
+    const shops = await $fetch(useRuntimeConfig().public.apiBase + '/platform/shops/me', {
       headers: {
         'Authorization': `Bearer ${token.value}`
       },
@@ -296,7 +296,7 @@ const shopSlug = computed(() => getCurrentShopSlug(route))
 // Fetch current shop data if on shop page
 const { data: currentShop } = await useFetch(() => {
   if (!shopSlug.value) return null
-  return `http://localhost:8000/platform/shops/${shopSlug.value}`
+  return `${useRuntimeConfig().public.apiBase}/platform/shops/${shopSlug.value}`
 }, {
   server: false,
   watch: [shopSlug]

@@ -328,21 +328,21 @@ onMounted(async () => {
   try {
     console.log('[Add Product] Загрузка данных для shop:', shopSlug.value)
     const [brandsData, categoriesData, statsData] = await Promise.all([
-      $fetch(`http://localhost:8000/brands?shop_slug=${shopSlug.value}`, {
+      $fetch(`${useRuntimeConfig().public.apiBase}/brands?shop_slug=${shopSlug.value}`, {
         headers: { 'Authorization': `Bearer ${token.value}` }
       }).catch(e => {
         console.error('[Add Product] Ошибка загрузки брендов:', e)
         brandsError.value = e
         return []
       }),
-      $fetch(`http://localhost:8000/categories?shop_slug=${shopSlug.value}`, {
+      $fetch(`${useRuntimeConfig().public.apiBase}/categories?shop_slug=${shopSlug.value}`, {
         headers: { 'Authorization': `Bearer ${token.value}` }
       }).catch(e => {
         console.error('[Add Product] Ошибка загрузки категорий:', e)
         categoriesError.value = e
         return []
       }),
-      $fetch(`http://localhost:8000/shop/${shopSlug.value}/admin/stats`, {
+      $fetch(`${useRuntimeConfig().public.apiBase}/shop/${shopSlug.value}/admin/stats`, {
         headers: { 'Authorization': `Bearer ${token.value}` }
       }).catch(e => {
         console.error('[Add Product] Ошибка загрузки статистики магазина:', e)
@@ -409,7 +409,7 @@ const uploadFiles = async (files) => {
         const formData = new FormData()
         formData.append('file', file)
 
-        const response = await $fetch('http://localhost:8000/upload', {
+        const response = await $fetch(useRuntimeConfig().public.apiBase + '/upload', {
           method: 'POST',
           body: formData
         })
@@ -499,7 +499,7 @@ const handleSubmit = async () => {
       return
     }
 
-    const response = await $fetch(`http://localhost:8000/products?shop_slug=${shopSlug.value}`, {
+    const response = await $fetch(`${useRuntimeConfig().public.apiBase}/products?shop_slug=${shopSlug.value}`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${token.value}` },
       body: productData

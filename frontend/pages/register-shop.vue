@@ -202,7 +202,7 @@ const currentStep = ref(1)
 const selectedPlan = ref(null)
 
 // Step 1: Fetch Plans
-const { data: plans, pending: plansPending } = await useFetch('http://localhost:8000/subscription-plans', {
+const { data: plans, pending: plansPending } = await useFetch(useRuntimeConfig().public.apiBase + '/subscription-plans', {
   server: false,
   transform: (data) => {
     const filteredPlans = data

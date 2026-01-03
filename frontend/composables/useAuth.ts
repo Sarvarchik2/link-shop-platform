@@ -8,7 +8,7 @@ export const useAuth = () => {
             formData.append('username', phone)
             formData.append('password', password)
 
-            const data: any = await $fetch('http://localhost:8000/token', {
+            const data: any = await $fetch(useRuntimeConfig().public.apiBase + '/token', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
@@ -50,7 +50,7 @@ export const useAuth = () => {
 
     const register = async (phone: string, password: string, first_name: string, last_name: string) => {
         try {
-            const data: any = await $fetch('http://localhost:8000/register', {
+            const data: any = await $fetch(useRuntimeConfig().public.apiBase + '/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -91,7 +91,7 @@ export const useAuth = () => {
     const fetchUser = async () => {
         if (!token.value) return
         try {
-            user.value = await $fetch('http://localhost:8000/users/me', {
+            user.value = await $fetch(useRuntimeConfig().public.apiBase + '/users/me', {
                 headers: { Authorization: `Bearer ${token.value}` }
             })
         } catch (e) {

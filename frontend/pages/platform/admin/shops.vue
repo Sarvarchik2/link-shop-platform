@@ -635,7 +635,7 @@ const currentRoute = computed(() => {
   return 'dashboard'
 })
 
-const { data: shops, pending, refresh, error } = await useFetch('http://localhost:8000/platform/shops', {
+const { data: shops, pending, refresh, error } = await useFetch(useRuntimeConfig().public.apiBase + '/platform/shops', {
   server: false,
   lazy: true,
   watch: [token],
@@ -703,14 +703,14 @@ const confirmPasswordAction = async () => {
     const { type, shop } = pendingAction.value
 
     if (type === 'activate') {
-      await $fetch(`http://localhost:8000/platform/admin/shops/${shop.id}/activate`, {
+      await $fetch(`${useRuntimeConfig().public.apiBase}/platform/admin/shops/${shop.id}/activate`, {
         method: 'PUT',
         headers: { 'Authorization': `Bearer ${token.value}` },
         body: { is_active: !shop.is_active, password: passwordInput.value }
       })
       toast.success(shop.is_active ? 'Магазин деактивирован' : 'Магазин активирован')
     } else if (type === 'delete') {
-      await $fetch(`http://localhost:8000/platform/admin/shops/${shop.id}/delete`, {
+      await $fetch(`${useRuntimeConfig().public.apiBase}/platform/admin/shops/${shop.id}/delete`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token.value}` },
         body: { password: passwordInput.value }
@@ -961,7 +961,7 @@ const openSubscriptionModal = async (shop) => {
 
   // Fetch history
   try {
-    const { data } = await useFetch(`http://localhost:8000/platform/admin/subscription-requests`, {
+    const { data } = await useFetch(`${useRuntimeConfig().public.apiBase}/platform/admin/subscription-requests`, {
       query: { shop_id: shop.id },
       headers: {
         'Authorization': `Bearer ${token.value}`
@@ -1007,7 +1007,7 @@ const updateSubscription = async () => {
       body.expires_at = new Date(subscriptionForm.expires_at).toISOString()
     }
 
-    await $fetch(`http://localhost:8000/platform/admin/shops/${selectedShop.value.id}/subscription`, {
+    await $fetch(`${useRuntimeConfig().public.apiBase}/platform/admin/shops/${selectedShop.value.id}/subscription`, {
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${token.value}`

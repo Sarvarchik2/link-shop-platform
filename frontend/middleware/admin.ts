@@ -22,7 +22,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
     if (!user.value || user.value.role !== 'platform_admin') {
         // Если у пользователя есть магазины, перенаправить в админку магазина
         try {
-            const shops = await $fetch('http://localhost:8000/platform/shops/me', {
+            const shops = await $fetch(useRuntimeConfig().public.apiBase + '/platform/shops/me', {
                 headers: {
                     'Authorization': `Bearer ${token.value}`
                 }

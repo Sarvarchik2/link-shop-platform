@@ -113,7 +113,7 @@ const toggleFav = async () => {
   isFavorite.value = !isFavorite.value
 
   try {
-    const result = await $fetch(`http://localhost:8000/products/${props.product.id}/favorite`, { method: 'POST' })
+    const result = await $fetch(`${useRuntimeConfig().public.apiBase}/products/${props.product.id}/favorite`, { method: 'POST' })
     // Sync the actual state from server
     isFavorite.value = result.is_favorite
 

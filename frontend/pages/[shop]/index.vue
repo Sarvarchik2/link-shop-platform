@@ -214,7 +214,7 @@ const getLocalized = (obj, field) => {
 }
 
 // Fetch Shop Information
-const { data: shop } = await useFetch(`http://localhost:8000/platform/shops/${shopSlug}`, {
+const { data: shop } = await useFetch(`${useRuntimeConfig().public.apiBase}/platform/shops/${shopSlug}`, {
   key: `shop-${shopSlug}`
 })
 
@@ -224,12 +224,12 @@ useHead({
 })
 
 // Fetch Banner
-const { data: banner } = await useFetch(`http://localhost:8000/banner?shop_slug=${shopSlug}`, {
+const { data: banner } = await useFetch(`${useRuntimeConfig().public.apiBase}/banner?shop_slug=${shopSlug}`, {
   key: `banner-${shopSlug}`
 })
 
-const { data: brands } = await useFetch(`http://localhost:8000/brands?shop_slug=${shopSlug}`, { server: false })
-const { data: products, pending } = await useFetch(`http://localhost:8000/products?shop_slug=${shopSlug}`, {
+const { data: brands } = await useFetch(`${useRuntimeConfig().public.apiBase}/brands?shop_slug=${shopSlug}`, { server: false })
+const { data: products, pending } = await useFetch(`${useRuntimeConfig().public.apiBase}/products?shop_slug=${shopSlug}`, {
   server: false
 })
 

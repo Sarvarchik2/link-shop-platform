@@ -162,7 +162,7 @@ regions.forEach(r => {
 const saving = ref(false)
 
 // Fetch initial data
-const { data: shop, pending } = await useFetch(`http://localhost:8000/platform/shops/${shopSlug}`, {
+const { data: shop, pending } = await useFetch(`${useRuntimeConfig().public.apiBase}/platform/shops/${shopSlug}`, {
     headers: {
         'Authorization': `Bearer ${token.value}`
     }
@@ -194,7 +194,7 @@ const saveSettings = async () => {
             }
         }
 
-        await $fetch(`http://localhost:8000/shop/${shopSlug}/admin/info`, {
+        await $fetch(`${useRuntimeConfig().public.apiBase}/shop/${shopSlug}/admin/info`, {
             method: 'PUT',
             headers: {
                 'Authorization': `Bearer ${token.value}`

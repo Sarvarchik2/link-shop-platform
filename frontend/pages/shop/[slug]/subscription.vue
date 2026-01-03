@@ -356,7 +356,7 @@ const renewForm = reactive({
   duration_months: 1
 })
 
-const { data: shop, pending, refresh } = await useFetch(`http://localhost:8000/platform/shops/${shopSlug}`, {
+const { data: shop, pending, refresh } = await useFetch(`${useRuntimeConfig().public.apiBase}/platform/shops/${shopSlug}`, {
   key: `shop-data-${shopSlug}`,
   server: false,
   headers: {
@@ -364,18 +364,18 @@ const { data: shop, pending, refresh } = await useFetch(`http://localhost:8000/p
   }
 })
 
-const { data: availablePlans } = await useFetch('http://localhost:8000/subscription-plans', {
+const { data: availablePlans } = await useFetch(useRuntimeConfig().public.apiBase + '/subscription-plans', {
   server: false,
   headers: {
     'Authorization': `Bearer ${token.value}`
   }
 })
 
-const { data: offers } = await useFetch('http://localhost:8000/offers', {
+const { data: offers } = await useFetch(useRuntimeConfig().public.apiBase + '/offers', {
   server: false
 })
 
-const { data: stats } = await useFetch(`http://localhost:8000/shop/${shopSlug}/admin/stats`, {
+const { data: stats } = await useFetch(`${useRuntimeConfig().public.apiBase}/shop/${shopSlug}/admin/stats`, {
   server: false,
   headers: {
     'Authorization': `Bearer ${token.value}`
@@ -386,7 +386,7 @@ const fetchSubscriptionRequest = async () => {
   if (!token.value || !shop.value) return
 
   try {
-    const request = await $fetch(`http://localhost:8000/shop/${shopSlug}/subscription/request`, {
+    const request = await $fetch(`${useRuntimeConfig().public.apiBase}/shop/${shopSlug}/subscription/request`, {
       headers: {
         'Authorization': `Bearer ${token.value}`
       },
@@ -590,7 +590,7 @@ const requestPlan = async (plan) => {
       duration_months: selectedDuration
     }
 
-    const request = await $fetch(`http://localhost:8000/shop/${shopSlug}/subscription/request`, {
+    const request = await $fetch(`${useRuntimeConfig().public.apiBase}/shop/${shopSlug}/subscription/request`, {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${token.value}` },
       body: requestData
@@ -619,7 +619,7 @@ const renewSubscription = async () => {
   try {
     const plan = availablePlans.value.find(p => p.id === renewForm.plan_id)
 
-    await $fetch(`http://localhost:8000/shop/${shopSlug}/subscription/request`, {
+    await $fetch(`${useRuntimeConfig().public.apiBase}/shop/${shopSlug}/subscription/request`, {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${token.value}` },
       body: {
@@ -642,7 +642,7 @@ const renewSubscription = async () => {
 const cancelSubscription = async () => {
   loading.value = true
   try {
-    await $fetch(`http://localhost:8000/shop/${shopSlug}/subscription/cancel`, {
+    await $fetch(`${useRuntimeConfig().public.apiBase}/shop/${shopSlug}/subscription/cancel`, {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${token.value}` }
     })

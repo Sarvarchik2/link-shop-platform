@@ -26,7 +26,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
 
     try {
         // Get shop info
-        const shop = await $fetch(`http://localhost:8000/platform/shops/${shopSlug}`, {
+        const shop = await $fetch(`${useRuntimeConfig().public.apiBase}/platform/shops/${shopSlug}`, {
             headers: {
                 'Authorization': `Bearer ${token.value}`
             }

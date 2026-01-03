@@ -196,7 +196,7 @@ const statuses = computed(() => [
   { value: 'cancelled', label: t('admin.status.cancelled') }
 ])
 
-const { data: orders, refresh } = await useFetch(`http://localhost:8000/shop/${shopSlug}/admin/orders`, {
+const { data: orders, refresh } = await useFetch(`${useRuntimeConfig().public.apiBase}/shop/${shopSlug}/admin/orders`, {
   headers: { Authorization: `Bearer ${token.value}` },
   server: false
 })
@@ -229,7 +229,7 @@ const formatDate = (dateStr) => {
 
 const updateStatus = async (id, newStatus) => {
   try {
-    await $fetch(`http://localhost:8000/shop/${shopSlug}/admin/orders/${id}`, {
+    await $fetch(`${useRuntimeConfig().public.apiBase}/shop/${shopSlug}/admin/orders/${id}`, {
       method: 'PUT',
       headers: { Authorization: `Bearer ${token.value}` },
       body: { status: newStatus }

@@ -207,7 +207,7 @@ const loading = ref(false)
 const toast = useToast()
 const { token } = useAuth()
 
-const { data: shop, refresh } = await useFetch(`http://localhost:8000/platform/shops/${shopSlug.value}`, {
+const { data: shop, refresh } = await useFetch(`${useRuntimeConfig().public.apiBase}/platform/shops/${shopSlug.value}`, {
   key: `shop-data-${shopSlug.value}`,
   server: false
 })
@@ -235,7 +235,7 @@ const handleLogoUpload = async (event) => {
   formData.append('file', file)
 
   try {
-    const response = await $fetch('http://localhost:8000/upload', {
+    const response = await $fetch(useRuntimeConfig().public.apiBase + '/upload', {
       method: 'POST',
       body: formData
     })
@@ -293,7 +293,7 @@ watch(() => form.logo_url, () => {
 const handleSubmit = async () => {
   loading.value = true
   try {
-    await $fetch(`http://localhost:8000/shop/${shopSlug.value}/admin/info`, {
+    await $fetch(`${useRuntimeConfig().public.apiBase}/shop/${shopSlug.value}/admin/info`, {
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${token.value}`

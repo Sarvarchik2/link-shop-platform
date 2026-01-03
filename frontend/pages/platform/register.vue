@@ -113,7 +113,7 @@ const checkExistingShop = async () => {
   const userRole = user.value?.role
   if (userRole === 'shop_owner' || userRole === 'platform_admin') {
     try {
-      const shops = await $fetch('http://localhost:8000/platform/shops/me', {
+      const shops = await $fetch(useRuntimeConfig().public.apiBase + '/platform/shops/me', {
         headers: {
           'Authorization': `Bearer ${token.value}`
         }
@@ -157,7 +157,7 @@ const registerShop = async () => {
   error.value = ''
 
   try {
-    const data = await $fetch('http://localhost:8000/platform/shops/register', {
+    const data = await $fetch(useRuntimeConfig().public.apiBase + '/platform/shops/register', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token.value}`

@@ -58,7 +58,7 @@
 </template>
 
 <script setup>
-const { data: shops, pending } = await useFetch('http://localhost:8000/platform/shops', { server: false })
+const { data: shops, pending } = await useFetch(useRuntimeConfig().public.apiBase + '/platform/shops', { server: false })
 
 const getStatusClass = (status) => {
   const statusMap = {

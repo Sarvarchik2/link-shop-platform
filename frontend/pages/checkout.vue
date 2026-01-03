@@ -264,7 +264,7 @@ const fetchDeliverySettings = async () => {
   if (!shopSlug) return
 
   try {
-    const { data } = await useFetch(`http://localhost:8000/platform/shops/${shopSlug}`, {
+    const { data } = await useFetch(`${useRuntimeConfig().public.apiBase}/platform/shops/${shopSlug}`, {
       headers: { Authorization: `Bearer ${token.value}` }
     })
     if (data.value) {
@@ -333,8 +333,8 @@ const placeOrder = async () => {
     // Get shop_slug from first item if available
     const shopSlug = items.value[0]?.shopSlug || null
     const url = shopSlug
-      ? `http://localhost:8000/orders?shop_slug=${shopSlug}`
-      : 'http://localhost:8000/orders'
+      ? `${useRuntimeConfig().public.apiBase}/orders?shop_slug=${shopSlug}`
+      : useRuntimeConfig().public.apiBase + '/orders'
 
     // Prepare data with unformatted phone
     const orderData = {

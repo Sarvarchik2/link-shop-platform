@@ -529,7 +529,7 @@ const localePath = useLocalePath()
 const { user, token } = useAuth()
 
 // Fetch subscription plans from API
-const { data: plans, pending: plansPending } = await useFetch('http://localhost:8000/subscription-plans', {
+const { data: plans, pending: plansPending } = await useFetch(useRuntimeConfig().public.apiBase + '/subscription-plans', {
   server: false,
   transform: (data) => {
     // Sort by display_order and filter active plans
@@ -552,12 +552,12 @@ const { data: plans, pending: plansPending } = await useFetch('http://localhost:
 })
 
 // Fetch active offers from API
-const { data: offers } = await useFetch('http://localhost:8000/offers', {
+const { data: offers } = await useFetch(useRuntimeConfig().public.apiBase + '/offers', {
   server: false
 })
 
 // Get user's shops to determine profile link
-const { data: myShops } = await useFetch('http://localhost:8000/platform/shops/me', {
+const { data: myShops } = await useFetch(useRuntimeConfig().public.apiBase + '/platform/shops/me', {
   server: false,
   headers: token.value ? {
     'Authorization': `Bearer ${token.value}`
