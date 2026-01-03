@@ -151,7 +151,7 @@ def on_startup():
                 print(f"DTO: Auto-creating admin user: {admin_phone}")
                 user = User(
                     phone=admin_phone,
-                    hashed_password=get_password_hash(admin_password),
+                    password_hash=get_password_hash(admin_password),
                     first_name="Platform",
                     last_name="Admin",
                     role="platform_admin",
@@ -163,7 +163,7 @@ def on_startup():
                  print(f"DTO: Updating admin user {admin_phone}")
                  user.role = "platform_admin"
                  # Always update password to match env var (in case it changed or was wrong)
-                 user.hashed_password = get_password_hash(admin_password) 
+                 user.password_hash = get_password_hash(admin_password) 
                  db.commit()
             db.close()
         except Exception as e:
