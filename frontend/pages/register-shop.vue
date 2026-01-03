@@ -150,7 +150,7 @@
                   <div class="preview-header">
                     <span class="preview-label">{{ $t('shopRegistration.form.preview') }}:</span>
                     <button type="button" class="btn-remove-logo" @click="form.logo_url = ''">{{ $t('common.delete')
-                      }}</button>
+                    }}</button>
                   </div>
                   <img :src="form.logo_url" alt="Logo" class="preview-image" @error="logoError = true" />
                   <p v-if="logoError" class="preview-error">{{ $t('shopRegistration.form.uploadError') }}</p>
@@ -176,7 +176,7 @@
             <ul>
               <li>Plan: <strong>{{ selectedPlan?.name }}</strong></li>
               <li>{{ $t('shopRegistration.info.point2') }} <strong>link-platform-shop.uz/{{ form.slug || 'your-slug'
-                  }}</strong></li>
+              }}</strong></li>
             </ul>
           </div>
         </div>
@@ -374,7 +374,22 @@ const registerShop = async () => {
     // Navigate to subscription page with selected plan param
     await navigateTo(`/shop/${data.slug}/subscription?plan=${selectedPlan.value.slug}`)
   } catch (e) {
-    error.value = e.data?.detail || t('shopRegistration.error.createFailed')
+    console.error('[Register Shop] Failed:', e)
+    console.error('[Register Shop] Error Data:', e.data)
+
+    let errorDetail = t('shopRegistration.error.createFailed')
+
+    if (e.data?.detail) {
+      errorDetail = e.data.detail
+      // Handle specific cases
+      if (errorDetail.includes('User already has a shop')) {
+        await checkExistingShop() // Refresh shops list to show redirect UI
+        toast.info(t('shopRegistration.existingShop.title'))
+        return
+      }
+    }
+
+    error.value = errorDetail
     toast.error(error.value)
   } finally {
     loading.value = false
