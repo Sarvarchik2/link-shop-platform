@@ -34,17 +34,36 @@ class OrderService:
                 "selected_size": item.selected_size
             })
             
-        # 2. Create order record
+        # 2. Calculate Delivery Cost
+        delivery_cost = 0.0
+        if shop_id:
+            shop = self.shop_service.get_shop_by_id(db, shop_id)
+            settings = shop.delivery_settings or {}
+            delivery_type = settings.get("type", "free")
+            
+            if delivery_type == "fixed":
+                delivery_cost = float(settings.get("price", 0))
+            elif delivery_type == "regional":
+                regions = settings.get("regions", {})
+                city = order_in.delivery_city
+                # Try exact match or fallback to 'Boshqa'
+                delivery_cost = float(regions.get(city, regions.get("Boshqa", 0)))
+
+        # Add delivery to total
+        total_price += delivery_cost
+
+        # 3. Create order record
         order_data = order_in.model_dump(exclude={"items"})
         order_data.update({
             "user_id": user_id,
             "shop_id": shop_id,
             "total_price": total_price,
+            "delivery_cost": delivery_cost,
             "status": "pending"
         })
         db_order = self.repository.create_order(db, order_data)
         
-        # 3. Create items
+        # 4. Create items
         for item_data in order_items_to_create:
             item_data["order_id"] = db_order.id
             self.repository.create_order_item(db, item_data)

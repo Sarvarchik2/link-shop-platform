@@ -153,11 +153,13 @@
               </div>
               <div class="summary-row">
                 <span>{{ $t('checkout.summary.shipping') }}</span>
-                <span class="free">{{ $t('checkout.summary.free') }}</span>
+                <span :class="{ free: deliveryCost === 0 }">
+                  {{ deliveryCost > 0 ? `$${deliveryCost.toFixed(2)}` : $t('checkout.summary.free') }}
+                </span>
               </div>
               <div class="summary-row total">
                 <span>{{ $t('checkout.summary.total') }}</span>
-                <span>${{ totalPrice.toFixed(2) }}</span>
+                <span>${{ (totalPrice + deliveryCost).toFixed(2) }}</span>
               </div>
             </div>
 
@@ -193,11 +195,13 @@
           </div>
           <div class="summary-row">
             <span>{{ $t('checkout.summary.shipping') }}</span>
-            <span class="free">{{ $t('checkout.summary.free') }}</span>
+            <span :class="{ free: deliveryCost === 0 }">
+              {{ deliveryCost > 0 ? `$${deliveryCost.toFixed(2)}` : $t('checkout.summary.free') }}
+            </span>
           </div>
           <div class="summary-row total">
             <span>{{ $t('checkout.summary.total') }}</span>
-            <span>${{ totalPrice.toFixed(2) }}</span>
+            <span>${{ (totalPrice + deliveryCost).toFixed(2) }}</span>
           </div>
         </div>
       </section>
@@ -248,6 +252,53 @@ onMounted(() => {
   } else {
     form.delivery_phone = formatPhoneNumber('998')
   }
+
+  fetchDeliverySettings()
+})
+
+const deliverySettings = ref(null)
+const deliveryCost = ref(0)
+
+const fetchDeliverySettings = async () => {
+  const shopSlug = items.value[0]?.shopSlug
+  if (!shopSlug) return
+
+  try {
+    const { data } = await useFetch(`http://localhost:8000/platform/shops/${shopSlug}`, {
+      headers: { Authorization: `Bearer ${token.value}` }
+    })
+    if (data.value) {
+      deliverySettings.value = data.value.delivery_settings || {}
+      calculateDeliveryCost()
+    }
+  } catch (e) {
+    console.error('Failed to fetch shop settings', e)
+  }
+}
+
+const calculateDeliveryCost = () => {
+  if (!deliverySettings.value) return
+
+  const type = deliverySettings.value.type || 'free'
+  const city = form.delivery_city
+
+  if (type === 'free') {
+    deliveryCost.value = 0
+  } else if (type === 'fixed') {
+    deliveryCost.value = Number(deliverySettings.value.price) || 0
+  } else if (type === 'regional') {
+    const regions = deliverySettings.value.regions || {}
+    // Try exact match or fallback to 'Boshqa'
+    if (city && regions[city] !== undefined) {
+      deliveryCost.value = Number(regions[city])
+    } else {
+      deliveryCost.value = Number(regions['Boshqa']) || 0
+    }
+  }
+}
+
+watch(() => form.delivery_city, () => {
+  calculateDeliveryCost()
 })
 
 const handlePhoneInput = (e) => {

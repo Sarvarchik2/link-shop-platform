@@ -14,6 +14,7 @@ class SubscriptionPlan(Base):
     is_trial = Column(Boolean, default=False)
     display_order = Column(Integer, default=0)
     max_products = Column(Integer, nullable=True)
+    max_banners = Column(Integer, default=1)
     created_at = Column(DateTime, default=datetime.utcnow)
 
 class SubscriptionRequest(Base):
@@ -21,6 +22,7 @@ class SubscriptionRequest(Base):
     shop_id = Column(Integer, ForeignKey("shop.id"), index=True, nullable=False)
     plan_id = Column(Integer, ForeignKey("subscriptionplan.id"), nullable=False)
     duration_months = Column(Integer, default=1)
+    type = Column(String, default="new") # new, renew, change
     status = Column(String, default="pending")
     requested_at = Column(DateTime, default=datetime.utcnow)
     approved_at = Column(DateTime, nullable=True)

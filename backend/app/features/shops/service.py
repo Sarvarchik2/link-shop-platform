@@ -249,3 +249,7 @@ class ShopService:
             subscriptions_trial=subscriptions_trial,
             subscriptions_expired=subscriptions_expired
         )
+
+    def delete_shop(self, db: Session, shop_id: int):
+        shop = self.get_shop_by_id(db, shop_id)
+        self.repository.delete(db, shop)

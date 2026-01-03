@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey
+from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey, JSON
 from datetime import datetime
 from app.db.base_class import Base
 
@@ -24,3 +24,7 @@ class Shop(Base):
     facebook = Column(String, nullable=True)
     twitter = Column(String, nullable=True)
     whatsapp = Column(String, nullable=True)
+    
+    # Delivery Settings
+    # { "type": "free" | "fixed" | "regional", "price": 0, "regions": { "Toshkent": 10000 } }
+    delivery_settings = Column(JSON, nullable=True, default={})

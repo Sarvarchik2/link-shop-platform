@@ -67,6 +67,48 @@
                 </div>
             </div>
         </div>
+
+        <!-- Pending Request Banner -->
+        <div v-if="activeRequest && activeRequest.status === 'pending'" class="request-banner">
+            <div class="banner-content">
+                <h3>{{ $t('shopSettings.subscription.pendingTitle') }}</h3>
+                <p>{{ $t('shopSettings.subscription.pendingDesc', { plan: activeRequest.plan_name }) }}</p>
+                <span class="status-badge pending">Pending</span>
+            </div>
+        </div>
+
+        <!-- Request Modal -->
+        <div v-if="showModal" class="modal-overlay" @click.self="showModal = false">
+            <div class="modal-content">
+                <h2>{{ modalMode === 'renew' ? $t('shopSettings.subscription.renewTitle') :
+                    $t('shopSettings.subscription.changeTitle') }}</h2>
+                <div class="modal-body">
+                    <div class="plan-summary">
+                        <span>{{ selectedPlan?.name }}</span>
+                        <span>{{ selectedPlan?.priceFormatted }} / {{ $t('shopSettings.subscription.month') }}</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label>{{ $t('shopSettings.subscription.duration') }}</label>
+                        <select v-model="requestDuration">
+                            <option :value="1">1 {{ $t('shopSettings.subscription.month') }}</option>
+                            <option :value="3">3 {{ $t('shopSettings.subscription.months') }} (-5%)</option>
+                            <option :value="6">6 {{ $t('shopSettings.subscription.months') }} (-10%)</option>
+                            <option :value="12">12 {{ $t('shopSettings.subscription.months') }} (-20%)</option>
+                        </select>
+                    </div>
+
+                    <div class="total-price">
+                        <span>{{ $t('shopSettings.subscription.total') }}:</span>
+                        <span>{{ (selectedPlan?.price * requestDuration).toLocaleString() }} UZS</span>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-cancel" @click="showModal = false">{{ $t('common.cancel') }}</button>
+                    <button class="btn-confirm" @click="submitRequest">{{ $t('common.confirm') }}</button>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -78,6 +120,7 @@ definePageMeta({
 const route = useRoute()
 const { t } = useI18n()
 const config = useRuntimeConfig()
+const toast = useToast()
 const shopSlug = route.params.slug
 
 // Mock Data & Limits
@@ -136,9 +179,50 @@ const getStatusText = (status) => {
     return map[status] || status
 }
 
+// Requests
+const selectedPlan = ref(null)
+const showModal = ref(false)
+const modalMode = ref('new') // 'new', 'renew', 'change'
+const requestDuration = ref(1)
+
+// Fetch Active Request
+const { data: activeRequest, refresh: refreshRequest } = await useFetch(`${config.public.apiBase}/subscription-requests/my`, {
+    headers: { Authorization: `Bearer ${useAuth().token.value}` },
+    query: { shop_slug: shopSlug }
+})
+
 const selectPlan = (plan) => {
-    // TODO: Implement payment flow
-    console.log('Selected plan:', plan)
+    selectedPlan.value = plan
+    if (shop.value.subscription_plan_id === plan.id) {
+        modalMode.value = 'renew'
+    } else {
+        modalMode.value = 'change'
+    }
+    showModal.value = true
+}
+
+const submitRequest = async () => {
+    try {
+        await $fetch(`${config.public.apiBase}/subscription-requests`, {
+            method: 'POST',
+            body: {
+                plan_id: selectedPlan.value.id,
+                duration_months: requestDuration.value,
+                type: modalMode.value
+            },
+            headers: { Authorization: `Bearer ${useAuth().token.value}` },
+            query: { shop_slug: shopSlug }
+        })
+        toast.success(t('shopSettings.subscription.requestSent'))
+        showModal.value = false
+        refreshRequest()
+    } catch (e) {
+        toast.error(e.data?.detail || 'Error sending request')
+    }
+}
+
+const cancelRequest = async () => {
+    // Logic to cancel request if API supported
 }
 </script>
 
@@ -313,5 +397,41 @@ const selectPlan = (plan) => {
 
 .plan-btn:hover {
     transform: translateY(-2px);
+}
+
+/* Modal & Banner Styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    padding: 32px;
+    border-radius: 20px;
+    width: 100%;
+    max-width: 400px;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.request-banner {
+    background: #EFF6FF;
+    border: 1px solid #BFDBFE;
+    padding: 16px;
+    border-radius: 12px;
+    margin-bottom: 24px;
 }
 </style>

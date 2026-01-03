@@ -19,10 +19,13 @@ def get_products(
     shop_slug: Optional[str] = None,
     category: Optional[str] = None,
     brand: Optional[str] = None,
-    q: Optional[str] = None
+    q: Optional[str] = None,
+    sort_by: Optional[str] = Query(None, description="price, name, sold_count, stock, created_at"),
+    sort_order: Optional[str] = Query("desc", description="asc, desc")
 ):
     return product_service.get_products(
-        db, skip=skip, limit=limit, shop_id=shop_id, shop_slug=shop_slug, category=category, brand=brand, query=q
+        db, skip=skip, limit=limit, shop_id=shop_id, shop_slug=shop_slug, category=category, brand=brand, query=q,
+        sort_by=sort_by, sort_order=sort_order
     )
 
 @router.get("/products/{product_id}", response_model=ProductRead)

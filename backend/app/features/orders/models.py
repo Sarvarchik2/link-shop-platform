@@ -10,6 +10,7 @@ class Order(Base):
     shop_id = Column(Integer, ForeignKey("shop.id"), nullable=True)
     status = Column(String, default="pending")
     total_price = Column(Float, nullable=False)
+    delivery_cost = Column(Float, default=0.0)
     created_at = Column(DateTime, default=datetime.utcnow)
     delivery_address = Column(String, nullable=True)
     delivery_city = Column(String, nullable=True)

@@ -36,3 +36,7 @@ class ShopRepository:
         db.commit()
         db.refresh(db_shop)
         return db_shop
+
+    def delete(self, db: Session, db_shop: Shop):
+        db.delete(db_shop)
+        db.commit()

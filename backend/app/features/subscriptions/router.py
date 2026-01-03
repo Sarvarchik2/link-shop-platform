@@ -103,3 +103,50 @@ def cancel_subscription(
 ):
     """Cancel subscription - shop owner only"""
     return subscription_service.cancel_subscription(db, shop_slug, current_user)
+@router.post("/subscription-requests", response_model=SubscriptionRequestRead)
+def create_subscription_request(
+    request_in: SubscriptionRequestCreate,
+    shop_slug: str = Query(..., description="Shop Slug"),
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+    """Create a subscription request (new/renew/change) - Shop Owner"""
+    return subscription_service.create_subscription_request(db, shop_slug, request_in, current_user)
+
+@router.get("/subscription-requests/my", response_model=Optional[SubscriptionRequestRead])
+def get_my_subscription_request(
+    shop_slug: str = Query(..., description="Shop Slug"),
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+    """Get active subscription request for a shop - Shop Owner"""
+    return subscription_service.get_shop_subscription_request(db, shop_slug, current_user)
+
+@router.get("/platform/admin/subscription-requests", response_model=List[SubscriptionRequestRead])
+def get_all_requests(
+    status: Optional[str] = None,
+    shop_id: Optional[int] = None,
+    db: Session = Depends(get_db),
+    admin = Depends(get_current_platform_admin)
+):
+    """Get all subscription requests - Platform Admin"""
+    return subscription_service.get_all_requests(db, status, shop_id)
+
+@router.put("/platform/admin/subscription-requests/{request_id}/status", response_model=SubscriptionRequestRead)
+def update_request_status(
+    request_id: int,
+    update_in: SubscriptionRequestUpdate,
+    db: Session = Depends(get_db),
+    admin = Depends(get_current_platform_admin)
+):
+    """Approve or reject subscription request"""
+    return subscription_service.update_request_status(db, request_id, update_in)
+
+@router.post("/subscription/cancel")
+def cancel_subscription(
+    shop_slug: str = Query(..., description="Shop Slug"),
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+    """Cancel subscription - Shop Owner"""
+    return subscription_service.cancel_subscription(db, shop_slug, current_user)

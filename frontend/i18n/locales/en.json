@@ -256,6 +256,13 @@
         "title": "Banner",
         "subtitle": "Shop banner settings",
         "preview": "Preview",
+        "addBanner": "Add Banner",
+        "editBanner": "Edit Banner",
+        "createBanner": "Create Banner",
+        "createFirst": "Create your first banner",
+        "noBanners": "No banners yet",
+        "limitReached": "Banner limit reached",
+        "confirmDelete": "Are you sure you want to delete this banner?",
         "edit": "Edit Banner",
         "badgeLabel": "Badge Text",
         "badgePlaceholder": "NEW",
@@ -270,7 +277,12 @@
         "activeLabel": "Banner Active",
         "saveBtn": "Save Banner",
         "saving": "Saving...",
-        "saved": "Banner saved!"
+        "saved": "Banner saved!",
+        "previewTitle": "Title",
+        "previewSubtitle": "Subtitle",
+        "previewButton": "Button",
+        "titlePlaceholder": "Ray-Ban Meta Smart Glasses",
+        "linkPlaceholder": "/products"
     },
     "languages": {
         "uz": "Uzbek",
@@ -283,7 +295,18 @@
         "titleEdit": "Edit Product",
         "titleNew": "Add Product",
         "emptyTitle": "No products yet",
-        "emptyDesc": "Add your first product",
+        "emptyDesc": "Get started by adding your first product",
+        "searchPlaceholder": "Search products...",
+        "sort": {
+            "newest": "Newest",
+            "oldest": "Oldest",
+            "priceLow": "Price: Low to High",
+            "priceHigh": "Price: High to Low",
+            "nameAz": "Name: A-Z",
+            "nameZa": "Name: Z-A",
+            "soldHigh": "Best Selling",
+            "stockLow": "Low Stock"
+        },
         "sold": "sold",
         "inStock": "in stock",
         "outOfStock": "Out of stock",
@@ -379,6 +402,18 @@
         "usage": "Usage",
         "limitWarning": "Approaching limit",
         "aboutShop": "About Shop",
+        "delivery": "Delivery",
+        "deliverySettingsSubtitle": "Configure delivery rates for your shop",
+        "deliveryType": "Delivery Type",
+        "deliveryFree": "Free Delivery",
+        "deliveryFreeDesc": "Delivery will be free for customers",
+        "deliveryFixed": "Fixed Price",
+        "deliveryFixedDesc": "Same price for all regions",
+        "deliveryRegional": "Regional Prices",
+        "deliveryRegionalDesc": "Set specific prices for each region",
+        "deliveryPrice": "Price",
+        "deliveryRegionalInfo": "Price for 'Other' will be applied for unlisted regions",
+        "domain": "Domain",
         "subscription": "Subscription",
         "periods": {
             "today": "Today",
@@ -476,79 +511,7 @@
         "ordersByStatus": "Orders by Status",
         "generalStats": "General Statistics",
         "selectPlan": "Select Plan",
-        "upgrade": "Upgrade",
-        "subscriptionPage": {
-            "title": "Subscription",
-            "pageTitle": "Select Subscription",
-            "pageSubtitle": "Choose a plan that suits your business",
-            "current": "Current Subscription",
-            "requestPending": "Request Pending",
-            "requestSent": "Request Sent",
-            "requestNote": "Your request has been sent to the administrator. Please wait for confirmation and plan activation.",
-            "labels": {
-                "plan": "PLAN",
-                "duration": "DURATION",
-                "sent": "SENT",
-                "price": "PRICE",
-                "expires": "EXPIRES",
-                "daysLeft": "DAYS LEFT",
-                "products": "PRODUCTS"
-            },
-            "actions": {
-                "renew": "Renew Subscription",
-                "cancel": "Cancel Subscription",
-                "upgrade": "Upgrade",
-                "select": "Select Plan",
-                "sending": "Sending..."
-            },
-            "availablePlans": "Available Plans",
-            "availablePlansDesc": "Select a plan and send a request. The platform administrator will contact you for payment and subscription activation.",
-            "popular": "Popular",
-            "month": "/month",
-            "selectDuration": "Select Duration:",
-            "priceFor": "Price for {duration} {unit}:",
-            "discount": "Discount",
-            "total": "Total:",
-            "specialOffers": "Special Offers",
-            "specialOffersDesc": "Additional services and solutions",
-            "contact": {
-                "email": "Email",
-                "call": "Call"
-            },
-            "importantInfo": "Important Information",
-            "infoList": {
-                "trial": "Trial period lasts 30 days from shop creation",
-                "suspension": "Shop will be suspended after trial period ends",
-                "activation": "To activate subscription, send a request for selected plan",
-                "payment": "Platform administrator will contact you for payment",
-                "renewal": "After activation, subscription renews automatically, or you can request manual renewal"
-            },
-            "modals": {
-                "renewTitle": "Renew Subscription",
-                "renewDesc": "Select plan and duration to renew:",
-                "selectPlan": "Subscription Plan",
-                "cancelTitle": "Cancel Subscription",
-                "cancelConfirm": "Are you sure you want to cancel subscription?",
-                "cancelWarning": "Your shop will be deactivated after cancellation.",
-                "reason": "Cancellation reason (optional)",
-                "reasonPlaceholder": "Enter reason...",
-                "confirmCancel": "Confirm Cancellation",
-                "sendRequest": "Send Request",
-                "savings": "You save"
-            },
-            "status": {
-                "trial": "Trial Period",
-                "active": "Active",
-                "expired": "Expired",
-                "cancelled": "Cancelled",
-                "free": "Free"
-            },
-            "months": {
-                "one": "month",
-                "few": "months",
-                "many": "months"
-            }
-        }
+        "upgrade": "Upgrade"
     },
     "platformAdmin": {
         "dashboard": {
@@ -574,163 +537,129 @@
             "requests": "Subscription Requests",
             "offers": "Offers"
         },
-        "shops": {
-            "title": "Shop Management",
-            "subtitle": "All registered shops on the platform",
-            "total": "Total Shops",
+        "requests": {
+            "title": "Subscription Requests",
+            "empty": "No pending requests found",
+            "plan": "Plan",
+            "duration": "Duration",
+            "notes": "Notes",
+            "approved": "Request approved successfully",
+            "rejected": "Request rejected"
+        },
+        "filterStatus": "All Statuses",
+        "filterActive": "All Shops",
+        "onlyActive": "Only Active",
+        "onlyInactive": "Only Inactive",
+        "clear": "Clear",
+        "notFound": "No shops found",
+        "export": "Export",
+        "cancelled": "Cancelled",
+        "details": "Details",
+        "activate": "Activate",
+        "deactivate": "Deactivate",
+        "subscription": "Subscription",
+        "expiresToday": "Expires today",
+        "expiresTomorrow": "Expires tomorrow",
+        "daysLeft": "{days} days",
+        "subscriptionManagement": "Subscription Management",
+        "currentPlan": "Current Plan",
+        "currentStatus": "Current Status",
+        "history": "Request History",
+        "quickActions": {
+            "month1": "+1 Month",
+            "month3": "+3 Months",
+            "month6": "+6 Months",
+            "year1": "+1 Year"
+        },
+        "table": {
+            "name": "Name",
+            "slug": "Slug",
+            "owner": "Owner",
+            "plan": "Plan",
+            "status": "Subscription Status",
+            "expires": "Expires",
+            "created": "Created At",
+            "isActive": "Active",
+            "actions": "Actions"
+        }
+    },
+    "users": {
+        "title": "User Management",
+        "subtitle": "All registered users on the platform",
+        "total": "Total Users",
+        "admins": "Platform Admins",
+        "shopOwners": "Shop Owners",
+        "regular": "Regular Users",
+        "search": "Search by name, phone...",
+        "filterRole": "All Roles",
+        "roles": {
+            "admin": "Platform Admin",
+            "owner": "Shop Owner",
+            "user": "User"
+        },
+        "table": {
+            "id": "ID",
+            "name": "Name",
+            "phone": "Phone",
+            "role": "Role",
+            "shops": "Shops",
+            "orders": "Orders",
+            "created": "Registered At",
+            "actions": "Actions"
+        },
+        "notFound": "No users found"
+    },
+    "plans": {
+        "title": "Subscription Plans",
+        "subtitle": "Create and manage subscription plans for shops",
+        "add": "Add Plan",
+        "create": "Create Plan",
+        "edit": "Edit Plan",
+        "delete": "Delete",
+        "save": "Save",
+        "cancel": "Cancel",
+        "empty": "No subscription plans yet",
+        "emptySubtitle": "Create the first subscription plan",
+        "card": {
+            "free": "Free",
+            "trial": "Trial",
+            "inactive": "Inactive",
+            "includes": "Includes:",
+            "noFeatures": "Features not specified",
+            "products": "Products:",
+            "unlimited": "Unlimited",
+            "order": "Order:",
             "active": "Active",
-            "trial": "Trial Period",
-            "expired": "Expired",
-            "search": "Search by name, slug, owner...",
-            "filterStatus": "All Statuses",
-            "filterActive": "All Shops",
-            "onlyActive": "Only Active",
-            "onlyInactive": "Only Inactive",
-            "clear": "Clear",
-            "notFound": "No shops found",
-            "export": "Export",
-            "cancelled": "Cancelled",
-            "details": "Details",
             "activate": "Activate",
-            "deactivate": "Deactivate",
-            "subscription": "Subscription",
-            "expiresToday": "Expires today",
-            "expiresTomorrow": "Expires tomorrow",
-            "daysLeft": "{days} days",
-            "subscriptionManagement": "Subscription Management",
-            "currentPlan": "Current Plan",
-            "currentStatus": "Current Status",
-            "history": "Request History",
-            "quickActions": {
-                "month1": "+1 Month",
-                "month3": "+3 Months",
-                "month6": "+6 Months",
-                "year1": "+1 Year"
-            },
-            "table": {
-                "name": "Name",
-                "slug": "Slug",
-                "owner": "Owner",
-                "plan": "Plan",
-                "status": "Subscription Status",
-                "expires": "Expires",
-                "created": "Created At",
-                "isActive": "Active",
-                "actions": "Actions"
-            }
+            "deactivate": "Deactivate"
         },
-        "users": {
-            "title": "User Management",
-            "subtitle": "All registered users on the platform",
-            "total": "Total Users",
-            "admins": "Platform Admins",
-            "shopOwners": "Shop Owners",
-            "regular": "Regular Users",
-            "search": "Search by name, phone...",
-            "filterRole": "All Roles",
-            "roles": {
-                "admin": "Platform Admin",
-                "owner": "Shop Owner",
-                "user": "User"
-            },
-            "table": {
-                "id": "ID",
-                "name": "Name",
-                "phone": "Phone",
-                "role": "Role",
-                "shops": "Shops",
-                "orders": "Orders",
-                "created": "Registered At",
-                "actions": "Actions"
-            },
-            "notFound": "No users found"
-        },
-        "plans": {
-            "title": "Subscription Plans",
-            "subtitle": "Create and manage subscription plans for shops",
-            "add": "Add Plan",
-            "create": "Create Plan",
-            "edit": "Edit Plan",
-            "delete": "Delete",
-            "save": "Save",
-            "cancel": "Cancel",
-            "empty": "No subscription plans yet",
-            "emptySubtitle": "Create the first subscription plan",
-            "card": {
-                "free": "Free",
-                "trial": "Trial",
-                "inactive": "Inactive",
-                "includes": "Includes:",
-                "noFeatures": "Features not specified",
-                "products": "Products:",
-                "unlimited": "Unlimited",
-                "order": "Order:",
-                "active": "Active",
-                "activate": "Activate",
-                "deactivate": "Deactivate"
-            },
-            "form": {
-                "name": "Plan Name",
-                "slug": "Slug",
-                "price": "Price ($)",
-                "period": "Period (days)",
-                "maxProducts": "Max Products",
-                "description": "Description",
-                "features": "Plan Features",
-                "addFeature": "Add",
-                "isTrial": "Trial Period",
-                "isActive": "Active",
-                "order": "Display Order",
-                "hints": {
-                    "slug": "Unique identifier (latin, no spaces)",
-                    "maxProducts": "Leave empty for unlimited products",
-                    "order": "Lower number = higher in list"
-                }
-            },
-            "period": {
+        "form": {
+            "name": "Plan Name",
+            "slug": "Slug",
+            "price": "Price ($)",
+            "period": "Period (days)",
+            "maxProducts": "Max Products",
+            "description": "Description",
+            "features": "Plan Features",
+            "addFeature": "Add",
+            "isTrial": "Trial Period",
+            "isActive": "Active",
+            "isActive": "Active",
+            "order": "Display Order",
+            "periodUnit": {
                 "day": "day",
                 "days_2_4": "days",
                 "days": "days"
-            }
+            },
+            "viewShop": "Shop"
         },
-        "requests": {
-            "title": "Subscription Requests",
-            "subtitle": "Manage subscription activation requests from shops",
-            "filter": {
-                "all": "All",
-                "pending": "Pending",
-                "approved": "Approved",
-                "rejected": "Rejected"
-            },
-            "empty": "No requests",
-            "emptySubtitle": "No subscription requests yet",
-            "card": {
-                "shop": "Shop",
-                "plan": "Plan",
-                "duration": "Duration",
-                "date": "Request Date",
-                "notes": "Notes",
-                "approved": "Approved:",
-                "rejected": "Rejected:"
-            },
-            "status": {
-                "pending": "Pending",
-                "approved": "Approved",
-                "rejected": "Rejected"
-            },
-            "actions": {
-                "approve": "Approve",
-                "reject": "Reject",
-                "viewShop": "Shop"
-            },
-            "modal": {
-                "approveTitle": "Approve Subscription Request",
-                "rejectTitle": "Reject Subscription Request",
-                "confirmApprove": "Are you sure you want to approve this request?",
-                "confirmReject": "Are you sure you want to reject this request?",
-                "notesPlaceholder": "Add notes...",
-                "reasonPlaceholder": "Reason for rejection..."
-            }
+        "modal": {
+            "approveTitle": "Approve Subscription Request",
+            "rejectTitle": "Reject Subscription Request",
+            "confirmApprove": "Are you sure you want to approve this request?",
+            "confirmReject": "Are you sure you want to reject this request?",
+            "notesPlaceholder": "Add notes...",
+            "reasonPlaceholder": "Reason for rejection..."
         },
         "offers": {
             "title": "Offer Management",
@@ -1019,6 +948,7 @@
             "addOneImage": "Please add at least one image",
             "errorLoadingData": "Error loading product data",
             "errorSaving": "Error saving data",
+            "deleteError": "Error deleting product",
             "loggedOut": "You have logged out"
         }
     }

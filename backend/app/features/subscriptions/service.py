@@ -118,25 +118,43 @@ class SubscriptionService:
         if update_in.notes:
             update_data["notes"] = update_in.notes
         
-        # If approved, update shop subscription
         if update_in.status == "approved":
             shop = self.shop_repository.get_by_id(db, db_request.shop_id)
             plan = self.repository.get_plan_by_id(db, db_request.plan_id)
             
             if shop and plan:
-                # Calculate expiration date
                 now = datetime.utcnow()
-                if shop.subscription_status == "active" and shop.subscription_expires_at and shop.subscription_expires_at > now:
-                     # Extend existing subscription
-                     expires_at = shop.subscription_expires_at + timedelta(days=30 * db_request.duration_months)
-                else:
-                     # New or renewed from expired
-                     expires_at = now + timedelta(days=30 * db_request.duration_months)
+                
+                # Logic based on request type
+                if db_request.type == "renew":
+                    # Extend existing subscription
+                    if shop.subscription_expires_at and shop.subscription_expires_at > now:
+                        # If active, add to current expiry
+                        expires_at = shop.subscription_expires_at + timedelta(days=30 * db_request.duration_months)
+                    else:
+                        # If expired, start from now
+                        expires_at = now + timedelta(days=30 * db_request.duration_months)
+                        
+                    # Keep same plan (unless oddly requested otherwise, but renew implies same)
+                    # Ideally renew keeps same plan_id, but we respect request.plan_id just in case
+                    subscription_plan_id = db_request.plan_id
+                    
+                elif db_request.type == "change":
+                    # Change plan - simplified logic: restart subscription with new plan
+                    # You might want pro-rated logic, but for now: New Plan Starts NOW.
+                    # Previous time is forfeited or you could add logic to convert it.
+                    # Simple approach: Reset start date to now.
+                    expires_at = now + timedelta(days=30 * db_request.duration_months)
+                    subscription_plan_id = db_request.plan_id
+                    
+                else: # Default/New
+                    expires_at = now + timedelta(days=30 * db_request.duration_months)
+                    subscription_plan_id = db_request.plan_id
                 
                 shop_update_data = {
                     "subscription_status": "active",
                     "subscription_expires_at": expires_at,
-                    "subscription_plan_id": plan.id
+                    "subscription_plan_id": subscription_plan_id
                 }
                 
                 self.shop_repository.update(db, shop, shop_update_data)

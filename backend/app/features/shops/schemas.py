@@ -15,6 +15,7 @@ class ShopBase(BaseModel):
     facebook: Optional[str] = None
     twitter: Optional[str] = None
     whatsapp: Optional[str] = None
+    delivery_settings: Optional[dict] = {}
 
 class ShopCreate(ShopBase):
     pass
@@ -31,6 +32,7 @@ class ShopUpdate(BaseModel):
     facebook: Optional[str] = None
     twitter: Optional[str] = None
     whatsapp: Optional[str] = None
+    delivery_settings: Optional[dict] = None
     subscription_status: Optional[str] = None
     subscription_expires_at: Optional[datetime] = None
     subscription_plan_id: Optional[int] = None
@@ -79,3 +81,10 @@ class DashboardStats(BaseModel):
     plan_limit_products: Optional[int] = None
     plan_name: Optional[str] = None
     products_usage_percent: Optional[float] = 0.0
+
+class AdminActionRequest(BaseModel):
+    password: str
+
+class ShopStatusUpdate(BaseModel):
+    is_active: bool
+    password: str

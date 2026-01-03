@@ -263,7 +263,15 @@
                     </div>
                   </td>
                   <td>
-                    <code class="shop-slug" :title="shop.slug">{{ shop.slug }}</code>
+                    <a :href="'/' + shop.slug" target="_blank" class="shop-slug-link" :title="shop.slug">
+                      <code class="shop-slug">{{ shop.slug }}</code>
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                        <polyline points="15 3 21 3 21 9"></polyline>
+                        <line x1="10" y1="14" x2="21" y2="3"></line>
+                      </svg>
+                    </a>
                   </td>
                   <td>
                     <div class="owner-info">
@@ -323,14 +331,23 @@
                           <line x1="12" y1="8" x2="12.01" y2="8"></line>
                         </svg>
                       </button>
-                      <button @click="toggleActive(shop)"
+                      <button @click="openPasswordModal('activate', shop)"
                         :class="['action-btn', shop.is_active ? 'btn-danger' : 'btn-success']"
                         :title="shop.is_active ? $t('platformAdmin.shops.deactivate') : $t('platformAdmin.shops.activate')">
-                        {{ shop.is_active ? $t('platformAdmin.shops.deactivate') : $t('platformAdmin.shops.activate') }}
+                        {{ shop.is_active ? 'Faolsizlantirish' : $t('platformAdmin.shops.activate') }}
                       </button>
                       <button @click="openSubscriptionModal(shop)" class="action-btn btn-primary"
                         :title="$t('platformAdmin.shops.subscriptionManagement')">
                         {{ $t('platformAdmin.shops.subscription') }}
+                      </button>
+                      <button @click="openPasswordModal('delete', shop)" class="action-btn btn-danger icon-only"
+                        title="Удалить магазин">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                          stroke-width="2">
+                          <polyline points="3 6 5 6 21 6"></polyline>
+                          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
+                          </path>
+                        </svg>
                       </button>
                     </div>
                   </td>
@@ -561,6 +578,34 @@
             </form>
           </div>
         </div>
+
+        <!-- Password Confirmation Modal -->
+        <div v-if="showPasswordModal" class="modal-overlay" @click="closePasswordModal">
+          <div class="modal-content small-modal" @click.stop>
+            <div class="modal-header">
+              <h2 class="modal-title">{{ passwordModalTitle }}</h2>
+              <button @click="closePasswordModal" class="modal-close">×</button>
+            </div>
+            <div class="modal-body">
+              <p class="mb-4">{{ passwordModalMessage }}</p>
+              <form @submit.prevent="confirmPasswordAction">
+                <div class="form-group">
+                  <label>{{ $t('auth.password') }}</label>
+                  <input v-model="passwordInput" type="password" class="form-input" required
+                    placeholder="Введите пароль администратора" autofocus />
+                </div>
+                <div class="modal-actions">
+                  <button type="button" @click="closePasswordModal" class="btn-secondary">{{ $t('common.cancel')
+                    }}</button>
+                  <button type="submit" class="btn-primary" :class="{ 'btn-danger': pendingAction?.type === 'delete' }"
+                    :disabled="isConfirming">
+                    {{ isConfirming ? $t('common.processing') : $t('common.confirm') }}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
       </div>
     </main>
   </div>
@@ -621,6 +666,66 @@ const subscriptionForm = reactive({
   expires_at: ''
 })
 const isUpdating = ref(false)
+
+// Password Modal State
+const showPasswordModal = ref(false)
+const passwordInput = ref('')
+const pendingAction = ref(null)
+const isConfirming = ref(false)
+
+const passwordModalTitle = computed(() => {
+  if (pendingAction.value?.type === 'delete') return 'Удаление магазина'
+  return pendingAction.value?.shop.is_active ? 'Подтвердите деактивацию' : 'Подтвердите активацию'
+})
+
+const passwordModalMessage = computed(() => {
+  if (pendingAction.value?.type === 'delete') return `Вы уверены, что хотите НАВСЕГДА удалить магазин "${pendingAction.value.shop.name}"? Это действие необратимо и удалит все товары и данные магазина.`
+  return `Вы уверены, что хотите ${pendingAction.value?.shop.is_active ? 'деактивировать' : 'активировать'} магазин "${pendingAction.value?.shop.name}"?`
+})
+
+const openPasswordModal = (type, shop) => {
+  pendingAction.value = { type, shop }
+  passwordInput.value = ''
+  showPasswordModal.value = true
+}
+
+const closePasswordModal = () => {
+  showPasswordModal.value = false
+  pendingAction.value = null
+  passwordInput.value = ''
+}
+
+const confirmPasswordAction = async () => {
+  if (!passwordInput.value) return
+  isConfirming.value = true
+
+  try {
+    const { type, shop } = pendingAction.value
+
+    if (type === 'activate') {
+      await $fetch(`http://localhost:8000/platform/admin/shops/${shop.id}/activate`, {
+        method: 'PUT',
+        headers: { 'Authorization': `Bearer ${token.value}` },
+        body: { is_active: !shop.is_active, password: passwordInput.value }
+      })
+      toast.success(shop.is_active ? 'Магазин деактивирован' : 'Магазин активирован')
+    } else if (type === 'delete') {
+      await $fetch(`http://localhost:8000/platform/admin/shops/${shop.id}/delete`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token.value}` },
+        body: { password: passwordInput.value }
+      })
+      toast.success('Магазин удален')
+    }
+
+    refresh()
+    closePasswordModal()
+  } catch (e) {
+    toast.error(e.data?.detail || 'Ошибка / Неверный пароль')
+  } finally {
+    isConfirming.value = false
+  }
+}
 
 
 // Computed stats
@@ -921,23 +1026,7 @@ const updateSubscription = async () => {
   }
 }
 
-const toggleActive = async (shop) => {
-  try {
-    await $fetch(`http://localhost:8000/platform/admin/shops/${shop.id}/activate`, {
-      method: 'PUT',
-      headers: {
-        'Authorization': `Bearer ${token.value}`
-      },
-      body: {
-        is_active: !shop.is_active
-      }
-    })
-    toast.success(t('alerts.shop.statusChanged', { status: shop.is_active ? t('common.deactivated') : t('common.activated') }))
-    refresh()
-  } catch (e) {
-    toast.error(e.data?.detail || 'Ошибка при изменении статуса')
-  }
-}
+
 </script>
 
 <style scoped>
@@ -2427,5 +2516,35 @@ const toggleActive = async (shop) => {
   .pagination {
     padding: 12px;
   }
+}
+</style>
+
+<style scoped>
+.shop-slug-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #2563EB;
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+.shop-slug-link:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}
+
+.small-modal {
+  max-width: 400px !important;
+}
+
+.icon-only {
+  padding: 8px !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mb-4 {
+  margin-bottom: 24px;
 }
 </style>

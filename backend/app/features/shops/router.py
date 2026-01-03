@@ -3,8 +3,9 @@ from sqlalchemy.orm import Session
 from typing import List
 from app.db.session import get_db
 from app.core.dependencies import get_current_user, get_current_platform_admin
+from app.core.security import verify_password
 from .service import ShopService
-from .schemas import ShopCreate, ShopRead, ShopReadWithOwner, ShopUpdate, DashboardStats
+from .schemas import ShopCreate, ShopRead, ShopReadWithOwner, ShopUpdate, DashboardStats, ShopStatusUpdate, AdminActionRequest
 
 router = APIRouter()
 shop_service = ShopService()
@@ -57,6 +58,7 @@ def get_platform_admin_stats(
     current_user = Depends(get_current_platform_admin)
 ):
     return shop_service.get_platform_stats(db)
+
 @router.put("/platform/admin/shops/{shop_id}/subscription", response_model=ShopRead)
 def update_shop_subscription(
     shop_id: int,
@@ -72,11 +74,27 @@ def update_shop_subscription(
 @router.put("/platform/admin/shops/{shop_id}/activate", response_model=ShopRead)
 def toggle_shop_active(
     shop_id: int,
-    shop_in: ShopUpdate,
+    status_update: ShopStatusUpdate,
     db: Session = Depends(get_db),
     admin = Depends(get_current_platform_admin)
 ):
     """Activate/deactivate shop - platform admin only"""
+    if not verify_password(status_update.password, admin.password_hash):
+        raise HTTPException(status_code=403, detail="Invalid password")
+
     shop = shop_service.get_shop_by_id(db, shop_id)
-    update_data = shop_in.model_dump(exclude_unset=True)
-    return shop_service.repository.update(db, shop, update_data)
+    return shop_service.repository.update(db, shop, {"is_active": status_update.is_active})
+
+@router.post("/platform/admin/shops/{shop_id}/delete")
+def delete_shop(
+    shop_id: int,
+    action: AdminActionRequest,
+    db: Session = Depends(get_db),
+    admin = Depends(get_current_platform_admin)
+):
+    """Delete shop - platform admin only"""
+    if not verify_password(action.password, admin.password_hash):
+        raise HTTPException(status_code=403, detail="Invalid password")
+    
+    shop_service.delete_shop(db, shop_id)
+    return {"status": "success", "message": "Shop deleted"}

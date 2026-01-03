@@ -1,5 +1,6 @@
-from sqlalchemy import Column, Integer, String, Float, Boolean, ForeignKey
+from sqlalchemy import Column, Integer, String, Float, Boolean, ForeignKey, DateTime
 from app.db.base_class import Base
+from datetime import datetime
 
 class Product(Base):
     id = Column(Integer, primary_key=True, index=True)
@@ -37,3 +38,5 @@ class Product(Base):
     shop_id = Column(Integer, ForeignKey("shop.id"), nullable=True)
     is_preorder_enabled = Column(Boolean, default=False)
     sold_count = Column(Integer, default=0)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

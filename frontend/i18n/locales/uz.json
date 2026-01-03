@@ -259,26 +259,6 @@
         "orUrl": "yoki URL kiriting",
         "createBtn": "Brend yaratish"
     },
-    "bannerPage": {
-        "title": "Banner",
-        "subtitle": "Do'kon bannerini sozlash",
-        "preview": "Ko'rib chiqish",
-        "edit": "Bannerni tahrirlash",
-        "badgeLabel": "Belgi matni",
-        "badgePlaceholder": "YANGI",
-        "titleLabel": "Sarlavha (yangi qator uchun \\n)",
-        "subtitleLabel": "Quyi sarlavha",
-        "subtitlePlaceholder": "$299 dan",
-        "btnTextLabel": "Tugma matni",
-        "btnTextPlaceholder": "Sotib olish",
-        "btnLinkLabel": "Tugma havolasi",
-        "imageUrlLabel": "Rasm URL manzili",
-        "uploadLabel": "Yoki rasm yuklang",
-        "activeLabel": "Banner faol",
-        "saveBtn": "Bannerni saqlash",
-        "saving": "Saqlanmoqda...",
-        "saved": "Banner saqlandi!"
-    },
     "languages": {
         "uz": "O'zbekcha",
         "ru": "Русский",
@@ -290,7 +270,18 @@
         "titleEdit": "Mahsulotni tahrirlash",
         "titleNew": "Yangi mahsulot",
         "emptyTitle": "Mahsulotlar yo'q",
-        "emptyDesc": "Birinchi mahsulotni qo'shing",
+        "emptyDesc": "Birinchi mahsulotni qo'shishdan boshlang",
+        "searchPlaceholder": "Mahsulotlarni qidirish...",
+        "sort": {
+            "newest": "Eng yangilari",
+            "oldest": "Eng eskilari",
+            "priceLow": "Narx: Arzonroq",
+            "priceHigh": "Narx: Qimmatroq",
+            "nameAz": "Nom: A-Z",
+            "nameZa": "Nom: Z-A",
+            "soldHigh": "Ko'p sotilganlar",
+            "stockLow": "Kam qolganlar"
+        },
         "sold": "sotildi",
         "inStock": "sotuvda",
         "outOfStock": "Sotuvda yo'q",
@@ -377,6 +368,18 @@
         "usage": "Foydalanish",
         "limitWarning": "Limitga yaqinlashyapsiz",
         "aboutShop": "Do'kon haqida",
+        "delivery": "Yetkazib berish",
+        "deliverySettingsSubtitle": "Do'koningiz uchun yetkazib berish narxlarini sozlang",
+        "deliveryType": "Yetkazib berish turi",
+        "deliveryFree": "Bepul yetkazib berish",
+        "deliveryFreeDesc": "Xaridorlar uchun yetkazib berish bepul bo'ladi",
+        "deliveryFixed": "Fikslashgan narx",
+        "deliveryFixedDesc": "Barcha hududlar uchun bir xil narx",
+        "deliveryRegional": "Hududiy narxlar",
+        "deliveryRegionalDesc": "Har bir hudud uchun alohida narx belgilash",
+        "deliveryPrice": "Narx",
+        "deliveryRegionalInfo": "Ro'yxatda yo'q hududlar uchun 'Boshqa' narxi qo'llaniladi",
+        "domain": "Domen",
         "subscription": "Obuna",
         "periods": {
             "today": "Bugun",
@@ -563,14 +566,14 @@
                 "users": "Foydalanuvchilar"
             }
         },
-        "nav": {
-            "dashboard": "Bosh sahifa",
-            "shops": "Do'konlar",
-            "users": "Foydalanuvchilar",
-            "orders": "Buyurtmalar",
-            "plans": "Obuna rejalari",
-            "requests": "Obuna so'rovlari",
-            "offers": "Takliflar"
+        "requests": {
+            "title": "Obuna so'rovlari",
+            "empty": "Kutilayotgan so'rovlar yo'q",
+            "plan": "Reja",
+            "duration": "Davomiyligi",
+            "notes": "Izohlar",
+            "approved": "So'rov tasdiqlandi",
+            "rejected": "So'rov rad etildi"
         },
         "shops": {
             "title": "Do'konlarni boshqarish",
@@ -691,44 +694,51 @@
                 "days": "kun"
             }
         },
-        "requests": {
-            "title": "Obuna so'rovlari",
-            "subtitle": "Do'konlardan obuna faollashtirish so'rovlarini boshqarish",
-            "filter": {
-                "all": "Barchasi",
-                "pending": "Ko'rib chiqilmoqda",
-                "approved": "Tasdiqlangan",
-                "rejected": "Rad etilgan"
-            },
-            "empty": "So'rovlar yo'q",
-            "emptySubtitle": "Hozircha obuna so'rovlari yo'q",
-            "card": {
-                "shop": "Do'kon",
-                "plan": "Reja",
-                "duration": "Muddat",
-                "date": "Sana",
-                "notes": "Izohlar",
-                "approved": "Tasdiqlandi:",
-                "rejected": "Rad etildi:"
-            },
-            "status": {
-                "pending": "Ko'rib chiqilmoqda",
-                "approved": "Tasdiqlangan",
-                "rejected": "Rad etilgan"
-            },
-            "actions": {
-                "approve": "Tasdiqlash",
-                "reject": "Rad etish",
-                "viewShop": "Do'kon"
-            },
-            "modal": {
-                "approveTitle": "Obuna so'rovini tasdiqlash",
-                "rejectTitle": "Obuna so'rovini rad etish",
-                "confirmApprove": "Obuna so'rovini tasdiqlashga ishonchingiz komilmi?",
-                "confirmReject": "Obuna so'rovini rad etishga ishonchingiz komilmi?",
-                "notesPlaceholder": "Izohlar...",
-                "reasonPlaceholder": "Rad etish sababi..."
-            }
+        "status": {
+            "pending": "Ko'rib chiqilmoqda",
+            "approved": "Tasdiqlangan",
+            "rejected": "Rad etilgan"
+        },
+        "actions": {
+            "approve": "Tasdiqlash",
+            "reject": "Rad etish",
+            "viewShop": "Do'kon"
+        },
+        "modal": {
+            "approveTitle": "Obuna so'rovini tasdiqlash",
+            "rejectTitle": "Obuna so'rovini rad etish",
+            "confirmApprove": "Obuna so'rovini tasdiqlashga ishonchingiz komilmi?",
+            "confirmReject": "Obuna so'rovini rad etishga ishonchingiz komilmi?",
+            "notesPlaceholder": "Izohlar...",
+            "reasonPlaceholder": "Rad etish sababi..."
+        }
+    },
+    "offers": {
+        "title": "Takliflarni boshqarish",
+        "subtitle": "Maxsus takliflarni boshqarish (WhiteLabel va boshqalar)",
+        "add": "Taklif qo'shish",
+        "create": "Taklif yaratish",
+        "edit": "Taklifni tahrirlash",
+        "delete": "O'chirish",
+        "empty": "Takliflar hozircha yo'q",
+        "emptySubtitle": "Birinchi taklifni yarating",
+        "card": {
+            "priceByRequest": "Narx so'rov bo'yicha",
+            "inactive": "Faol emas",
+            "order": "Tartib:",
+            "active": "Faol",
+            "activate": "Faollashtirish",
+            "deactivate": "Faolsizlantirish"
+        },
+        "form": {
+            "title": "Sarlavha",
+            "description": "Tavsif",
+            "price": "Narx ($)",
+            "priceText": "Narx matni",
+            "contactText": "Aloqa matni",
+            "email": "Email",
+            "phone": "Telefon",
+            "isActive": "Faol"
         },
         "offers": {
             "title": "Takliflarni boshqarish",
@@ -1021,7 +1031,49 @@
             "addOneImage": "Iltimos, kamida bitta rasm qo'shing",
             "errorLoadingData": "Mahsulot ma'lumotlarini yuklashda xato",
             "errorSaving": "Saqlashda xatolik",
+            "deleteError": "O'chirishda xatolik yuz berdi",
             "loggedOut": "Siz tizimdan chiqdingiz"
+        },
+        "checkout": {
+            "title": "Buyurtma berish",
+            "back": "Ortga",
+            "sections": {
+                "contact": "Aloqa ma'lumotlari",
+                "delivery": "Yetkazib berish usuli",
+                "payment": "To'lov usuli"
+            }
         }
+    },
+    "bannerPage": {
+        "title": "Banner",
+        "subtitle": "Do'kon banner sozlamalari",
+        "preview": "Ko'rib chiqish",
+        "previewTitle": "Sarlavha",
+        "previewSubtitle": "Quyi sarlavha",
+        "previewButton": "Tugma",
+        "addBanner": "Banner qo'shish",
+        "editBanner": "Banner tahrirlash",
+        "createBanner": "Banner yaratish",
+        "createFirst": "Birinchi bannerni yaratish",
+        "noBanners": "Bannerlar yo'q",
+        "limitReached": "Banner limiti tugadi",
+        "confirmDelete": "Haqiqatan ham bu bannerni o'chirmoqchimisiz?",
+        "edit": "Banner tahrirlash",
+        "badgeLabel": "Belgi matni",
+        "badgePlaceholder": "YANGI",
+        "titleLabel": "Sarlavha (\\n yangi qator uchun)",
+        "titlePlaceholder": "Yozgi kolleksiya 2024",
+        "subtitleLabel": "Quyi sarlavha",
+        "subtitlePlaceholder": "$299 dan boshlab",
+        "linkPlaceholder": "https://link-shop.uz/collection/summer",
+        "btnTextLabel": "Tugma matni",
+        "btnTextPlaceholder": "Sotib olish",
+        "btnLinkLabel": "Tugma havolasi",
+        "imageUrlLabel": "Rasm URL manzili",
+        "uploadLabel": "Yoki rasmni yuklang",
+        "activeLabel": "Banner faol",
+        "saveBtn": "Bannerni saqlash",
+        "saving": "Saqlanmoqda...",
+        "saved": "Banner saqlandi!"
     }
 }

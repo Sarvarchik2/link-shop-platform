@@ -13,6 +13,7 @@ class ProductService:
         if shop_slug:
             shop = self.shop_service.get_shop_by_slug(db, shop_slug)
             kwargs["shop_id"] = shop.id
+        # kwargs will contain sort_by, sort_order etc
         return self.repository.get_all(db, **kwargs)
 
     def get_product(self, db: Session, product_id: int):

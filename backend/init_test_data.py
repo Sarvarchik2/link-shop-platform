@@ -1,45 +1,56 @@
 #!/usr/bin/env python3
 """
-Скрипт для очистки базы данных и создания тестовых данных:
-- Владелец магазина с полностью оформленным магазином
-- Обычный пользователь
-- Платформенный админ
+Script for clearing database and creating test data:
+- Shop owner with fully configured shop (Premium Eyewear)
+- Regular user
+- Platform admin
 """
 
 import os
 import json
 from datetime import datetime, timedelta
-from sqlmodel import Session, SQLModel, create_engine, select
-from main import (
-    User, Shop, Product, Brand, Category, Banner, SubscriptionPlan,
-    get_password_hash
-)
+from sqlalchemy.orm import Session
+from sqlalchemy import create_engine, text
+from app.db.base_class import Base
+from app.core.security import get_password_hash
+from app.core.config import settings
+from app.db.session import engine
 
-# Database setup
-sqlite_file_name = "database.db"
-sqlite_url = f"sqlite:///{sqlite_file_name}"
-connect_args = {"check_same_thread": False}
-engine = create_engine(sqlite_url, echo=False, connect_args=connect_args)
+# Import Models
+from app.features.users.models import User
+from app.features.shops.models import Shop
+from app.features.products.models import Product
+from app.features.brands.models import Brand
+from app.features.categories.models import Category
+from app.features.banners.models import Banner
+from app.features.subscriptions.models import SubscriptionPlan
 
 def clear_database():
-    """Удаляет базу данных если она существует"""
-    if os.path.exists(sqlite_file_name):
-        os.remove(sqlite_file_name)
-        print("✓ База данных удалена")
+    """Drops all tables to clear data"""
+    if "sqlite" in settings.DATABASE_URL:
+        db_file = settings.DATABASE_URL.replace("sqlite:///", "")
+        if os.path.exists(db_file):
+            os.remove(db_file)
+            print("✓ SQLite database file removed")
     else:
-        print("✓ База данных не существует, создаем новую")
+        # For Postgres, we drop schema to handle cascades appropriately
+        with engine.connect() as connection:
+            connection.execute(text("DROP SCHEMA public CASCADE"))
+            connection.execute(text("CREATE SCHEMA public"))
+            connection.commit()
+        print("✓ Tables dropped (Schema reset)")
 
 def create_tables():
-    """Создает все таблицы"""
-    SQLModel.metadata.create_all(engine)
-    print("✓ Таблицы созданы")
+    """Creates all tables"""
+    Base.metadata.create_all(engine)
+    print("✓ Tables created")
 
 def init_test_data():
-    """Создает тестовые данные"""
+    """Create test data"""
     with Session(engine) as session:
-        # 1. Создаем платформенного админа
+        # 1. Create platform admin
         admin = User(
-            phone="admin",
+            phone="998900000000",
             password_hash=get_password_hash("admin123"),
             first_name="Admin",
             last_name="System",
@@ -48,39 +59,44 @@ def init_test_data():
         session.add(admin)
         session.commit()
         session.refresh(admin)
-        print("✓ Платформенный админ создан: admin / admin123")
+        print("✓ Platform admin created: 998900000000 / admin123")
         
-        # 2. Создаем владельца магазина
+        # 2. Create shop owner
         shop_owner = User(
-            phone="shopowner",
+            phone="998901234567",
             password_hash=get_password_hash("owner123"),
-            first_name="Иван",
-            last_name="Петров",
+            first_name="Ivan",
+            last_name="Petrov",
             role="shop_owner"
         )
         session.add(shop_owner)
         session.commit()
         session.refresh(shop_owner)
-        print("✓ Владелец магазина создан: shopowner / owner123")
+        print("✓ Shop owner created: 998901234567 / owner123")
         
-        # 3. Создаем магазин
+        # ... (skip shop creation lines as they don't change owner_id reference logic)
+        
+        # 3. Create shop
         subscription_expires = datetime.utcnow() + timedelta(days=365)
         shop = Shop(
             name="Premium Eyewear Store",
             slug="premium-eyewear",
             owner_id=shop_owner.id,
-            description="Премиальный магазин очков и солнцезащитных очков. Широкий ассортимент брендовых моделей от ведущих производителей.",
+            description="Premium eyewear store featuring luxury brands and smart glasses.",
             logo_url="https://images.unsplash.com/photo-1572635196237-14b3f281503f?q=80&w=200&auto=format&fit=crop",
             subscription_status="active",
             subscription_expires_at=subscription_expires,
-            is_active=True
+            is_active=True,
+            phone="+998901234567",
+            email="info@eyewear.uz",
+            address="Tashkent, Amir Temur 1"
         )
         session.add(shop)
         session.commit()
         session.refresh(shop)
-        print("✓ Магазин создан: Premium Eyewear Store (slug: premium-eyewear)")
+        print("✓ Shop created: Premium Eyewear Store")
         
-        # 4. Создаем бренды для магазина
+        # 4. Create brands
         brands = [
             Brand(name="Ray-Ban", logo_url="https://upload.wikimedia.org/wikipedia/commons/thumb/0/03/Ray-Ban_logo.svg/2560px-Ray-Ban_logo.svg.png", shop_id=shop.id),
             Brand(name="Oakley", logo_url="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Oakley_logo.svg/2560px-Oakley_logo.svg.png", shop_id=shop.id),
@@ -88,308 +104,216 @@ def init_test_data():
             Brand(name="Gucci", logo_url="https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/Gucci_Logo.svg/2560px-Gucci_Logo.svg.png", shop_id=shop.id),
             Brand(name="Tom Ford", logo_url="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Tom_Ford_logo.svg/2560px-Tom_Ford_logo.svg.png", shop_id=shop.id),
         ]
-        for brand in brands:
-            session.add(brand)
+        session.add_all(brands)
         session.commit()
-        print("✓ Бренды созданы (5 шт)")
+        print("✓ Brands created")
         
-        # 5. Создаем категории для магазина
+        # 5. Create categories (multilingual)
         categories = [
-            Category(name="Солнцезащитные очки", image_url="https://images.unsplash.com/photo-1511499767150-a48a237f0083?q=80&w=2080&auto=format&fit=crop", shop_id=shop.id),
-            Category(name="Умные очки", image_url="https://images.unsplash.com/photo-1572635196237-14b3f281503f?q=80&w=2080&auto=format&fit=crop", shop_id=shop.id),
-            Category(name="Очки для зрения", image_url="https://images.unsplash.com/photo-1577803645773-f96470509666?q=80&w=2080&auto=format&fit=crop", shop_id=shop.id),
-            Category(name="Люксовые очки", image_url="https://images.unsplash.com/photo-1511499767150-a48a237f0083?q=80&w=2080&auto=format&fit=crop", shop_id=shop.id),
-            Category(name="Спортивные очки", image_url="https://images.unsplash.com/photo-1572635196237-14b3f281503f?q=80&w=2080&auto=format&fit=crop", shop_id=shop.id),
+            Category(
+                name_ru="Солнцезащитные очки", 
+                name_en="Sunglasses", 
+                name_uz="Quyosh ko'zoynaklari",
+                image_url="https://images.unsplash.com/photo-1511499767150-a48a237f0083?q=80&w=600&auto=format&fit=crop", 
+                shop_id=shop.id
+            ),
+            Category(
+                name_ru="Умные очки", 
+                name_en="Smart Glasses", 
+                name_uz="Aqlli ko'zoynaklar",
+                image_url="https://images.unsplash.com/photo-1572635196237-14b3f281503f?q=80&w=600&auto=format&fit=crop", 
+                shop_id=shop.id
+            ),
+            Category(
+                name_ru="Очки для зрения", 
+                name_en="Eyeglasses", 
+                name_uz="Ko'rish ko'zoynaklari",
+                image_url="https://images.unsplash.com/photo-1577803645773-f96470509666?q=80&w=600&auto=format&fit=crop", 
+                shop_id=shop.id
+            ),
+            Category(
+                name_ru="Люксовые очки", 
+                name_en="Luxury Eyewear", 
+                name_uz="Lyuks ko'zoynaklar",
+                image_url="https://images.unsplash.com/photo-1511499767150-a48a237f0083?q=80&w=600&auto=format&fit=crop", 
+                shop_id=shop.id
+            ),
+            Category(
+                name_ru="Спортивные очки", 
+                name_en="Sports Eyewear", 
+                name_uz="Sport ko'zoynaklari",
+                image_url="https://images.unsplash.com/photo-1572635196237-14b3f281503f?q=80&w=600&auto=format&fit=crop", 
+                shop_id=shop.id
+            ),
         ]
-        for category in categories:
-            session.add(category)
+        session.add_all(categories)
         session.commit()
-        print("✓ Категории созданы (5 шт)")
+        print("✓ Categories created")
         
-        # 6. Создаем товары для магазина
+        # 6. Create products (multilingual)
         products = [
             Product(
-                name="Ray-Ban Meta Wayfarer",
-                description="Классический стиль Wayfarer с умными функциями. Встроенная камера и динамики для максимального опыта использования умных очков.",
+                name_ru="Ray-Ban Meta Wayfarer",
+                name_en="Ray-Ban Meta Wayfarer",
+                name_uz="Ray-Ban Meta Wayfarer",
+                description_ru="Классический стиль Wayfarer с умными функциями. Встроенная камера, динамики и ИИ.",
+                description_en="Classic Wayfarer style with smart features. Built-in camera, speakers and AI.",
+                description_uz="Aqlli funksiyalarga ega klassik Wayfarer uslubi. O'rnatilgan kamera, dinamiklar va sun'iy intellekt.",
                 price=299.00,
                 image_url="https://images.unsplash.com/photo-1572635196237-14b3f281503f?q=80&w=2080&auto=format&fit=crop",
                 images=json.dumps([
                     "https://images.unsplash.com/photo-1572635196237-14b3f281503f?q=80&w=2080&auto=format&fit=crop",
-                    "https://images.unsplash.com/photo-1511499767150-a48a237f0083?q=80&w=2080&auto=format&fit=crop",
-                    "https://images.unsplash.com/photo-1577803645773-f96470509666?q=80&w=2080&auto=format&fit=crop"
+                    "https://images.unsplash.com/photo-1511499767150-a48a237f0083?q=80&w=2080&auto=format&fit=crop"
                 ]),
-                category="Умные очки",
-                brand="Ray-Ban",
-                rating=4.5,
-                reviews_count=120,
-                stock=15,
+                # Multilingual string fields for filtering
+                category_ru="Умные очки", category_en="Smart Glasses", category_uz="Aqlli ko'zoynaklar",
+                brand_ru="Ray-Ban", brand_en="Ray-Ban", brand_uz="Ray-Ban",
+                rating=4.8, reviews_count=156, stock=15,
                 variants=json.dumps([
-                    {"size": "S", "color": "Черный", "colorHex": "#000000", "stock": 5},
-                    {"size": "M", "color": "Черный", "colorHex": "#000000", "stock": 3},
-                    {"size": "L", "color": "Черный", "colorHex": "#000000", "stock": 2},
-                    {"size": "M", "color": "Черепаховый", "colorHex": "#8B4513", "stock": 3},
-                    {"size": "L", "color": "Черепаховый", "colorHex": "#8B4513", "stock": 2},
+                    {"size": "M", "color": "Black", "colorHex": "#000000", "stock": 5},
+                    {"size": "L", "color": "Black", "colorHex": "#000000", "stock": 2}
                 ]),
                 shop_id=shop.id
             ),
             Product(
-                name="Ray-Ban Aviator Classic",
-                description="Легендарный стиль, с которого все началось. Классический дизайн авиатора.",
+                name_ru="Ray-Ban Aviator Classic",
+                name_en="Ray-Ban Aviator Classic",
+                name_uz="Ray-Ban Aviator Classic",
+                description_ru="Легендарный стиль авиатор. Золотая оправа и зеленые линзы.",
+                description_en="Legendary aviator style. Gold frame and green lenses.",
+                description_uz="Afsonaviy aviator uslubi. Oltin ramka va yashil linzalar.",
                 price=163.00,
-                image_url="https://images.unsplash.com/photo-1572635196237-14b3f281503f?q=80&w=2080&auto=format&fit=crop",
+                image_url="https://images.unsplash.com/photo-1511499767150-a48a237f0083?q=80&w=2080&auto=format&fit=crop",
                 images=json.dumps([
-                    "https://images.unsplash.com/photo-1572635196237-14b3f281503f?q=80&w=2080&auto=format&fit=crop",
-                    "https://images.unsplash.com/photo-1577803645773-f96470509666?q=80&w=2080&auto=format&fit=crop"
+                    "https://images.unsplash.com/photo-1511499767150-a48a237f0083?q=80&w=2080&auto=format&fit=crop"
                 ]),
-                category="Солнцезащитные очки",
-                brand="Ray-Ban",
-                rating=4.6,
-                reviews_count=200,
-                stock=30,
+                category_ru="Солнцезащитные очки", category_en="Sunglasses", category_uz="Quyosh ko'zoynaklari",
+                brand_ru="Ray-Ban", brand_en="Ray-Ban", brand_uz="Ray-Ban",
+                rating=4.7, reviews_count=242, stock=35,
                 variants=json.dumps([
-                    {"size": "S", "color": "Золото/Зеленый", "colorHex": "#FFD700", "stock": 10},
-                    {"size": "M", "color": "Золото/Зеленый", "colorHex": "#FFD700", "stock": 5},
-                    {"size": "S", "color": "Серебро/Синий", "colorHex": "#C0C0C0", "stock": 8},
-                    {"size": "M", "color": "Серебро/Синий", "colorHex": "#C0C0C0", "stock": 5},
-                    {"size": "L", "color": "Черный", "colorHex": "#000000", "stock": 2},
+                    {"size": "M", "color": "Gold", "colorHex": "#FFD700", "stock": 10},
+                    {"size": "L", "color": "Gold", "colorHex": "#FFD700", "stock": 8}
                 ]),
                 shop_id=shop.id
             ),
             Product(
-                name="Oakley Holbrook",
-                description="Вневременной классический дизайн в сочетании с современными технологиями Oakley. Прочные и стильные.",
-                price=150.00,
+                name_ru="Oakley Holbrook",
+                name_en="Oakley Holbrook",
+                name_uz="Oakley Holbrook",
+                description_ru="Вневременной классический дизайн с современными технологиями линз Prizm.",
+                description_en="Timeless classic design with modern Prizm lens technology.",
+                description_uz="Zamonaviy Prizm linza texnologiyasi bilan birlashtirilgan o'zgarmas klassik dizayn.",
+                price=152.00,
                 image_url="https://images.unsplash.com/photo-1577803645773-f96470509666?q=80&w=2080&auto=format&fit=crop",
                 images=json.dumps([
-                    "https://images.unsplash.com/photo-1577803645773-f96470509666?q=80&w=2080&auto=format&fit=crop"
+                     "https://images.unsplash.com/photo-1577803645773-f96470509666?q=80&w=2080&auto=format&fit=crop"
                 ]),
-                category="Солнцезащитные очки",
-                brand="Oakley",
-                rating=4.8,
-                reviews_count=210,
-                stock=25,
+                category_ru="Спортивные очки", category_en="Sports Eyewear", category_uz="Sport ko'zoynaklari",
+                brand_ru="Oakley", brand_en="Oakley", brand_uz="Oakley",
+                rating=4.9, reviews_count=89, stock=20,
                 variants=json.dumps([
-                    {"size": "S", "color": "Матовый черный", "colorHex": "#1a1a1a", "stock": 5},
-                    {"size": "M", "color": "Матовый черный", "colorHex": "#1a1a1a", "stock": 5},
-                    {"size": "L", "color": "Полированный черный", "colorHex": "#000000", "stock": 8},
-                    {"size": "XL", "color": "Полированный черный", "colorHex": "#000000", "stock": 4},
-                    {"size": "M", "color": "Коричневый черепаховый", "colorHex": "#654321", "stock": 3},
+                    {"size": "One Size", "color": "Matte Black", "colorHex": "#121212", "stock": 20}
                 ]),
                 shop_id=shop.id
             ),
-            Product(
-                name="Prada Symbole",
-                description="Геометрический дизайн с дерзким видом. Роскошные очки высочайшего качества.",
+             Product(
+                name_ru="Prada Symbole",
+                name_en="Prada Symbole",
+                name_uz="Prada Symbole",
+                description_ru="Геометрический дизайн с дерзким видом. Роскошные очки высочайшего качества.",
+                description_en="Geometric design with a bold look. Luxury eyewear of the highest quality.",
+                description_uz="Jasur ko'rinishga ega geometrik dizayn. Eng yuqori sifatli lyuks ko'zoynaklar.",
                 price=450.00,
                 image_url="https://images.unsplash.com/photo-1572635196237-14b3f281503f?q=80&w=2080&auto=format&fit=crop",
                 images=json.dumps([
                     "https://images.unsplash.com/photo-1572635196237-14b3f281503f?q=80&w=2080&auto=format&fit=crop",
                     "https://images.unsplash.com/photo-1511499767150-a48a237f0083?q=80&w=2080&auto=format&fit=crop"
                 ]),
-                category="Люксовые очки",
-                brand="Prada",
-                rating=4.9,
-                reviews_count=45,
-                stock=12,
-                variants=json.dumps([
-                    {"size": "M", "color": "Черный", "colorHex": "#000000", "stock": 6},
-                    {"size": "L", "color": "Черный", "colorHex": "#000000", "stock": 3},
-                    {"size": "M", "color": "Золото", "colorHex": "#FFD700", "stock": 2},
-                    {"size": "L", "color": "Золото", "colorHex": "#FFD700", "stock": 1},
-                ]),
-                shop_id=shop.id
-            ),
-            Product(
-                name="Gucci GG0061S",
-                description="Круглые металлические солнцезащитные очки с винтажным оттенком. Знаковый стиль Gucci.",
-                price=380.00,
-                image_url="https://images.unsplash.com/photo-1511499767150-a48a237f0083?q=80&w=2080&auto=format&fit=crop",
-                images=json.dumps([
-                    "https://images.unsplash.com/photo-1511499767150-a48a237f0083?q=80&w=2080&auto=format&fit=crop"
-                ]),
-                category="Люксовые очки",
-                brand="Gucci",
-                rating=4.6,
-                reviews_count=60,
-                stock=12,
-                variants=json.dumps([
-                    {"size": "S", "color": "Золото", "colorHex": "#FFD700", "stock": 3},
-                    {"size": "M", "color": "Золото", "colorHex": "#FFD700", "stock": 3},
-                    {"size": "S", "color": "Серебро", "colorHex": "#C0C0C0", "stock": 3},
-                    {"size": "M", "color": "Серебро", "colorHex": "#C0C0C0", "stock": 3},
-                ]),
-                shop_id=shop.id
-            ),
-            Product(
-                name="Tom Ford FT5400",
-                description="Элегантные прямоугольные очки с золотыми акцентами. Премиальное качество и стиль.",
-                price=420.00,
-                image_url="https://images.unsplash.com/photo-1572635196237-14b3f281503f?q=80&w=2080&auto=format&fit=crop",
-                images=json.dumps([
-                    "https://images.unsplash.com/photo-1572635196237-14b3f281503f?q=80&w=2080&auto=format&fit=crop",
-                    "https://images.unsplash.com/photo-1511499767150-a48a237f0083?q=80&w=2080&auto=format&fit=crop"
-                ]),
-                category="Люксовые очки",
-                brand="Tom Ford",
-                rating=4.7,
-                reviews_count=88,
-                stock=18,
-                variants=json.dumps([
-                    {"size": "M", "color": "Черный", "colorHex": "#000000", "stock": 6},
-                    {"size": "L", "color": "Черный", "colorHex": "#000000", "stock": 4},
-                    {"size": "M", "color": "Коричневый", "colorHex": "#8B4513", "stock": 5},
-                    {"size": "L", "color": "Коричневый", "colorHex": "#8B4513", "stock": 3},
-                ]),
-                shop_id=shop.id
-            ),
-            Product(
-                name="Ray-Ban Meta Headliner",
-                description="Круглая форма для ретро-образа. Идеально подходит для повседневной носки с передовой аудиотехнологией.",
-                price=329.00,
-                image_url="https://images.unsplash.com/photo-1511499767150-a48a237f0083?q=80&w=2080&auto=format&fit=crop",
-                images=json.dumps([
-                    "https://images.unsplash.com/photo-1511499767150-a48a237f0083?q=80&w=2080&auto=format&fit=crop",
-                    "https://images.unsplash.com/photo-1572635196237-14b3f281503f?q=80&w=2080&auto=format&fit=crop"
-                ]),
-                category="Умные очки",
-                brand="Ray-Ban",
-                rating=4.7,
-                reviews_count=85,
-                stock=8,
-                variants=json.dumps([
-                    {"size": "M", "color": "Матовый черный", "colorHex": "#1a1a1a", "stock": 3},
-                    {"size": "L", "color": "Матовый черный", "colorHex": "#1a1a1a", "stock": 2},
-                    {"size": "M", "color": "Блестящий черный", "colorHex": "#000000", "stock": 2},
-                    {"size": "L", "color": "Блестящий черный", "colorHex": "#000000", "stock": 1},
-                ]),
-                shop_id=shop.id
-            ),
-            Product(
-                name="Oakley Radar EV",
-                description="Спортивные очки с защитой от ультрафиолета и превосходной оптикой. Для активного образа жизни.",
-                price=180.00,
-                image_url="https://images.unsplash.com/photo-1577803645773-f96470509666?q=80&w=2080&auto=format&fit=crop",
-                images=json.dumps([
-                    "https://images.unsplash.com/photo-1577803645773-f96470509666?q=80&w=2080&auto=format&fit=crop"
-                ]),
-                category="Спортивные очки",
-                brand="Oakley",
-                rating=4.5,
-                reviews_count=150,
-                stock=20,
-                variants=json.dumps([
-                    {"size": "M", "color": "Черный", "colorHex": "#000000", "stock": 8},
-                    {"size": "L", "color": "Черный", "colorHex": "#000000", "stock": 6},
-                    {"size": "M", "color": "Синий", "colorHex": "#1E40AF", "stock": 4},
-                    {"size": "L", "color": "Синий", "colorHex": "#1E40AF", "stock": 2},
+                category_ru="Люксовые очки", category_en="Luxury Eyewear", category_uz="Lyuks ko'zoynaklar",
+                brand_ru="Prada", brand_en="Prada", brand_uz="Prada",
+                rating=5.0, reviews_count=32, stock=5,
+                 variants=json.dumps([
+                    {"size": "M", "color": "Black", "colorHex": "#000000", "stock": 5}
                 ]),
                 shop_id=shop.id
             ),
         ]
-        
-        for product in products:
-            session.add(product)
+        session.add_all(products)
         session.commit()
-        print("✓ Товары созданы (8 шт)")
+        print("✓ Products created (multilingual)")
         
-        # 7. Создаем баннер для магазина
+        # 7. Create banner
         banner = Banner(
-            badge_text="НОВИНКА",
+            badge_text="NEW ARRIVAL",
+            
             title="Ray-Ban Meta Smart Glasses",
-            subtitle="От $299",
-            button_text="Купить сейчас",
+            title_ru="Умные очки Ray-Ban Meta",
+            title_en="Ray-Ban Meta Smart Glasses",
+            title_uz="Ray-Ban Meta aqlli ko'zoynaklari",
+            
+            subtitle="The future of eyewear starting at $299",
+            subtitle_ru="Будущее очков по цене от $299",
+            subtitle_en="The future of eyewear starting at $299",
+            subtitle_uz="Ko'zoynaklarning kelajagi $299 dan boshlanadi",
+            
+            button_text="Shop Collection",
+            button_text_ru="Смотреть коллекцию",
+            button_text_en="Shop Collection",
+            button_text_uz="To'plamni ko'rish",
+            
             button_link="/products",
-            image_url="https://images.unsplash.com/photo-1572635196237-14b3f281503f?q=80&w=800&auto=format&fit=crop",
+            image_url="https://images.unsplash.com/photo-1572635196237-14b3f281503f?q=80&w=1200&auto=format&fit=crop",
             is_active=True,
             shop_id=shop.id
         )
         session.add(banner)
         session.commit()
-        print("✓ Баннер создан")
+        print("✓ Banner created")
         
-        # 8. Создаем обычного пользователя
+        # 8. Create regular user
         regular_user = User(
-            phone="user123",
+            phone="998907654321",
             password_hash=get_password_hash("user123"),
-            first_name="Мария",
-            last_name="Иванова",
+            first_name="Maria",
+            last_name="Ivanova",
             role="user"
         )
         session.add(regular_user)
         session.commit()
-        print("✓ Обычный пользователь создан: user123 / user123")
+        print("✓ Regular user created: 998907654321 / user123")
         
-        # 9. Создаем планы подписки
+        # 9. Create subscription plans
         plans = [
-            SubscriptionPlan(
-                name="Базовый",
+             SubscriptionPlan(
+                name="Basic",
                 slug="basic",
                 price=29.99,
                 period_days=30,
-                description="Базовый план для начинающих продавцов",
-                features=json.dumps(["До 50 товаров", "Базовая аналитика", "Email поддержка"]),
+                description="For small shops",
+                features=json.dumps(["Up to 50 products", "Basic analytics"]),
                 is_active=True,
                 is_trial=False,
                 display_order=1
             ),
             SubscriptionPlan(
-                name="Профессиональный",
+                name="Pro",
                 slug="pro",
                 price=79.99,
                 period_days=30,
-                description="Для растущего бизнеса",
-                features=json.dumps(["Неограниченное количество товаров", "Расширенная аналитика", "Приоритетная поддержка", "Кастомный домен"]),
+                description="For growing businesses",
+                features=json.dumps(["Unlimited products", "Advanced analytics", "Priority support"]),
                 is_active=True,
                 is_trial=False,
                 display_order=2
             ),
-            SubscriptionPlan(
-                name="Премиум",
-                slug="premium",
-                price=149.99,
-                period_days=30,
-                description="Максимальные возможности",
-                features=json.dumps(["Все функции Pro", "Персональный менеджер", "API доступ", "Белый лейбл"]),
-                is_active=True,
-                is_trial=False,
-                display_order=3
-            ),
         ]
-        for plan in plans:
-            session.add(plan)
+        session.add_all(plans)
         session.commit()
-        print("✓ Планы подписки созданы (3 шт)")
+        print("✓ Subscription plans created")
         
-        print("\n" + "="*60)
-        print("ТЕСТОВЫЕ ДАННЫЕ СОЗДАНЫ УСПЕШНО!")
-        print("="*60)
-        print("\n📋 ДОСТУПЫ ДЛЯ ВХОДА:\n")
-        print("1. ПЛАТФОРМЕННЫЙ АДМИН:")
-        print("   Логин: admin")
-        print("   Пароль: admin123")
-        print("   URL: http://localhost:3000/platform/admin")
-        print()
-        print("2. ВЛАДЕЛЕЦ МАГАЗИНА:")
-        print("   Логин: shopowner")
-        print("   Пароль: owner123")
-        print("   URL: http://localhost:3000/shop/premium-eyewear/admin")
-        print()
-        print("3. ОБЫЧНЫЙ ПОЛЬЗОВАТЕЛЬ:")
-        print("   Логин: user123")
-        print("   Пароль: user123")
-        print("   URL: http://localhost:3000/login")
-        print()
-        print("="*60)
-        print("Магазин: Premium Eyewear Store")
-        print("Slug: premium-eyewear")
-        print("Товаров: 8")
-        print("Брендов: 5")
-        print("Категорий: 5")
-        print("="*60)
+        print("\nSUCCESS! Test data initialized.")
 
 if __name__ == "__main__":
-    print("Начинаю инициализацию тестовых данных...\n")
     clear_database()
     create_tables()
     init_test_data()
-    print("\n✓ Готово! Можете тестировать приложение.")

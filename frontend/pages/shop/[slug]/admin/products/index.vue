@@ -29,17 +29,40 @@
     <main class="admin-main">
       <div class="container">
         <div class="page-header">
-          <div>
-            <h1 class="page-title">{{ $t('productsPage.title') }}</h1>
-            <p class="page-subtitle">{{ $t('productsPage.subtitle') }}</p>
+          <div class="header-content">
+            <div>
+              <h1 class="page-title">{{ $t('productsPage.title') }}</h1>
+              <p class="page-subtitle">{{ $t('productsPage.subtitle') }}</p>
+            </div>
+
+            <div class="header-actions">
+              <div class="search-sort-bar">
+                <div class="search-input-wrapper">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    class="search-icon">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  </svg>
+                  <input v-model="searchQuery" type="text" :placeholder="$t('productsPage.searchPlaceholder')"
+                    class="search-input" />
+                </div>
+
+                <select v-model="sortOption" class="sort-select">
+                  <option v-for="opt in sortOptions" :key="opt.value" :value="opt.value">
+                    {{ opt.label }}
+                  </option>
+                </select>
+              </div>
+
+              <NuxtLink :to="`/shop/${shopSlug}/admin/products/new`" class="btn btn-primary">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                <span class="btn-text">{{ $t('productsPage.titleNew') }}</span>
+              </NuxtLink>
+            </div>
           </div>
-          <NuxtLink :to="`/shop/${shopSlug}/admin/products/new`" class="btn btn-primary">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="12" y1="5" x2="12" y2="19"></line>
-              <line x1="5" y1="12" x2="19" y2="12"></line>
-            </svg>
-            <span class="btn-text">{{ $t('productsPage.titleNew') }}</span>
-          </NuxtLink>
         </div>
 
         <div class="admin-content">
@@ -78,7 +101,7 @@
               </div>
               <div class="product-info">
                 <div class="product-category">{{ product.category }}</div>
-                <h3 class="product-name">{{ product.name }}</h3>
+                <h3 class="product-name">{{ getProductName(product) }}</h3>
                 <div class="product-brand">{{ product.brand }}</div>
                 <div class="product-footer">
                   <div class="product-price">${{ product.price.toFixed(2) }}</div>
@@ -102,6 +125,8 @@
 </template>
 
 <script setup>
+import { useDebounceFn } from '@vueuse/core'
+
 definePageMeta({
   middleware: ['auth', 'shop-owner']
 })
@@ -109,15 +134,54 @@ definePageMeta({
 const route = useRoute()
 const shopSlug = route.params.slug
 const { token, logout } = useAuth()
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 const sidebarOpen = ref(false)
-
 const currentRoute = computed(() => 'products')
 
-const { data: products, error, refresh } = await useFetch(`http://localhost:8000/products?shop_slug=${shopSlug}`, {
+// Helper to get localized name
+const getProductName = (product) => {
+  if (!product) return ''
+  const currentLocale = locale.value
+  return product[`name_${currentLocale}`] || product.name_en || product.name_ru || product.name_uz || ''
+}
+
+// Filters
+const searchQuery = ref('')
+const debouncedSearch = ref('')
+const sortOption = ref('newest')
+
+// Debounce search input to avoid too many API calls
+watch(searchQuery, useDebounceFn((newVal) => {
+  debouncedSearch.value = newVal
+}, 500))
+
+const sortOptions = computed(() => [
+  { value: 'newest', label: t('productsPage.sort.newest'), by: 'created_at', order: 'desc' },
+  { value: 'oldest', label: t('productsPage.sort.oldest'), by: 'created_at', order: 'asc' },
+  { value: 'priceLow', label: t('productsPage.sort.priceLow'), by: 'price', order: 'asc' },
+  { value: 'priceHigh', label: t('productsPage.sort.priceHigh'), by: 'price', order: 'desc' },
+  { value: 'nameAz', label: t('productsPage.sort.nameAz'), by: 'name', order: 'asc' },
+  { value: 'nameZa', label: t('productsPage.sort.nameZa'), by: 'name', order: 'desc' },
+  { value: 'soldHigh', label: t('productsPage.sort.soldHigh'), by: 'sold_count', order: 'desc' },
+  { value: 'stockLow', label: t('productsPage.sort.stockLow'), by: 'stock', order: 'asc' },
+])
+
+const currentSort = computed(() => sortOptions.value.find(o => o.value === sortOption.value) || sortOptions.value[0])
+
+const queryParams = computed(() => {
+  return {
+    shop_slug: shopSlug,
+    q: debouncedSearch.value || undefined,
+    sort_by: currentSort.value.by,
+    sort_order: currentSort.value.order
+  }
+})
+
+const { data: products, error, refresh } = await useFetch('http://localhost:8000/products', {
   server: false,
   lazy: true,
+  query: queryParams,
   headers: computed(() => ({
     'Authorization': token.value ? `Bearer ${token.value}` : ''
   }))
@@ -125,7 +189,7 @@ const { data: products, error, refresh } = await useFetch(`http://localhost:8000
 
 watch(error, (newError) => {
   if (newError) {
-    console.error('[Products List] Ошибка загрузки товаров:', newError)
+    console.error('[Products List] Error loading products:', newError)
   }
 })
 
@@ -139,7 +203,7 @@ const deleteProduct = async (id) => {
     refresh()
     useToast().success(t('alerts.shop.productDeleted'))
   } catch (e) {
-    console.error('[Products List] Ошибка при удалении товара:', e)
+    console.error('[Products List] Error deleting:', e)
     useToast().error(e.data?.detail || e.message || t('alerts.shop.deleteError'))
   }
 }
@@ -211,10 +275,99 @@ const deleteProduct = async (id) => {
 }
 
 .page-header {
+  margin-bottom: 32px;
+}
+
+.header-content {
   display: flex;
   justify-content: space-between;
+  align-items: flex-end;
+  /* Align bottom to match buttons */
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.header-actions {
+  display: flex;
+  gap: 16px;
   align-items: center;
-  margin-bottom: 40px;
+  flex-wrap: wrap;
+}
+
+.search-sort-bar {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.search-input-wrapper {
+  position: relative;
+  width: 320px;
+  /* Slightly wider */
+}
+
+.search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9CA3AF;
+  width: 18px;
+  height: 18px;
+  pointer-events: none;
+}
+
+.search-input {
+  width: 100%;
+  height: 48px;
+  /* Taller inputs */
+  padding: 0 16px 0 42px;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  outline: none;
+  transition: all 0.2s;
+  background: white;
+  color: #111;
+}
+
+.search-input:focus {
+  border-color: #111;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+}
+
+.search-input::placeholder {
+  color: #9CA3AF;
+}
+
+.sort-select {
+  height: 48px;
+  /* Match height */
+  padding: 0 40px 0 16px;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  /* Match font size */
+  font-weight: 500;
+  outline: none;
+  cursor: pointer;
+  background-color: white;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg width='12' height='12' viewBox='0 0 12 12' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M2.5 4.5L6 8L9.5 4.5' stroke='%23111111' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  color: #111;
+  min-width: 200px;
+  /* Wider select */
+  transition: all 0.2s;
+}
+
+.sort-select:hover {
+  border-color: #D1D5DB;
+}
+
+.sort-select:focus {
+  border-color: #111;
 }
 
 .page-title {
@@ -239,10 +392,12 @@ const deleteProduct = async (id) => {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 12px 20px;
+  padding: 0 24px;
+  height: 48px;
+  /* Match height */
   border-radius: 12px;
   font-weight: 600;
-  font-size: 0.875rem;
+  font-size: 0.95rem;
   cursor: pointer;
   transition: all 0.2s;
   border: none;
@@ -257,14 +412,15 @@ const deleteProduct = async (id) => {
 .btn-primary:hover {
   background: #000;
   transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .empty-state {
   text-align: center;
-  padding: 60px 20px;
+  padding: 80px 20px;
   background: white;
   border-radius: 20px;
-  border: 1px solid #E5E7EB;
+  border: 1px dashed #E5E7EB;
 }
 
 .empty-icon {
@@ -294,32 +450,38 @@ const deleteProduct = async (id) => {
 
 .products-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  /* Wider cards */
   gap: 24px;
 }
 
 .product-card {
   background: white;
-  border-radius: 24px;
+  border-radius: 20px;
   overflow: hidden;
-  transition: all 0.3s;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 10px 40px rgba(0, 0, 0, 0.02);
-  border: 1px solid #f1f1f1;
+  transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  border: 1px solid #f3f4f6;
+  display: flex;
+  flex-direction: column;
 }
 
 .product-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.06);
+  border-color: #e5e7eb;
 }
 
 .product-image {
   position: relative;
-  background: #F9FAFB;
-  aspect-ratio: 1;
+  background: #F8F9FA;
+  aspect-ratio: 4/3;
+  /* Better aspect ratio */
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 16px;
+  padding: 24px;
+  overflow: hidden;
 }
 
 .product-image img {
@@ -327,27 +489,33 @@ const deleteProduct = async (id) => {
   height: 100%;
   object-fit: contain;
   mix-blend-mode: multiply;
-  border-radius: 10px;
+  transition: transform 0.5s ease;
+}
+
+.product-card:hover .product-image img {
+  transform: scale(1.05);
 }
 
 .product-actions {
   position: absolute;
-  top: 8px;
-  right: 8px;
+  top: 12px;
+  right: 12px;
   display: flex;
-  gap: 6px;
+  gap: 8px;
   opacity: 0;
-  transition: opacity 0.2s;
+  transform: translateY(-5px);
+  transition: all 0.2s ease;
 }
 
 .product-card:hover .product-actions {
   opacity: 1;
+  transform: translateY(0);
 }
 
 .btn-action {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
   border: none;
   cursor: pointer;
   display: flex;
@@ -355,12 +523,13 @@ const deleteProduct = async (id) => {
   justify-content: center;
   transition: all 0.2s;
   text-decoration: none;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(4px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .btn-edit {
-  background: white;
   color: #3B82F6;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .btn-edit:hover {
@@ -369,9 +538,7 @@ const deleteProduct = async (id) => {
 }
 
 .btn-delete {
-  background: white;
   color: #EF4444;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .btn-delete:hover {
@@ -380,24 +547,29 @@ const deleteProduct = async (id) => {
 }
 
 .product-info {
-  padding: 16px;
+  padding: 20px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .product-category {
-  font-size: 0.65rem;
+  font-size: 0.7rem;
   color: #9CA3AF;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
 }
 
 .product-name {
-  font-size: 0.95rem;
+  font-size: 1.1rem;
   font-weight: 700;
   color: #111;
-  margin-bottom: 2px;
-  line-height: 1.3;
+  margin-bottom: 4px;
+  line-height: 1.35;
+
+  /* Truncate nicely */
   display: -webkit-box;
   line-clamp: 2;
   -webkit-line-clamp: 2;
@@ -406,52 +578,55 @@ const deleteProduct = async (id) => {
 }
 
 .product-brand {
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   color: #6B7280;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 }
 
 .product-footer {
+  margin-top: auto;
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding-top: 12px;
-  border-top: 1px solid #f0f0f0;
+  align-items: flex-end;
+  padding-top: 16px;
+  border-top: 1px solid #F3F4F6;
 }
 
 .product-meta {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 4px;
+  gap: 6px;
 }
 
 .product-sold {
-  font-size: 0.65rem;
+  font-size: 0.7rem;
   font-weight: 700;
-  color: #F59E0B;
+  color: #D97706;
   background: #FFFBEB;
-  padding: 2px 6px;
-  border-radius: 4px;
+  padding: 3px 8px;
+  border-radius: 6px;
 }
 
 .product-price {
-  font-size: 1.1rem;
+  font-size: 1.25rem;
+  /* Larger price */
   font-weight: 800;
   color: #111;
+  letter-spacing: -0.02em;
 }
 
 .product-stock {
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   font-weight: 600;
-  color: #10B981;
+  color: #059669;
   background: #ECFDF5;
   padding: 4px 8px;
   border-radius: 6px;
 }
 
 .product-stock.out-of-stock {
-  color: #EF4444;
+  color: #DC2626;
   background: #FEF2F2;
 }
 
@@ -484,22 +659,69 @@ const deleteProduct = async (id) => {
     border-bottom: 1px solid #eee;
     display: flex;
     flex-direction: column;
+    gap: 16px;
+  }
+
+  .header-content {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .header-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .search-sort-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-input-wrapper,
+  .sort-select {
+    width: 100%;
   }
 
   .btn-primary {
     width: 100%;
     justify-content: center;
-    padding: 14px;
-    border-radius: 12px;
   }
 
   .products-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 12px;
+    padding: 0 16px 20px 16px;
+  }
+
+  .product-image {
+    padding: 12px;
   }
 
   .product-actions {
     opacity: 1;
+    transform: none;
+    top: 8px;
+    right: 8px;
+  }
+
+  .btn-action {
+    width: 32px;
+    height: 32px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .product-info {
+    padding: 12px;
+  }
+
+  .product-name {
+    font-size: 0.95rem;
+  }
+
+  .product-price {
+    font-size: 1rem;
   }
 }
 </style>

@@ -37,14 +37,18 @@
 const route = useRoute()
 const shopSlug = route.params.shop
 const config = useRuntimeConfig()
+const { t } = useI18n()
 
 const selectedCategory = ref('')
 const selectedBrand = ref('')
 
-const { data: categories } = await useFetch(`${config.public.apiBase}/categories?shop_slug=${shopSlug}`, { server: false })
-const { data: brands } = await useFetch(`${config.public.apiBase}/brands?shop_slug=${shopSlug}`, { server: false })
-const { data: products, pending } = await useFetch(`${config.public.apiBase}/products?shop_slug=${shopSlug}`, {
-  server: false
+const { data: categories } = await useFetch(`${config.public.apiBase}/categories?shop_slug=${shopSlug}`)
+const { data: brands } = await useFetch(`${config.public.apiBase}/brands?shop_slug=${shopSlug}`)
+const { data: products, pending } = await useFetch(`${config.public.apiBase}/products?shop_slug=${shopSlug}`)
+
+// SEO
+useHead({
+  title: computed(() => t('store.productsTitle')),
 })
 
 const filteredProducts = computed(() => {
@@ -93,9 +97,17 @@ const filteredProducts = computed(() => {
   border-radius: 12px;
   font-size: 0.875rem;
   font-weight: 600;
-  background: white;
+  color: #111;
+  background-color: white;
   cursor: pointer;
   transition: all 0.2s;
+  min-width: 180px;
+}
+
+/* Ensure options are visible */
+.filter-select option {
+  color: #111;
+  background-color: white;
 }
 
 .filter-select:focus {

@@ -33,10 +33,9 @@ export const usePhoneFormatter = () => {
         return formatted
     }
 
-    // Helper to get raw number for API sending
     const unformatPhoneNumber = (value: string) => {
         const numbers = value.replace(/\D/g, '')
-        return '+' + numbers
+        return numbers
     }
 
     return {

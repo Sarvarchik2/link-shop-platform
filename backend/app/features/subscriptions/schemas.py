@@ -46,13 +46,14 @@ class SubscriptionPlanRead(SubscriptionPlanBase):
 class SubscriptionRequestBase(BaseModel):
     plan_id: int
     duration_months: int = 1
+    type: str = "new" # new, renew, change
     notes: Optional[str] = None
 
 class SubscriptionRequestCreate(SubscriptionRequestBase):
     pass
 
 class SubscriptionRequestUpdate(BaseModel):
-    status: str  # approved, rejected
+    status: Optional[str] = None
     notes: Optional[str] = None
 
 class SubscriptionRequestRead(SubscriptionRequestBase):

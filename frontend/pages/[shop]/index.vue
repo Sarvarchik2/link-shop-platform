@@ -13,16 +13,46 @@
       </div> -->
 
       <!-- Hero Section -->
-      <div v-if="banner && Array.isArray(banner) && banner.length > 0" class="hero-card mb-8">
-        <div class="hero-content">
-          <div class="badge">{{ banner[0].badge_text }}</div>
-          <h1 class="hero-title" v-html="banner[0]?.title ? banner[0].title.replace(/\\n/g, '<br/>') : ''"></h1>
-          <p class="hero-price">{{ banner[0]?.subtitle }}</p>
-          <NuxtLink :to="`/${shopSlug}/products`" class="hero-btn">{{ banner[0].button_text }}</NuxtLink>
-        </div>
-        <div class="hero-image">
-          <img :src="banner[0].image_url" alt="Banner" />
-        </div>
+      <div v-if="banner && Array.isArray(banner) && banner.length > 0" class="hero-section mb-8">
+        <ClientOnly>
+          <swiper-container v-if="banner.length > 1" :slides-per-view="1" :speed="500" :loop="true"
+            :autoplay="{ delay: 5000 }" pagination="true" class="hero-swiper">
+            <swiper-slide v-for="slide in banner" :key="slide.id">
+              <div class="hero-card">
+                <div class="hero-content">
+                  <div v-if="slide.badge_text" class="badge">{{ slide.badge_text }}</div>
+                  <h1 class="hero-title"
+                    v-html="(getLocalized(slide, 'title') ? getLocalized(slide, 'title').replace(/\\n/g, '<br/>') : '')">
+                  </h1>
+                  <p class="hero-price">{{ getLocalized(slide, 'subtitle') }}</p>
+                  <NuxtLink :to="slide.button_link || `/${shopSlug}/products`" class="hero-btn">{{ getLocalized(slide,
+                    'button_text') }}
+                  </NuxtLink>
+                </div>
+                <div class="hero-image">
+                  <img :src="slide.image_url" alt="Banner" />
+                </div>
+              </div>
+            </swiper-slide>
+          </swiper-container>
+
+          <!-- Single Banner Fallback -->
+          <div v-else-if="banner[0]" class="hero-card">
+            <div class="hero-content">
+              <div v-if="banner[0].badge_text" class="badge">{{ banner[0].badge_text }}</div>
+              <h1 class="hero-title"
+                v-html="(getLocalized(banner[0], 'title') ? getLocalized(banner[0], 'title').replace(/\\n/g, '<br/>') : '')">
+              </h1>
+              <p class="hero-price">{{ getLocalized(banner[0], 'subtitle') }}</p>
+              <NuxtLink :to="banner[0].button_link || `/${shopSlug}/products`" class="hero-btn">{{
+                getLocalized(banner[0], 'button_text')
+                }}</NuxtLink>
+            </div>
+            <div class="hero-image">
+              <img :src="banner[0].image_url" alt="Banner" />
+            </div>
+          </div>
+        </ClientOnly>
       </div>
 
       <!-- Brand Filters -->
@@ -170,11 +200,34 @@
 </template>
 
 <script setup>
+import { register } from 'swiper/element/bundle'
+
+register()
+
+const { t, locale } = useI18n()
 const route = useRoute()
 const shopSlug = route.params.shop
 
-const { data: shop } = await useFetch(`http://localhost:8000/platform/shops/${shopSlug}`, { server: false })
-const { data: banner } = await useFetch(`http://localhost:8000/banner?shop_slug=${shopSlug}`, { server: false })
+const getLocalized = (obj, field) => {
+  if (!obj) return ''
+  return obj[`${field}_${locale.value}`] || obj[field]
+}
+
+// Fetch Shop Information
+const { data: shop } = await useFetch(`http://localhost:8000/platform/shops/${shopSlug}`, {
+  key: `shop-${shopSlug}`
+})
+
+// SEO
+useHead({
+  title: computed(() => shop.value?.name || 'Shop'),
+})
+
+// Fetch Banner
+const { data: banner } = await useFetch(`http://localhost:8000/banner?shop_slug=${shopSlug}`, {
+  key: `banner-${shopSlug}`
+})
+
 const { data: brands } = await useFetch(`http://localhost:8000/brands?shop_slug=${shopSlug}`, { server: false })
 const { data: products, pending } = await useFetch(`http://localhost:8000/products?shop_slug=${shopSlug}`, {
   server: false
@@ -740,5 +793,23 @@ const displayedBrands = computed(() => {
     flex: 1;
     min-width: 140px;
   }
+}
+</style>
+
+<style scoped>
+/* Swiper Styles */
+.hero-swiper {
+  width: 100%;
+  height: 100%;
+}
+
+swiper-slide {
+  height: auto;
+}
+
+/* Ensure hero card takes full height inside slide */
+swiper-slide .hero-card {
+  height: 100%;
+  min-height: 400px;
 }
 </style>

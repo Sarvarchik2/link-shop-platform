@@ -32,7 +32,7 @@ class OrderRepository:
 
     def get_order_items(self, db: Session, order_id: int):
         # Join with Product and Shop to get details
-        return db.query(OrderItem, Product.name, Product.image_url, Shop.slug).\
+        return db.query(OrderItem, Product.name_en, Product.image_url, Shop.slug).\
             join(Product, OrderItem.product_id == Product.id).\
             outerjoin(Shop, Product.shop_id == Shop.id).\
             filter(OrderItem.order_id == order_id).all()
