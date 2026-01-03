@@ -143,7 +143,7 @@ def on_startup():
     admin_phone = os.getenv("ADMIN_PHONE")
     admin_password = os.getenv("ADMIN_PASSWORD")
     if admin_phone and admin_password:
-        from app.features.users.security import get_password_hash
+        from app.core.security import get_password_hash
         try:
             db = SessionLocal()
             user = db.query(User).filter(User.phone == admin_phone).first()
