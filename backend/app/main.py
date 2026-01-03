@@ -138,6 +138,34 @@ def on_startup():
             
     finally:
         db.close()
+    
+    # Auto-create admin if env vars are provided (For Railway)
+    admin_phone = os.getenv("ADMIN_PHONE")
+    admin_password = os.getenv("ADMIN_PASSWORD")
+    if admin_phone and admin_password:
+        from app.features.users.security import get_password_hash
+        try:
+            db = SessionLocal()
+            user = db.query(User).filter(User.phone == admin_phone).first()
+            if not user:
+                print(f"DTO: Auto-creating admin user: {admin_phone}")
+                user = User(
+                    phone=admin_phone,
+                    hashed_password=get_password_hash(admin_password),
+                    first_name="Platform",
+                    last_name="Admin",
+                    role="platform_admin",
+                    is_active=True
+                )
+                db.add(user)
+                db.commit()
+            elif user.role != "platform_admin":
+                 print(f"DTO: Promoting user {admin_phone} to platform_admin")
+                 user.role = "platform_admin"
+                 db.commit()
+            db.close()
+        except Exception as e:
+            print(f"DTO: Failed to auto-create admin: {e}")
 
 @app.get("/")
 def read_root():
