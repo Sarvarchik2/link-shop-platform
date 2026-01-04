@@ -4,30 +4,58 @@ from typing import Optional, List
 
 class SubscriptionPlanBase(BaseModel):
     name: str
+    name_ru: Optional[str] = None
+    name_en: Optional[str] = None
+    name_uz: Optional[str] = None
+    
     slug: str
     price: float
     period_days: int = 30
+    
     description: Optional[str] = None
+    description_ru: Optional[str] = None
+    description_en: Optional[str] = None
+    description_uz: Optional[str] = None
+    
     features: Optional[str] = None
+    features_ru: Optional[str] = None
+    features_en: Optional[str] = None
+    features_uz: Optional[str] = None
+    
     is_active: bool = True
     is_trial: bool = False
     display_order: int = 0
     max_products: Optional[int] = None
+    max_banners: Optional[int] = 1
 
 class SubscriptionPlanCreate(SubscriptionPlanBase):
     pass
 
 class SubscriptionPlanUpdate(BaseModel):
     name: Optional[str] = None
+    name_ru: Optional[str] = None
+    name_en: Optional[str] = None
+    name_uz: Optional[str] = None
+    
     slug: Optional[str] = None
     price: Optional[float] = None
     period_days: Optional[int] = None
+    
     description: Optional[str] = None
+    description_ru: Optional[str] = None
+    description_en: Optional[str] = None
+    description_uz: Optional[str] = None
+    
     features: Optional[str] = None
+    features_ru: Optional[str] = None
+    features_en: Optional[str] = None
+    features_uz: Optional[str] = None
+    
     is_active: Optional[bool] = None
     is_trial: Optional[bool] = None
     display_order: Optional[int] = None
     max_products: Optional[int] = None
+    max_banners: Optional[int] = None
 
 class SubscriptionPlanRead(SubscriptionPlanBase):
     id: int

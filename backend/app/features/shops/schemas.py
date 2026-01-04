@@ -18,7 +18,7 @@ class ShopBase(BaseModel):
     delivery_settings: Optional[dict] = {}
 
 class ShopCreate(ShopBase):
-    pass
+    subscription_plan_id: Optional[int] = None
 
 class ShopUpdate(BaseModel):
     name: Optional[str] = None
@@ -79,8 +79,11 @@ class DashboardStats(BaseModel):
     subscriptions_trial: Optional[int] = 0
     subscriptions_expired: Optional[int] = 0
     plan_limit_products: Optional[int] = None
+    plan_limit_banners: Optional[int] = 1
     plan_name: Optional[str] = None
     products_usage_percent: Optional[float] = 0.0
+    banners_usage_percent: Optional[float] = 0.0
+    total_banners: Optional[int] = 0
 
 class AdminActionRequest(BaseModel):
     password: str

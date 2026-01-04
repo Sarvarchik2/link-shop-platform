@@ -67,20 +67,20 @@
           <div v-for="offer in offers" :key="offer.id" class="offer-card" :class="{ 'inactive': !offer.is_active }">
             <div class="offer-header">
               <div class="offer-title-section">
-                <h3 class="offer-name">{{ offer.title }}</h3>
+                <h3 class="offer-name">{{ getLocalizedValue(offer, 'title') }}</h3>
                 <div class="offer-badges">
                   <span v-if="!offer.is_active" class="badge inactive-badge">{{ $t('platformAdmin.plans.card.inactive')
                     }}</span>
                 </div>
               </div>
               <div class="offer-actions">
-                <button @click="editOffer(offer)" class="icon-btn" title="Редактировать">
+                <button @click="editOffer(offer)" class="icon-btn" :title="$t('platformAdmin.offers.edit')">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                     <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
                   </svg>
                 </button>
-                <button @click="deleteOffer(offer)" class="icon-btn delete" title="Удалить">
+                <button @click="deleteOffer(offer)" class="icon-btn delete" :title="$t('platformAdmin.offers.delete')">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <polyline points="3 6 5 6 21 6"></polyline>
                     <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
@@ -93,13 +93,12 @@
               <div v-if="offer.price" class="offer-price-value">
                 ${{ offer.price.toFixed(2) }}
               </div>
-              <div v-else-if="offer.price_text" class="offer-price-text">
-                {{ offer.price_text }}
+              <div v-else class="offer-price-text">
+                {{ getLocalizedValue(offer, 'price_text') || $t('platformAdmin.offers.card.priceByRequest') }}
               </div>
-              <div v-else class="offer-price-text">{{ $t('platformAdmin.offers.card.priceByRequest') }}</div>
             </div>
 
-            <p class="offer-description">{{ offer.description }}</p>
+            <p class="offer-description">{{ getLocalizedValue(offer, 'description') }}</p>
 
             <div class="offer-contact-info">
               <div v-if="offer.contact_email" class="contact-info-item">
@@ -151,18 +150,33 @@
               <button @click="closeModal" class="modal-close">×</button>
             </div>
 
+            <div class="lang-switcher">
+              <button v-for="lang in ['ru', 'en', 'uz']" :key="lang" class="lang-btn"
+                :class="{ active: activeLang === lang }" @click="activeLang = lang">
+                {{ lang.toUpperCase() }}
+              </button>
+            </div>
+
             <form @submit.prevent="saveOffer" class="modal-form">
               <div class="form-grid">
                 <div class="form-group full-width">
-                  <label>{{ $t('platformAdmin.offers.form.title') }} *</label>
-                  <input v-model="offerForm.title" type="text" class="form-input" required
-                    :placeholder="$t('platformAdmin.offers.form.title')" />
+                  <label>{{ $t('platformAdmin.offers.form.title') }} ({{ activeLang.toUpperCase() }}) *</label>
+                  <input v-if="activeLang === 'ru'" v-model="offerForm.title_ru" type="text" class="form-input"
+                    required />
+                  <input v-if="activeLang === 'en'" v-model="offerForm.title_en" type="text" class="form-input"
+                    required />
+                  <input v-if="activeLang === 'uz'" v-model="offerForm.title_uz" type="text" class="form-input"
+                    required />
                 </div>
 
                 <div class="form-group full-width">
-                  <label>{{ $t('platformAdmin.offers.form.description') }} *</label>
-                  <textarea v-model="offerForm.description" class="form-input" rows="4" required
-                    :placeholder="$t('platformAdmin.offers.form.description')"></textarea>
+                  <label>{{ $t('platformAdmin.offers.form.description') }} ({{ activeLang.toUpperCase() }}) *</label>
+                  <textarea v-if="activeLang === 'ru'" v-model="offerForm.description_ru" class="form-input" rows="4"
+                    required></textarea>
+                  <textarea v-if="activeLang === 'en'" v-model="offerForm.description_en" class="form-input" rows="4"
+                    required></textarea>
+                  <textarea v-if="activeLang === 'uz'" v-model="offerForm.description_uz" class="form-input" rows="4"
+                    required></textarea>
                 </div>
 
                 <div class="form-group">
@@ -173,24 +187,30 @@
                 </div>
 
                 <div class="form-group">
-                  <label>{{ $t('platformAdmin.offers.form.priceText') }}</label>
-                  <input v-model="offerForm.price_text" type="text" class="form-input" placeholder="" />
-                  <small class="form-hint"></small>
+                  <label>{{ $t('platformAdmin.offers.form.priceText') }} ({{ activeLang.toUpperCase() }})</label>
+                  <input v-if="activeLang === 'ru'" v-model="offerForm.price_text_ru" type="text" class="form-input" />
+                  <input v-if="activeLang === 'en'" v-model="offerForm.price_text_en" type="text" class="form-input" />
+                  <input v-if="activeLang === 'uz'" v-model="offerForm.price_text_uz" type="text" class="form-input" />
                 </div>
 
                 <div class="form-group full-width">
-                  <label>{{ $t('platformAdmin.offers.form.contactText') }}</label>
-                  <input v-model="offerForm.contact_text" type="text" class="form-input" placeholder="" />
+                  <label>{{ $t('platformAdmin.offers.form.contactText') }} ({{ activeLang.toUpperCase() }})</label>
+                  <input v-if="activeLang === 'ru'" v-model="offerForm.contact_text_ru" type="text"
+                    class="form-input" />
+                  <input v-if="activeLang === 'en'" v-model="offerForm.contact_text_en" type="text"
+                    class="form-input" />
+                  <input v-if="activeLang === 'uz'" v-model="offerForm.contact_text_uz" type="text"
+                    class="form-input" />
                 </div>
 
                 <div class="form-group">
                   <label>{{ $t('platformAdmin.offers.form.email') }}</label>
-                  <input v-model="offerForm.contact_email" type="email" class="form-input" placeholder="" />
+                  <input v-model="offerForm.contact_email" type="email" class="form-input" />
                 </div>
 
                 <div class="form-group">
                   <label>{{ $t('platformAdmin.offers.form.phone') }}</label>
-                  <input v-model="offerForm.contact_phone" type="tel" class="form-input" placeholder="" />
+                  <input v-model="offerForm.contact_phone" type="tel" class="form-input" />
                 </div>
 
                 <div class="form-group">
@@ -232,7 +252,7 @@ const route = useRoute()
 const sidebarOpen = ref(false)
 const { token, logout } = useAuth()
 const toast = useToast()
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 const handleLogout = () => {
   logout()
@@ -257,18 +277,36 @@ const { data: offers, pending, error, refresh } = await useFetch(useRuntimeConfi
 const showModal = ref(false)
 const editingOffer = ref(null)
 const saving = ref(false)
+const activeLang = ref('ru') // 'ru', 'en', 'uz'
 
 const offerForm = reactive({
-  title: '',
-  description: '',
+  title_ru: '',
+  title_en: '',
+  title_uz: '',
+  description_ru: '',
+  description_en: '',
+  description_uz: '',
   price: null,
-  price_text: '',
-  contact_text: 'Свяжитесь с нами для покупки',
+  price_text_ru: '',
+  price_text_en: '',
+  price_text_uz: '',
+  contact_text_ru: 'Свяжитесь с нами для покупки',
+  contact_text_en: 'Contact us to buy',
+  contact_text_uz: 'Sotib olish uchun biz bilan bog\'laning',
   contact_email: '',
   contact_phone: '',
   is_active: true,
   display_order: 0
 })
+
+const getLocalizedValue = (obj, key) => {
+  const currentLocale = locale.value
+  if (currentLocale === 'ru' && obj[key + '_ru']) return obj[key + '_ru']
+  if (currentLocale === 'en' && obj[key + '_en']) return obj[key + '_en']
+  if (currentLocale === 'uz' && obj[key + '_uz']) return obj[key + '_uz']
+  // Fallback to default fields (legacy support)
+  return obj[key] || obj[key + '_ru'] || ''
+}
 
 const openCreateModal = () => {
   editingOffer.value = null
@@ -278,11 +316,24 @@ const openCreateModal = () => {
 
 const editOffer = (offer) => {
   editingOffer.value = offer
-  offerForm.title = offer.title
-  offerForm.description = offer.description
+  offerForm.title_ru = offer.title_ru || offer.title
+  offerForm.title_en = offer.title_en || offer.title
+  offerForm.title_uz = offer.title_uz || offer.title
+
+  offerForm.description_ru = offer.description_ru || offer.description
+  offerForm.description_en = offer.description_en || offer.description
+  offerForm.description_uz = offer.description_uz || offer.description
+
   offerForm.price = offer.price ?? null
-  offerForm.price_text = offer.price_text || ''
-  offerForm.contact_text = offer.contact_text || 'Свяжитесь с нами для покупки'
+
+  offerForm.price_text_ru = offer.price_text_ru || offer.price_text || ''
+  offerForm.price_text_en = offer.price_text_en || offer.price_text || ''
+  offerForm.price_text_uz = offer.price_text_uz || offer.price_text || ''
+
+  offerForm.contact_text_ru = offer.contact_text_ru || offer.contact_text || 'Свяжитесь с нами для покупки'
+  offerForm.contact_text_en = offer.contact_text_en || offer.contact_text || 'Contact us to buy'
+  offerForm.contact_text_uz = offer.contact_text_uz || offer.contact_text || 'Sotib olish uchun biz bilan bog\'laning'
+
   offerForm.contact_email = offer.contact_email || ''
   offerForm.contact_phone = offer.contact_phone || ''
   offerForm.is_active = offer.is_active
@@ -297,11 +348,19 @@ const closeModal = () => {
 }
 
 const resetForm = () => {
-  offerForm.title = ''
-  offerForm.description = ''
+  offerForm.title_ru = ''
+  offerForm.title_en = ''
+  offerForm.title_uz = ''
+  offerForm.description_ru = ''
+  offerForm.description_en = ''
+  offerForm.description_uz = ''
   offerForm.price = null
-  offerForm.price_text = ''
-  offerForm.contact_text = 'Свяжитесь с нами для покупки'
+  offerForm.price_text_ru = ''
+  offerForm.price_text_en = ''
+  offerForm.price_text_uz = ''
+  offerForm.contact_text_ru = 'Свяжитесь с нами для покупки'
+  offerForm.contact_text_en = 'Contact us to buy'
+  offerForm.contact_text_uz = 'Sotib olish uchun biz bilan bog\'laning'
   offerForm.contact_email = ''
   offerForm.contact_phone = ''
   offerForm.is_active = true
@@ -311,8 +370,13 @@ const resetForm = () => {
 const saveOffer = async () => {
   saving.value = true
   try {
+    // Fill required default fields with RU values as fallback
     const payload = {
       ...offerForm,
+      title: offerForm.title_ru || offerForm.title_en || offerForm.title_uz,
+      description: offerForm.description_ru || offerForm.description_en || offerForm.description_uz,
+      price_text: offerForm.price_text_ru,
+      contact_text: offerForm.contact_text_ru,
       price: offerForm.price === null || offerForm.price === '' ? null : Number(offerForm.price)
     }
 
@@ -364,7 +428,7 @@ const toggleActive = async (offer) => {
 }
 
 const deleteOffer = async (offer) => {
-  if (!confirm(`${t('platformAdmin.offers.delete')} "${offer.title}"?`)) {
+  if (!confirm(`${t('platformAdmin.offers.delete')} "${getLocalizedValue(offer, 'title')}"?`)) {
     return
   }
 
@@ -373,7 +437,7 @@ const deleteOffer = async (offer) => {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${token.value}`
-      }
+      },
     })
     toast.success(t('common.deleted'))
     refresh()
@@ -796,6 +860,169 @@ const deleteOffer = async (offer) => {
   justify-content: center;
   z-index: 2000;
   padding: 20px;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 800px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.modal-header {
+  padding: 24px;
+  border-bottom: 1px solid #E5E7EB;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #111;
+  margin: 0;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: #6B7280;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.lang-switcher {
+  display: flex;
+  gap: 8px;
+  padding: 16px 24px 0;
+}
+
+.lang-btn {
+  padding: 8px 16px;
+  border: 1px solid #E5E7EB;
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+  font-weight: 600;
+  color: #6B7280;
+  transition: all 0.2s;
+}
+
+.lang-btn.active {
+  background: #111;
+  color: white;
+  border-color: #111;
+}
+
+.modal-form {
+  padding: 24px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.form-group.full-width {
+  grid-column: 1 / -1;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #D1D5DB;
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  transition: all 0.2s;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #111;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+}
+
+.form-hint {
+  display: block;
+  font-size: 0.75rem;
+  color: #6B7280;
+  margin-top: 4px;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.checkbox-input {
+  width: 18px;
+  height: 18px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid #E5E7EB;
+}
+
+.btn-primary,
+.btn-secondary {
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  font-size: 0.9375rem;
+  transition: all 0.2s;
+}
+
+.btn-primary {
+  background: #111;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #000;
+}
+
+.btn-primary:disabled {
+  background: #9CA3AF;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background: #F3F4F6;
+  color: #374151;
+}
+
+.btn-secondary:hover {
+  background: #E5E7EB;
+}
+
+@media (max-width: 640px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
 }
 
 .modal-content {

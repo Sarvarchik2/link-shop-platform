@@ -54,7 +54,9 @@
               <line x1="12" y1="8" x2="12" y2="12"></line>
               <line x1="12" y1="16" x2="12.01" y2="16"></line>
             </svg>
-            <p class="error-message">Ошибка загрузки данных: {{ error.message || 'Неизвестная ошибка' }}</p>
+            <p class="error-message">{{ $t('platformAdmin.dashboard.errorMessage', {
+              message: error.message ||
+                $t('platformAdmin.dashboard.errorUnknown') }) }}</p>
             <button @click="refresh" class="retry-btn">{{ $t('platformAdmin.dashboard.refresh') }}</button>
           </div>
 
@@ -90,10 +92,16 @@
                   <div class="stat-value">{{ subscriptionStats.totalShops }}</div>
                   <div class="stat-label">{{ $t('platformAdmin.dashboard.stats.totalShops') }}</div>
                   <div class="stat-change positive" v-if="shopsRecentlyAdded > 0">
-                    <span v-if="selectedPeriod === 'today'">+{{ shopsRecentlyAdded }} сегодня</span>
-                    <span v-else-if="selectedPeriod === 'week'">+{{ shopsRecentlyAdded }} на неделе</span>
-                    <span v-else-if="selectedPeriod === 'month'">+{{ shopsRecentlyAdded }} в месяце</span>
-                    <span v-else>+{{ shopsRecentlyAdded }} за месяц</span>
+                    <span v-if="selectedPeriod === 'today'">{{ $t('platformAdmin.dashboard.stats.newToday', {
+                      count:
+                      shopsRecentlyAdded }) }}</span>
+                    <span v-else-if="selectedPeriod === 'week'">{{ $t('platformAdmin.dashboard.stats.newWeek', {
+                      count:
+                      shopsRecentlyAdded }) }}</span>
+                    <span v-else-if="selectedPeriod === 'month'">{{ $t('platformAdmin.dashboard.stats.newMonth', {
+                      count: shopsRecentlyAdded }) }}</span>
+                    <span v-else>{{ $t('platformAdmin.dashboard.stats.newMonth', { count: shopsRecentlyAdded })
+                      }}</span>
                   </div>
                 </div>
               </div>
@@ -108,7 +116,7 @@
                   <div class="stat-value">{{ subscriptionStats.activeShops }}</div>
                   <div class="stat-label">{{ $t('platformAdmin.dashboard.stats.activeShops') }}</div>
                   <div class="stat-percentage">
-                    {{ activeShopsPercentage }}% от общего числа
+                    {{ $t('platformAdmin.dashboard.stats.activePercentage', { percent: activeShopsPercentage }) }}
                   </div>
                 </div>
               </div>
@@ -123,16 +131,21 @@
                 <div class="stat-info">
                   <div class="stat-value">${{ subscriptionStats.monthlyRevenue.toFixed(0) }}</div>
                   <div class="stat-label">
-                    <span v-if="selectedPeriod === 'today'">Доход с подписок (сегодня)</span>
-                    <span v-else-if="selectedPeriod === 'week'">Доход с подписок (неделя)</span>
-                    <span v-else-if="selectedPeriod === 'month'">Доход с подписок (месяц)</span>
-                    <span v-else>{{ $t('platformAdmin.dashboard.stats.revenue') }}/{{ $t('home.pricing.month') }}</span>
+                    <span v-if="selectedPeriod === 'today'">{{ $t('platformAdmin.dashboard.stats.revenueToday')
+                      }}</span>
+                    <span v-else-if="selectedPeriod === 'week'">{{ $t('platformAdmin.dashboard.stats.revenueWeek')
+                      }}</span>
+                    <span v-else-if="selectedPeriod === 'month'">{{ $t('platformAdmin.dashboard.stats.revenueMonth')
+                      }}</span>
+                    <span v-else>{{ $t('platformAdmin.dashboard.stats.revenue') }}/{{
+                      $t('platformAdmin.dashboard.stats.revenuePerMonth') }}</span>
                   </div>
                   <div class="stat-yearly" v-if="selectedPeriod === 'all'">
-                    ≈ ${{ (subscriptionStats.monthlyRevenue * 12).toFixed(0) }}/год
+                    ≈ ${{ (subscriptionStats.monthlyRevenue * 12).toFixed(0) }}/{{
+                      $t('platformAdmin.dashboard.stats.revenuePerYear') }}
                   </div>
                   <div class="stat-yearly" v-else-if="periodStats?.sales">
-                    Продажи: ${{ periodStats.sales.toFixed(0) }}
+                    {{ $t('platformAdmin.dashboard.stats.sales', { amount: periodStats.sales.toFixed(0) }) }}
                   </div>
                 </div>
               </div>
@@ -151,10 +164,10 @@
                   <div class="stat-label">{{ $t('platformAdmin.dashboard.stats.users') }}</div>
                   <div class="stat-products"
                     v-if="periodStats?.products !== null && periodStats?.products !== undefined">
-                    {{ periodStats.products }} товаров
+                    {{ $t('platformAdmin.dashboard.stats.productsCount', { count: periodStats.products }) }}
                   </div>
                   <div class="stat-products" v-else-if="selectedPeriod === 'all' && stats?.total_products">
-                    {{ stats.total_products }} товаров на платформе
+                    {{ $t('platformAdmin.dashboard.stats.productsTotal', { count: stats.total_products }) }}
                   </div>
                 </div>
               </div>
@@ -173,13 +186,13 @@
                       <line x1="8" y1="2" x2="8" y2="6"></line>
                       <line x1="3" y1="10" x2="21" y2="10"></line>
                     </svg>
-                    Статистика подписок
+                    {{ $t('platformAdmin.dashboard.subscriptionStats') }}
                   </h2>
                   <button @click="toggleSortExpiry" class="sort-btn">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                       <path d="M3 6h18M7 12h10M11 18h2"></path>
                     </svg>
-                    <span>Сортировать по сроку</span>
+                    <span>{{ $t('platformAdmin.dashboard.sortByExpiry') }}</span>
                   </button>
                 </div>
 
@@ -210,7 +223,7 @@
                     </svg>
                     <div class="pie-chart-center">
                       <div class="pie-chart-total">{{ subscriptionStats.totalShops }}</div>
-                      <div class="pie-chart-label">магазинов</div>
+                      <div class="pie-chart-label">{{ $t('platformAdmin.dashboard.shops') }}</div>
                     </div>
                   </div>
                   <div class="chart-legend">
@@ -233,7 +246,7 @@
                     </div>
                     <div class="status-content">
                       <div class="status-value">{{ subscriptionStats.byStatus.trial }}</div>
-                      <div class="status-label">Пробный период</div>
+                      <div class="status-label">{{ $t('platformAdmin.dashboard.status.trial') }}</div>
                     </div>
                   </div>
 
@@ -246,7 +259,7 @@
                     </div>
                     <div class="status-content">
                       <div class="status-value">{{ subscriptionStats.byStatus.active }}</div>
-                      <div class="status-label">Активные</div>
+                      <div class="status-label">{{ $t('platformAdmin.dashboard.status.active') }}</div>
                     </div>
                   </div>
 
@@ -260,7 +273,7 @@
                     </div>
                     <div class="status-content">
                       <div class="status-value">{{ subscriptionStats.byStatus.expired }}</div>
-                      <div class="status-label">Истекшие</div>
+                      <div class="status-label">{{ $t('platformAdmin.dashboard.status.expired') }}</div>
                     </div>
                   </div>
 
@@ -274,7 +287,7 @@
                     </div>
                     <div class="status-content">
                       <div class="status-value">{{ subscriptionStats.byStatus.cancelled }}</div>
-                      <div class="status-label">Отмененные</div>
+                      <div class="status-label">{{ $t('platformAdmin.dashboard.status.cancelled') }}</div>
                     </div>
                   </div>
 
@@ -303,7 +316,7 @@
                         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                         <circle cx="12" cy="7" r="4"></circle>
                       </svg>
-                      Владельцы магазинов
+                      {{ $t('platformAdmin.dashboard.shopOwners') }}
                     </h2>
                   </div>
                   <div class="owners-info-grid">
@@ -318,7 +331,7 @@
                         </svg>
                       </div>
                       <div class="owner-stat-value">{{ uniqueOwners }}</div>
-                      <div class="owner-stat-label">Уникальных владельцев</div>
+                      <div class="owner-stat-label">{{ $t('platformAdmin.dashboard.uniqueOwners') }}</div>
                     </div>
 
                     <div class="owner-stat-card">
@@ -329,7 +342,7 @@
                         </svg>
                       </div>
                       <div class="owner-stat-value">{{ shopsWithActiveSubscriptions }}</div>
-                      <div class="owner-stat-label">С активными подписками</div>
+                      <div class="owner-stat-label">{{ $t('platformAdmin.dashboard.activeSubscriptions') }}</div>
                     </div>
 
                     <div class="owner-stat-card warning" v-if="shopsNeedingRenewal > 0">
@@ -344,7 +357,7 @@
                         </svg>
                       </div>
                       <div class="owner-stat-value">{{ shopsNeedingRenewal }}</div>
-                      <div class="owner-stat-label">Требуют продления</div>
+                      <div class="owner-stat-label">{{ $t('platformAdmin.dashboard.needingRenewal') }}</div>
                     </div>
                     <div class="owner-stat-card" v-else>
                       <div class="owner-icon">
@@ -354,7 +367,7 @@
                         </svg>
                       </div>
                       <div class="owner-stat-value">0</div>
-                      <div class="owner-stat-label">Требуют продления</div>
+                      <div class="owner-stat-label">{{ $t('platformAdmin.dashboard.needingRenewal') }}</div>
                     </div>
                   </div>
                 </div>
@@ -374,24 +387,25 @@
                         <line x1="12" y1="9" x2="12" y2="13"></line>
                         <line x1="12" y1="17" x2="12.01" y2="17"></line>
                       </svg>
-                      Требуют внимания
+                      {{ $t('platformAdmin.dashboard.attention') }}
                     </h2>
                   </div>
                   <div class="attention-list">
                     <div v-for="shop in shopsExpiringSoon" :key="shop.id" class="attention-item">
                       <div class="attention-shop-info">
                         <div class="attention-shop-name">{{ shop.name }}</div>
-                        <div class="attention-shop-meta">{{ shop.owner_name || 'Владелец не указан' }}</div>
+                        <div class="attention-shop-meta">{{ shop.owner_name ||
+                          $t('platformAdmin.dashboard.ownerUnspecified') }}</div>
                       </div>
                       <div class="attention-days">
                         <span class="days-badge" :class="getDaysBadgeClass(getDaysUntilExpiry(shop))">
-                          {{ getDaysUntilExpiry(shop) }} дн.
+                          {{ getDaysUntilExpiry(shop) }} {{ $t('platformAdmin.dashboard.days') }}
                         </span>
                       </div>
                     </div>
                   </div>
                   <NuxtLink to="/platform/admin/shops" class="view-all-link">
-                    Посмотреть все магазины →
+                    {{ $t('platformAdmin.dashboard.viewAllShops') }} →
                   </NuxtLink>
                 </div>
 
@@ -404,7 +418,7 @@
                         <circle cx="12" cy="12" r="10"></circle>
                         <polyline points="12 6 12 12 16 14"></polyline>
                       </svg>
-                      Недавно зарегистрированные
+                      {{ $t('platformAdmin.dashboard.recentShops') }}
                     </h2>
                   </div>
                   <div class="recent-list">
@@ -422,7 +436,7 @@
                       </div>
                     </div>
                     <NuxtLink to="/platform/admin/shops" class="view-all-link">
-                      Посмотреть все магазины →
+                      {{ $t('platformAdmin.dashboard.viewAllShops') }} →
                     </NuxtLink>
                   </div>
                 </div>
@@ -436,7 +450,7 @@
 </template>
 
 <script setup>
-const { t } = useI18n()
+const { t, locale } = useI18n()
 definePageMeta({
   middleware: 'platform-admin'
 })
@@ -449,16 +463,16 @@ const sidebarOpen = ref(false)
 
 const handleLogout = () => {
   logout()
-  useToast().success('Вы вышли из аккаунта')
+  useToast().success(t('auth.loggedOut'))
 }
 
 // Period selection
 const selectedPeriod = ref('all')
 const periods = computed(() => [
-  { key: 'today', label: t('admin.periods.today') },
-  { key: 'week', label: t('admin.periods.week') },
-  { key: 'month', label: t('admin.periods.month') },
-  { key: 'all', label: t('admin.periods.all') }
+  { key: 'today', label: t('platformAdmin.dashboard.periods.today') },
+  { key: 'week', label: t('platformAdmin.dashboard.periods.week') },
+  { key: 'month', label: t('platformAdmin.dashboard.periods.month') },
+  { key: 'all', label: t('platformAdmin.dashboard.periods.all') }
 ])
 
 const currentRoute = computed(() => {
@@ -720,10 +734,10 @@ const getStatusClass = (status) => {
 
 const getStatusText = (status) => {
   const statusMap = {
-    'trial': 'Пробный',
-    'active': 'Активна',
-    'expired': 'Истекла',
-    'cancelled': 'Отменена'
+    'trial': t('platformAdmin.dashboard.status.trial'),
+    'active': t('platformAdmin.dashboard.status.active'),
+    'expired': t('platformAdmin.dashboard.status.expired'),
+    'cancelled': t('platformAdmin.dashboard.status.cancelled')
   }
   return statusMap[status] || status
 }
@@ -731,7 +745,7 @@ const getStatusText = (status) => {
 const formatDate = (dateString) => {
   if (!dateString) return '-'
   const date = new Date(dateString)
-  return date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })
+  return date.toLocaleDateString(locale.value, { day: 'numeric', month: 'long', year: 'numeric' })
 }
 
 // Sort subscriptions by expiry date
@@ -771,10 +785,10 @@ const getSubscriptionColor = (status) => {
 
 const getStatusLabel = (status) => {
   const labels = {
-    'trial': 'Пробный период',
-    'active': 'Активные',
-    'expired': 'Истекшие',
-    'cancelled': 'Отмененные'
+    'trial': t('platformAdmin.dashboard.status.trial'),
+    'active': t('platformAdmin.dashboard.status.active'),
+    'expired': t('platformAdmin.dashboard.status.expired'),
+    'cancelled': t('platformAdmin.dashboard.status.cancelled')
   }
   return labels[status] || status
 }

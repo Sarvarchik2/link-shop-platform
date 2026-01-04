@@ -48,7 +48,7 @@
 
           <div v-if="pending" class="loading-state">
             <div class="spinner"></div>
-            <p>Загрузка...</p>
+            <p>{{ $t('common.loading') }}</p>
           </div>
 
           <div v-else class="dashboard-content">
@@ -101,13 +101,16 @@
                     </svg>
                   </div>
                   <div class="stat-comparison" v-if="getPeriodOrders() > 0">
-                    <span class="comparison-value">{{ getPeriodOrders() }} заказов</span>
+                    <span class="comparison-value">{{ $t('admin.dashboardStats.ordersCount', {
+                      count:
+                        getPeriodOrders()
+                    }) }}</span>
                   </div>
                 </div>
                 <div class="stat-value">${{ getPeriodSales().toFixed(2) }}</div>
-                <div class="stat-label">{{ periodLabel }} выручка</div>
+                <div class="stat-label">{{ periodLabel }} {{ $t('admin.dashboardStats.revenue') }}</div>
                 <div class="stat-note" v-if="stats?.orders_by_status?.cancelled > 0">
-                  {{ stats.orders_by_status.cancelled }} отмененных не учтено
+                  {{ $t('admin.dashboardStats.excludedCancelled', { count: stats.orders_by_status.cancelled }) }}
                 </div>
               </div>
 
@@ -122,10 +125,10 @@
                   </div>
                 </div>
                 <div class="stat-value">{{ stats?.total_orders || 0 }}</div>
-                <div class="stat-label">Всего заказов</div>
+                <div class="stat-label">{{ $t('admin.dashboardStats.totalOrders') }}</div>
                 <div class="stat-breakdown">
                   <span class="breakdown-item pending" v-if="stats?.orders_by_status?.pending">
-                    {{ stats.orders_by_status.pending }} ожидают
+                    {{ stats.orders_by_status.pending }} {{ $t('admin.status.pending') }}
                   </span>
                 </div>
               </div>
@@ -140,7 +143,7 @@
                   </div>
                 </div>
                 <div class="stat-value">{{ stats?.total_users || 0 }}</div>
-                <div class="stat-label">Клиентов</div>
+                <div class="stat-label">{{ $t('admin.dashboardStats.clients') }}</div>
               </div>
 
               <div class="stat-card products-card">
@@ -154,7 +157,7 @@
                   </div>
                 </div>
                 <div class="stat-value">{{ stats?.total_products || 0 }}</div>
-                <div class="stat-label">Товаров</div>
+                <div class="stat-label">{{ $t('admin.dashboardStats.products') }}</div>
               </div>
             </div>
 
@@ -171,7 +174,7 @@
                   </div>
                   <div class="status-info">
                     <span class="status-count">{{ stats?.orders_by_status?.pending || 0 }}</span>
-                    <span class="status-label">Ожидают</span>
+                    <span class="status-label">{{ $t('admin.status.pending') }}</span>
                   </div>
                   <div class="status-bar">
                     <div class="status-fill" :style="{ width: getStatusPercent('pending') + '%' }"></div>
@@ -189,7 +192,7 @@
                   </div>
                   <div class="status-info">
                     <span class="status-count">{{ stats?.orders_by_status?.processing || 0 }}</span>
-                    <span class="status-label">В обработке</span>
+                    <span class="status-label">{{ $t('admin.status.processing') }}</span>
                   </div>
                   <div class="status-bar">
                     <div class="status-fill" :style="{ width: getStatusPercent('processing') + '%' }"></div>
@@ -207,7 +210,7 @@
                   </div>
                   <div class="status-info">
                     <span class="status-count">{{ stats?.orders_by_status?.shipping || 0 }}</span>
-                    <span class="status-label">Доставляются</span>
+                    <span class="status-label">{{ $t('admin.status.shipping') }}</span>
                   </div>
                   <div class="status-bar">
                     <div class="status-fill" :style="{ width: getStatusPercent('shipping') + '%' }"></div>
@@ -223,7 +226,7 @@
                   </div>
                   <div class="status-info">
                     <span class="status-count">{{ stats?.orders_by_status?.delivered || 0 }}</span>
-                    <span class="status-label">Доставлены</span>
+                    <span class="status-label">{{ $t('admin.status.delivered') }}</span>
                   </div>
                   <div class="status-bar">
                     <div class="status-fill" :style="{ width: getStatusPercent('delivered') + '%' }"></div>
@@ -240,7 +243,7 @@
                   </div>
                   <div class="status-info">
                     <span class="status-count">{{ stats?.orders_by_status?.cancelled || 0 }}</span>
-                    <span class="status-label">Отменены</span>
+                    <span class="status-label">{{ $t('admin.status.cancelled') }}</span>
                   </div>
                   <div class="status-bar">
                     <div class="status-fill" :style="{ width: getStatusPercent('cancelled') + '%' }"></div>
@@ -255,66 +258,66 @@
               <div class="comparison-grid">
                 <div class="comparison-card">
                   <div class="comparison-header">
-                    <span class="comparison-title">Сегодня</span>
-                    <span class="comparison-badge today">LIVE</span>
+                    <span class="comparison-title">{{ $t('admin.dashboardStats.comparison.today') }}</span>
+                    <span class="comparison-badge today">{{ $t('admin.dashboardStats.pills.live') }}</span>
                   </div>
                   <div class="comparison-stats">
                     <div class="comparison-stat">
                       <span class="comp-value">${{ stats?.today_sales?.toFixed(2) || '0.00' }}</span>
-                      <span class="comp-label">Выручка</span>
+                      <span class="comp-label">{{ $t('admin.dashboardStats.revenue') }}</span>
                     </div>
                     <div class="comparison-stat">
                       <span class="comp-value">{{ stats?.today_orders || 0 }}</span>
-                      <span class="comp-label">Заказы</span>
+                      <span class="comp-label">{{ $t('admin.dashboardStats.orders') }}</span>
                     </div>
                   </div>
                 </div>
 
                 <div class="comparison-card">
                   <div class="comparison-header">
-                    <span class="comparison-title">Эта неделя</span>
+                    <span class="comparison-title">{{ $t('admin.dashboardStats.comparison.week') }}</span>
                   </div>
                   <div class="comparison-stats">
                     <div class="comparison-stat">
                       <span class="comp-value">${{ stats?.week_sales?.toFixed(2) || '0.00' }}</span>
-                      <span class="comp-label">Выручка</span>
+                      <span class="comp-label">{{ $t('admin.dashboardStats.revenue') }}</span>
                     </div>
                     <div class="comparison-stat">
                       <span class="comp-value">{{ stats?.week_orders || 0 }}</span>
-                      <span class="comp-label">Заказы</span>
+                      <span class="comp-label">{{ $t('admin.dashboardStats.orders') }}</span>
                     </div>
                   </div>
                 </div>
 
                 <div class="comparison-card">
                   <div class="comparison-header">
-                    <span class="comparison-title">Этот месяц</span>
+                    <span class="comparison-title">{{ $t('admin.dashboardStats.comparison.month') }}</span>
                   </div>
                   <div class="comparison-stats">
                     <div class="comparison-stat">
                       <span class="comp-value">${{ stats?.month_sales?.toFixed(2) || '0.00' }}</span>
-                      <span class="comp-label">Выручка</span>
+                      <span class="comp-label">{{ $t('admin.dashboardStats.revenue') }}</span>
                     </div>
                     <div class="comparison-stat">
                       <span class="comp-value">{{ stats?.month_orders || 0 }}</span>
-                      <span class="comp-label">Заказы</span>
+                      <span class="comp-label">{{ $t('admin.dashboardStats.orders') }}</span>
                     </div>
                   </div>
                 </div>
 
                 <div class="comparison-card total-card">
                   <div class="comparison-header">
-                    <span class="comparison-title">Все время</span>
-                    <span class="comparison-badge total">ВСЕГО</span>
+                    <span class="comparison-title">{{ $t('admin.dashboardStats.comparison.all') }}</span>
+                    <span class="comparison-badge total">{{ $t('admin.dashboardStats.pills.total') }}</span>
                   </div>
                   <div class="comparison-stats">
                     <div class="comparison-stat">
                       <span class="comp-value">${{ stats?.total_sales?.toFixed(2) || '0.00' }}</span>
-                      <span class="comp-label">Выручка</span>
+                      <span class="comp-label">{{ $t('admin.dashboardStats.revenue') }}</span>
                     </div>
                     <div class="comparison-stat">
                       <span class="comp-value">{{ stats?.total_orders || 0 }}</span>
-                      <span class="comp-label">Заказы</span>
+                      <span class="comp-label">{{ $t('admin.dashboardStats.orders') }}</span>
                     </div>
                   </div>
                 </div>

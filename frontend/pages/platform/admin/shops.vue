@@ -160,7 +160,7 @@
           <div class="table-header">
             <div class="table-info">
               <span>{{ $t('common.showing') }} {{ displayedShops.length }} {{ $t('common.of') }} {{ shops?.length || 0
-              }}</span>
+                }}</span>
             </div>
             <div class="table-actions">
               <button @click="exportData" class="export-btn">
@@ -258,7 +258,7 @@
                       <div class="shop-details">
                         <span class="shop-name">{{ shop.name }}</span>
                         <span v-if="shop.description" class="shop-description">{{ truncateText(shop.description, 40)
-                        }}</span>
+                          }}</span>
                       </div>
                     </div>
                   </td>
@@ -334,14 +334,14 @@
                       <button @click="openPasswordModal('activate', shop)"
                         :class="['action-btn', shop.is_active ? 'btn-danger' : 'btn-success']"
                         :title="shop.is_active ? $t('platformAdmin.shops.deactivate') : $t('platformAdmin.shops.activate')">
-                        {{ shop.is_active ? 'Faolsizlantirish' : $t('platformAdmin.shops.activate') }}
+                        {{ shop.is_active ? $t('platformAdmin.shops.deactivate') : $t('platformAdmin.shops.activate') }}
                       </button>
                       <button @click="openSubscriptionModal(shop)" class="action-btn btn-primary"
                         :title="$t('platformAdmin.shops.subscriptionManagement')">
                         {{ $t('platformAdmin.shops.subscription') }}
                       </button>
                       <button @click="openPasswordModal('delete', shop)" class="action-btn btn-danger icon-only"
-                        title="Удалить магазин">
+                        :title="$t('platformAdmin.shops.deleteShop')">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                           stroke-width="2">
                           <polyline points="3 6 5 6 21 6"></polyline>
@@ -533,7 +533,7 @@
                   <div class="history-main">
                     <span class="history-plan">{{ req.plan_name }}</span>
                     <span :class="['history-status', `status-${req.status}`]">{{ getRequestStatusText(req.status)
-                      }}</span>
+                    }}</span>
                   </div>
                   <div class="history-meta">
                     <span>{{ formatDate(req.requested_at) }}</span>
@@ -592,11 +592,11 @@
                 <div class="form-group">
                   <label>{{ $t('auth.password') }}</label>
                   <input v-model="passwordInput" type="password" class="form-input" required
-                    placeholder="Введите пароль администратора" autofocus />
+                    :placeholder="$t('platformAdmin.shops.passwordPlaceholder')" autofocus />
                 </div>
                 <div class="modal-actions">
                   <button type="button" @click="closePasswordModal" class="btn-secondary">{{ $t('common.cancel')
-                    }}</button>
+                  }}</button>
                   <button type="submit" class="btn-primary" :class="{ 'btn-danger': pendingAction?.type === 'delete' }"
                     :disabled="isConfirming">
                     {{ isConfirming ? $t('common.processing') : $t('common.confirm') }}
@@ -674,13 +674,15 @@ const pendingAction = ref(null)
 const isConfirming = ref(false)
 
 const passwordModalTitle = computed(() => {
-  if (pendingAction.value?.type === 'delete') return 'Удаление магазина'
-  return pendingAction.value?.shop.is_active ? 'Подтвердите деактивацию' : 'Подтвердите активацию'
+  if (pendingAction.value?.type === 'delete') return t('platformAdmin.shops.confirmDeleteTitle')
+  return pendingAction.value?.shop.is_active ? t('platformAdmin.shops.confirmDeactivateTitle') : t('platformAdmin.shops.confirmActivateTitle')
 })
 
 const passwordModalMessage = computed(() => {
-  if (pendingAction.value?.type === 'delete') return `Вы уверены, что хотите НАВСЕГДА удалить магазин "${pendingAction.value.shop.name}"? Это действие необратимо и удалит все товары и данные магазина.`
-  return `Вы уверены, что хотите ${pendingAction.value?.shop.is_active ? 'деактивировать' : 'активировать'} магазин "${pendingAction.value?.shop.name}"?`
+  if (pendingAction.value?.type === 'delete') return t('platformAdmin.shops.confirmDeleteMessage', { name: pendingAction.value.shop.name })
+  return pendingAction.value?.shop.is_active
+    ? t('platformAdmin.shops.confirmDeactivateMessage', { name: pendingAction.value?.shop.name })
+    : t('platformAdmin.shops.confirmActivateMessage', { name: pendingAction.value?.shop.name })
 })
 
 const openPasswordModal = (type, shop) => {
@@ -708,20 +710,20 @@ const confirmPasswordAction = async () => {
         headers: { 'Authorization': `Bearer ${token.value}` },
         body: { is_active: !shop.is_active, password: passwordInput.value }
       })
-      toast.success(shop.is_active ? 'Магазин деактивирован' : 'Магазин активирован')
+      toast.success(shop.is_active ? t('platformAdmin.shops.shopDeactivated') : t('platformAdmin.shops.shopActivated'))
     } else if (type === 'delete') {
       await $fetch(`${useRuntimeConfig().public.apiBase}/platform/admin/shops/${shop.id}/delete`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token.value}` },
         body: { password: passwordInput.value }
       })
-      toast.success('Магазин удален')
+      toast.success(t('platformAdmin.shops.shopDeleted'))
     }
 
     refresh()
     closePasswordModal()
   } catch (e) {
-    toast.error(e.data?.detail || 'Ошибка / Неверный пароль')
+    toast.error(e.data?.detail || t('platformAdmin.shops.errorPassword'))
   } finally {
     isConfirming.value = false
   }
@@ -2528,6 +2530,7 @@ const updateSubscription = async () => {
   text-decoration: none;
   transition: opacity 0.2s;
 }
+
 .shop-slug-link:hover {
   opacity: 0.8;
   text-decoration: underline;

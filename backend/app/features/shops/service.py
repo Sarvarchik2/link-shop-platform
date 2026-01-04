@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 from app.features.products.models import Product
 from app.features.orders.models import Order
 from app.features.users.models import User
+from app.features.banners.models import Banner
 from .schemas import ShopCreate, ShopUpdate, DashboardStats, OrdersByStatus
 
 from app.features.subscriptions.models import SubscriptionPlan
@@ -53,6 +54,11 @@ class ShopService:
         
         shop_data = shop_in.model_dump()
         shop_data["owner_id"] = owner_id
+        
+        # Ensure subscription info is handled
+        if "subscription_plan_id" not in shop_data:
+             shop_data["subscription_plan_id"] = None
+
         return self.repository.create(db, shop_data)
 
     def update_shop(self, db: Session, slug: str, shop_in: ShopUpdate, current_user):
@@ -158,6 +164,15 @@ class ShopService:
             products_usage_percent = (total_products / plan_limit_products) * 100
             if products_usage_percent > 100: products_usage_percent = 100.0
 
+        # Feature: Banners
+        total_banners = db.query(Banner).filter(Banner.shop_id == shop.id).count()
+        plan_limit_banners = plan.max_banners if plan else 1
+        
+        banners_usage_percent = 0.0
+        if plan_limit_banners and plan_limit_banners > 0:
+            banners_usage_percent = (total_banners / plan_limit_banners) * 100
+            if banners_usage_percent > 100: banners_usage_percent = 100.0
+
         return DashboardStats(
             total_sales=total_sales,
             total_orders=total_orders,
@@ -172,7 +187,12 @@ class ShopService:
             month_orders=len(month_orders_list),
             plan_limit_products=plan_limit_products,
             plan_name=plan_name,
-            products_usage_percent=products_usage_percent
+            plan_limit_products=plan_limit_products,
+            plan_limit_banners=plan_limit_banners,
+            plan_name=plan_name,
+            products_usage_percent=products_usage_percent,
+            banners_usage_percent=banners_usage_percent,
+            total_banners=total_banners
         )
 
     def get_platform_stats(self, db: Session):

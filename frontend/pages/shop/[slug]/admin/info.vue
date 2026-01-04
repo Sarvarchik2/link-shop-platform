@@ -42,14 +42,14 @@
               <div class="form-group">
                 <label class="form-label">{{ $t('shopSettings.shopName') }} *</label>
                 <input v-model="form.name" type="text" required class="form-input"
-                  placeholder="Например: Style Haven" />
-                <p class="form-help">Отображается в шапке сайта, если не загружен логотип</p>
+                  :placeholder="$t('shopSettings.placeholders.name')" />
+                <p class="form-help">{{ $t('shopSettings.hints.name') }}</p>
               </div>
 
               <div class="form-group">
                 <label class="form-label">{{ $t('shopSettings.description') }}</label>
                 <textarea v-model="form.description" class="form-input" rows="4"
-                  placeholder="Кратко расскажите о вашем магазине..."></textarea>
+                  :placeholder="$t('shopSettings.placeholders.description')"></textarea>
               </div>
 
               <div class="form-group">
@@ -58,7 +58,8 @@
                   <div class="logo-preview-box" :class="{ 'has-logo': form.logo_url }">
                     <template v-if="form.logo_url">
                       <img :src="form.logo_url" alt="Logo" class="logo-img" @error="logoError = true" />
-                      <button type="button" class="logo-remove-btn" @click="form.logo_url = ''" title="Удалить">
+                      <button type="button" class="logo-remove-btn" @click="form.logo_url = ''"
+                        :title="$t('shopSettings.tooltips.remove')">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                           stroke-width="2.5">
                           <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -79,18 +80,19 @@
 
                   <div class="logo-actions">
                     <div class="url-input-container">
-                      <input v-model="form.logo_url" type="url" class="form-input-small" placeholder="URL логотипа" />
+                      <input v-model="form.logo_url" type="url" class="form-input-small"
+                        :placeholder="$t('shopSettings.placeholders.logoUrl')" />
                       <button type="button" class="btn-file-upload" @click="$refs.logoInput.click()"
                         :disabled="uploading">
-                        {{ uploading ? '...' : 'Файл' }}
+                        {{ uploading ? '...' : $t('shopSettings.buttons.file') }}
                       </button>
                     </div>
-                    <p class="form-help">Рекомендуемый размер: 200x200px (PNG, JPG, SVG)</p>
+                    <p class="form-help">{{ $t('shopSettings.hints.logoSize') }}</p>
                   </div>
                   <input type="file" ref="logoInput" style="display: none" accept="image/*"
                     @change="handleLogoUpload" />
                 </div>
-                <p v-if="logoError" class="error-msg">Ошибка загрузки логотипа. Проверьте ссылку.</p>
+                <p v-if="logoError" class="error-msg">{{ $t('shopSettings.errors.logoUpload') }}</p>
               </div>
             </div>
 
@@ -112,7 +114,8 @@
 
               <div class="form-group">
                 <label class="form-label">{{ $t('shopSettings.address') }}</label>
-                <input v-model="form.address" type="text" class="form-input" placeholder="Город, улица, ориентир" />
+                <input v-model="form.address" type="text" class="form-input"
+                  :placeholder="$t('shopSettings.placeholders.address')" />
               </div>
             </div>
 

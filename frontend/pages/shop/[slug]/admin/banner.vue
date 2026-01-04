@@ -38,7 +38,7 @@
               <line x1="12" y1="5" x2="12" y2="19"></line>
               <line x1="5" y1="12" x2="19" y2="12"></line>
             </svg>
-            {{ $t('bannerPage.addBanner') || 'Add Banner' }}
+            {{ $t('bannerPage.addBanner') }}
           </button>
         </div>
 
@@ -54,13 +54,14 @@
               <h3 class="banner-title">{{ banner.title }}</h3>
               <p class="banner-subtitle">{{ banner.subtitle }}</p>
               <div class="banner-actions">
-                <button @click="editBanner(banner)" class="action-btn edit" title="Edit">
+                <button @click="editBanner(banner)" class="action-btn edit" :title="$t('bannerPage.tooltips.edit')">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                     <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
                   </svg>
                 </button>
-                <button @click="deleteBanner(banner.id)" class="action-btn delete" title="Delete">
+                <button @click="deleteBanner(banner.id)" class="action-btn delete"
+                  :title="$t('bannerPage.tooltips.delete')">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <polyline points="3 6 5 6 21 6"></polyline>
                     <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
@@ -71,8 +72,8 @@
           </div>
 
           <div v-if="bannerList.length === 0" class="empty-state">
-            <p>{{ $t('bannerPage.noBanners') || 'No banners yet' }}</p>
-            <button @click="openCreateModal">{{ $t('bannerPage.createFirst') || 'Create your first banner' }}</button>
+            <p>{{ $t('bannerPage.noBanners') }}</p>
+            <button @click="openCreateModal">{{ $t('bannerPage.createFirst') }}</button>
           </div>
         </div>
 
@@ -80,25 +81,23 @@
         <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
           <div class="modal-content">
             <div class="modal-header">
-              <h2>{{ isEditing ? ($t('bannerPage.editBanner') || 'Edit Banner') : ($t('bannerPage.createBanner') ||
-                'Create Banner') }}</h2>
+              <h2>{{ isEditing ? $t('bannerPage.editBanner') : $t('bannerPage.createBanner') }}</h2>
               <button @click="closeModal" class="close-btn">&times;</button>
             </div>
             <div class="modal-body">
               <!-- Live Preview -->
               <div class="banner-preview-wrapper mb-6">
-                <label class="block text-sm font-medium text-gray-700 mb-2">{{ $t('bannerPage.preview') || 'Preview'
-                  }}</label>
+                <label class="block text-sm font-medium text-gray-700 mb-2">{{ $t('bannerPage.preview') }}</label>
                 <div class="banner-preview">
                   <div class="preview-content">
                     <div v-if="form.badge_text" class="preview-badge">{{ form.badge_text }}</div>
                     <h3 class="preview-title"
-                      v-html="form[`title_${activeLang}`] ? form[`title_${activeLang}`].replace(/\\n/g, '<br/>') : ($t('bannerPage.previewTitle') || 'Title')">
+                      v-html="form[`title_${activeLang}`] ? form[`title_${activeLang}`].replace(/\\n/g, '<br/>') : $t('bannerPage.previewTitle')">
                     </h3>
-                    <p class="preview-subtitle">{{ form[`subtitle_${activeLang}`] || ($t('bannerPage.previewSubtitle')
-                      || 'Subtitle') }}</p>
-                    <span class="preview-btn">{{ form[`button_text_${activeLang}`] || ($t('bannerPage.previewButton') ||
-                      'Button') }}</span>
+                    <p class="preview-subtitle">{{ form[`subtitle_${activeLang}`] || $t('bannerPage.previewSubtitle') }}
+                    </p>
+                    <span class="preview-btn">{{ form[`button_text_${activeLang}`] || $t('bannerPage.previewButton')
+                      }}</span>
                   </div>
                   <div class="preview-image">
                     <img :src="form.image_url || '/placeholder.png'" alt="Banner" class="object-cover w-full h-full" />
@@ -146,7 +145,7 @@
                   <div class="image-upload-wrapper">
                     <input v-model="form.image_url" type="text" placeholder="https://..." class="url-input" />
                     <label class="file-upload-btn">
-                      Upload
+                      {{ $t('bannerPage.buttons.upload') }}
                       <input type="file" accept="image/*" @change="uploadImage" hidden />
                     </label>
                   </div>
@@ -160,10 +159,10 @@
               </div>
             </div>
             <div class="modal-footer">
-              <button @click="closeModal" class="cancel-btn">{{ $t('common.cancel') || 'Cancel' }}</button>
+              <button @click="closeModal" class="cancel-btn">{{ $t('common.cancel') }}</button>
               <button @click="saveBanner" class="save-btn" :disabled="saving">
                 <span v-if="saving" class="spinner-small"></span>
-                {{ saving ? ($t('common.saving') || 'Saving...') : ($t('common.save') || 'Save') }}
+                {{ saving ? $t('common.saving') : $t('common.save') }}
               </button>
             </div>
           </div>
@@ -252,9 +251,9 @@ const uploadImage = async (event) => {
       body: formData
     })
     form.value.image_url = result.url
-    toast.success(t('alerts.shop.imageUploaded') || 'Image uploaded')
+    toast.success(t('alerts.shop.imageUploaded'))
   } catch (e) {
-    toast.error(t('alerts.shop.imageError') || 'Upload failed')
+    toast.error(t('alerts.shop.imageError'))
   }
 }
 
@@ -276,14 +275,14 @@ const saveBanner = async () => {
         body: form.value
       })
     }
-    toast.success(t('bannerPage.saved') || 'Saved successfully')
+    toast.success(t('bannerPage.saved'))
     closeModal()
     refresh()
   } catch (e) {
     if (e.response && e.response.status === 400 && e.response._data.detail.includes('limit reached')) {
-      toast.error(e.response._data.detail)
+      toast.error(t('bannerPage.limitReached'))
     } else {
-      toast.error(t('alerts.shop.errorSaving') || 'Error saving')
+      toast.error(t('alerts.shop.errorSaving'))
     }
   } finally {
     saving.value = false
@@ -291,7 +290,7 @@ const saveBanner = async () => {
 }
 
 const deleteBanner = async (id) => {
-  if (!confirm(t('common.confirmDelete') || 'Are you sure?')) return
+  if (!confirm(t('bannerPage.confirmDelete'))) return
 
   try {
     await $fetch(`${useRuntimeConfig().public.apiBase}/banner/${id}?shop_slug=${shopSlug}`, {

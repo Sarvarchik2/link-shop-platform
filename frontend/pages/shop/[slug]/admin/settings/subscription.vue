@@ -5,12 +5,18 @@
             <p class="page-subtitle">{{ $t('shopSettings.subscription.subtitle') }}</p>
         </div>
 
+        <!-- Error State -->
+        <div v-if="error" class="error-state">
+            <p>{{ $t('alerts.shop.errorLoadingData') }}</p>
+            <button @click="retryFetch" class="btn-secondary">{{ $t('common.retry') }}</button>
+        </div>
+
         <div v-if="pending" class="loading-state">
             <div class="spinner"></div>
         </div>
 
         <div v-else class="content-grid">
-            <!-- Current Plan Card -->
+            <!-- Current Subscription Card -->
             <div class="card current-plan">
                 <div class="plan-header">
                     <div>
@@ -25,33 +31,81 @@
                     </div>
                 </div>
 
+                <!-- Active Request Banner -->
+                <div v-if="subscriptionRequest && subscriptionRequest.status === 'pending'" class="request-banner">
+                    <div class="banner-content">
+                        <h3>{{ $t('shopSettings.subscription.pendingTitle') }}</h3>
+                        <p>{{ $t('shopSettings.subscription.pendingDesc', { plan: subscriptionRequest.plan_name }) }}
+                        </p>
+                        <p class="text-sm text-gray-500 mt-1">
+                            {{ $t('shopSettings.subscription.duration') }}: {{ subscriptionRequest.duration_months }} {{
+                                getMonthsLabel(subscriptionRequest.duration_months) }}
+                        </p>
+                    </div>
+                    <div class="banner-status">Pending</div>
+                </div>
+
                 <div class="usage-stats">
+                    <!-- Products Limit -->
                     <div class="stat-item">
-                        <span class="stat-label">{{ $t('shopSettings.subscription.products') }}</span>
-                        <span class="stat-value">{{ productsCount }} / {{ PLAN_LIMITS.products }}</span>
+                        <div class="stat-header">
+                            <span class="stat-label">{{ $t('shopSettings.subscription.products') }}</span>
+                            <span class="stat-value">
+                                {{ stats?.total_products || 0 }} / {{ stats?.plan_limit_products || '∞' }}
+                            </span>
+                        </div>
                         <div class="progress-bar">
-                            <div class="progress"
-                                :style="{ width: getProgress(productsCount, PLAN_LIMITS.products) + '%' }"></div>
+                            <div class="progress" :style="{ width: (stats?.products_usage_percent || 0) + '%' }"
+                                :class="{ 'over-limit': (stats?.products_usage_percent || 0) >= 100 }"></div>
+                        </div>
+                    </div>
+
+                    <!-- Banners Limit -->
+                    <div class="stat-item">
+                        <div class="stat-header">
+                            <span class="stat-label">{{ $t('platformAdmin.plans.form.maxBanners') }}</span>
+                            <span class="stat-value">
+                                {{ stats?.total_banners || 0 }} / {{ stats?.plan_limit_banners || 1 }}
+                            </span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress" :style="{ width: (stats?.banners_usage_percent || 0) + '%' }"
+                                :class="{ 'over-limit': (stats?.banners_usage_percent || 0) >= 100 }"></div>
                         </div>
                     </div>
                 </div>
+
+                <!-- Action Buttons -->
+                <div class="plan-actions" v-if="shop?.subscription_status === 'active'">
+                    <button @click="openRenewModal" class="btn-primary-outline">
+                        {{ $t('shopSettings.subscription.renewTitle') }}
+                    </button>
+                    <button @click="openCancelModal" class="btn-danger-text">
+                        Cancel Subscription
+                    </button>
+                </div>
             </div>
 
-            <!-- Plans Grid -->
-            <div class="plans-section">
+            <!-- Plans Grid (Available Plans) -->
+            <div v-if="shop?.subscription_status !== 'active' && availablePlans?.length > 0" class="plans-section">
                 <h2 class="section-title">{{ $t('shopSettings.subscription.plans') }}</h2>
                 <div class="plans-grid">
-                    <div v-for="plan in plans" :key="plan.id" class="plan-card" :class="{ 'featured': plan.featured }">
+                    <div v-for="plan in availablePlans" :key="plan.id" class="plan-card"
+                        :class="{ 'featured': plan.slug === 'pro' }">
                         <div class="plan-header">
-                            <h3 class="plan-name">{{ plan.name }}</h3>
+                            <h3 class="plan-name">{{ getLocalizedValue(plan, 'name') }}</h3>
                             <div class="plan-price">
-                                <span class="amount">{{ plan.priceFormatted }}</span>
-                                <span class="period">/ {{ $t('shopSettings.subscription.month') }}</span>
+                                <span class="amount" v-if="plan.price > 0">${{ plan.price }}</span>
+                                <span class="amount" v-else>Free</span>
+                                <span class="period" v-if="plan.price > 0">/ {{ $t('shopSettings.subscription.month')
+                                    }}</span>
                             </div>
                         </div>
 
+                        <div class="plan-desc">{{ getLocalizedValue(plan, 'description') }}</div>
+
                         <ul class="plan-features">
-                            <li v-for="(feature, idx) in plan.features" :key="idx">
+                            <li v-for="(feature, idx) in getLocalizedFeatures(plan)" :key="idx">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                     stroke-width="2">
                                     <polyline points="20 6 9 17 4 12"></polyline>
@@ -60,55 +114,89 @@
                             </li>
                         </ul>
 
-                        <button class="plan-btn" :class="{ 'primary': plan.featured }" @click="selectPlan(plan)">
-                            {{ $t('shopSettings.subscription.select') }}
+                        <!-- Duration Selector -->
+                        <div v-if="plan.price > 0" class="duration-selector">
+                            <div class="duration-options">
+                                <button v-for="duration in durations" :key="duration.months"
+                                    @click="setPlanDuration(plan.id, duration.months)" class="duration-chip"
+                                    :class="{ active: getPlanDuration(plan.id) === duration.months }">
+                                    {{ duration.label }}
+                                </button>
+                            </div>
+                            <div class="price-calc">
+                                Total: ${{ calculatePrice(plan, getPlanDuration(plan.id)).final.toFixed(2) }}
+                            </div>
+                        </div>
+
+                        <button class="plan-btn" :class="{ 'primary': plan.slug === 'pro' }" @click="requestPlan(plan)"
+                            :disabled="loading || subscriptionRequest?.status === 'pending'">
+                            {{ loading && selectedPlan?.id === plan.id ? 'Sending...' :
+                                $t('shopSettings.subscription.select') }}
                         </button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Pending Request Banner -->
-        <div v-if="activeRequest && activeRequest.status === 'pending'" class="request-banner">
-            <div class="banner-content">
-                <h3>{{ $t('shopSettings.subscription.pendingTitle') }}</h3>
-                <p>{{ $t('shopSettings.subscription.pendingDesc', { plan: activeRequest.plan_name }) }}</p>
-                <span class="status-badge pending">Pending</span>
-            </div>
-        </div>
-
-        <!-- Request Modal -->
-        <div v-if="showModal" class="modal-overlay" @click.self="showModal = false">
+        <!-- Renew Modal -->
+        <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
             <div class="modal-content">
                 <h2>{{ modalMode === 'renew' ? $t('shopSettings.subscription.renewTitle') :
                     $t('shopSettings.subscription.changeTitle') }}</h2>
+
                 <div class="modal-body">
-                    <div class="plan-summary">
-                        <span>{{ selectedPlan?.name }}</span>
-                        <span>{{ selectedPlan?.priceFormatted }} / {{ $t('shopSettings.subscription.month') }}</span>
+                    <div class="form-group">
+                        <label>{{ $t('shopSettings.subscription.plans') }}</label>
+                        <select v-model="renewForm.plan_id" class="form-input">
+                            <option v-for="plan in availablePlans?.filter(p => !p.is_trial)" :key="plan.id"
+                                :value="plan.id">
+                                {{ getLocalizedValue(plan, 'name') }} - ${{ plan.price }}/mo
+                            </option>
+                        </select>
                     </div>
 
                     <div class="form-group">
                         <label>{{ $t('shopSettings.subscription.duration') }}</label>
-                        <select v-model="requestDuration">
-                            <option :value="1">1 {{ $t('shopSettings.subscription.month') }}</option>
-                            <option :value="3">3 {{ $t('shopSettings.subscription.months') }} (-5%)</option>
-                            <option :value="6">6 {{ $t('shopSettings.subscription.months') }} (-10%)</option>
-                            <option :value="12">12 {{ $t('shopSettings.subscription.months') }} (-20%)</option>
-                        </select>
+                        <div class="duration-grid-modal">
+                            <button v-for="duration in durations" :key="duration.months"
+                                @click="renewForm.duration_months = duration.months" class="duration-btn-modal"
+                                :class="{ active: renewForm.duration_months === duration.months }">
+                                {{ duration.label }}
+                                <span v-if="duration.discount > 0" class="discount-pill">-{{ duration.discount
+                                    }}%</span>
+                            </button>
+                        </div>
                     </div>
 
-                    <div class="total-price">
-                        <span>{{ $t('shopSettings.subscription.total') }}:</span>
-                        <span>{{ (selectedPlan?.price * requestDuration).toLocaleString() }} UZS</span>
+                    <div class="price-summary" v-if="renewForm.plan_id">
+                        <div class="summary-row total">
+                            <span>Total:</span>
+                            <span>${{ getRenewTotalPrice().final.toFixed(2) }}</span>
+                        </div>
                     </div>
                 </div>
+
                 <div class="modal-actions">
-                    <button class="btn-cancel" @click="showModal = false">{{ $t('common.cancel') }}</button>
-                    <button class="btn-confirm" @click="submitRequest">{{ $t('common.confirm') }}</button>
+                    <button class="btn-cancel" @click="closeModal">{{ $t('common.cancel') }}</button>
+                    <button class="btn-confirm" @click="submitRequest" :disabled="loading">
+                        {{ loading ? '...' : $t('common.confirm') }}
+                    </button>
                 </div>
             </div>
         </div>
+
+        <!-- Cancel Modal -->
+        <div v-if="showCancelModal" class="modal-overlay" @click.self="showCancelModal = false">
+            <div class="modal-content">
+                <h2>Cancel Subscription</h2>
+                <p>Are you sure you want to cancel your subscription?</p>
+                <div class="modal-actions">
+                    <button class="btn-cancel" @click="showCancelModal = false">No, Keep it</button>
+                    <button class="btn-danger" @click="cancelSubscription" :disabled="loading">Yes, Cancel</button>
+                </div>
+            </div>
+        </div>
+
     </div>
 </template>
 
@@ -118,56 +206,87 @@ definePageMeta({
 })
 
 const route = useRoute()
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const config = useRuntimeConfig()
 const toast = useToast()
+const { token } = useAuth()
 const shopSlug = route.params.slug
 
-// Mock Data & Limits
-const PLAN_LIMITS = {
-    products: 100
-}
+const loading = ref(false)
+const showModal = ref(false)
+const showCancelModal = ref(false)
+const modalMode = ref('new')
+const selectedPlan = ref(null)
+const planDurations = ref({})
 
-const plans = [
-    {
-        id: 'basic',
-        name: 'Basic',
-        priceFormatted: '50 000 UZS',
-        featured: false,
-        features: [
-            '100 ta mahsulot',
-            'Telegram bot',
-            'Admin panel'
-        ]
-    },
-    {
-        id: 'pro',
-        name: 'Pro',
-        priceFormatted: '150 000 UZS',
-        featured: true,
-        features: [
-            'Cheksiz mahsulotlar',
-            'Barcha funksiyalar',
-            'Premium qo\'llab quvvatlash'
-        ]
-    }
-]
-
-// Fetch Shop Data
-const { data: shop, pending } = await useFetch(`${config.public.apiBase}/platform/shops/${shopSlug}`, {
-    headers: { Authorization: `Bearer ${useAuth().token.value}` }
+const renewForm = reactive({
+    plan_id: null,
+    duration_months: 1
 })
 
-// Mock products count for now
-const productsCount = ref(45)
+// --- Data Fetching ---
 
-const formatDate = (date) => {
-    return new Date(date).toLocaleDateString('uz-UZ')
+const { data: shop, pending: shopPending, refresh: refreshShop, error: shopError } = await useFetch(`${config.public.apiBase}/platform/shops/${shopSlug}`, {
+    headers: { Authorization: `Bearer ${token.value}` }
+})
+
+const { data: availablePlans, pending: plansPending, error: plansError } = await useFetch(`${config.public.apiBase}/subscription-plans`, {
+    headers: { Authorization: `Bearer ${token.value}` }
+})
+
+const { data: stats, pending: statsPending, refresh: refreshStats } = await useFetch(`${config.public.apiBase}/shop/${shopSlug}/admin/stats`, {
+    headers: { Authorization: `Bearer ${token.value}` }
+})
+
+// Subscription Requests
+const subscriptionRequest = ref(null)
+
+const fetchSubscriptionRequest = async () => {
+    try {
+        const request = await $fetch(`${config.public.apiBase}/shop/${shopSlug}/subscription/request`, {
+            headers: { Authorization: `Bearer ${token.value}` }
+        })
+        subscriptionRequest.value = request
+    } catch (e) {
+        subscriptionRequest.value = null
+    }
 }
 
-const getProgress = (current, max) => {
-    return Math.min((current / max) * 100, 100)
+// Initial load
+await fetchSubscriptionRequest()
+
+// Composite loading/error state
+const pending = computed(() => shopPending.value || plansPending.value || statsPending.value)
+const error = computed(() => shopError.value || plansError.value)
+
+const retryFetch = () => {
+    refreshShop()
+    refreshStats()
+    fetchSubscriptionRequest()
 }
+
+// --- Helpers ---
+
+const getLocalizedValue = (obj, key) => {
+    const current = locale.value
+    if (current === 'ru' && obj[key + '_ru']) return obj[key + '_ru']
+    if (current === 'en' && obj[key + '_en']) return obj[key + '_en']
+    if (current === 'uz' && obj[key + '_uz']) return obj[key + '_uz']
+    return obj[key] || ''
+}
+
+const getLocalizedFeatures = (plan) => {
+    const current = locale.value
+    let featuresStr = plan.features // default
+    if (current === 'ru' && plan.features_ru) featuresStr = plan.features_ru
+    if (current === 'en' && plan.features_en) featuresStr = plan.features_en
+    if (current === 'uz' && plan.features_uz) featuresStr = plan.features_uz
+
+    if (!featuresStr) return []
+    return featuresStr.split(',')
+}
+
+const formatDate = (date) => new Date(date).toLocaleDateString(locale.value)
 
 const getStatusText = (status) => {
     const map = {
@@ -179,51 +298,126 @@ const getStatusText = (status) => {
     return map[status] || status
 }
 
-// Requests
-const selectedPlan = ref(null)
-const showModal = ref(false)
-const modalMode = ref('new') // 'new', 'renew', 'change'
-const requestDuration = ref(1)
+const durations = computed(() => [
+    { months: 1, label: `1 ${t('shopSettings.subscription.month')}`, discount: 0 },
+    { months: 3, label: `3 ${t('shopSettings.subscription.months')}`, discount: 5 },
+    { months: 6, label: `6 ${t('shopSettings.subscription.months')}`, discount: 10 },
+    { months: 12, label: `12 ${t('shopSettings.subscription.months')}`, discount: 15 }
+])
 
-// Fetch Active Request
-const { data: activeRequest, refresh: refreshRequest } = await useFetch(`${config.public.apiBase}/subscription-requests/my`, {
-    headers: { Authorization: `Bearer ${useAuth().token.value}` },
-    query: { shop_slug: shopSlug }
-})
+const getMonthsLabel = (months) => {
+    if (months === 1) return t('shopSettings.subscription.month')
+    return t('shopSettings.subscription.months')
+}
 
-const selectPlan = (plan) => {
-    selectedPlan.value = plan
-    if (shop.value.subscription_plan_id === plan.id) {
-        modalMode.value = 'renew'
-    } else {
-        modalMode.value = 'change'
+// --- Duration Logic ---
+
+const getPlanDuration = (planId) => planDurations.value[planId] || 1
+const setPlanDuration = (planId, m) => planDurations.value[planId] = m
+
+const calculatePrice = (plan, durationMonths) => {
+    const duration = durations.value.find(d => d.months === durationMonths) || durations.value[0]
+    const discount = duration.discount
+    const total = plan.price * durationMonths
+    const discountAmount = (total * discount) / 100
+    return {
+        total,
+        discount,
+        discountAmount,
+        final: total - discountAmount
     }
+}
+
+// --- Actions ---
+
+const requestPlan = async (plan) => {
+    if (subscriptionRequest.value?.status === 'pending') {
+        toast.warning(t('alerts.shop.requestTheSame'))
+        return
+    }
+
+    loading.value = true
+    selectedPlan.value = plan
+    try {
+        const duration = getPlanDuration(plan.id)
+        await $fetch(`${config.public.apiBase}/shop/${shopSlug}/subscription/request`, {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${token.value}` },
+            body: {
+                plan_id: plan.id,
+                duration_months: duration,
+                type: 'new'
+            }
+        })
+        toast.success(t('shopSettings.subscription.requestSent'))
+        await fetchSubscriptionRequest()
+    } catch (e) {
+        toast.error(e.data?.detail || 'Error')
+    } finally {
+        loading.value = false
+    }
+}
+
+const openRenewModal = () => {
+    if (availablePlans.value?.length) {
+        renewForm.plan_id = shop.value.subscription_plan_id || availablePlans.value[0].id
+    }
+    modalMode.value = 'renew'
     showModal.value = true
 }
 
+const closeModal = () => {
+    showModal.value = false
+}
+
+const getRenewTotalPrice = () => {
+    if (!renewForm.plan_id || !availablePlans.value) return { final: 0 }
+    const plan = availablePlans.value.find(p => p.id === renewForm.plan_id)
+    if (!plan) return { final: 0 }
+    return calculatePrice(plan, renewForm.duration_months)
+}
+
 const submitRequest = async () => {
+    loading.value = true
     try {
-        await $fetch(`${config.public.apiBase}/subscription-requests`, {
+        await $fetch(`${config.public.apiBase}/shop/${shopSlug}/subscription/request`, {
             method: 'POST',
+            headers: { Authorization: `Bearer ${token.value}` },
             body: {
-                plan_id: selectedPlan.value.id,
-                duration_months: requestDuration.value,
+                plan_id: renewForm.plan_id,
+                duration_months: renewForm.duration_months,
                 type: modalMode.value
-            },
-            headers: { Authorization: `Bearer ${useAuth().token.value}` },
-            query: { shop_slug: shopSlug }
+            }
         })
         toast.success(t('shopSettings.subscription.requestSent'))
-        showModal.value = false
-        refreshRequest()
+        closeModal()
+        await fetchSubscriptionRequest()
     } catch (e) {
-        toast.error(e.data?.detail || 'Error sending request')
+        toast.error(e.data?.detail || 'Error')
+    } finally {
+        loading.value = false
     }
 }
 
-const cancelRequest = async () => {
-    // Logic to cancel request if API supported
+const openCancelModal = () => showCancelModal.value = true
+
+const cancelSubscription = async () => {
+    loading.value = true
+    try {
+        await $fetch(`${config.public.apiBase}/shop/${shopSlug}/subscription/cancel`, {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${token.value}` }
+        })
+        toast.success('Subscription cancelled')
+        showCancelModal.value = false
+        refreshShop()
+    } catch (e) {
+        toast.error(e.data?.detail || 'Error')
+    } finally {
+        loading.value = false
+    }
 }
+
 </script>
 
 <style scoped>
@@ -261,7 +455,7 @@ const cancelRequest = async () => {
     margin-bottom: 16px;
 }
 
-.current-plan .plan-header {
+.plan-header {
     display: flex;
     justify-content: space-between;
     margin-bottom: 24px;
@@ -274,6 +468,7 @@ const cancelRequest = async () => {
     font-size: 0.875rem;
     font-weight: 600;
     margin-top: 8px;
+    text-transform: capitalize;
 }
 
 .status-badge.active {
@@ -292,18 +487,19 @@ const cancelRequest = async () => {
 }
 
 .usage-stats {
-    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 24px;
 }
 
-.stat-item {
-    margin-bottom: 16px;
-}
-
-.stat-label {
-    display: block;
-    font-size: 0.875rem;
-    color: #6B7280;
-    margin-bottom: 4px;
+.stat-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #374151;
 }
 
 .progress-bar {
@@ -311,13 +507,17 @@ const cancelRequest = async () => {
     background: #F3F4F6;
     border-radius: 4px;
     overflow: hidden;
-    margin-top: 8px;
 }
 
 .progress {
     height: 100%;
     background: #111;
     border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.progress.over-limit {
+    background: #EF4444;
 }
 
 .plans-grid {
@@ -329,65 +529,64 @@ const cancelRequest = async () => {
 .plan-card {
     background: white;
     border-radius: 20px;
-    padding: 32px;
+    padding: 24px;
     border: 1px solid #E5E7EB;
     display: flex;
     flex-direction: column;
+    transition: transform 0.2s;
+}
+
+.plan-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 .plan-card.featured {
     border: 2px solid #111;
-    position: relative;
 }
 
 .plan-name {
     font-size: 1.5rem;
-    font-weight: 800;
-    margin-bottom: 16px;
+    font-weight: 700;
+    margin-bottom: 8px;
 }
 
 .plan-price {
-    margin-bottom: 24px;
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 16px;
 }
 
-.amount {
-    font-size: 2rem;
-    font-weight: 900;
-}
-
-.period {
+.plan-desc {
     color: #6B7280;
+    margin-bottom: 16px;
+    font-size: 0.9rem;
 }
 
 .plan-features {
     list-style: none;
     padding: 0;
-    margin: 0 0 32px 0;
+    margin: 0 0 24px 0;
     flex-grow: 1;
 }
 
 .plan-features li {
     display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 12px;
-    color: #374151;
-}
-
-.plan-features svg {
-    color: #10B981;
+    gap: 8px;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+    color: #4B5563;
 }
 
 .plan-btn {
     width: 100%;
-    padding: 16px;
+    padding: 12px;
     border-radius: 12px;
     font-weight: 700;
     cursor: pointer;
     background: #F3F4F6;
-    color: #111;
     border: none;
-    transition: all 0.2s;
+    margin-top: 16px;
 }
 
 .plan-btn.primary {
@@ -395,17 +594,50 @@ const cancelRequest = async () => {
     color: white;
 }
 
-.plan-btn:hover {
-    transform: translateY(-2px);
+.plan-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
-/* Modal & Banner Styles */
+.duration-selector {
+    background: #F9FAFB;
+    padding: 12px;
+    border-radius: 12px;
+    margin-top: auto;
+}
+
+.duration-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.duration-chip {
+    padding: 4px 12px;
+    border-radius: 100px;
+    border: 1px solid #E5E7EB;
+    background: white;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.duration-chip.active {
+    background: #111;
+    color: white;
+    border-color: #111;
+}
+
+.price-calc {
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-align: right;
+}
+
 .modal-overlay {
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    inset: 0;
     background: rgba(0, 0, 0, 0.5);
     display: flex;
     align-items: center;
@@ -417,8 +649,8 @@ const cancelRequest = async () => {
     background: white;
     padding: 32px;
     border-radius: 20px;
-    width: 100%;
-    max-width: 400px;
+    width: 90%;
+    max-width: 450px;
 }
 
 .modal-actions {
@@ -427,11 +659,86 @@ const cancelRequest = async () => {
     margin-top: 24px;
 }
 
+.btn-primary-outline,
+.btn-danger-text,
+.btn-confirm,
+.btn-cancel,
+.btn-danger {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-primary-outline {
+    background: white;
+    border: 1px solid #111;
+    color: #111;
+}
+
+.btn-danger-text {
+    background: none;
+    border: none;
+    color: #EF4444;
+}
+
+.btn-confirm {
+    background: #111;
+    color: white;
+    border: none;
+    flex: 1;
+}
+
+.btn-cancel {
+    background: #F3F4F6;
+    border: none;
+    flex: 1;
+}
+
+.btn-danger {
+    background: #EF4444;
+    color: white;
+    border: none;
+    flex: 1;
+}
+
 .request-banner {
     background: #EFF6FF;
     border: 1px solid #BFDBFE;
     padding: 16px;
     border-radius: 12px;
     margin-bottom: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.duration-grid-modal {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.duration-btn-modal {
+    padding: 12px;
+    border: 1px solid #E5E7EB;
+    background: white;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: center;
+}
+
+.duration-btn-modal.active {
+    background: #111;
+    color: white;
+    border-color: #111;
+}
+
+.form-input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #E5E7EB;
+    border-radius: 8px;
+    margin-top: 4px;
 }
 </style>

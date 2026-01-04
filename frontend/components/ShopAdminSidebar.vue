@@ -109,7 +109,7 @@
           </svg>
           <span>{{ $t('admin.delivery') }}</span>
         </NuxtLink>
-        <NuxtLink :to="localePath(`/shop/${shopSlug}/subscription`)" class="nav-item"
+        <NuxtLink :to="localePath(`/shop/${shopSlug}/admin/settings/subscription`)" class="nav-item"
           :class="{ active: currentRoute === 'subscription' }" @click="closeSidebar">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <circle cx="12" cy="12" r="10"></circle>

@@ -89,19 +89,19 @@
                   <div class="detail-grid">
                     <div class="detail-item">
                       <span class="detail-label">{{ $t('admin.ordersPage.recipient') }}</span>
-                      <span class="detail-value">{{ order.recipient_name || 'N/A' }}</span>
+                      <span class="detail-value">{{ order.recipient_name || $t('common.na') }}</span>
                     </div>
                     <div class="detail-item">
                       <span class="detail-label">{{ $t('admin.ordersPage.phone') }}</span>
-                      <span class="detail-value">{{ order.delivery_phone || 'N/A' }}</span>
+                      <span class="detail-value">{{ order.delivery_phone || $t('common.na') }}</span>
                     </div>
                     <div class="detail-item">
                       <span class="detail-label">{{ $t('admin.ordersPage.city') }}</span>
-                      <span class="detail-value">{{ order.delivery_city || 'N/A' }}</span>
+                      <span class="detail-value">{{ order.delivery_city || $t('common.na') }}</span>
                     </div>
                     <div class="detail-item full-width">
                       <span class="detail-label">{{ $t('admin.ordersPage.address') }}</span>
-                      <span class="detail-value">{{ order.delivery_address || 'N/A' }}</span>
+                      <span class="detail-value">{{ order.delivery_address || $t('common.na') }}</span>
                     </div>
                   </div>
                 </div>
@@ -171,7 +171,7 @@
 </template>
 
 <script setup>
-const { t } = useI18n()
+const { t, locale } = useI18n()
 definePageMeta({
   middleware: ['auth', 'shop-owner']
 })
@@ -218,7 +218,7 @@ const toggleOrder = (orderId) => {
 }
 
 const formatDate = (dateStr) => {
-  return new Date(dateStr).toLocaleDateString('ru-RU', {
+  return new Date(dateStr).toLocaleDateString(locale.value, {
     day: '2-digit',
     month: '2-digit',
     year: 'numeric',

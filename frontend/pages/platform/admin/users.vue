@@ -157,7 +157,7 @@
           <div class="table-header">
             <div class="table-info">
               <span>{{ $t('common.showing') }} {{ displayedUsers.length }} {{ $t('common.of') }} {{ users?.length || 0
-                }}</span>
+              }}</span>
             </div>
             <div class="table-actions">
               <button @click="exportData" class="export-btn">
@@ -289,7 +289,8 @@
                   </td>
                   <td>
                     <div class="actions">
-                      <button @click="viewUserDetails(user)" class="action-btn btn-icon" title="Подробнее">
+                      <button @click="viewUserDetails(user)" class="action-btn btn-icon"
+                        :title="$t('platformAdmin.users.details')">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                           stroke-width="2">
                           <circle cx="12" cy="12" r="10"></circle>
@@ -369,7 +370,7 @@
                     <line x1="12" y1="16" x2="12" y2="12"></line>
                     <line x1="12" y1="8" x2="12.01" y2="8"></line>
                   </svg>
-                  Подробнее
+                  {{ $t('platformAdmin.users.details') }}
                 </button>
               </div>
             </div>
@@ -380,7 +381,7 @@
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                 <circle cx="12" cy="7" r="4"></circle>
               </svg>
-              <p>Пользователи не найдены</p>
+              <p>{{ $t('platformAdmin.users.notFound') }}</p>
             </div>
           </div>
 
@@ -399,7 +400,7 @@
             </button>
 
             <div class="pagination-info">
-              Страница {{ currentPage }} из {{ totalPages }}
+              {{ $t('common.page') }} {{ currentPage }} {{ $t('common.of') }} {{ totalPages }}
             </div>
 
             <button @click="currentPage++" :disabled="currentPage === totalPages" class="pagination-btn">
@@ -433,7 +434,7 @@ const sidebarOpen = ref(false)
 
 const handleLogout = () => {
   logout()
-  useToast().success('Вы вышли из аккаунта')
+  useToast().success(t('auth.loggedOut'))
 }
 
 const currentRoute = computed(() => {
@@ -590,7 +591,7 @@ watch([searchQuery, filterRole], () => {
 })
 
 // Functions
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const clearFilters = () => {
   searchQuery.value = ''
   filterRole.value = ''
@@ -636,13 +637,13 @@ const getRoleText = (role) => {
 const formatDate = (dateString) => {
   if (!dateString) return '-'
   const date = new Date(dateString)
-  return date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })
+  return date.toLocaleDateString(locale.value, { day: 'numeric', month: 'long', year: 'numeric' })
 }
 
 const formatTime = (dateString) => {
   if (!dateString) return ''
   const date = new Date(dateString)
-  return date.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })
+  return date.toLocaleTimeString(locale.value, { hour: '2-digit', minute: '2-digit' })
 }
 
 const viewUserDetails = (user) => {
@@ -652,7 +653,15 @@ const viewUserDetails = (user) => {
 
 const exportData = () => {
   const csv = [
-    ['ID', 'Имя', 'Телефон', 'Роль', 'Магазинов', 'Заказов', 'Дата регистрации'],
+    [
+      t('platformAdmin.users.table.id'),
+      t('platformAdmin.users.table.name'),
+      t('platformAdmin.users.table.phone'),
+      t('platformAdmin.users.table.role'),
+      t('platformAdmin.users.table.shops'),
+      t('platformAdmin.users.table.orders'),
+      t('platformAdmin.users.table.created')
+    ],
     ...displayedUsers.value.map(user => [
       user.id,
       getUserName(user),

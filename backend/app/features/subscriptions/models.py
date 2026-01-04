@@ -5,11 +5,23 @@ from app.db.base_class import Base
 class SubscriptionPlan(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
+    name_ru = Column(String, nullable=True)
+    name_en = Column(String, nullable=True)
+    name_uz = Column(String, nullable=True)
+    
     slug = Column(String, unique=True, index=True, nullable=False)
     price = Column(Float, nullable=False)
     period_days = Column(Integer, default=30)
+    
     description = Column(String, nullable=True)
+    description_ru = Column(String, nullable=True)
+    description_en = Column(String, nullable=True)
+    description_uz = Column(String, nullable=True)
+    
     features = Column(String, nullable=True) # JSON string
+    features_ru = Column(String, nullable=True) # JSON string
+    features_en = Column(String, nullable=True) # JSON string
+    features_uz = Column(String, nullable=True) # JSON string
     is_active = Column(Boolean, default=True)
     is_trial = Column(Boolean, default=False)
     display_order = Column(Integer, default=0)

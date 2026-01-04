@@ -32,12 +32,14 @@
           <div class="flex items-center gap-4">
             <div class="flex items-center gap-2">
               <div :class="['step-circle', { active: currentStep === 1, completed: currentStep > 1 }]">1</div>
-              <span :class="['step-label', { active: currentStep === 1, completed: currentStep > 1 }]">Tariff</span>
+              <span :class="['step-label', { active: currentStep === 1, completed: currentStep > 1 }]">{{
+                $t('shopRegistration.steps.tariff') }}</span>
             </div>
             <div class="step-line border-t-2 border-dashed border-zinc-200 w-16"></div>
             <div class="flex items-center gap-2">
               <div :class="['step-circle', { active: currentStep === 2 }]">2</div>
-              <span :class="['step-label', { active: currentStep === 2 }]">Shop Details</span>
+              <span :class="['step-label', { active: currentStep === 2 }]">{{ $t('shopRegistration.steps.details')
+              }}</span>
             </div>
           </div>
         </div>
@@ -45,8 +47,8 @@
         <!-- Step 1: Plan Selection -->
         <div v-if="currentStep === 1" class="register-card fade-in">
           <div class="text-center mb-8">
-            <h1 class="page-title">Choose Your Plan</h1>
-            <p class="page-subtitle">Select the best plan for your business</p>
+            <h1 class="page-title">{{ $t('shopRegistration.plans.title') }}</h1>
+            <p class="page-subtitle">{{ $t('shopRegistration.plans.subtitle') }}</p>
           </div>
 
           <div v-if="plansPending" class="text-center py-12">
@@ -60,8 +62,8 @@
               @click="selectPlan(plan)">
               <div class="flex justify-between items-start mb-4">
                 <div>
-                  <h3 class="font-bold text-lg">{{ plan.name }}</h3>
-                  <p class="text-zinc-500 text-sm">{{ plan.description }}</p>
+                  <h3 class="font-bold text-lg">{{ getLocalizedValue(plan, 'name') }}</h3>
+                  <p class="text-zinc-500 text-sm">{{ getLocalizedValue(plan, 'description') }}</p>
                 </div>
                 <div v-if="selectedPlan?.id === plan.id"
                   class="w-6 h-6 bg-black rounded-full flex items-center justify-center text-white">
@@ -73,7 +75,7 @@
                 <span class="text-zinc-500">/{{ $t('home.pricing.month') }}</span>
               </div>
               <ul class="space-y-3 mb-6">
-                <li v-for="(feature, i) in plan.features_list" :key="i"
+                <li v-for="(feature, i) in getLocalizedFeatures(plan)" :key="i"
                   class="flex items-start gap-2 text-sm text-zinc-600">
                   <iconify-icon icon="lucide:check" class="mt-0.5 text-green-500 flex-shrink-0"></iconify-icon>
                   <span>{{ feature }}</span>
@@ -81,14 +83,15 @@
               </ul>
               <button class="w-full py-3 rounded-xl font-semibold transition-all"
                 :class="selectedPlan?.id === plan.id ? 'bg-black text-white shadow-md' : 'bg-zinc-100 text-zinc-900 hover:bg-zinc-200'">
-                {{ selectedPlan?.id === plan.id ? 'Selected' : 'Select Plan' }}
+                {{ selectedPlan?.id === plan.id ? $t('shopRegistration.plans.selected') :
+                  $t('shopRegistration.plans.select') }}
               </button>
             </div>
           </div>
 
           <div class="mt-8 flex justify-end">
             <button class="btn-primary flex items-center gap-2" :disabled="!selectedPlan" @click="currentStep = 2">
-              Next Step
+              {{ $t('shopRegistration.next') }}
               <iconify-icon icon="lucide:arrow-right" width="18"></iconify-icon>
             </button>
           </div>
@@ -150,7 +153,7 @@
                   <div class="preview-header">
                     <span class="preview-label">{{ $t('shopRegistration.form.preview') }}:</span>
                     <button type="button" class="btn-remove-logo" @click="form.logo_url = ''">{{ $t('common.delete')
-                    }}</button>
+                      }}</button>
                   </div>
                   <img :src="form.logo_url" alt="Logo" class="preview-image" @error="logoError = true" />
                   <p v-if="logoError" class="preview-error">{{ $t('shopRegistration.form.uploadError') }}</p>
@@ -163,7 +166,8 @@
             </div>
 
             <div class="flex gap-4">
-              <button type="button" class="btn-secondary w-full" @click="currentStep = 1">Back</button>
+              <button type="button" class="btn-secondary w-full" @click="currentStep = 1">{{ $t('shopRegistration.back')
+                }}</button>
               <button type="submit" :disabled="loading" class="submit-button w-full">
                 <span v-if="loading">{{ $t('shopRegistration.form.creating') }}</span>
                 <span v-else>{{ $t('shopRegistration.form.submit') }}</span>
@@ -174,8 +178,9 @@
           <div class="info-box mt-8">
             <h3>{{ $t('shopRegistration.info.title') }}</h3>
             <ul>
-              <li>Plan: <strong>{{ selectedPlan?.name }}</strong></li>
-              <li>{{ $t('shopRegistration.info.point2') }} <strong>link-platform-shop.uz/{{ form.slug || 'your-slug'
+              <li>{{ $t('shopRegistration.info.planLabel') }} <strong>{{ getLocalizedValue(selectedPlan, 'name')
+              }}</strong></li>
+              <li>{{ $t('shopRegistration.info.urlLabel') }} <strong>link-platform-shop.uz/{{ form.slug || 'your-slug'
               }}</strong></li>
             </ul>
           </div>
@@ -196,6 +201,40 @@ const router = useRouter()
 const route = useRoute()
 const toast = useToast()
 const config = useRuntimeConfig()
+const { locale } = useI18n()
+
+const getLocalizedValue = (obj, key) => {
+  if (!obj) return ''
+  const current = locale.value
+  if (current === 'ru' && obj[key + '_ru']) return obj[key + '_ru']
+  if (current === 'en' && obj[key + '_en']) return obj[key + '_en']
+  if (current === 'uz' && obj[key + '_uz']) return obj[key + '_uz']
+  return obj[key] || ''
+}
+
+const getLocalizedFeatures = (plan) => {
+  if (!plan) return []
+  const current = locale.value
+  let featuresStr = plan.features // default
+  if (current === 'ru' && plan.features_ru) featuresStr = plan.features_ru
+  if (current === 'en' && plan.features_en) featuresStr = plan.features_en
+  if (current === 'uz' && plan.features_uz) featuresStr = plan.features_uz
+
+  if (!featuresStr) return []
+  try {
+    // If it's a JSON string, parse it
+    if (typeof featuresStr === 'string' && (featuresStr.startsWith('[') || featuresStr.startsWith('{'))) {
+      return JSON.parse(featuresStr)
+    }
+    // If it's a comma separated string
+    if (typeof featuresStr === 'string') {
+      return featuresStr.split(',').map(f => f.trim())
+    }
+    return featuresStr // already an array?
+  } catch (e) {
+    return []
+  }
+}
 
 // Stepper State
 const currentStep = ref(1)
@@ -350,7 +389,7 @@ const registerShop = async () => {
   }
 
   if (!selectedPlan.value) {
-    toast.error('Please select a plan first')
+    toast.error(t('shopRegistration.notifications.selectPlan'))
     currentStep.value = 1
     return
   }
@@ -364,7 +403,10 @@ const registerShop = async () => {
       headers: {
         'Authorization': `Bearer ${token.value}`
       },
-      body: form
+      body: {
+        ...form,
+        subscription_plan_id: selectedPlan.value.id
+      }
     })
 
     toast.success(t('shopRegistration.success.created'))
@@ -372,7 +414,7 @@ const registerShop = async () => {
     await new Promise(resolve => setTimeout(resolve, 500))
 
     // Navigate to subscription page with selected plan param
-    await navigateTo(`/shop/${data.slug}/subscription?plan=${selectedPlan.value.slug}`)
+    await navigateTo(useLocalePath()(`/shop/${data.slug}/admin/settings/subscription?plan=${selectedPlan.value.slug}`))
   } catch (e) {
     console.error('[Register Shop] Failed:', e)
     console.error('[Register Shop] Error Data:', e.data)

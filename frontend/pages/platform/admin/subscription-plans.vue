@@ -68,7 +68,7 @@
             :class="{ 'inactive': !plan.is_active, 'trial': plan.is_trial }">
             <div class="plan-header">
               <div class="plan-title-section">
-                <h3 class="plan-name">{{ plan.name }}</h3>
+                <h3 class="plan-name">{{ getLocalizedValue(plan, 'name') }}</h3>
                 <div class="plan-badges">
                   <span v-if="plan.is_trial" class="badge trial-badge">{{ $t('platformAdmin.plans.card.trial') }}</span>
                   <span v-if="!plan.is_active" class="badge inactive-badge">{{ $t('platformAdmin.plans.card.inactive')
@@ -101,16 +101,16 @@
               <div class="plan-slug">{{ plan.slug }}</div>
             </div>
 
-            <div v-if="plan.description" class="plan-description">
-              {{ plan.description }}
+            <div v-if="getLocalizedValue(plan, 'description')" class="plan-description">
+              {{ getLocalizedValue(plan, 'description') }}
             </div>
 
             <div class="plan-features">
               <div class="features-header">
                 <span class="features-title">{{ $t('platformAdmin.plans.card.includes') }}</span>
               </div>
-              <ul class="features-list" v-if="plan.features_list && plan.features_list.length > 0">
-                <li v-for="(feature, index) in plan.features_list" :key="index">
+              <ul class="features-list" v-if="getLocalizedFeatures(plan).length > 0">
+                <li v-for="(feature, index) in getLocalizedFeatures(plan)" :key="index">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <polyline points="20 6 9 17 4 12"></polyline>
                   </svg>
@@ -129,6 +129,16 @@
                 <span class="limit-label">{{ $t('platformAdmin.plans.card.products') }}</span>
                 <span class="limit-value">
                   {{ plan.max_products === null ? $t('platformAdmin.plans.card.unlimited') : plan.max_products }}
+                </span>
+              </div>
+              <div class="limit-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+                <span class="limit-label">{{ $t('platformAdmin.plans.form.maxBanners') }}</span>
+                <span class="limit-value">
+                  {{ plan.max_banners === null ? '1' : plan.max_banners }}
                 </span>
               </div>
             </div>
@@ -166,12 +176,23 @@
               <button @click="closeModal" class="modal-close">×</button>
             </div>
 
+            <div class="lang-switcher">
+              <button v-for="lang in ['ru', 'en', 'uz']" :key="lang" class="lang-btn"
+                :class="{ active: activeLang === lang }" @click="activeLang = lang">
+                {{ lang.toUpperCase() }}
+              </button>
+            </div>
+
             <form @submit.prevent="savePlan" class="modal-form">
               <div class="form-grid">
                 <div class="form-group">
-                  <label>{{ $t('platformAdmin.plans.form.name') }} *</label>
-                  <input v-model="planForm.name" type="text" class="form-input" required
-                    :placeholder="$t('platformAdmin.plans.form.name')" />
+                  <label>{{ $t('platformAdmin.plans.form.name') }} ({{ activeLang.toUpperCase() }}) *</label>
+                  <input v-if="activeLang === 'ru'" v-model="planForm.name_ru" type="text" class="form-input"
+                    required />
+                  <input v-if="activeLang === 'en'" v-model="planForm.name_en" type="text" class="form-input"
+                    required />
+                  <input v-if="activeLang === 'uz'" v-model="planForm.name_uz" type="text" class="form-input"
+                    required />
                 </div>
 
                 <div class="form-group">
@@ -199,15 +220,27 @@
                   <small class="form-hint">{{ $t('platformAdmin.plans.form.hints.maxProducts') }}</small>
                 </div>
 
+                <div class="form-group">
+                  <label>{{ $t('platformAdmin.plans.form.maxBanners') }}</label>
+                  <input :value="planForm.max_banners === null ? '' : planForm.max_banners"
+                    @input="planForm.max_banners = $event.target.value === '' ? null : Number($event.target.value)"
+                    type="number" min="0" class="form-input" placeholder="1" />
+                  <small class="form-hint">{{ $t('platformAdmin.plans.form.hints.maxBanners') }}</small>
+                </div>
+
                 <div class="form-group full-width">
-                  <label>{{ $t('platformAdmin.plans.form.description') }}</label>
-                  <textarea v-model="planForm.description" class="form-input" rows="3"
-                    :placeholder="$t('platformAdmin.plans.form.description')"></textarea>
+                  <label>{{ $t('platformAdmin.plans.form.description') }} ({{ activeLang.toUpperCase() }})</label>
+                  <textarea v-if="activeLang === 'ru'" v-model="planForm.description_ru" class="form-input"
+                    rows="3"></textarea>
+                  <textarea v-if="activeLang === 'en'" v-model="planForm.description_en" class="form-input"
+                    rows="3"></textarea>
+                  <textarea v-if="activeLang === 'uz'" v-model="planForm.description_uz" class="form-input"
+                    rows="3"></textarea>
                 </div>
 
                 <div class="form-group full-width">
                   <label>
-                    {{ $t('platformAdmin.plans.form.features') }}
+                    {{ $t('platformAdmin.plans.form.features') }} ({{ activeLang.toUpperCase() }})
                     <button type="button" @click="addFeature" class="add-feature-btn">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2">
@@ -217,23 +250,34 @@
                       {{ $t('platformAdmin.plans.form.addFeature') }}
                     </button>
                   </label>
+
                   <div class="features-input-list">
-                    <div v-for="(feature, index) in planForm.features" :key="index" class="feature-input-row">
-                      <input v-model="planForm.features[index]" type="text" class="form-input"
-                        :placeholder="`${$t('platformAdmin.plans.form.features')} ${index + 1}`" />
-                      <button type="button" @click="removeFeature(index)" class="remove-feature-btn">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                          stroke-width="2">
-                          <line x1="18" y1="6" x2="6" y2="18"></line>
-                          <line x1="6" y1="6" x2="18" y2="18"></line>
-                        </svg>
-                      </button>
+                    <div v-if="activeLang === 'ru'">
+                      <div v-for="(feature, index) in planForm.features_ru" :key="'ru-' + index"
+                        class="feature-input-row">
+                        <input v-model="planForm.features_ru[index]" type="text" class="form-input" />
+                        <button type="button" @click="removeFeature(index)" class="remove-feature-btn">×</button>
+                      </div>
                     </div>
-                    <div v-if="planForm.features.length === 0" class="no-features-input">
-                      {{ $t('platformAdmin.plans.card.noFeatures') }}
+
+                    <div v-if="activeLang === 'en'">
+                      <div v-for="(feature, index) in planForm.features_en" :key="'en-' + index"
+                        class="feature-input-row">
+                        <input v-model="planForm.features_en[index]" type="text" class="form-input" />
+                        <button type="button" @click="removeFeature(index)" class="remove-feature-btn">×</button>
+                      </div>
+                    </div>
+
+                    <div v-if="activeLang === 'uz'">
+                      <div v-for="(feature, index) in planForm.features_uz" :key="'uz-' + index"
+                        class="feature-input-row">
+                        <input v-model="planForm.features_uz[index]" type="text" class="form-input" />
+                        <button type="button" @click="removeFeature(index)" class="remove-feature-btn">×</button>
+                      </div>
                     </div>
                   </div>
                 </div>
+
 
                 <div class="form-group">
                   <label class="checkbox-label">
@@ -258,7 +302,7 @@
 
               <div class="modal-actions">
                 <button type="button" @click="closeModal" class="btn-secondary">{{ $t('platformAdmin.plans.cancel')
-                  }}</button>
+                }}</button>
                 <button type="submit" class="btn-primary" :disabled="saving">
                   {{ saving ? $t('common.saving') : (editingPlan ? $t('platformAdmin.plans.save') :
                     $t('platformAdmin.plans.create')) }}
@@ -278,7 +322,7 @@ definePageMeta({
 })
 
 // Imports
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const route = useRoute()
 const { token, logout } = useAuth()
 const toast = useToast()
@@ -310,19 +354,56 @@ const { data: plans, pending, refresh, error } = await useFetch(useRuntimeConfig
 const showModal = ref(false)
 const editingPlan = ref(null)
 const saving = ref(false)
+const activeLang = ref('ru') // 'ru', 'en', 'uz'
 
 const planForm = reactive({
-  name: '',
+  name_ru: '',
+  name_en: '',
+  name_uz: '',
   slug: '',
   price: 0,
   period_days: 30,
-  description: '',
-  features: [],
+  description_ru: '',
+  description_en: '',
+  description_uz: '',
+  features_ru: [],
+  features_en: [],
+  features_uz: [],
   is_active: true,
   is_trial: false,
   display_order: 0,
-  max_products: null
+  max_products: null,
+  max_banners: 1
 })
+
+const getLocalizedValue = (obj, key) => {
+  const currentLocale = locale.value
+  if (currentLocale === 'ru' && obj[key + '_ru']) return obj[key + '_ru']
+  if (currentLocale === 'en' && obj[key + '_en']) return obj[key + '_en']
+  if (currentLocale === 'uz' && obj[key + '_uz']) return obj[key + '_uz']
+  // Fallback
+  return obj[key] || obj[key + '_ru'] || ''
+}
+
+const getLocalizedFeatures = (plan) => {
+  const currentLocale = locale.value
+  let featuresJson = null
+
+  if (currentLocale === 'ru' && plan.features_ru) featuresJson = plan.features_ru
+  else if (currentLocale === 'en' && plan.features_en) featuresJson = plan.features_en
+  else if (currentLocale === 'uz' && plan.features_uz) featuresJson = plan.features_uz
+  else featuresJson = plan.features // fallback
+
+  // If it's already a list (from schema), return it. But schema returns `features` as string, `features_list` as computed.
+  // We need to parse JSON if it's a string, or split by comma if that was the old way? 
+  // The backend uses a JSON string for features. 
+  // Actually, wait. The schema `SubscriptionPlanRead` has `features_list` which splits by comma? 
+  // Let's check the backend model: `features = Column(String, nullable=True) # JSON string`.
+  // If I look at `savePlan` below, it joins by comma. So it's a comma separated string.
+
+  if (!featuresJson) return []
+  return featuresJson.split(',')
+}
 
 const openCreateModal = () => {
   editingPlan.value = null
@@ -332,16 +413,27 @@ const openCreateModal = () => {
 
 const editPlan = (plan) => {
   editingPlan.value = plan
-  planForm.name = plan.name
+  planForm.name_ru = plan.name_ru || plan.name
+  planForm.name_en = plan.name_en || plan.name
+  planForm.name_uz = plan.name_uz || plan.name
+
   planForm.slug = plan.slug
   planForm.price = plan.price
   planForm.period_days = plan.period_days
-  planForm.description = plan.description || ''
-  planForm.features = plan.features_list ? [...plan.features_list] : []
+
+  planForm.description_ru = plan.description_ru || plan.description || ''
+  planForm.description_en = plan.description_en || plan.description || ''
+  planForm.description_uz = plan.description_uz || plan.description || ''
+
+  planForm.features_ru = plan.features_ru ? plan.features_ru.split(',') : (plan.features ? plan.features.split(',') : [])
+  planForm.features_en = plan.features_en ? plan.features_en.split(',') : (plan.features ? plan.features.split(',') : [])
+  planForm.features_uz = plan.features_uz ? plan.features_uz.split(',') : (plan.features ? plan.features.split(',') : [])
+
   planForm.is_active = plan.is_active
   planForm.is_trial = plan.is_trial
   planForm.display_order = plan.display_order
   planForm.max_products = plan.max_products ?? null
+  planForm.max_banners = plan.max_banners ?? 1
   showModal.value = true
 }
 
@@ -352,24 +444,35 @@ const closeModal = () => {
 }
 
 const resetForm = () => {
-  planForm.name = ''
+  planForm.name_ru = ''
+  planForm.name_en = ''
+  planForm.name_uz = ''
   planForm.slug = ''
   planForm.price = 0
   planForm.period_days = 30
-  planForm.description = ''
-  planForm.features = []
+  planForm.description_ru = ''
+  planForm.description_en = ''
+  planForm.description_uz = ''
+  planForm.features_ru = []
+  planForm.features_en = []
+  planForm.features_uz = []
   planForm.is_active = true
   planForm.is_trial = false
   planForm.display_order = 0
   planForm.max_products = null
+  planForm.max_banners = 1
 }
 
 const addFeature = () => {
-  planForm.features.push('')
+  if (activeLang.value === 'ru') planForm.features_ru.push('')
+  if (activeLang.value === 'en') planForm.features_en.push('')
+  if (activeLang.value === 'uz') planForm.features_uz.push('')
 }
 
 const removeFeature = (index) => {
-  planForm.features.splice(index, 1)
+  if (activeLang.value === 'ru') planForm.features_ru.splice(index, 1)
+  if (activeLang.value === 'en') planForm.features_en.splice(index, 1)
+  if (activeLang.value === 'uz') planForm.features_uz.splice(index, 1)
 }
 
 const getPeriodText = (days) => {
@@ -387,8 +490,16 @@ const savePlan = async () => {
   try {
     const payload = {
       ...planForm,
-      features: planForm.features.filter(f => f.trim() !== '').join(','),
-      max_products: planForm.max_products === null || planForm.max_products === '' ? null : Number(planForm.max_products)
+      name: planForm.name_ru || planForm.name_en || planForm.name_uz, // Fallback
+      description: planForm.description_ru || planForm.description_en || planForm.description_uz,
+      features: planForm.features_ru.join(','), // Default features fallback
+
+      features_ru: planForm.features_ru.filter(f => f.trim() !== '').join(','),
+      features_en: planForm.features_en.filter(f => f.trim() !== '').join(','),
+      features_uz: planForm.features_uz.filter(f => f.trim() !== '').join(','),
+
+      max_products: planForm.max_products === null || planForm.max_products === '' ? null : Number(planForm.max_products),
+      max_banners: planForm.max_banners === null || planForm.max_banners === '' ? 1 : Number(planForm.max_banners)
     }
 
     if (editingPlan.value) {
@@ -439,7 +550,7 @@ const toggleActive = async (plan) => {
 }
 
 const deletePlan = async (plan) => {
-  if (!confirm(`${t('platformAdmin.plans.delete')} "${plan.name}"?`)) {
+  if (!confirm(`${t('platformAdmin.plans.delete')} "${getLocalizedValue(plan, 'name')}"?`)) {
     return
   }
 
@@ -1040,6 +1151,37 @@ const deletePlan = async (plan) => {
     padding: 20px;
     border-radius: 16px;
   }
+}
+
+
+.lang-switcher {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 24px;
+  border-bottom: 2px solid #F3F4F6;
+  padding-bottom: 24px;
+}
+
+.lang-btn {
+  padding: 8px 16px;
+  border: 1px solid #E5E7EB;
+  border-radius: 8px;
+  background: white;
+  color: #6B7280;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.lang-btn:hover {
+  background: #F9FAFB;
+  color: #111;
+}
+
+.lang-btn.active {
+  background: #111;
+  color: white;
+  border-color: #111;
 }
 
 .modal-form {
