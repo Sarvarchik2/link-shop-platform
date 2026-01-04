@@ -12,103 +12,126 @@
         <p v-if="shop.description" class="shop-description">{{ shop.description }}</p>
       </div> -->
 
-      <!-- Hero Section -->
-      <div v-if="banner && Array.isArray(banner) && banner.length > 0" class="hero-section mb-8">
-        <ClientOnly>
-          <swiper-container v-if="banner.length > 1" :slides-per-view="1" :speed="500" :loop="true"
-            :autoplay="{ delay: 5000 }" pagination="true" class="hero-swiper">
-            <swiper-slide v-for="slide in banner" :key="slide.id">
-              <div class="hero-card">
-                <div class="hero-content">
-                  <div v-if="slide.badge_text" class="badge">{{ slide.badge_text }}</div>
-                  <h1 class="hero-title"
-                    v-html="(getLocalized(slide, 'title') ? getLocalized(slide, 'title').replace(/\\n/g, '<br/>') : '')">
-                  </h1>
-                  <p class="hero-price">{{ getLocalized(slide, 'subtitle') }}</p>
-                  <NuxtLink :to="slide.button_link || `/${shopSlug}/products`" class="hero-btn">{{ getLocalized(slide,
-                    'button_text') }}
-                  </NuxtLink>
-                </div>
-                <div class="hero-image">
-                  <img :src="slide.image_url" alt="Banner" />
-                </div>
-              </div>
-            </swiper-slide>
-          </swiper-container>
-
-          <!-- Single Banner Fallback -->
-          <div v-else-if="banner[0]" class="hero-card">
-            <div class="hero-content">
-              <div v-if="banner[0].badge_text" class="badge">{{ banner[0].badge_text }}</div>
-              <h1 class="hero-title"
-                v-html="(getLocalized(banner[0], 'title') ? getLocalized(banner[0], 'title').replace(/\\n/g, '<br/>') : '')">
-              </h1>
-              <p class="hero-price">{{ getLocalized(banner[0], 'subtitle') }}</p>
-              <NuxtLink :to="banner[0].button_link || `/${shopSlug}/products`" class="hero-btn">{{
-                getLocalized(banner[0], 'button_text')
-                }}</NuxtLink>
-            </div>
-            <div class="hero-image">
-              <img :src="banner[0].image_url" alt="Banner" />
-            </div>
-          </div>
-        </ClientOnly>
+      <!-- Error State / Inactive Shop -->
+      <div v-if="shopError || (shop && (!shop.is_active || shop.subscription_status === 'expired'))"
+        class="unavailable-state py-24 text-center">
+        <div class="mb-6 inline-flex p-4 rounded-full bg-red-50 text-red-500">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="15" y1="9" x2="9" y2="15"></line>
+            <line x1="9" y1="9" x2="15" y2="15"></line>
+          </svg>
+        </div>
+        <h2 class="text-3xl font-black text-gray-900 mb-4">{{ $t('store.unavailableTitle') || 'Shop Temporarily
+          Unavailable' }}</h2>
+        <p class="text-gray-500 max-w-md mx-auto">{{ $t('store.unavailableDesc') || 'This shop is currently inactive or
+          its subscription has expired.Please check back later.' }}</p>
+        <NuxtLink to="/"
+          class="mt-8 inline-block px-8 py-3 bg-black text-white rounded-full font-bold hover:bg-gray-800 transition-all">
+          {{ $t('common.backToHome') || 'Explore Other Shops' }}
+        </NuxtLink>
       </div>
 
-      <!-- Brand Filters -->
-      <section class="mb-8">
-        <div class="section-header">
-          <h2 class="section-title">{{ $t('store.brands') }}</h2>
-          <NuxtLink :to="`/${shopSlug}/products`" class="view-all-btn">
-            {{ $t('store.viewAll') }}
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="5" y1="12" x2="19" y2="12"></line>
-              <polyline points="12 5 19 12 12 19"></polyline>
-            </svg>
-          </NuxtLink>
-        </div>
-        <div class="brand-grid">
-          <NuxtLink v-for="brand in displayedBrands" :key="brand.id" :to="`/${shopSlug}/products?brand=${brand.name}`"
-            class="brand-card">
-            <div class="brand-logo-wrapper">
-              <img :src="brand.logo_url" :alt="brand.name" class="brand-logo-img" />
+      <template v-else>
+        <!-- Hero Section -->
+        <div v-if="banner && Array.isArray(banner) && banner.length > 0" class="hero-section mb-8">
+          <ClientOnly>
+            <swiper-container v-if="banner.length > 1" :slides-per-view="1" :speed="500" :loop="true"
+              :autoplay="{ delay: 5000 }" pagination="true" class="hero-swiper">
+              <swiper-slide v-for="slide in banner" :key="slide.id">
+                <div class="hero-card">
+                  <div class="hero-content">
+                    <div v-if="slide.badge_text" class="badge">{{ slide.badge_text }}</div>
+                    <h1 class="hero-title"
+                      v-html="(getLocalized(slide, 'title') ? getLocalized(slide, 'title').replace(/\\n/g, '<br/>') : '')">
+                    </h1>
+                    <p class="hero-price">{{ getLocalized(slide, 'subtitle') }}</p>
+                    <NuxtLink :to="slide.button_link || `/${shopSlug}/products`" class="hero-btn">{{ getLocalized(slide,
+                      'button_text') }}
+                    </NuxtLink>
+                  </div>
+                  <div class="hero-image">
+                    <img :src="slide.image_url" alt="Banner" />
+                  </div>
+                </div>
+              </swiper-slide>
+            </swiper-container>
+
+            <!-- Single Banner Fallback -->
+            <div v-else-if="banner[0]" class="hero-card">
+              <div class="hero-content">
+                <div v-if="banner[0].badge_text" class="badge">{{ banner[0].badge_text }}</div>
+                <h1 class="hero-title"
+                  v-html="(getLocalized(banner[0], 'title') ? getLocalized(banner[0], 'title').replace(/\\n/g, '<br/>') : '')">
+                </h1>
+                <p class="hero-price">{{ getLocalized(banner[0], 'subtitle') }}</p>
+                <NuxtLink :to="banner[0].button_link || `/${shopSlug}/products`" class="hero-btn">{{
+                  getLocalized(banner[0], 'button_text')
+                }}</NuxtLink>
+              </div>
+              <div class="hero-image">
+                <img :src="banner[0].image_url" alt="Banner" />
+              </div>
             </div>
-            <span class="brand-name-text">{{ brand.name }}</span>
-          </NuxtLink>
-        </div>
-      </section>
-
-      <!-- Featured Products -->
-      <section class="mb-8">
-        <div class="section-header">
-          <h2 class="section-title">{{ $t('store.recommended') }}</h2>
-          <NuxtLink :to="`/${shopSlug}/products`" class="view-all-btn">
-            {{ $t('store.viewAll') }}
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="5" y1="12" x2="19" y2="12"></line>
-              <polyline points="12 5 19 12 12 19"></polyline>
-            </svg>
-          </NuxtLink>
-        </div>
-        <div v-if="pending" class="text-center py-12 text-gray-400">
-          <div class="loading-spinner"></div>
-          <p class="mt-4">{{ $t('store.loadingProducts') }}</p>
-        </div>
-        <div v-else class="products-grid">
-          <ProductCard v-for="product in featuredProducts" :key="product.id" :product="product" :shop-slug="shopSlug" />
+          </ClientOnly>
         </div>
 
-        <!-- View All Products Button -->
-        <div class="view-all-section">
-          <NuxtLink :to="`/${shopSlug}/products`" class="view-all-products-btn">
-            <span>{{ $t('store.viewAllProducts') }}</span>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="5" y1="12" x2="19" y2="12"></line>
-              <polyline points="12 5 19 12 12 19"></polyline>
-            </svg>
-          </NuxtLink>
-        </div>
-      </section>
+        <!-- Brand Filters -->
+        <section class="mb-8">
+          <div class="section-header">
+            <h2 class="section-title">{{ $t('store.brands') }}</h2>
+            <NuxtLink :to="`/${shopSlug}/products`" class="view-all-btn">
+              {{ $t('store.viewAll') }}
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </NuxtLink>
+          </div>
+          <div class="brand-grid">
+            <NuxtLink v-for="brand in displayedBrands" :key="brand.id" :to="`/${shopSlug}/products?brand=${brand.name}`"
+              class="brand-card">
+              <div class="brand-logo-wrapper">
+                <img :src="brand.logo_url" :alt="brand.name" class="brand-logo-img" />
+              </div>
+              <span class="brand-name-text">{{ brand.name }}</span>
+            </NuxtLink>
+          </div>
+        </section>
+
+        <!-- Featured Products -->
+        <section class="mb-8">
+          <div class="section-header">
+            <h2 class="section-title">{{ $t('store.recommended') }}</h2>
+            <NuxtLink :to="`/${shopSlug}/products`" class="view-all-btn">
+              {{ $t('store.viewAll') }}
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </NuxtLink>
+          </div>
+          <div v-if="pending" class="text-center py-12 text-gray-400">
+            <div class="loading-spinner"></div>
+            <p class="mt-4">{{ $t('store.loadingProducts') }}</p>
+          </div>
+          <div v-else class="products-grid">
+            <ProductCard v-for="product in featuredProducts" :key="product.id" :product="product"
+              :shop-slug="shopSlug" />
+          </div>
+
+          <!-- View All Products Button -->
+          <div class="view-all-section">
+            <NuxtLink :to="`/${shopSlug}/products`" class="view-all-products-btn">
+              <span>{{ $t('store.viewAllProducts') }}</span>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </NuxtLink>
+          </div>
+        </section>
+      </template>
     </main>
 
     <!-- Shop Footer -->
@@ -214,8 +237,13 @@ const getLocalized = (obj, field) => {
 }
 
 // Fetch Shop Information
-const { data: shop } = await useFetch(`${useRuntimeConfig().public.apiBase}/platform/shops/${shopSlug}`, {
-  key: `shop-${shopSlug}`
+const { data: shop, error: shopError } = await useFetch(`${useRuntimeConfig().public.apiBase}/platform/shops/${shopSlug}`, {
+  key: `shop-${shopSlug}`,
+  onResponseError({ response }) {
+    if (response.status === 403) {
+      console.warn('[Storefront] Shop is inactive or expired')
+    }
+  }
 })
 
 // SEO

@@ -16,6 +16,28 @@
         </div>
 
         <div v-else class="content-grid">
+            <!-- Inactive/Expired Warning -->
+            <div v-if="!shop?.is_active || shop?.subscription_status === 'expired' || (shop?.subscription_expires_at && new Date(shop.subscription_expires_at) < new Date())"
+                class="expiry-warning-banner">
+                <div class="warning-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path
+                            d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z">
+                        </path>
+                        <line x1="12" y1="9" x2="12" y2="13"></line>
+                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                    </svg>
+                </div>
+                <div class="warning-text">
+                    <h3>{{ !shop?.is_active ? $t('shopSettings.subscription.shopInactive') || 'Shop Deactivated' :
+                        $t('shopSettings.subscription.expiredTitle') || 'Subscription Expired' }}</h3>
+                    <p>{{ !shop?.is_active ? $t('shopSettings.subscription.contactSupport') || 'Your shop has been
+                        deactivated by the administrator.Please contact support.' :
+                    $t('shopSettings.subscription.expiredDesc') || 'Your subscription has ended. Please choose a
+                        plan below to reactive your shop and continue selling.' }}</p>
+                </div>
+            </div>
+
             <!-- Current Subscription Card -->
             <div class="card current-plan">
                 <div class="plan-header">
@@ -98,7 +120,7 @@
                                 <span class="amount" v-if="plan.price > 0">${{ plan.price }}</span>
                                 <span class="amount" v-else>Free</span>
                                 <span class="period" v-if="plan.price > 0">/ {{ $t('shopSettings.subscription.month')
-                                    }}</span>
+                                }}</span>
                             </div>
                         </div>
 
@@ -163,7 +185,7 @@
                                 :class="{ active: renewForm.duration_months === duration.months }">
                                 {{ duration.label }}
                                 <span v-if="duration.discount > 0" class="discount-pill">-{{ duration.discount
-                                    }}%</span>
+                                }}%</span>
                             </button>
                         </div>
                     </div>
@@ -740,5 +762,34 @@ const cancelSubscription = async () => {
     border: 1px solid #E5E7EB;
     border-radius: 8px;
     margin-top: 4px;
+}
+
+.expiry-warning-banner {
+    display: flex;
+    gap: 16px;
+    background: #FEF2F2;
+    border: 1px solid #FEE2E2;
+    padding: 24px;
+    border-radius: 16px;
+    margin-bottom: 32px;
+}
+
+.warning-icon {
+    flex-shrink: 0;
+    color: #EF4444;
+}
+
+.warning-text h3 {
+    margin: 0 0 4px 0;
+    font-size: 1.125rem;
+    font-weight: 800;
+    color: #991B1B;
+}
+
+.warning-text p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #B91C1C;
+    line-height: 1.5;
 }
 </style>

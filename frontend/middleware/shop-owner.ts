@@ -19,7 +19,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
 
     // Get shop slug from route params (to.params instead of useRoute())
     const shopSlug = to.params.slug
-    
+
     if (!shopSlug) {
         return navigateTo('/profile')
     }
@@ -33,7 +33,23 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
         })
 
         // Check if user is platform admin or shop owner
-        if (user.value.role === 'platform_admin' || shop.owner_id === user.value.id) {
+        const currentUser = user.value as any
+        const currentShop = shop as any
+
+        if (currentUser && (currentUser.role === 'platform_admin' || currentShop.owner_id === currentUser.id)) {
+            // Subscription check for shop owners
+            if (currentUser.role !== 'platform_admin') {
+                const isExpired = currentShop.subscription_status === 'expired' ||
+                    (currentShop.subscription_expires_at && new Date(currentShop.subscription_expires_at) < new Date())
+
+                const isInactive = !currentShop.is_active
+                const subscriptionPath = `/shop/${shopSlug}/admin/settings/subscription`
+
+                if ((isExpired || isInactive) && to.path !== subscriptionPath) {
+                    console.warn('[Shop Owner Middleware] Shop expired/inactive, redirecting to subscription page')
+                    return navigateTo(subscriptionPath)
+                }
+            }
             return // Allow access
         }
 
