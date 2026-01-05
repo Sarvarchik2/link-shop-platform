@@ -187,9 +187,7 @@ class ShopService:
             month_orders=len(month_orders_list),
             plan_limit_products=plan_limit_products,
             plan_name=plan_name,
-            plan_limit_products=plan_limit_products,
             plan_limit_banners=plan_limit_banners,
-            plan_name=plan_name,
             products_usage_percent=products_usage_percent,
             banners_usage_percent=banners_usage_percent,
             total_banners=total_banners

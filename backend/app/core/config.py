@@ -4,7 +4,7 @@ class Settings(BaseSettings):
     SECRET_KEY: str = "your-secret-key-here"
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
-    DATABASE_URL: str = "sqlite:///./database.db"
+    DATABASE_URL: str = "postgresql://localhost/link_shop_platform"
     UPLOAD_DIR: str = "uploads"
     BASE_URL: str = "http://localhost:8000"
 

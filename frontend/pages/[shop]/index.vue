@@ -22,10 +22,8 @@
             <line x1="9" y1="9" x2="15" y2="15"></line>
           </svg>
         </div>
-        <h2 class="text-3xl font-black text-gray-900 mb-4">{{ $t('store.unavailableTitle') || 'Shop Temporarily
-          Unavailable' }}</h2>
-        <p class="text-gray-500 max-w-md mx-auto">{{ $t('store.unavailableDesc') || 'This shop is currently inactive or
-          its subscription has expired.Please check back later.' }}</p>
+        <h2 class="text-3xl font-black text-gray-900 mb-4">{{ $t('store.unavailableTitle') || 'Shop Temporarily   Unavailable' }}</h2>
+        <p class="text-gray-500 max-w-md mx-auto">{{ $t('store.unavailableDesc') || 'This shop is currently inactive or   its subscription has expired.Please check back later.' }}</p>
         <NuxtLink to="/"
           class="mt-8 inline-block px-8 py-3 bg-black text-white rounded-full font-bold hover:bg-gray-800 transition-all">
           {{ $t('common.backToHome') || 'Explore Other Shops' }}

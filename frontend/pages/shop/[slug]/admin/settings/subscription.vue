@@ -31,10 +31,8 @@
                 <div class="warning-text">
                     <h3>{{ !shop?.is_active ? $t('shopSettings.subscription.shopInactive') || 'Shop Deactivated' :
                         $t('shopSettings.subscription.expiredTitle') || 'Subscription Expired' }}</h3>
-                    <p>{{ !shop?.is_active ? $t('shopSettings.subscription.contactSupport') || 'Your shop has been
-                        deactivated by the administrator.Please contact support.' :
-                    $t('shopSettings.subscription.expiredDesc') || 'Your subscription has ended. Please choose a
-                        plan below to reactive your shop and continue selling.' }}</p>
+                    <p>{{ !shop?.is_active ? $t('shopSettings.subscription.contactSupport') || 'Your shop has been       deactivated by the administrator.Please contact support.' :
+                    $t('shopSettings.subscription.expiredDesc') || 'Your subscription has ended. Please choose a       plan below to reactive your shop and continue selling.' }}</p>
                 </div>
             </div>
 
