@@ -69,6 +69,13 @@ app.include_router(offers_router, tags=["Offers"])
 @app.on_event("startup")
 def on_startup():
     # Create tables
+    from sqlalchemy import text
+    try:
+        db_host = settings.SQLALCHEMY_DATABASE_URI.split("@")[-1].split("/")[0]
+        print(f"Startup: Connecting to database host: {db_host}")
+    except:
+        print("Startup: Connecting to database...")
+        
     Base.metadata.create_all(bind=engine)
     
     from sqlalchemy.orm import Session
