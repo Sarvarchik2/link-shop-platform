@@ -3,16 +3,7 @@
     <AppHeader />
 
     <main class="container py-8">
-      <!-- Shop Name / Profile Header -->
-      <!-- <div v-if="shop" class="shop-header mb-8">
-        <div class="shop-title-group">
-          <img v-if="shop.logo_url" :src="shop.logo_url" :alt="shop.name" class="shop-main-logo" />
-          <h1 class="shop-name">{{ shop.name }}</h1>
-        </div>
-        <p v-if="shop.description" class="shop-description">{{ shop.description }}</p>
-      </div> -->
 
-      <!-- Error State / Inactive Shop -->
       <div v-if="shopError || (shop && (!shop.is_active || shop.subscription_status === 'expired'))"
         class="unavailable-state py-24 text-center">
         <div class="mb-6 inline-flex p-4 rounded-full bg-red-50 text-red-500">
@@ -66,7 +57,7 @@
                 <p class="hero-price">{{ getLocalized(banner[0], 'subtitle') }}</p>
                 <NuxtLink :to="banner[0].button_link || `/${shopSlug}/products`" class="hero-btn">{{
                   getLocalized(banner[0], 'button_text')
-                  }}</NuxtLink>
+                }}</NuxtLink>
               </div>
               <div class="hero-image">
                 <img :src="banner[0].image_url" alt="Banner" />
