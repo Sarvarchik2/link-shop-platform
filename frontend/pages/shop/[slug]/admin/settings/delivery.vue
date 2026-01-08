@@ -15,7 +15,7 @@
                     <line x1="6" y1="6" x2="18" y2="18"></line>
                 </svg>
             </button>
-            <span class="mobile-title">{{ $t('admin.delivery') }}</span>
+            <span class="mobile-title">{{ $t('admin.delivery.title') }}</span>
             <NuxtLink :to="`/${shopSlug}`" class="home-btn">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
@@ -28,7 +28,7 @@
 
         <main class="admin-main">
             <div class="content-wrapper">
-                <h1 class="page-title">{{ $t('admin.delivery') }}</h1>
+                <h1 class="page-title">{{ $t('admin.delivery.title') }}</h1>
                 <p class="page-subtitle">{{ $t('admin.deliverySettingsSubtitle') }}</p>
 
                 <div v-if="pending" class="loading-state">

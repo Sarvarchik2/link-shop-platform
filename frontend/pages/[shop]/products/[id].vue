@@ -103,11 +103,11 @@
           <div class="product-meta">
             <div class="meta-item">
               <span class="meta-label">{{ $t('product.brand') }}:</span>
-              <span class="meta-value">{{ product.brand }}</span>
+              <span class="meta-value">{{ getField(product, 'brand') }}</span>
             </div>
             <div class="meta-item">
               <span class="meta-label">{{ $t('product.category') }}:</span>
-              <span class="meta-value">{{ product.category }}</span>
+              <span class="meta-value">{{ getField(product, 'category') }}</span>
             </div>
           </div>
 

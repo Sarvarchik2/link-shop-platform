@@ -29,7 +29,19 @@ export const useMultilingual = () => {
             return obj[fallbackKey]
         }
 
-        // Last resort: try the field without suffix (backwards compatibility)
+        // Fallback to English
+        const enKey = `${fieldName}_en`
+        if (obj[enKey]) {
+            return obj[enKey]
+        }
+
+        // Fallback to Russian
+        const ruKey = `${fieldName}_ru`
+        if (obj[ruKey]) {
+            return obj[ruKey]
+        }
+
+        // Last resort: try the field without suffix (backwards compatibility) or just return first available
         return obj[fieldName] || ''
     }
 

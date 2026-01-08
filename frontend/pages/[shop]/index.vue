@@ -13,10 +13,8 @@
             <line x1="9" y1="9" x2="15" y2="15"></line>
           </svg>
         </div>
-        <h2 class="text-3xl font-black text-gray-900 mb-4">{{ $t('store.unavailableTitle') || 'Shop Temporarily
-          Unavailable' }}</h2>
-        <p class="text-gray-500 max-w-md mx-auto">{{ $t('store.unavailableDesc') || 'This shop is currently inactive or
-          its subscription has expired.Please check back later.' }}</p>
+        <h2 class="text-3xl font-black text-gray-900 mb-4">{{ $t('store.unavailableTitle') || 'Shop Temporarily Unavailable' }}</h2>
+        <p class="text-gray-500 max-w-md mx-auto">{{ $t('store.unavailableDesc') || 'This shop is currently inactive or its subscription has expired. Please check back later.' }}</p>
         <NuxtLink to="/"
           class="mt-8 inline-block px-8 py-3 bg-black text-white rounded-full font-bold hover:bg-gray-800 transition-all">
           {{ $t('common.backToHome') || 'Explore Other Shops' }}
@@ -27,13 +25,13 @@
         <div v-if="banner && Array.isArray(banner) && banner.length > 0" class="hero-section mb-8">
           <ClientOnly>
             <swiper-container v-if="banner.length > 1" :slides-per-view="1" :speed="500" :loop="true"
-              :autoplay="{ delay: 5000 }" pagination="true" class="hero-swiper">
+              :autoplay="{ delay: 3000 }" pagination="true" class="hero-swiper">
               <swiper-slide v-for="slide in banner" :key="slide.id">
                 <div class="hero-card">
                   <div class="hero-content">
                     <div v-if="slide.badge_text" class="badge">{{ slide.badge_text }}</div>
                     <h1 class="hero-title"
-                      v-html="(getLocalized(slide, 'title') ? getLocalized(slide, 'title').replace(/\\n/g, '<br/>') : '')">
+                      v-html="(getLocalized(slide, 'title') ? getLocalized(slide, 'title').replace(/\n/g, '<br/>') : '')">
                     </h1>
                     <p class="hero-price">{{ getLocalized(slide, 'subtitle') }}</p>
                     <NuxtLink :to="slide.button_link || `/${shopSlug}/products`" class="hero-btn">{{ getLocalized(slide,
@@ -57,7 +55,7 @@
                 <p class="hero-price">{{ getLocalized(banner[0], 'subtitle') }}</p>
                 <NuxtLink :to="banner[0].button_link || `/${shopSlug}/products`" class="hero-btn">{{
                   getLocalized(banner[0], 'button_text')
-                }}</NuxtLink>
+                  }}</NuxtLink>
               </div>
               <div class="hero-image">
                 <img :src="banner[0].image_url" alt="Banner" />

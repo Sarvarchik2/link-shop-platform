@@ -15,6 +15,20 @@ class BannerService:
         # Assuming repository returns list
         return self.repository.get_by_shop_slug(db, shop_id=shop_id)
 
+    def get_banner(self, db: Session, banner_id: int, shop_slug: str, current_user):
+        shop = self.shop_service.get_shop_by_slug(db, shop_slug, check_active=True)
+        
+        if current_user.role != "platform_admin" and shop.owner_id != current_user.id:
+            from fastapi import HTTPException
+            raise HTTPException(status_code=403, detail="Not authorized")
+            
+        banner = self.repository.get(db, banner_id)
+        if not banner or banner.shop_id != shop.id:
+            from fastapi import HTTPException
+            raise HTTPException(status_code=404, detail="Banner not found")
+            
+        return banner
+
     def create_banner(self, db: Session, banner_in, shop_slug: str, current_user):
         shop = self.shop_service.get_shop_by_slug(db, shop_slug, check_active=True)
         

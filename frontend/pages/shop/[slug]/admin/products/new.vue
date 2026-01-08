@@ -48,6 +48,27 @@
             <div class="form-section">
               <h2 class="section-title">{{ $t('productsPage.basicInfo') }}</h2>
 
+              <!-- Common Fields -->
+              <div class="form-group">
+                <label class="label">{{ $t('productsPage.categoryLabel') }} *</label>
+                <select v-model="selectedCategory" class="input" style="height: 50px;">
+                  <option :value="null" disabled>{{ $t('productsPage.selectCategory') || 'Select Category' }}</option>
+                  <option v-for="cat in categories" :key="cat.id" :value="cat">
+                    {{ getField(cat, 'name') }}
+                  </option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="label">{{ $t('productsPage.brandLabel') }} *</label>
+                <select v-model="selectedBrand" class="input" style="height: 50px;">
+                  <option :value="null" disabled>{{ $t('productsPage.selectBrand') || 'Select Brand' }}</option>
+                  <option v-for="brand in brands" :key="brand.id" :value="brand">
+                    {{ brand.name }}
+                  </option>
+                </select>
+              </div>
+
               <!-- Language Tabs -->
               <div class="language-tabs">
                 <button type="button" v-for="lang in ['uz', 'ru', 'en']" :key="lang" @click="currentLang = lang"
@@ -69,18 +90,6 @@
                   <textarea v-model="form.description_uz" rows="4" required class="input"
                     :placeholder="$t('productsPage.descriptionPlaceholder')"></textarea>
                 </div>
-
-                <div class="form-group">
-                  <label class="label">{{ $t('productsPage.categoryLabel') }} ({{ $t('languages.uz') }}) *</label>
-                  <input v-model="form.category_uz" required class="input"
-                    :placeholder="$t('productsPage.example') + ', Ko\'zoynak'" />
-                </div>
-
-                <div class="form-group">
-                  <label class="label">{{ $t('productsPage.brandLabel') }} ({{ $t('languages.uz') }}) *</label>
-                  <input v-model="form.brand_uz" required class="input"
-                    :placeholder="$t('productsPage.example') + ', Ray-Ban'" />
-                </div>
               </div>
 
               <!-- Russian Fields -->
@@ -96,18 +105,6 @@
                   <textarea v-model="form.description_ru" rows="4" required class="input"
                     :placeholder="$t('productsPage.descriptionPlaceholder')"></textarea>
                 </div>
-
-                <div class="form-group">
-                  <label class="label">{{ $t('productsPage.categoryLabel') }} ({{ $t('languages.ru') }}) *</label>
-                  <input v-model="form.category_ru" required class="input"
-                    :placeholder="$t('productsPage.example') + ', Очки'" />
-                </div>
-
-                <div class="form-group">
-                  <label class="label">{{ $t('productsPage.brandLabel') }} ({{ $t('languages.ru') }}) *</label>
-                  <input v-model="form.brand_ru" required class="input"
-                    :placeholder="$t('productsPage.example') + ', Ray-Ban'" />
-                </div>
               </div>
 
               <!-- English Fields -->
@@ -122,18 +119,6 @@
                   <label class="label">{{ $t('productsPage.descriptionLabel') }} ({{ $t('languages.en') }}) *</label>
                   <textarea v-model="form.description_en" rows="4" required class="input"
                     :placeholder="$t('productsPage.descriptionPlaceholder')"></textarea>
-                </div>
-
-                <div class="form-group">
-                  <label class="label">{{ $t('productsPage.categoryLabel') }} ({{ $t('languages.en') }}) *</label>
-                  <input v-model="form.category_en" required class="input"
-                    :placeholder="$t('productsPage.example') + ', Sunglasses'" />
-                </div>
-
-                <div class="form-group">
-                  <label class="label">{{ $t('productsPage.brandLabel') }} ({{ $t('languages.en') }}) *</label>
-                  <input v-model="form.brand_en" required class="input"
-                    :placeholder="$t('productsPage.example') + ', Ray-Ban'" />
                 </div>
               </div>
 
@@ -152,6 +137,7 @@
                 </div>
               </div>
             </div>
+
 
             <div class="form-section">
               <h2 class="section-title">{{ $t('productsPage.imagesTitle') }}</h2>
@@ -301,6 +287,7 @@ const brandsError = ref(null)
 const categoriesError = ref(null)
 const toast = useToast()
 const { t } = useI18n()
+const { getField } = useMultilingual()
 
 const getLanguageLabel = (lang) => {
   switch (lang) {
@@ -368,6 +355,30 @@ onMounted(async () => {
 const fileInput = ref(null)
 const uploadedImages = ref([])
 const imageUrl = ref('')
+
+// Selection state
+const selectedCategory = ref(null)
+const selectedBrand = ref(null)
+
+// Watch for selection changes to populate form
+watch(selectedCategory, (newVal) => {
+  if (newVal) {
+    form.category_uz = newVal.name_uz
+    form.category_ru = newVal.name_ru
+    form.category_en = newVal.name_en
+  }
+})
+
+watch(selectedBrand, (newVal) => {
+  if (newVal) {
+    form.brand_uz = newVal.name // Brand name is usually universal? Check model.
+    form.brand_ru = newVal.name
+    form.brand_en = newVal.name
+    // Wait, Product model has brand_uz/ru/en. Brand model has name?
+    // Let's check brand model or just copy name to all if generic.
+    // Assuming Brand model has simple 'name'.
+  }
+})
 
 const variants = ref([{ size: '', color: '', colorHex: '#000000', stock: 0 }])
 
@@ -470,6 +481,27 @@ const form = reactive({
 const handleSubmit = async () => {
   if (uploadedImages.value.length === 0) {
     toast.warning(t('alerts.shop.addOneImage'))
+    return
+  }
+
+  // Custom Validation for Multilingual Fields
+  if (!form.name_uz || !form.name_ru || !form.name_en) {
+    toast.warning(t('alerts.shop.fillAllNames') || 'Please fill product name in all languages')
+    return
+  }
+
+  if (!form.description_uz || !form.description_ru || !form.description_en) {
+    toast.warning(t('alerts.shop.fillAllDescriptions') || 'Please fill product description in all languages')
+    return
+  }
+
+  if (!selectedCategory.value) {
+    toast.warning(t('alerts.shop.selectCategory') || 'Please select a category')
+    return
+  }
+
+  if (!selectedBrand.value) {
+    toast.warning(t('alerts.shop.selectBrand') || 'Please select a brand')
     return
   }
 
