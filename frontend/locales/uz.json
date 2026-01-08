@@ -707,351 +707,504 @@
             "subtitle": "Reja va to'lovlarni boshqarish",
             "currentPlan": "Joriy reja",
             "expires": "Tugash sanasi",
-            "products": "Mahsulotlar limiti",
+            "renewTitle": "Obunani uzaytirish",
+            "changeTitle": "Rejani o'zgartirish",
+            "cancelSubscription": "Obunani bekor qilish",
+            "keepSubscription": "Yo'q, saqlab qolish",
+            "confirmCancel": "Ha, bekor qilish",
+            "cancelTitle": "Obunani bekor qilish",
+            "cancelDesc": "Haqiqatan ham obunani bekor qilmoqchimisiz?",
+            "pendingTitle": "So'rov ko'rib chiqilmoqda",
+            "pendingDesc": "Sizning {plan} rejasiga o'tish so'rovingiz ko'rib chiqilmoqda",
             "plans": "Mavjud rejalar",
             "month": "oy",
             "months": "oy",
             "select": "Tanlash",
-            "pendingTitle": "So'rov ko'rib chiqilmoqda",
-            "pendingDesc": "{plan} rejasi uchun so'rovingiz ko'rib chiqilmoqda",
-            "renewTitle": "Obunani uzaytirish",
-            "changeTitle": "Rejani o'zgartirish",
-            "duration": "Davomiyligi",
-            "total": "Jami",
-            "requestSent": "So'rov yuborildi"
-        }
-    },
-    "checkout": {
-        "title": "Buyurtma berish",
-        "back": "Ortga",
-        "sections": {
-            "delivery": "Yetkazib berish manzili",
-            "payment": "To'lov usuli",
-            "notes": "Izohlar (ixtiyoriy)",
-            "summary": "Buyurtma xulosasi"
-        },
-        "form": {
-            "name": "Qabul qiluvchi ismi",
-            "namePlaceholder": "To'liq ism",
-            "phone": "Telefon raqami",
-            "phonePlaceholder": "+998 90 123 45 67",
-            "city": "Shahar",
-            "selectCity": "Shaharni tanlang",
-            "address": "Yetkazib berish manzili",
-            "addressPlaceholder": "Ko'cha, uy, kvartira...",
-            "notesPlaceholder": "Maxsus ko'rsatmalar..."
-        },
-        "payment": {
-            "cash": {
-                "title": "Naqd pul",
-                "desc": "Qabul qilganda to'lang"
-            },
-            "card": {
-                "title": "Karta orqali",
-                "desc": "Yetkazib berishda karta bilan to'lang"
-            }
-        },
-        "summary": {
-            "subtotal": "Oraliq jami",
-            "shipping": "Yetkazib berish",
-            "free": "Bepul",
-            "total": "Jami",
-            "placeOrder": "BUYURTMA BERISH",
-            "processing": "Jarayonda..."
-        },
-        "validation": {
-            "required": "Iltimos, barcha majburiy maydonlarni to'ldiring"
-        },
-        "success": "Buyurtma muvaffaqiyatli berildi!",
-        "error": "Buyurtma berishda xatolik. Iltimos, qayta urinib ko'ring."
-    },
-    "profile": {
-        "title": "Mening profilim",
-        "id": "Foydalanuvchi ID",
-        "role": "Rol",
-        "roles": {
-            "admin": "Admin",
-            "shopOwner": "Do'kon egasi",
-            "user": "Foydalanuvchi"
-        },
-        "links": {
-            "platformAdmin": "Platforma boshqaruvi",
-            "myShop": "Mening do'konim",
-            "shopAdmin": "Do'kon boshqaruvi",
-            "createShop": "Do'kon yaratish",
-            "customerProfile": "Xaridor profili"
-        },
-        "actions": {
-            "orders": "Buyurtmalarim",
-            "favorites": "Sevimlilar",
-            "cart": "Savatcha",
-            "products": "Mahsulotlar",
-            "logout": "Chiqish"
-        },
-        "info": {
-            "title": "Shaxsiy ma'lumotlar",
-            "firstName": "Ism",
-            "lastName": "Familiya",
-            "phone": "Telefon raqam",
-            "phoneChangeHint": "Telefon raqamni o'zgartirib bo'lmaydi"
-        },
-        "shops": {
-            "title": "Mening do'konlarim",
-            "status": {
-                "trial": "Sinov davri",
-                "active": "Faol",
-                "expired": "Muddati tugagan",
-                "cancelled": "Bekor qilingan"
-            },
-            "expires": {
-                "expired": "Iste'mol muddati tugagan",
-                "today": "Bugun tugaydi",
-                "tomorrow": "Ertaga tugaydi",
-                "days": "{days} kunda tugaydi",
-                "date": "{date} gacha"
-            },
-            "actions": {
-                "open": "Do'konni ochish",
-                "admin": "Boshqaruv",
-                "subscription": "Obuna"
-            }
-        },
-        "shopPromo": {
-            "title": "Do'kon egasi profili",
-            "desc": "Ushbu profil do'kon egalari uchun. Agar do'kon yaratmoqchi bo'lsangiz, quyidagi tugmani bosing.",
-            "redirect": "Agar xaridor bo'lsangiz, xaridor profiliga o'ting"
-        }
-    },
-    "orders": {
-        "title": "Mening buyurtmalarim",
-        "search": "Buyurtma ID bo'yicha qidirish...",
-        "empty": {
-            "title": "Hozircha buyurtmalar yo'q",
-            "subtitle": "Xarid qilganingizdan so'ng buyurtmalaringiz shu yerda ko'rinadi",
-            "action": "Xarid qilishni boshlash"
-        },
-        "card": {
-            "order": "Buyurtma",
-            "qty": "Soni",
-            "total": "Jami",
-            "details": "Batafsil",
-            "hide": "Yashirish",
-            "moreProducts": "+{count} ta mahsulot"
-        },
-        "details": {
-            "status": "Buyurtma holati",
-            "delivery": "Yetkazib berish manzili",
-            "payment": "To'lov usuli",
-            "products": "Mahsulotlar"
-        },
-        "status": {
-            "all": "Hammasi",
-            "pending": "Kutilmoqda",
-            "processing": "Jarayonda",
-            "shipping": "Yetkazilmoqda",
-            "delivered": "Yetkazildi",
-            "cancelled": "Bekor qilindi"
-        },
-        "steps": {
-            "placed": "Buyurtma berildi",
-            "processing": "Jarayonda",
-            "shipping": "Yetkazilmoqda",
-            "delivered": "Yetkazildi"
-        }
-    },
-    "shopRegistration": {
-        "title": "Do'kon yaratish",
-        "subtitle": "O'z do'koningizni platformada ro'yxatdan o'tkazing",
-        "steps": {
-            "tariff": "Tarif",
-            "details": "Do'kon ma'lumotlari"
-        },
-        "authNotice": "Do'kon yaratish uchun tizimga kirishingiz kerak",
-        "login": "Kirish",
-        "register": "Ro'yxatdan o'tish",
-        "checking": "Tekshirilmoqda...",
-        "next": "Keyingi qadam",
-        "back": "Ortga",
-        "plans": {
-            "title": "Rejangizni tanlang",
-            "subtitle": "Biznesingiz uchun eng yaxshi rejani tanlang",
-            "select": "Rejani tanlash",
-            "selected": "Tanlangan"
-        },
-        "alreadyExists": {
-            "title": "Sizda allaqachon do'kon mavjud",
-            "desc": "Bitta akkauntda faqat bitta do'kon yaratish mumkin.",
-            "goToAdmin": "Do'kon boshqaruviga o'tish",
-            "backToProfile": "Profilga qaytish"
-        },
-        "form": {
-            "name": "Do'kon nomi *",
-            "namePlaceholder": "Masalan: Nike Store",
-            "slug": "Do'kon URL manzili (slug) *",
-            "slugPlaceholder": "nike",
-            "slugHint": "Faqat lotin harflari, raqamlar va defis. Masalan: nike, adidas-store",
-            "description": "Tavsif (ixtiyoriy)",
-            "descPlaceholder": "Do'koningiz haqida qisqacha ma'lumot",
-            "logo": "Do'kon logotipi",
-            "logoUrl": "yoki havola orqali",
-            "upload": "Yuklash",
-            "uploading": "Yuklanmoqda...",
-            "divider": "yoki",
-            "logoHint": "Tavsiya etilgan o'lcham: kengligi 200px gacha",
-            "preview": "Ko'rib chiqish:",
-            "remove": "O'chirish",
-            "submit": "Do'kon yaratish",
-            "submitting": "Yaratilmoqda..."
-        },
-        "info": {
-            "title": "Ro'yxatdan o'tish yakuni",
-            "trial": "Siz tanlangan rejaga muvofiq sinov davriga ega bo'lasiz",
-            "url": "Do'koningiz manzili:",
-            "features": "Mahsulotlar qo'shish va buyurtmalarni boshqarish imkoniyati",
-            "admin": "Boshqaruv paneli profilingizda paydo bo'ladi",
-            "planLabel": "Tanlangan reja:",
-            "urlLabel": "Do'kon URL manzili:"
-        },
-        "notifications": {
-            "imageRequired": "Iltimos, rasm tanlang",
-            "sizeLimit": "Fayl hajmi 2MB dan oshmasligi kerak",
-            "selectPlan": "Iltimos, avval rejani tanlang",
-            "shopCreated": "Do'kon muvaffaqiyatli yaratildi",
-            "brandCreationError": "Brend yaratishda xatolik",
-            "addOneImage": "Kamida bitta rasm yuklang",
-            "productUpdated": "Mahsulot yangilandi",
-            "errorLoadingData": "Yuklashda xatolik",
-            "loggedOut": "Tizimdan chiqildi",
-            "success": "Do'kon muvaffaqiyatli yaratildi!",
-            "error": "Do'kon yaratishda xatolik",
-            "logoSuccess": "Logotip muvaffaqiyatli yuklandi",
-            "logoError": "Logotip yuklashda xatolik"
-        }
-    },
-    "alerts": {
-        "preorder": {
-            "loginRequired": "Oldindan buyurtma berish uchun tizimga kiring",
-            "phoneRequired": "Iltimos, telefon raqamingizni kiriting",
-            "success": "Oldindan buyurtma muvaffaqiyatli rasmiylashtirildi! Mahsulot sotuvga chiqqanda sizni xabardor qilamiz.",
-            "error": "Oldindan buyurtma berishda xato. Iltimos, qayta urinib ko'ring."
-        },
-        "cart": {
-            "loginRequired": "Savatga qo'shish uchun tizimga kiring",
-            "selectColor": "Iltimos, rangni tanlang",
-            "colorOutOfStock": "Bu rang tugagan",
-            "selectSize": "Iltimos, o'lchamni tanlang",
-            "success": "Savatga qo'shildi!"
-        },
-        "favorites": {
-            "loginRequired": "Sevimlilarga qo'shish uchun tizimga kiring"
-        },
-        "shop": {
-            "created": "Do'kon muvaffaqiyatli yaratildi!",
-            "exported": "Ma'lumotlar eksport qilindi",
-            "expiryRequired": "Faol obuna uchun tugash sanasini kiriting",
-            "statusChanged": "Do'kon {status}",
-            "requestTheSame": "Sizda ko'rib chiqilayotgan faol so'rov mavjud",
-            "planRequestSent": "\"{plan}\" rejasiga so'rov yuborildi! Administrator siz bilan bog'lanadi.",
-            "selectPlan": "Obuna rejasini tanlang",
-            "renewalSent": "\"{plan}\" obunasini uzaytirish so'rovi yuborildi!",
-            "subscriptionActivated": "Obuna faollashtirildi",
-            "subscriptionUpdated": "Obuna yangilandi",
-            "subscriptionCancelled": "Obuna muvaffaqiyatli bekor qilindi",
-            "requestError": "So'rov yuborishda xatolik",
-            "renewalError": "Uzaytirish so'rovini yuborishda xatolik",
-            "cancellationError": "Obunani bekor qilishda xatolik",
-            "logoRequired": "Iltimos, rasm tanlang",
-            "fileSize": "Fayl hajmi 2MB dan oshmasligi kerak",
-            "logoUploaded": "Logotip muvaffaqiyatli yuklandi",
-            "logoError": "Logotip yuklashda xato",
-            "imageRequired": "Iltimos, rasm yuklang",
-            "imageUploaded": "Rasm yuklandi!",
-            "imageError": "Rasm yuklashda xato",
-            "fillAll": "Iltimos, barcha maydonlarni to'ldiring",
-            "brandCreationError": "Brend yaratishda xatolik yuz berdi",
-            "brandCreated": "Brend muvaffaqiyatli yaratildi!",
-            "categoryCreated": "Kategoriya muvaffaqiyatli yaratildi!",
-            "productCreated": "Mahsulot muvaffaqiyatli yaratildi!",
-            "productUpdated": "Mahsulot muvaffaqiyatli yangilandi!",
-            "productDeleted": "Mahsulot o'chirildi",
-            "addOneImage": "Iltimos, kamida bitta rasm qo'shing",
-            "errorLoadingData": "Mahsulot ma'lumotlarini yuklashda xato",
-            "errorSaving": "Saqlashda xatolik",
-            "deleteError": "O'chirishda xatolik yuz berdi",
-            "loggedOut": "Siz tizimdan chiqdingiz"
+            "requestSent": "So'rov yuborildi",
+            "products": "Mahsulotlar limiti",
+            "duration": "Muddat",
+            "shopInactive": "Do'kon faol emas",
+            "expiredTitle": "Obuna muddati tugadi",
+            "contactSupport": "Do'koningiz administrator tomonidan o'chirildi. Iltimos, yordam xizmatiga murojaat qiling.",
+            "expiredDesc": "Obuna muddati tugadi. Sotuvni davom ettirish uchun quyidagi rejalardan birini tanlang.",
+            "total": "Jami:",
+            "pendingStatus": "Kutilmoqda"
         },
         "checkout": {
             "title": "Buyurtma berish",
             "back": "Ortga",
             "sections": {
-                "contact": "Aloqa ma'lumotlari",
-                "delivery": "Yetkazib berish usuli",
-                "payment": "To'lov usuli"
+                "delivery": "Yetkazib berish manzili",
+                "payment": "To'lov usuli",
+                "notes": "Izohlar (ixtiyoriy)",
+                "summary": "Buyurtma xulosasi"
+            },
+            "form": {
+                "name": "Qabul qiluvchi ismi",
+                "namePlaceholder": "To'liq ism",
+                "phone": "Telefon raqami",
+                "phonePlaceholder": "+998 90 123 45 67",
+                "city": "Shahar",
+                "selectCity": "Shaharni tanlang",
+                "address": "Yetkazib berish manzili",
+                "addressPlaceholder": "Ko'cha, uy, kvartira...",
+                "notesPlaceholder": "Maxsus ko'rsatmalar..."
+            },
+            "payment": {
+                "cash": {
+                    "title": "Naqd pul",
+                    "desc": "Qabul qilganda to'lang"
+                },
+                "card": {
+                    "title": "Karta orqali",
+                    "desc": "Yetkazib berishda karta bilan to'lang"
+                }
+            },
+            "summary": {
+                "subtotal": "Oraliq jami",
+                "shipping": "Yetkazib berish",
+                "free": "Bepul",
+                "total": "Jami",
+                "placeOrder": "BUYURTMA BERISH",
+                "processing": "Jarayonda..."
+            },
+            "validation": {
+                "required": "Iltimos, barcha majburiy maydonlarni to'ldiring"
+            },
+            "success": "Buyurtma muvaffaqiyatli berildi!",
+            "error": "Buyurtma berishda xatolik. Iltimos, qayta urinib ko'ring."
+        },
+        "profile": {
+            "title": "Mening profilim",
+            "id": "Foydalanuvchi ID",
+            "role": "Rol",
+            "roles": {
+                "admin": "Admin",
+                "shopOwner": "Do'kon egasi",
+                "user": "Foydalanuvchi"
+            },
+            "links": {
+                "platformAdmin": "Platforma boshqaruvi",
+                "myShop": "Mening do'konim",
+                "shopAdmin": "Do'kon boshqaruvi",
+                "createShop": "Do'kon yaratish",
+                "customerProfile": "Xaridor profili"
+            },
+            "actions": {
+                "orders": "Buyurtmalarim",
+                "favorites": "Sevimlilar",
+                "cart": "Savatcha",
+                "products": "Mahsulotlar",
+                "logout": "Chiqish"
+            },
+            "info": {
+                "title": "Shaxsiy ma'lumotlar",
+                "firstName": "Ism",
+                "lastName": "Familiya",
+                "phone": "Telefon raqam",
+                "phoneChangeHint": "Telefon raqamni o'zgartirib bo'lmaydi"
+            },
+            "shops": {
+                "title": "Mening do'konlarim",
+                "status": {
+                    "trial": "Sinov davri",
+                    "active": "Faol",
+                    "expired": "Muddati tugagan",
+                    "cancelled": "Bekor qilingan"
+                },
+                "expires": {
+                    "expired": "Iste'mol muddati tugagan",
+                    "today": "Bugun tugaydi",
+                    "tomorrow": "Ertaga tugaydi",
+                    "days": "{days} kunda tugaydi",
+                    "date": "{date} gacha"
+                },
+                "actions": {
+                    "open": "Do'konni ochish",
+                    "admin": "Boshqaruv",
+                    "subscription": "Obuna"
+                }
+            },
+            "shopPromo": {
+                "title": "Do'kon egasi profili",
+                "desc": "Ushbu profil do'kon egalari uchun. Agar do'kon yaratmoqchi bo'lsangiz, quyidagi tugmani bosing.",
+                "redirect": "Agar xaridor bo'lsangiz, xaridor profiliga o'ting"
             }
-        }
-    },
-    "bannerPage": {
-        "title": "Banner",
-        "subtitle": "Do'kon banner sozlamalari",
-        "preview": "Ko'rib chiqish",
-        "previewTitle": "Sarlavha",
-        "previewSubtitle": "Quyi sarlavha",
-        "previewButton": "Tugma",
-        "addBanner": "Banner qo'shish",
-        "editBanner": "Banner tahrirlash",
-        "createBanner": "Banner yaratish",
-        "createFirst": "Birinchi bannerni yaratish",
-        "noBanners": "Bannerlar yo'q",
-        "limitReached": "Banner limiti tugadi",
-        "confirmDelete": "Haqiqatan ham bu bannerni o'chirmoqchimisiz?",
-        "edit": "Banner tahrirlash",
-        "badgeLabel": "Belgi matni",
-        "badgePlaceholder": "YANGI",
-        "titleLabel": "Sarlavha (\\n yangi qator uchun)",
-        "titlePlaceholder": "Yozgi kolleksiya 2024",
-        "subtitleLabel": "Quyi sarlavha",
-        "subtitlePlaceholder": "$299 dan boshlab",
-        "linkPlaceholder": "https://link-shop.uz/collection/summer",
-        "tooltips": {
-            "edit": "Tahrirlash",
-            "delete": "O'chirish"
         },
-        "buttons": {
-            "upload": "Yuklash"
+        "orders": {
+            "title": "Mening buyurtmalarim",
+            "search": "Buyurtma ID bo'yicha qidirish...",
+            "empty": {
+                "title": "Hozircha buyurtmalar yo'q",
+                "subtitle": "Xarid qilganingizdan so'ng buyurtmalaringiz shu yerda ko'rinadi",
+                "action": "Xarid qilishni boshlash"
+            },
+            "card": {
+                "order": "Buyurtma",
+                "qty": "Soni",
+                "total": "Jami",
+                "details": "Batafsil",
+                "hide": "Yashirish",
+                "moreProducts": "+{count} ta mahsulot"
+            },
+            "details": {
+                "status": "Buyurtma holati",
+                "delivery": "Yetkazib berish manzili",
+                "payment": "To'lov usuli",
+                "products": "Mahsulotlar"
+            },
+            "status": {
+                "all": "Hammasi",
+                "pending": "Kutilmoqda",
+                "processing": "Jarayonda",
+                "shipping": "Yetkazilmoqda",
+                "delivered": "Yetkazildi",
+                "cancelled": "Bekor qilindi"
+            },
+            "steps": {
+                "placed": "Buyurtma berildi",
+                "processing": "Jarayonda",
+                "shipping": "Yetkazilmoqda",
+                "delivered": "Yetkazildi"
+            }
         },
-        "btnTextLabel": "Tugma matni",
-        "btnTextPlaceholder": "Sotib olish",
-        "btnLinkLabel": "Tugma havolasi",
-        "imageUrlLabel": "Rasm URL manzili",
-        "uploadLabel": "Yoki rasmni yuklang",
-        "activeLabel": "Banner faol",
-        "saveBtn": "Bannerni saqlash",
-        "saving": "Saqlanmoqda...",
-        "saved": "Banner saqlandi!"
-    },
-    "admin": {
-        "status": {
-            "active": "Faol",
-            "trial": "Sinov davri",
-            "expired": "Tugagan",
-            "cancelled": "Bekor qilingan",
-            "pending": "Kutilmoqda",
-            "processing": "Jarayonda",
-            "shipping": "Yetkazilmoqda",
-            "delivered": "Yetkazildi"
+        "shopRegistration": {
+            "title": "Do'kon yaratish",
+            "subtitle": "O'z do'koningizni platformada ro'yxatdan o'tkazing",
+            "steps": {
+                "tariff": "Tarif",
+                "details": "Do'kon ma'lumotlari"
+            },
+            "authNotice": "Do'kon yaratish uchun tizimga kirishingiz kerak",
+            "login": "Kirish",
+            "register": "Ro'yxatdan o'tish",
+            "checking": "Tekshirilmoqda...",
+            "next": "Keyingi qadam",
+            "back": "Ortga",
+            "plans": {
+                "title": "Rejangizni tanlang",
+                "subtitle": "Biznesingiz uchun eng yaxshi rejani tanlang",
+                "select": "Rejani tanlash",
+                "selected": "Tanlangan"
+            },
+            "alreadyExists": {
+                "title": "Sizda allaqachon do'kon mavjud",
+                "desc": "Bitta akkauntda faqat bitta do'kon yaratish mumkin.",
+                "goToAdmin": "Do'kon boshqaruviga o'tish",
+                "backToProfile": "Profilga qaytish"
+            },
+            "form": {
+                "name": "Do'kon nomi *",
+                "namePlaceholder": "Masalan: Nike Store",
+                "slug": "Do'kon URL manzili (slug) *",
+                "slugPlaceholder": "nike",
+                "slugHint": "Faqat lotin harflari, raqamlar va defis. Masalan: nike, adidas-store",
+                "description": "Tavsif (ixtiyoriy)",
+                "descPlaceholder": "Do'koningiz haqida qisqacha ma'lumot",
+                "logo": "Do'kon logotipi",
+                "logoUrl": "yoki havola orqali",
+                "upload": "Yuklash",
+                "uploading": "Yuklanmoqda...",
+                "divider": "yoki",
+                "logoHint": "Tavsiya etilgan o'lcham: kengligi 200px gacha",
+                "preview": "Ko'rib chiqish:",
+                "remove": "O'chirish",
+                "submit": "Do'kon yaratish",
+                "submitting": "Yaratilmoqda..."
+            },
+            "info": {
+                "title": "Ro'yxatdan o'tish yakuni",
+                "trial": "Siz tanlangan rejaga muvofiq sinov davriga ega bo'lasiz",
+                "url": "Do'koningiz manzili:",
+                "features": "Mahsulotlar qo'shish va buyurtmalarni boshqarish imkoniyati",
+                "admin": "Boshqaruv paneli profilingizda paydo bo'ladi",
+                "planLabel": "Tanlangan reja:",
+                "urlLabel": "Do'kon URL manzili:"
+            },
+            "notifications": {
+                "imageRequired": "Iltimos, rasm tanlang",
+                "sizeLimit": "Fayl hajmi 2MB dan oshmasligi kerak",
+                "selectPlan": "Iltimos, avval rejani tanlang",
+                "shopCreated": "Do'kon muvaffaqiyatli yaratildi",
+                "brandCreationError": "Brend yaratishda xatolik",
+                "addOneImage": "Kamida bitta rasm yuklang",
+                "productUpdated": "Mahsulot yangilandi",
+                "errorLoadingData": "Yuklashda xatolik",
+                "loggedOut": "Tizimdan chiqildi",
+                "success": "Do'kon muvaffaqiyatli yaratildi!",
+                "error": "Do'kon yaratishda xatolik",
+                "logoSuccess": "Logotip muvaffaqiyatli yuklandi",
+                "logoError": "Logotip yuklashda xatolik"
+            }
         },
-        "delivery": {
-            "title": "Yetkazib berish",
-            "settingsSubtitle": "Yetkazib berish usullari va narxlarini sozlash",
-            "type": "Yetkazib berish turi",
-            "free": "Bepul yetkazib berish",
-            "freeDesc": "Barcha buyurtmalar uchun bepul",
-            "fixed": "Qat'iy narx",
-            "fixedDesc": "Barcha hududlar uchun bir xil narx",
-            "regional": "Hududlar bo'yicha",
-            "regionalDesc": "Har bir hudud uchun alohida narx",
-            "price": "Yetkazib berish narxi",
-            "regionalInfo": "Har bir hudud uchun yetkazib berish narxini kiriting",
+        "alerts": {
+            "preorder": {
+                "loginRequired": "Oldindan buyurtma berish uchun tizimga kiring",
+                "phoneRequired": "Iltimos, telefon raqamingizni kiriting",
+                "success": "Oldindan buyurtma muvaffaqiyatli rasmiylashtirildi! Mahsulot sotuvga chiqqanda sizni xabardor qilamiz.",
+                "error": "Oldindan buyurtma berishda xato. Iltimos, qayta urinib ko'ring."
+            },
+            "cart": {
+                "loginRequired": "Savatga qo'shish uchun tizimga kiring",
+                "selectColor": "Iltimos, rangni tanlang",
+                "colorOutOfStock": "Bu rang tugagan",
+                "selectSize": "Iltimos, o'lchamni tanlang",
+                "success": "Savatga qo'shildi!"
+            },
+            "favorites": {
+                "loginRequired": "Sevimlilarga qo'shish uchun tizimga kiring"
+            },
+            "shop": {
+                "created": "Do'kon muvaffaqiyatli yaratildi!",
+                "exported": "Ma'lumotlar eksport qilindi",
+                "expiryRequired": "Faol obuna uchun tugash sanasini kiriting",
+                "statusChanged": "Do'kon {status}",
+                "requestTheSame": "Sizda ko'rib chiqilayotgan faol so'rov mavjud",
+                "planRequestSent": "\"{plan}\" rejasiga so'rov yuborildi! Administrator siz bilan bog'lanadi.",
+                "selectPlan": "Obuna rejasini tanlang",
+                "renewalSent": "\"{plan}\" obunasini uzaytirish so'rovi yuborildi!",
+                "subscriptionActivated": "Obuna faollashtirildi",
+                "subscriptionUpdated": "Obuna yangilandi",
+                "subscriptionCancelled": "Obuna muvaffaqiyatli bekor qilindi",
+                "requestError": "So'rov yuborishda xatolik",
+                "renewalError": "Uzaytirish so'rovini yuborishda xatolik",
+                "cancellationError": "Obunani bekor qilishda xatolik",
+                "logoRequired": "Iltimos, rasm tanlang",
+                "fileSize": "Fayl hajmi 2MB dan oshmasligi kerak",
+                "logoUploaded": "Logotip muvaffaqiyatli yuklandi",
+                "logoError": "Logotip yuklashda xato",
+                "imageRequired": "Iltimos, rasm yuklang",
+                "imageUploaded": "Rasm yuklandi!",
+                "imageError": "Rasm yuklashda xato",
+                "fillAll": "Iltimos, barcha maydonlarni to'ldiring",
+                "brandCreationError": "Brend yaratishda xatolik yuz berdi",
+                "brandCreated": "Brend muvaffaqiyatli yaratildi!",
+                "categoryCreated": "Kategoriya muvaffaqiyatli yaratildi!",
+                "productCreated": "Mahsulot muvaffaqiyatli yaratildi!",
+                "productUpdated": "Mahsulot muvaffaqiyatli yangilandi!",
+                "productDeleted": "Mahsulot o'chirildi",
+                "addOneImage": "Iltimos, kamida bitta rasm qo'shing",
+                "errorLoadingData": "Mahsulot ma'lumotlarini yuklashda xato",
+                "errorSaving": "Saqlashda xatolik",
+                "deleteError": "O'chirishda xatolik yuz berdi",
+                "loggedOut": "Siz tizimdan chiqdingiz"
+            },
+            "checkout": {
+                "title": "Buyurtma berish",
+                "back": "Ortga",
+                "sections": {
+                    "contact": "Aloqa ma'lumotlari",
+                    "delivery": "Yetkazib berish usuli",
+                    "payment": "To'lov usuli"
+                }
+            }
+        },
+        "bannerPage": {
+            "title": "Banner",
+            "subtitle": "Do'kon banner sozlamalari",
+            "preview": "Ko'rib chiqish",
+            "previewTitle": "Sarlavha",
+            "previewSubtitle": "Quyi sarlavha",
+            "previewButton": "Tugma",
+            "addBanner": "Banner qo'shish",
+            "editBanner": "Banner tahrirlash",
+            "createBanner": "Banner yaratish",
+            "createFirst": "Birinchi bannerni yaratish",
+            "noBanners": "Bannerlar yo'q",
+            "limitReached": "Banner limiti tugadi",
+            "confirmDelete": "Haqiqatan ham bu bannerni o'chirmoqchimisiz?",
+            "edit": "Banner tahrirlash",
+            "badgeLabel": "Belgi matni",
+            "badgePlaceholder": "YANGI",
+            "titleLabel": "Sarlavha (\\n yangi qator uchun)",
+            "titlePlaceholder": "Yozgi kolleksiya 2024",
+            "subtitleLabel": "Quyi sarlavha",
+            "subtitlePlaceholder": "$299 dan boshlab",
+            "linkPlaceholder": "https://link-shop.uz/collection/summer",
+            "tooltips": {
+                "edit": "Tahrirlash",
+                "delete": "O'chirish"
+            },
+            "buttons": {
+                "upload": "Yuklash"
+            },
+            "btnTextLabel": "Tugma matni",
+            "btnTextPlaceholder": "Sotib olish",
+            "btnLinkLabel": "Tugma havolasi",
+            "imageUrlLabel": "Rasm URL manzili",
+            "uploadLabel": "Yoki rasmni yuklang",
+            "activeLabel": "Banner faol",
+            "saveBtn": "Bannerni saqlash",
+            "saving": "Saqlanmoqda...",
+            "saved": "Banner saqlandi!"
+        },
+        "admin": {
+            "status": {
+                "active": "Faol",
+                "trial": "Sinov davri",
+                "expired": "Tugagan",
+                "cancelled": "Bekor qilingan",
+                "pending": "Kutilmoqda",
+                "processing": "Jarayonda",
+                "shipping": "Yetkazilmoqda",
+                "delivered": "Yetkazildi"
+            },
+            "delivery": {
+                "title": "Yetkazib berish",
+                "settingsSubtitle": "Yetkazib berish usullari va narxlarini sozlash",
+                "type": "Yetkazib berish turi",
+                "free": "Bepul yetkazib berish",
+                "freeDesc": "Barcha buyurtmalar uchun bepul",
+                "fixed": "Qat'iy narx",
+                "fixedDesc": "Barcha hududlar uchun bir xil narx",
+                "regional": "Hududlar bo'yicha",
+                "regionalDesc": "Har bir hudud uchun alohida narx",
+                "price": "Yetkazib berish narxi",
+                "regionalInfo": "Har bir hudud uchun yetkazib berish narxini kiriting",
+                "deliverySettingsSubtitle": "Yetkazib berish narxlarini sozlash",
+                "deliveryType": "Yetkazib berish turi",
+                "deliveryFree": "Bepul yetkazib berish",
+                "deliveryFreeDesc": "Mijozlar uchun bepul",
+                "deliveryFixed": "Qat'iy narx",
+                "deliveryFixedDesc": "Barcha hududlar uchun bir xil",
+                "deliveryRegional": "Hududiy narxlar",
+                "deliveryRegionalDesc": "Har bir hudud uchun alohida",
+                "deliveryPrice": "Narx",
+                "deliveryRegionalInfo": "'Boshqa' narxi ro'yxatda yo'q hududlar uchun qo'llaniladi"
+            },
+            "subscriptionPage": {
+                "title": "Obuna",
+                "pageTitle": "Obunani boshqarish",
+                "pageSubtitle": "Reja va limitlarni nazorat qiling",
+                "current": "Joriy reja",
+                "requestPending": "So'rov ko'rib chiqilmoqda",
+                "labels": {
+                    "plan": "Reja",
+                    "duration": "Davomiyligi",
+                    "sent": "Yuborildi",
+                    "price": "Narx",
+                    "expires": "Tugash muddati",
+                    "daysLeft": "Kun qoldi",
+                    "products": "Mahsulotlar"
+                },
+                "requestNote": "Sizning so'rovingiz ko'rib chiqilmoqda.",
+                "availablePlans": "Mavjud rejalar",
+                "availablePlansDesc": "Biznesingiz uchun mos rejani tanlang",
+                "popular": "OMMABOP",
+                "month": "/oy",
+                "selectDuration": "Davrni tanlang",
+                "priceFor": "{duration} {unit} uchun narx",
+                "discount": "Chegirma",
+                "total": "Jami",
+                "actions": {
+                    "renew": "Obunani uzaytirish",
+                    "cancel": "Obunani bekor qilish",
+                    "sending": "Yuborilmoqda..."
+                },
+                "requestSent": "So'rov yuborildi",
+                "specialOffers": "Maxsus takliflar",
+                "specialOffersDesc": "Siz uchun maxsus takliflar",
+                "contact": {
+                    "email": "Bizga yozing",
+                    "call": "Qo'ng'iroq qiling"
+                },
+                "importantInfo": "Muhim ma'lumot",
+                "infoList": {
+                    "trial": "Sinov davri to'liq kirish imkonini beradi.",
+                    "suspension": "Obuna tugasa, do'kon to'xtatiladi.",
+                    "activation": "Faollashtirish to'lovdan keyin amalga oshiriladi.",
+                    "payment": "To'lov tafsilotlari uchun biz bilan bog'laning.",
+                    "renewal": "To'xtab qolmasligi uchun oldindan uzaytiring."
+                },
+                "modals": {
+                    "renewTitle": "Obunani uzaytirish",
+                    "renewDesc": "Obunani uzaytirish uchun so'rov yuboring.",
+                    "selectPlan": "Rejani tanlang",
+                    "total": "To'lov summasi",
+                    "savings": "Tejaysiz",
+                    "sendRequest": "So'rov yuborish",
+                    "cancelTitle": "Obunani bekor qilish",
+                    "cancelConfirm": "Ishonchingiz komilmi?",
+                    "cancelWarning": "Do'koningiz darhol faolsizlantiriladi.",
+                    "reason": "Sabab (ixtiyoriy)",
+                    "reasonPlaceholder": "Nega ketayapsiz?",
+                    "confirmCancel": "Ha, obunani bekor qilish"
+                },
+                "months": {
+                    "one": "oy",
+                    "few": "oy",
+                    "many": "oy"
+                },
+                "status": {
+                    "trial": "Sinov",
+                    "active": "Faol",
+                    "expired": "Muddati tugagan",
+                    "cancelled": "Bekor qilingan",
+                    "free": "Bepul"
+                }
+            },
+            "dashboardStats": {
+                "ordersCount": "{count} buyurtma",
+                "revenue": "Tushum",
+                "excludedCancelled": "{count} bekor qilingan hisoblanmadi",
+                "totalOrders": "Jami buyurtmalar",
+                "clients": "Mijozlar",
+                "products": "Mahsulotlar",
+                "pills": {
+                    "live": "LIVE",
+                    "total": "JAMI"
+                },
+                "comparison": {
+                    "today": "Bugun",
+                    "week": "Shu hafta",
+                    "month": "Shu oy",
+                    "all": "Barcha vaqt"
+                },
+                "orders": "Buyurtmalar"
+            },
+            "intro": "Xush kelibsiz",
+            "welcome": "Boshqaruv paneliga xush kelibsiz",
+            "panel": "Boshqaruv Paneli",
+            "analytics": "Analitika",
+            "overview": "Umumiy ko'rinish",
+            "orders": "Buyurtmalar",
+            "shop": "Do'kon",
+            "viewShop": "Do'konni ko'rish",
+            "products": "Mahsulotlar",
+            "categories": "Kategoriyalar",
+            "brand": "Brend",
+            "settings": "Sozlamalar",
+            "banner": "Banner",
+            "yourPlan": "Sizning rejangiz",
+            "usage": "Foydalanish",
+            "limitWarning": "Limitga yaqinlashilmoqda",
+            "aboutShop": "Do'kon haqida",
+            "domain": "Domen",
+            "subscription": "Obuna",
+            "dashboard": "Boshqaruv Paneli",
+            "addProduct": "Mahsulot qo'shish",
+            "editProduct": "Mahsulotni tahrirlash",
+            "basicInfo": "Asosiy ma'lumotlar",
+            "images": "Rasmlar",
+            "variants": "Variantlar",
+            "productName": "Mahsulot nomi",
+            "productNameUz": "Mahsulot nomi (O'zbek)",
+            "productNameRu": "Mahsulot nomi (Rus)",
+            "productNameEn": "Mahsulot nomi (Ingliz)",
+            "description": "Tavsif",
+            "descriptionUz": "Tavsif (O'zbek)",
+            "descriptionRu": "Tavsif (Rus)",
+            "descriptionEn": "Tavsif (Ingliz)",
+            "price": "Narx",
+            "discount": "Chegirma",
+            "discountHint": "Chegirma foizini kiriting (0-100)",
+            "stock": "Ombor",
+            "image": "Rasm",
+            "category": "Kategoriya",
+            "categoryUz": "Kategoriya (O'zbek)",
+            "categoryRu": "Kategoriya (Rus)",
+            "categoryEn": "Kategoriya (Ingliz)",
+            "logout": "Chiqish",
             "deliverySettingsSubtitle": "Yetkazib berish narxlarini sozlash",
             "deliveryType": "Yetkazib berish turi",
             "deliveryFree": "Bepul yetkazib berish",
@@ -1061,210 +1214,67 @@
             "deliveryRegional": "Hududiy narxlar",
             "deliveryRegionalDesc": "Har bir hudud uchun alohida",
             "deliveryPrice": "Narx",
-            "deliveryRegionalInfo": "'Boshqa' narxi ro'yxatda yo'q hududlar uchun qo'llaniladi"
-        },
-        "subscriptionPage": {
-            "title": "Obuna",
-            "pageTitle": "Obunani boshqarish",
-            "pageSubtitle": "Reja va limitlarni nazorat qiling",
-            "current": "Joriy reja",
-            "requestPending": "So'rov ko'rib chiqilmoqda",
-            "labels": {
-                "plan": "Reja",
-                "duration": "Davomiyligi",
-                "sent": "Yuborildi",
-                "price": "Narx",
-                "expires": "Tugash muddati",
-                "daysLeft": "Kun qoldi",
-                "products": "Mahsulotlar"
-            },
-            "requestNote": "Sizning so'rovingiz ko'rib chiqilmoqda.",
-            "availablePlans": "Mavjud rejalar",
-            "availablePlansDesc": "Biznesingiz uchun mos rejani tanlang",
-            "popular": "OMMABOP",
-            "month": "/oy",
-            "selectDuration": "Davrni tanlang",
-            "priceFor": "{duration} {unit} uchun narx",
-            "discount": "Chegirma",
-            "total": "Jami",
-            "actions": {
-                "renew": "Obunani uzaytirish",
-                "cancel": "Obunani bekor qilish",
-                "sending": "Yuborilmoqda..."
-            },
-            "requestSent": "So'rov yuborildi",
-            "specialOffers": "Maxsus takliflar",
-            "specialOffersDesc": "Siz uchun maxsus takliflar",
-            "contact": {
-                "email": "Bizga yozing",
-                "call": "Qo'ng'iroq qiling"
-            },
-            "importantInfo": "Muhim ma'lumot",
-            "infoList": {
-                "trial": "Sinov davri to'liq kirish imkonini beradi.",
-                "suspension": "Obuna tugasa, do'kon to'xtatiladi.",
-                "activation": "Faollashtirish to'lovdan keyin amalga oshiriladi.",
-                "payment": "To'lov tafsilotlari uchun biz bilan bog'laning.",
-                "renewal": "To'xtab qolmasligi uchun oldindan uzaytiring."
-            },
-            "modals": {
-                "renewTitle": "Obunani uzaytirish",
-                "renewDesc": "Obunani uzaytirish uchun so'rov yuboring.",
-                "selectPlan": "Rejani tanlang",
-                "total": "To'lov summasi",
-                "savings": "Tejaysiz",
-                "sendRequest": "So'rov yuborish",
-                "cancelTitle": "Obunani bekor qilish",
-                "cancelConfirm": "Ishonchingiz komilmi?",
-                "cancelWarning": "Do'koningiz darhol faolsizlantiriladi.",
-                "reason": "Sabab (ixtiyoriy)",
-                "reasonPlaceholder": "Nega ketayapsiz?",
-                "confirmCancel": "Ha, obunani bekor qilish"
-            },
-            "months": {
-                "one": "oy",
-                "few": "oy",
-                "many": "oy"
-            },
-            "status": {
-                "trial": "Sinov",
-                "active": "Faol",
-                "expired": "Muddati tugagan",
-                "cancelled": "Bekor qilingan",
-                "free": "Bepul"
-            }
-        },
-        "dashboardStats": {
-            "ordersCount": "{count} buyurtma",
-            "revenue": "Tushum",
-            "excludedCancelled": "{count} bekor qilingan hisoblanmadi",
-            "totalOrders": "Jami buyurtmalar",
-            "clients": "Mijozlar",
-            "products": "Mahsulotlar",
-            "pills": {
-                "live": "LIVE",
-                "total": "JAMI"
-            },
-            "comparison": {
+            "deliveryRegionalInfo": "'Boshqa' narxi ro'yxatda yo'q hududlar uchun qo'llaniladi",
+            "periods": {
                 "today": "Bugun",
-                "week": "Shu hafta",
-                "month": "Shu oy",
+                "week": "Hafta",
+                "month": "Oy",
                 "all": "Barcha vaqt"
             },
-            "orders": "Buyurtmalar"
-        },
-        "intro": "Xush kelibsiz",
-        "welcome": "Boshqaruv paneliga xush kelibsiz",
-        "panel": "Boshqaruv Paneli",
-        "analytics": "Analitika",
-        "overview": "Umumiy ko'rinish",
-        "orders": "Buyurtmalar",
-        "shop": "Do'kon",
-        "viewShop": "Do'konni ko'rish",
-        "products": "Mahsulotlar",
-        "categories": "Kategoriyalar",
-        "brand": "Brend",
-        "settings": "Sozlamalar",
-        "banner": "Banner",
-        "yourPlan": "Sizning rejangiz",
-        "usage": "Foydalanish",
-        "limitWarning": "Limitga yaqinlashilmoqda",
-        "aboutShop": "Do'kon haqida",
-        "domain": "Domen",
-        "subscription": "Obuna",
-        "dashboard": "Boshqaruv Paneli",
-        "addProduct": "Mahsulot qo'shish",
-        "editProduct": "Mahsulotni tahrirlash",
-        "basicInfo": "Asosiy ma'lumotlar",
-        "images": "Rasmlar",
-        "variants": "Variantlar",
-        "productName": "Mahsulot nomi",
-        "productNameUz": "Mahsulot nomi (O'zbek)",
-        "productNameRu": "Mahsulot nomi (Rus)",
-        "productNameEn": "Mahsulot nomi (Ingliz)",
-        "description": "Tavsif",
-        "descriptionUz": "Tavsif (O'zbek)",
-        "descriptionRu": "Tavsif (Rus)",
-        "descriptionEn": "Tavsif (Ingliz)",
-        "price": "Narx",
-        "discount": "Chegirma",
-        "discountHint": "Chegirma foizini kiriting (0-100)",
-        "stock": "Ombor",
-        "image": "Rasm",
-        "category": "Kategoriya",
-        "categoryUz": "Kategoriya (O'zbek)",
-        "categoryRu": "Kategoriya (Rus)",
-        "categoryEn": "Kategoriya (Ingliz)",
-        "logout": "Chiqish",
-        "deliverySettingsSubtitle": "Yetkazib berish narxlarini sozlash",
-        "deliveryType": "Yetkazib berish turi",
-        "deliveryFree": "Bepul yetkazib berish",
-        "deliveryFreeDesc": "Mijozlar uchun bepul",
-        "deliveryFixed": "Qat'iy narx",
-        "deliveryFixedDesc": "Barcha hududlar uchun bir xil",
-        "deliveryRegional": "Hududiy narxlar",
-        "deliveryRegionalDesc": "Har bir hudud uchun alohida",
-        "deliveryPrice": "Narx",
-        "deliveryRegionalInfo": "'Boshqa' narxi ro'yxatda yo'q hududlar uchun qo'llaniladi",
-        "periods": {
-            "today": "Bugun",
-            "week": "Hafta",
-            "month": "Oy",
-            "all": "Barcha vaqt"
-        },
-        "brandUz": "Brend (O'zbek)",
-        "brandRu": "Brend (Rus)",
-        "brandEn": "Brend (Ingliz)",
-        "uploadImages": "Rasmlarni yuklash",
-        "uploadHint": "PNG, JPG 5MB gacha",
-        "orAddUrl": "yoki URL orqali",
-        "addUrl": "Qo'shish",
-        "addVariant": "+ Variant qo'shish",
-        "variantsHint": "O'lcham va rang kombinatsiyalarini qo'shing",
-        "size": "O'lcham",
-        "color": "Rang",
-        "selectColor": "Rangni tanlang",
-        "creating": "Yaratilmoqda...",
-        "saving": "Saqlanmoqda...",
-        "createProduct": "Mahsulot yaratish",
-        "saveChanges": "Saqlash",
-        "mainImage": "Asosiy",
-        "setAsMain": "Asosiy qilish",
-        "uploading": "Yuklanmoqda...",
-        "loadingProduct": "Yuklanmoqda...",
-        "errorLoadingBrands": "Brendlarni yuklashda xatolik",
-        "errorLoadingCategories": "Kategoriyalarni yuklashda xatolik",
-        "selectBrand": "Brendni tanlang",
-        "selectCategory": "Kategoriyani tanlang",
-        "loadingBrands": "Brendlar yuklanmoqda...",
-        "loadingCategories": "Kategoriyalar yuklanmoqda...",
-        "ordersPage": {
-            "title": "Buyurtmalar",
-            "subtitle": "Do'kon buyurtmalarini boshqarish",
-            "empty": "Buyurtmalar yo'q",
-            "delivery": "Yetkazib berish",
-            "recipient": "Qabul qiluvchi",
-            "phone": "Telefon",
-            "city": "Shahar",
-            "address": "Manzil",
-            "payment": "To'lov",
-            "cash": "Naqd",
-            "card": "Karta",
-            "items": "Mahsulotlar",
-            "qty": "Soni",
-            "notes": "Izoh",
-            "statusUpdateSuccess": "Status yangilandi",
-            "statusUpdateError": "Xatolik: Status yangilanmadi"
-        },
-        "periodLabel": {
-            "today": "Bugungi",
-            "week": "Haftalik",
-            "month": "Oylik",
-            "total": "Jami"
-        },
-        "ordersByStatus": "Status bo'yicha buyurtmalar",
-        "generalStats": "Umumiy statistika",
-        "selectPlan": "Rejani tanlang",
-        "upgrade": "Ko'tarish"
+            "brandUz": "Brend (O'zbek)",
+            "brandRu": "Brend (Rus)",
+            "brandEn": "Brend (Ingliz)",
+            "uploadImages": "Rasmlarni yuklash",
+            "uploadHint": "PNG, JPG 5MB gacha",
+            "orAddUrl": "yoki URL orqali",
+            "addUrl": "Qo'shish",
+            "addVariant": "+ Variant qo'shish",
+            "variantsHint": "O'lcham va rang kombinatsiyalarini qo'shing",
+            "size": "O'lcham",
+            "color": "Rang",
+            "selectColor": "Rangni tanlang",
+            "creating": "Yaratilmoqda...",
+            "saving": "Saqlanmoqda...",
+            "createProduct": "Mahsulot yaratish",
+            "saveChanges": "Saqlash",
+            "mainImage": "Asosiy",
+            "setAsMain": "Asosiy qilish",
+            "uploading": "Yuklanmoqda...",
+            "loadingProduct": "Yuklanmoqda...",
+            "errorLoadingBrands": "Brendlarni yuklashda xatolik",
+            "errorLoadingCategories": "Kategoriyalarni yuklashda xatolik",
+            "selectBrand": "Brendni tanlang",
+            "selectCategory": "Kategoriyani tanlang",
+            "loadingBrands": "Brendlar yuklanmoqda...",
+            "loadingCategories": "Kategoriyalar yuklanmoqda...",
+            "ordersPage": {
+                "title": "Buyurtmalar",
+                "subtitle": "Do'kon buyurtmalarini boshqarish",
+                "empty": "Buyurtmalar yo'q",
+                "delivery": "Yetkazib berish",
+                "recipient": "Qabul qiluvchi",
+                "phone": "Telefon",
+                "city": "Shahar",
+                "address": "Manzil",
+                "payment": "To'lov",
+                "cash": "Naqd",
+                "card": "Karta",
+                "items": "Mahsulotlar",
+                "qty": "Soni",
+                "notes": "Izoh",
+                "statusUpdateSuccess": "Status yangilandi",
+                "statusUpdateError": "Xatolik: Status yangilanmadi"
+            },
+            "periodLabel": {
+                "today": "Bugungi",
+                "week": "Haftalik",
+                "month": "Oylik",
+                "total": "Jami"
+            },
+            "ordersByStatus": "Status bo'yicha buyurtmalar",
+            "generalStats": "Umumiy statistika",
+            "selectPlan": "Rejani tanlang",
+            "upgrade": "Ko'tarish"
+        }
     }
 }

@@ -31,8 +31,10 @@
                 <div class="warning-text">
                     <h3>{{ !shop?.is_active ? $t('shopSettings.subscription.shopInactive') || 'Shop Deactivated' :
                         $t('shopSettings.subscription.expiredTitle') || 'Subscription Expired' }}</h3>
-                    <p>{{ !shop?.is_active ? $t('shopSettings.subscription.contactSupport') || 'Your shop has been       deactivated by the administrator.Please contact support.' :
-                    $t('shopSettings.subscription.expiredDesc') || 'Your subscription has ended. Please choose a       plan below to reactive your shop and continue selling.' }}</p>
+                    <p>{{ !shop?.is_active ? $t('shopSettings.subscription.contactSupport') || 'Your shop has been
+                        deactivated by the administrator.Please contact support.' :
+                    $t('shopSettings.subscription.expiredDesc') || 'Your subscription has ended. Please choose a
+                        plan below to reactive your shop and continue selling.' }}</p>
                 </div>
             </div>
 
@@ -47,7 +49,7 @@
                     </div>
                     <div class="expiry-date" v-if="shop?.subscription_expires_at">
                         <span class="label">{{ $t('shopSettings.subscription.expires') }}</span>
-                        <span class="date">{{ formatDate(shop.subscription_expires_at) }}</span>
+                        <span class="date ml-2">{{ formatDate(shop.subscription_expires_at) }}</span>
                     </div>
                 </div>
 
@@ -62,7 +64,7 @@
                                 getMonthsLabel(subscriptionRequest.duration_months) }}
                         </p>
                     </div>
-                    <div class="banner-status">Pending</div>
+                    <div class="banner-status">{{ $t('shopSettings.subscription.pendingStatus') || 'Pending' }}</div>
                 </div>
 
                 <div class="usage-stats">
@@ -83,7 +85,8 @@
                     <!-- Banners Limit -->
                     <div class="stat-item">
                         <div class="stat-header">
-                            <span class="stat-label">{{ $t('platformAdmin.plans.form.maxBanners') }}</span>
+                            <span class="stat-label">{{ $t('shopSettings.subscription.maxBanners', { count: 1 }) ||
+                                $t('platformAdmin.plans.form.maxBanners') }}</span>
                             <span class="stat-value">
                                 {{ stats?.total_banners || 0 }} / {{ stats?.plan_limit_banners || 1 }}
                             </span>
@@ -101,7 +104,7 @@
                         {{ $t('shopSettings.subscription.renewTitle') }}
                     </button>
                     <button @click="openCancelModal" class="btn-danger-text">
-                        Cancel Subscription
+                        {{ $t('shopSettings.subscription.cancelSubscription') }}
                     </button>
                 </div>
             </div>
@@ -144,7 +147,8 @@
                                 </button>
                             </div>
                             <div class="price-calc">
-                                Total: ${{ calculatePrice(plan, getPlanDuration(plan.id)).final.toFixed(2) }}
+                                {{ $t('shopSettings.subscription.total') }} ${{ calculatePrice(plan,
+                                    getPlanDuration(plan.id)).final.toFixed(2) }}
                             </div>
                         </div>
 
@@ -190,7 +194,7 @@
 
                     <div class="price-summary" v-if="renewForm.plan_id">
                         <div class="summary-row total">
-                            <span>Total:</span>
+                            <span>{{ $t('shopSettings.subscription.total') }}</span>
                             <span>${{ getRenewTotalPrice().final.toFixed(2) }}</span>
                         </div>
                     </div>
@@ -208,11 +212,13 @@
         <!-- Cancel Modal -->
         <div v-if="showCancelModal" class="modal-overlay" @click.self="showCancelModal = false">
             <div class="modal-content">
-                <h2>Cancel Subscription</h2>
-                <p>Are you sure you want to cancel your subscription?</p>
+                <h2>{{ $t('shopSettings.subscription.cancelTitle') }}</h2>
+                <p>{{ $t('shopSettings.subscription.cancelDesc') }}</p>
                 <div class="modal-actions">
-                    <button class="btn-cancel" @click="showCancelModal = false">No, Keep it</button>
-                    <button class="btn-danger" @click="cancelSubscription" :disabled="loading">Yes, Cancel</button>
+                    <button class="btn-cancel" @click="showCancelModal = false">{{
+                        $t('shopSettings.subscription.keepSubscription') }}</button>
+                    <button class="btn-danger" @click="cancelSubscription" :disabled="loading">{{
+                        $t('shopSettings.subscription.confirmCancel') }}</button>
                 </div>
             </div>
         </div>

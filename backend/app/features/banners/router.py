@@ -34,13 +34,26 @@ class BannerSchema(BaseModel):
         from_attributes = True
 
 class BannerCreate(BaseModel):
-    badge_text: str
+    badge_text: Optional[str] = None
+    
+    title_ru: Optional[str] = None
+    title_en: Optional[str] = None
+    title_uz: Optional[str] = None
     title: str
+
+    subtitle_ru: Optional[str] = None
+    subtitle_en: Optional[str] = None
+    subtitle_uz: Optional[str] = None
     subtitle: str
+
+    button_text_ru: Optional[str] = None
+    button_text_en: Optional[str] = None
+    button_text_uz: Optional[str] = None
     button_text: str
+
     button_link: str
     image_url: str
-    is_active: bool
+    is_active: bool = True
 
 router = APIRouter()
 banner_service = BannerService()

@@ -97,7 +97,7 @@
 
           <div class="product-description">
             <h3 class="section-title">{{ $t('product.description') }}</h3>
-            <p>{{ product.description }}</p>
+            <p>{{ getField(product, 'description') }}</p>
           </div>
 
           <div class="product-meta">
