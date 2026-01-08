@@ -44,7 +44,7 @@ app.add_middleware(
         "http://127.0.0.1:8000",
         "https://link-shop-frontend-production.up.railway.app",
     ],
-    allow_origin_regex="https://.*\.up\.railway\.app",
+    allow_origin_regex=r"https://.*\.up\.railway\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

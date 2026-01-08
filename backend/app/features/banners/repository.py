@@ -13,6 +13,9 @@ class BannerRepository:
             
         return banners
 
+    def get(self, db: Session, banner_id: int) -> Optional[Banner]:
+        return db.query(Banner).filter(Banner.id == banner_id).first()
+
     def create(self, db: Session, banner_data: dict):
         db_banner = Banner(**banner_data)
         db.add(db_banner)
@@ -26,3 +29,9 @@ class BannerRepository:
         db.commit()
         db.refresh(db_banner)
         return db_banner
+
+    def remove(self, db: Session, id: int):
+        obj = db.query(Banner).get(id)
+        db.delete(obj)
+        db.commit()
+        return obj
