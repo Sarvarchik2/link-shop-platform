@@ -29,6 +29,14 @@ class BannerService:
             
         return banner
 
+    def get_banner_public(self, db: Session, banner_id: int, shop_slug: str):
+        shop = self.shop_service.get_shop_by_slug(db, shop_slug, check_active=True)
+        banner = self.repository.get(db, banner_id)
+        if not banner or banner.shop_id != shop.id:
+            from fastapi import HTTPException
+            raise HTTPException(status_code=404, detail="Banner not found")
+        return banner
+
     def create_banner(self, db: Session, banner_in, shop_slug: str, current_user):
         shop = self.shop_service.get_shop_by_slug(db, shop_slug, check_active=True)
         

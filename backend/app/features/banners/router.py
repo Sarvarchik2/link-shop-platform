@@ -66,10 +66,9 @@ def get_banners(shop_slug: Optional[str] = Query(None), db: Session = Depends(ge
 def get_banner(
     banner_id: int,
     shop_slug: str = Query(...),
-    db: Session = Depends(get_db),
-    current_user = Depends(get_current_user)
+    db: Session = Depends(get_db)
 ):
-    return banner_service.get_banner(db, banner_id, shop_slug, current_user)
+    return banner_service.get_banner_public(db, banner_id, shop_slug)
 
 @router.post("/banner", response_model=BannerSchema)
 def create_banner(
