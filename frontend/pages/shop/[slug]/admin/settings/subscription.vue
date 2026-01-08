@@ -31,10 +31,8 @@
                 <div class="warning-text">
                     <h3>{{ !shop?.is_active ? $t('shopSettings.subscription.shopInactive') || 'Shop Deactivated' :
                         $t('shopSettings.subscription.expiredTitle') || 'Subscription Expired' }}</h3>
-                    <p>{{ !shop?.is_active ? $t('shopSettings.subscription.contactSupport') || 'Your shop has been
-                        deactivated by the administrator.Please contact support.' :
-                    $t('shopSettings.subscription.expiredDesc') || 'Your subscription has ended. Please choose a
-                        plan below to reactive your shop and continue selling.' }}</p>
+                    <p>{{ !shop?.is_active ? $t('shopSettings.subscription.contactSupport') || 'Your shop has been deactivated by the administrator. Please contact support.' :
+                    $t('shopSettings.subscription.expiredDesc') || 'Your subscription has ended. Please choose a plan below to reactive your shop and continue selling.' }}</p>
                 </div>
             </div>
 
@@ -121,7 +119,7 @@
                                 <span class="amount" v-if="plan.price > 0">${{ plan.price }}</span>
                                 <span class="amount" v-else>Free</span>
                                 <span class="period" v-if="plan.price > 0">/ {{ $t('shopSettings.subscription.month')
-                                }}</span>
+                                    }}</span>
                             </div>
                         </div>
 
@@ -187,7 +185,7 @@
                                 :class="{ active: renewForm.duration_months === duration.months }">
                                 {{ duration.label }}
                                 <span v-if="duration.discount > 0" class="discount-pill">-{{ duration.discount
-                                }}%</span>
+                                    }}%</span>
                             </button>
                         </div>
                     </div>

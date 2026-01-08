@@ -730,50 +730,6 @@
             "total": "Jami:",
             "pendingStatus": "Kutilmoqda"
         },
-        "checkout": {
-            "title": "Buyurtma berish",
-            "back": "Ortga",
-            "sections": {
-                "delivery": "Yetkazib berish manzili",
-                "payment": "To'lov usuli",
-                "notes": "Izohlar (ixtiyoriy)",
-                "summary": "Buyurtma xulosasi"
-            },
-            "form": {
-                "name": "Qabul qiluvchi ismi",
-                "namePlaceholder": "To'liq ism",
-                "phone": "Telefon raqami",
-                "phonePlaceholder": "+998 90 123 45 67",
-                "city": "Shahar",
-                "selectCity": "Shaharni tanlang",
-                "address": "Yetkazib berish manzili",
-                "addressPlaceholder": "Ko'cha, uy, kvartira...",
-                "notesPlaceholder": "Maxsus ko'rsatmalar..."
-            },
-            "payment": {
-                "cash": {
-                    "title": "Naqd pul",
-                    "desc": "Qabul qilganda to'lang"
-                },
-                "card": {
-                    "title": "Karta orqali",
-                    "desc": "Yetkazib berishda karta bilan to'lang"
-                }
-            },
-            "summary": {
-                "subtotal": "Oraliq jami",
-                "shipping": "Yetkazib berish",
-                "free": "Bepul",
-                "total": "Jami",
-                "placeOrder": "BUYURTMA BERISH",
-                "processing": "Jarayonda..."
-            },
-            "validation": {
-                "required": "Iltimos, barcha majburiy maydonlarni to'ldiring"
-            },
-            "success": "Buyurtma muvaffaqiyatli berildi!",
-            "error": "Buyurtma berishda xatolik. Iltimos, qayta urinib ko'ring."
-        },
         "profile": {
             "title": "Mening profilim",
             "id": "Foydalanuvchi ID",
@@ -1276,5 +1232,49 @@
             "selectPlan": "Rejani tanlang",
             "upgrade": "Ko'tarish"
         }
+    },
+    "checkout": {
+        "title": "Buyurtma berish",
+        "back": "Ortga",
+        "sections": {
+            "delivery": "Yetkazib berish manzili",
+            "payment": "To'lov usuli",
+            "notes": "Izohlar (ixtiyoriy)",
+            "summary": "Buyurtma xulosasi"
+        },
+        "form": {
+            "name": "Qabul qiluvchi ismi",
+            "namePlaceholder": "To'liq ism",
+            "phone": "Telefon raqami",
+            "phonePlaceholder": "+998 90 123 45 67",
+            "city": "Shahar",
+            "selectCity": "Shaharni tanlang",
+            "address": "Yetkazib berish manzili",
+            "addressPlaceholder": "Ko'cha, uy, kvartira...",
+            "notesPlaceholder": "Maxsus ko'rsatmalar..."
+        },
+        "payment": {
+            "cash": {
+                "title": "Naqd pul",
+                "desc": "Qabul qilganda to'lang"
+            },
+            "card": {
+                "title": "Karta orqali",
+                "desc": "Yetkazib berishda karta bilan to'lang"
+            }
+        },
+        "summary": {
+            "subtotal": "Oraliq jami",
+            "shipping": "Yetkazib berish",
+            "free": "Bepul",
+            "total": "Jami",
+            "placeOrder": "BUYURTMA BERISH",
+            "processing": "Jarayonda..."
+        },
+        "validation": {
+            "required": "Iltimos, barcha majburiy maydonlarni to'ldiring"
+        },
+        "success": "Buyurtma muvaffaqiyatli berildi!",
+        "error": "Buyurtma berishda xatolik. Iltimos, qayta urinib ko'ring."
     }
 }
