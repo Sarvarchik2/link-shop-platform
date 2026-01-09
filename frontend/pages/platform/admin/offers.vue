@@ -91,7 +91,7 @@
 
             <div class="offer-price-section">
               <div v-if="offer.price" class="offer-price-value">
-                ${{ offer.price.toFixed(2) }}
+                {{ formatPrice(offer.price) }}
               </div>
               <div v-else class="offer-price-text">
                 {{ getLocalizedValue(offer, 'price_text') || $t('platformAdmin.offers.card.priceByRequest') }}
@@ -253,6 +253,7 @@ const sidebarOpen = ref(false)
 const { token, logout } = useAuth()
 const toast = useToast()
 const { t, locale } = useI18n()
+const { formatPrice } = useCurrency()
 
 const handleLogout = () => {
   logout()

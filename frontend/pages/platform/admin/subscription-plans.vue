@@ -95,7 +95,7 @@
               <div class="plan-price">
                 <span v-if="plan.price === 0 || plan.is_trial" class="price-amount">{{
                   $t('platformAdmin.plans.card.free') }}</span>
-                <span v-else class="price-amount">${{ plan.price }}</span>
+                <span v-else class="price-amount">{{ formatPrice(plan.price) }}</span>
                 <span class="price-period">/ {{ plan.period_days }} {{ getPeriodText(plan.period_days) }}</span>
               </div>
               <div class="plan-slug">{{ plan.slug }}</div>
@@ -325,6 +325,7 @@ definePageMeta({
 const { t, locale } = useI18n()
 const route = useRoute()
 const { token, logout } = useAuth()
+const { formatPrice } = useCurrency()
 const toast = useToast()
 
 const sidebarOpen = ref(false)

@@ -19,11 +19,11 @@
       <div class="product-footer">
         <div class="price-container">
           <div v-if="product.discount > 0" class="price-with-discount">
-            <div class="product-price-discounted">${{ finalPrice.toFixed(2) }}</div>
-            <div class="product-price-original">${{ product.price.toFixed(2) }}</div>
+            <div class="product-price-discounted">{{ formatPrice(finalPrice) }}</div>
+            <div class="product-price-original">{{ formatPrice(product.price) }}</div>
             <div class="discount-badge-small">-{{ product.discount }}%</div>
           </div>
-          <div v-else class="product-price">${{ product.price.toFixed(2) }}</div>
+          <div v-else class="product-price">{{ formatPrice(product.price) }}</div>
         </div>
       </div>
       <div v-if="totalStock > 0 && totalStock <= 5" class="stock-warning">
@@ -100,6 +100,7 @@ watch(() => user.value, (newUser) => {
 })
 
 const { openModal } = useAuthModal()
+const { formatPrice } = useCurrency()
 
 const toggleFav = async () => {
   // Check if user is logged in

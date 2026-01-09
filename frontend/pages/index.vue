@@ -99,7 +99,7 @@
               <div class="grid grid-cols-3 gap-4">
                 <div class="bg-white p-4 rounded-lg border border-zinc-100 shadow-sm">
                   <div class="text-xs text-zinc-400 mb-1">Total Revenue</div>
-                  <div class="text-2xl font-semibold text-zinc-900">$12,402</div>
+                  <div class="text-2xl font-semibold text-zinc-900">{{ formatPrice(12402) }}</div>
                   <div class="mt-2 h-1 w-full bg-zinc-100 rounded-full overflow-hidden">
                     <div class="h-full w-[70%] bg-zinc-900 rounded-full"></div>
                   </div>
@@ -368,8 +368,8 @@
 
             <h3 class="text-xl font-medium mb-2">{{ plan.name }}</h3>
             <div class="text-4xl font-bold mb-6">
-              <span v-if="plan.price === 0 || plan.is_trial">$0</span>
-              <span v-else>${{ plan.price }}</span>
+              <span v-if="plan.price === 0 || plan.is_trial">{{ formatPrice(0) }}</span>
+              <span v-else>{{ formatPrice(plan.price) }}</span>
               <span v-if="plan.is_trial" class="text-base font-normal text-zinc-500">/{{ plan.period_days }} {{
                 $t('home.pricing.days') }}</span>
               <span v-else class="text-base font-normal text-zinc-500">/{{ $t('home.pricing.month') }}</span>
@@ -430,7 +430,7 @@
               <div class="flex justify-between items-start mb-4">
                 <h3 class="text-xl font-semibold">{{ offer.title }}</h3>
                 <div v-if="offer.price || offer.price_text" class="text-right">
-                  <div v-if="offer.price" class="text-2xl font-bold">${{ offer.price.toFixed(2) }}</div>
+                  <div v-if="offer.price" class="text-2xl font-bold">{{ formatPrice(offer.price) }}</div>
                   <div v-else class="text-sm font-medium text-zinc-600">{{ offer.price_text }}</div>
                 </div>
               </div>
@@ -527,6 +527,7 @@
 const route = useRoute()
 const localePath = useLocalePath()
 const { user, token } = useAuth()
+const { formatPrice } = useCurrency()
 
 // Fetch subscription plans from API
 const { data: plans, pending: plansPending } = await useFetch(useRuntimeConfig().public.apiBase + '/subscription-plans', {

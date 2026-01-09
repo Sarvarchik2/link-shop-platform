@@ -104,7 +104,7 @@
                 <h3 class="product-name">{{ getProductName(product) }}</h3>
                 <div class="product-brand">{{ product.brand }}</div>
                 <div class="product-footer">
-                  <div class="product-price">${{ product.price.toFixed(2) }}</div>
+                  <div class="product-price">{{ formatPrice(product.price) }}</div>
                   <div class="product-meta">
                     <div class="product-sold" v-if="product.sold_count > 0">
                       🔥 {{ product.sold_count }} {{ $t('productsPage.sold') }}
@@ -135,6 +135,7 @@ const route = useRoute()
 const shopSlug = route.params.slug
 const { token, logout } = useAuth()
 const { t, locale } = useI18n()
+const { formatPrice } = useCurrency()
 
 const sidebarOpen = ref(false)
 const currentRoute = computed(() => 'products')

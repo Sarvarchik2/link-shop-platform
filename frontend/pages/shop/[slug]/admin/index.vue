@@ -107,7 +107,7 @@
                     }) }}</span>
                   </div>
                 </div>
-                <div class="stat-value">${{ getPeriodSales().toFixed(2) }}</div>
+                <div class="stat-value">{{ formatPrice(getPeriodSales()) }}</div>
                 <div class="stat-label">{{ periodLabel }} {{ $t('admin.dashboardStats.revenue') }}</div>
                 <div class="stat-note" v-if="stats?.orders_by_status?.cancelled > 0">
                   {{ $t('admin.dashboardStats.excludedCancelled', { count: stats.orders_by_status.cancelled }) }}
@@ -263,7 +263,7 @@
                   </div>
                   <div class="comparison-stats">
                     <div class="comparison-stat">
-                      <span class="comp-value">${{ stats?.today_sales?.toFixed(2) || '0.00' }}</span>
+                      <span class="comp-value">{{ formatPrice(stats?.today_sales) || '0' }}</span>
                       <span class="comp-label">{{ $t('admin.dashboardStats.revenue') }}</span>
                     </div>
                     <div class="comparison-stat">
@@ -279,7 +279,7 @@
                   </div>
                   <div class="comparison-stats">
                     <div class="comparison-stat">
-                      <span class="comp-value">${{ stats?.week_sales?.toFixed(2) || '0.00' }}</span>
+                      <span class="comp-value">{{ formatPrice(stats?.week_sales) || '0' }}</span>
                       <span class="comp-label">{{ $t('admin.dashboardStats.revenue') }}</span>
                     </div>
                     <div class="comparison-stat">
@@ -295,7 +295,7 @@
                   </div>
                   <div class="comparison-stats">
                     <div class="comparison-stat">
-                      <span class="comp-value">${{ stats?.month_sales?.toFixed(2) || '0.00' }}</span>
+                      <span class="comp-value">{{ formatPrice(stats?.month_sales) || '0' }}</span>
                       <span class="comp-label">{{ $t('admin.dashboardStats.revenue') }}</span>
                     </div>
                     <div class="comparison-stat">
@@ -312,7 +312,7 @@
                   </div>
                   <div class="comparison-stats">
                     <div class="comparison-stat">
-                      <span class="comp-value">${{ stats?.total_sales?.toFixed(2) || '0.00' }}</span>
+                      <span class="comp-value">{{ formatPrice(stats?.total_sales) || '0' }}</span>
                       <span class="comp-label">{{ $t('admin.dashboardStats.revenue') }}</span>
                     </div>
                     <div class="comparison-stat">
@@ -338,6 +338,7 @@
 
 <script setup>
 const { t } = useI18n()
+const { formatPrice } = useCurrency()
 definePageMeta({
   middleware: ['auth', 'shop-owner']
 })

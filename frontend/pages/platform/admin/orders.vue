@@ -3,7 +3,8 @@
     <!-- Mobile Header -->
     <header class="mobile-header">
       <button class="menu-btn" @click="sidebarOpen = !sidebarOpen">
-        <svg v-if="!sidebarOpen" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg v-if="!sidebarOpen" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2">
           <line x1="3" y1="12" x2="21" y2="12"></line>
           <line x1="3" y1="6" x2="21" y2="6"></line>
           <line x1="3" y1="18" x2="21" y2="18"></line>
@@ -22,11 +23,8 @@
       </NuxtLink>
     </header>
 
-    <PlatformAdminSidebar 
-      current-route="orders" 
-      :model-value="sidebarOpen"
-      @update:model-value="sidebarOpen = $event"
-    />
+    <PlatformAdminSidebar current-route="orders" :model-value="sidebarOpen"
+      @update:model-value="sidebarOpen = $event" />
 
     <!-- Main Content -->
     <main class="admin-main">
@@ -58,7 +56,7 @@
                 {{ getStatusText(order.status) }}
               </span>
             </div>
-            
+
             <div class="order-details">
               <div class="detail-row">
                 <span class="detail-label">Клиент:</span>
@@ -74,18 +72,20 @@
               </div>
               <div class="detail-row">
                 <span class="detail-label">Сумма:</span>
-                <span class="detail-value amount">${{ order.total_price.toFixed(2) }}</span>
+                <span class="detail-value amount">{{ formatPrice(order.total_price) }}</span>
               </div>
             </div>
-            
+
             <div v-if="order.items && order.items.length > 0" class="order-items">
               <div class="items-title">Товары:</div>
-              <NuxtLink v-for="item in order.items" :key="item.product_id" :to="item.shop_slug ? `/${item.shop_slug}/products/${item.product_id}` : `/products/${item.product_id}`" class="order-item">
+              <NuxtLink v-for="item in order.items" :key="item.product_id"
+                :to="item.shop_slug ? `/${item.shop_slug}/products/${item.product_id}` : `/products/${item.product_id}`"
+                class="order-item">
                 <img v-if="item.product_image" :src="item.product_image" :alt="item.product_name" class="item-image" />
                 <div class="item-info">
                   <div class="item-name">{{ item.product_name }}</div>
                   <div class="item-details">
-                    Количество: {{ item.quantity }} × ${{ item.price.toFixed(2) }}
+                    Количество: {{ item.quantity }} × {{ formatPrice(item.price) }}
                   </div>
                 </div>
               </NuxtLink>
@@ -103,6 +103,7 @@ definePageMeta({
 })
 
 const { token, logout } = useAuth()
+const { formatPrice } = useCurrency()
 const router = useRouter()
 const sidebarOpen = ref(false)
 
@@ -193,7 +194,8 @@ const formatDate = (dateString) => {
 
 /* New mobile header styles */
 .mobile-header {
-  display: none; /* Hidden by default, shown on smaller screens */
+  display: none;
+  /* Hidden by default, shown on smaller screens */
   justify-content: space-between;
   align-items: center;
   padding: 16px;
@@ -225,18 +227,21 @@ const formatDate = (dateString) => {
 /* Adjust main content margin for desktop */
 .admin-main {
   flex: 1;
-  margin-left: 280px; /* Default for desktop */
+  margin-left: 280px;
+  /* Default for desktop */
   min-height: 100vh;
 }
 
 /* Responsive adjustments */
 @media (max-width: 1024px) {
   .mobile-header {
-    display: flex; /* Show mobile header */
+    display: flex;
+    /* Show mobile header */
   }
 
   .admin-main {
-    margin-left: 0; /* No margin on smaller screens */
+    margin-left: 0;
+    /* No margin on smaller screens */
     padding-top: 80px;
     padding-left: 16px;
     padding-right: 16px;
@@ -261,7 +266,7 @@ const formatDate = (dateString) => {
     font-size: 1.25rem !important;
     line-height: 1.2 !important;
   }
-  
+
   .admin-header {
     padding: 20px !important;
   }
@@ -292,7 +297,7 @@ const formatDate = (dateString) => {
   background: white;
   border-radius: 16px;
   padding: 24px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   border: 1px solid #E5E7EB;
 }
 
@@ -437,8 +442,12 @@ const formatDate = (dateString) => {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 </style>
-

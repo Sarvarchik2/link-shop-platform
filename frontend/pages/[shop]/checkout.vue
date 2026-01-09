@@ -18,7 +18,6 @@
       <div class="checkout-layout">
         <!-- Left Column - Form -->
         <div class="checkout-form">
-          <!-- Delivery Info -->
           <section class="checkout-section">
             <h2 class="section-title">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -144,7 +143,7 @@
                     <span v-if="item.selectedColor">{{ $t('admin.color') }}: {{ item.selectedColor.name }}</span>
                     <span v-if="item.selectedSize">{{ $t('admin.size') }}: {{ item.selectedSize }}</span>
                   </div>
-                  <div class="item-price">${{ (item.price * item.quantity).toFixed(2) }}</div>
+                  <div class="item-price">{{ formatPrice(item.price * item.quantity) }}</div>
                 </div>
                 <div class="item-quantity">x{{ item.quantity }}</div>
               </div>
@@ -153,7 +152,7 @@
             <div class="summary-totals">
               <div class="total-row">
                 <span class="total-label">{{ $t('checkout.summary.total') }}:</span>
-                <span class="total-value">${{ totalPrice.toFixed(2) }}</span>
+                <span class="total-value">{{ formatPrice(totalPrice) }}</span>
               </div>
             </div>
 
@@ -181,6 +180,7 @@ definePageMeta({
 const route = useRoute()
 const shopSlug = route.params.shop
 const { t } = useI18n()
+const { formatPrice } = useCurrency()
 
 const { items, totalPrice, clearCart } = useCart()
 const { token, user } = useAuth()
@@ -197,7 +197,6 @@ const form = reactive({
   notes: ''
 })
 
-// Pre-fill with user data if available
 onMounted(() => {
   if (user.value) {
     form.recipient_name = `${user.value.first_name} ${user.value.last_name}`.trim()

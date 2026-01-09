@@ -178,6 +178,7 @@
         "filter": "Filtrlash",
         "back": "Orqaga",
         "close": "Yopish",
+        "backToHome": "Bosh sahifaga qaytish",
         "sending": "Yuborilmoqda...",
         "panel": "Boshqaruv paneli",
         "analytics": "Analitika",
@@ -297,7 +298,7 @@
         "selectCategory": "Kategoriyani tanlang",
         "brandLabel": "Brend",
         "selectBrand": "Brendni tanlang",
-        "priceLabel": "Narx ($)",
+        "priceLabel": "Narx",
         "discountLabel": "Chegirma (%)",
         "discountHelp": "Chegirma foizini kiriting (0-100)",
         "imagesTitle": "Rasmlar",
@@ -337,7 +338,9 @@
         "productsTitle": "Mahsulotlar",
         "allCategories": "Barcha kategoriyalar",
         "allBrands": "Barcha brendlar",
-        "noProducts": "Mahsulotlar topilmadi"
+        "noProducts": "Mahsulotlar topilmadi",
+        "unavailableTitle": "Do'kon topilmadi",
+        "unavailableDesc": "Ushbu do'kon vaqtincha mavjud emas yoki o'chirilgan."
     },
     "product": {
         "loading": "Mahsulot ma'lumotlari yuklanmoqda...",
@@ -620,7 +623,7 @@
             "form": {
                 "name": "Reja nomi",
                 "slug": "Slug",
-                "price": "Narx ($)",
+                "price": "Narx",
                 "period": "Davr (kunlar)",
                 "maxProducts": "Maksimum mahsulotlar",
                 "maxBanners": "Maksimum bannerlar (standart 1)",

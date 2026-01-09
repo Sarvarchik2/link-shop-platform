@@ -126,7 +126,7 @@
                 </div>
                 <span class="item-qty">{{ $t('orders.card.qty') }}: {{ item.quantity }}</span>
               </div>
-              <span class="item-price">${{ (item.price * item.quantity).toFixed(2) }}</span>
+              <span class="item-price">{{ formatPrice(item.price * item.quantity) }}</span>
             </NuxtLink>
             <div v-if="order.items?.length > 2" class="more-items">
               {{ $t('orders.card.moreProducts', { count: order.items.length - 2 }) }}
@@ -137,7 +137,7 @@
           <div class="order-footer">
             <div class="order-total">
               <span class="total-label">{{ $t('orders.card.total') }}</span>
-              <span class="total-value">${{ order.total_price.toFixed(2) }}</span>
+              <span class="total-value">{{ formatPrice(order.total_price) }}</span>
             </div>
             <button class="expand-btn" @click="toggleOrder(order.id)">
               {{ expandedOrder === order.id ? $t('orders.card.hide') : $t('orders.card.details') }}
@@ -229,10 +229,11 @@
                       <span v-if="item.selected_color" class="option-tag color">{{ item.selected_color }}</span>
                       <span v-if="item.selected_size" class="option-tag size">{{ item.selected_size }}</span>
                     </div>
-                    <span class="item-meta">{{ $t('orders.card.qty') }}: {{ item.quantity }} × ${{ item.price.toFixed(2)
+                    <span class="item-meta">{{ $t('orders.card.qty') }}: {{ item.quantity }} × {{
+                      formatPrice(item.price)
                       }}</span>
                   </div>
-                  <span class="item-total">${{ (item.price * item.quantity).toFixed(2) }}</span>
+                  <span class="item-total">{{ formatPrice(item.price * item.quantity) }}</span>
                 </NuxtLink>
               </div>
             </div>
@@ -253,6 +254,7 @@ definePageMeta({
 
 const { token } = useAuth()
 const { t } = useI18n()
+const { formatPrice } = useCurrency()
 const config = useRuntimeConfig()
 const { data: orders, pending } = await useFetch(`${config.public.apiBase}/orders/me`, {
   headers: { Authorization: `Bearer ${token.value}` },

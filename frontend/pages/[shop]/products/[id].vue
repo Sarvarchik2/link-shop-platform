@@ -28,11 +28,11 @@
           <div class="product-price-section">
             <div class="price-container">
               <div v-if="product.discount > 0" class="price-with-discount">
-                <div class="product-price-discounted">${{ finalPrice.toFixed(2) }}</div>
-                <div class="product-price-original">${{ product.price.toFixed(2) }}</div>
+                <div class="product-price-discounted">{{ formatPrice(finalPrice) }}</div>
+                <div class="product-price-original">{{ formatPrice(product.price) }}</div>
                 <div class="discount-badge">-{{ product.discount }}%</div>
               </div>
-              <div v-else class="product-price">${{ product.price.toFixed(2) }}</div>
+              <div v-else class="product-price">{{ formatPrice(product.price) }}</div>
             </div>
             <!-- Stock badge based on selected variant -->
             <template v-if="productVariants.length > 0">
@@ -197,6 +197,7 @@ const { addItem } = useCart()
 const { user } = useAuth()
 const { getField } = useMultilingual()
 const { t } = useI18n()
+const { formatPrice } = useCurrency()
 const { openModal } = useAuthModal()
 const config = useRuntimeConfig()
 

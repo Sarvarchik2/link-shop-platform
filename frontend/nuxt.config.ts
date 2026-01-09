@@ -1,4 +1,5 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+// Force restart
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
@@ -33,7 +34,7 @@ export default defineNuxtConfig({
   },
   vue: {
     compilerOptions: {
-      isCustomElement: (tag) => tag === 'iconify-icon'
+      isCustomElement: (tag) => tag === 'iconify-icon' || tag.startsWith('swiper-')
     }
   },
 

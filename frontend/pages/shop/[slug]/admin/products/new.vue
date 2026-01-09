@@ -124,7 +124,7 @@
 
               <div class="form-row">
                 <div class="form-group">
-                  <label class="label">{{ $t('productsPage.priceLabel') }} ($)</label>
+                  <label class="label">{{ $t('productsPage.priceLabel') }}</label>
                   <input v-model.number="form.price" type="number" step="0.01" required class="input"
                     placeholder="0.00" />
                 </div>
@@ -225,7 +225,7 @@
 
             <div class="form-actions">
               <NuxtLink :to="`/shop/${shopSlug}/admin/products`" class="btn btn-secondary">{{ $t('productsPage.cancel')
-                }}</NuxtLink>
+              }}</NuxtLink>
               <button type="submit" class="btn btn-primary"
                 :disabled="loading || uploadedImages.length === 0 || limitReached">
                 {{ loading ? $t('productsPage.creating') : $t('productsPage.createBtn') }}

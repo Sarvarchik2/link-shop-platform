@@ -60,7 +60,7 @@
                   <span class="customer-name">{{ order.user?.first_name }} {{ order.user?.last_name }}</span>
                   <span class="customer-phone">{{ order.user?.phone }}</span>
                 </div>
-                <div class="order-total">${{ order.total_price.toFixed(2) }}</div>
+                <div class="order-total">{{ formatPrice(order.total_price) }}</div>
                 <select :value="order.status" @click.stop @change="updateStatus(order.id, $event.target.value)"
                   class="status-select" :class="order.status">
                   <option value="pending">{{ $t('admin.status.pending') }}</option>
@@ -140,10 +140,10 @@
                           <span v-if="item.selected_color" class="item-option color">{{ item.selected_color }}</span>
                           <span v-if="item.selected_size" class="item-option size">{{ item.selected_size }}</span>
                         </div>
-                        <span class="item-meta">{{ $t('admin.ordersPage.qty') }}: {{ item.quantity }} × ${{
-                          item.price.toFixed(2) }}</span>
+                        <span class="item-meta">{{ $t('admin.ordersPage.qty') }}: {{ item.quantity }} × {{
+                          formatPrice(item.price) }}</span>
                       </div>
-                      <span class="item-total">${{ (item.quantity * item.price).toFixed(2) }}</span>
+                      <span class="item-total">{{ formatPrice(item.quantity * item.price) }}</span>
                     </NuxtLink>
                   </div>
                 </div>
@@ -172,6 +172,7 @@
 
 <script setup>
 const { t, locale } = useI18n()
+const { formatPrice } = useCurrency()
 definePageMeta({
   middleware: ['auth', 'shop-owner']
 })

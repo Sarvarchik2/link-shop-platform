@@ -29,10 +29,8 @@
                     </svg>
                 </div>
                 <div class="warning-text">
-                    <h3>{{ !shop?.is_active ? $t('shopSettings.subscription.shopInactive') || 'Shop Deactivated' :
-                        $t('shopSettings.subscription.expiredTitle') || 'Subscription Expired' }}</h3>
-                    <p>{{ !shop?.is_active ? $t('shopSettings.subscription.contactSupport') || 'Your shop has been deactivated by the administrator. Please contact support.' :
-                    $t('shopSettings.subscription.expiredDesc') || 'Your subscription has ended. Please choose a plan below to reactive your shop and continue selling.' }}</p>
+                    <h3>{{ expiryTitle }}</h3>
+                    <p>{{ expiryMessage }}</p>
                 </div>
             </div>
 
@@ -116,10 +114,10 @@
                         <div class="plan-header">
                             <h3 class="plan-name">{{ getLocalizedValue(plan, 'name') }}</h3>
                             <div class="plan-price">
-                                <span class="amount" v-if="plan.price > 0">${{ plan.price }}</span>
-                                <span class="amount" v-else>Free</span>
+                                <span class="amount" v-if="plan.price > 0">{{ formatPrice(plan.price) }}</span>
+                                <span class="amount" v-else>{{ $t('shopSettings.subscription.free') || 'Free' }}</span>
                                 <span class="period" v-if="plan.price > 0">/ {{ $t('shopSettings.subscription.month')
-                                    }}</span>
+                                }}</span>
                             </div>
                         </div>
 
@@ -145,8 +143,9 @@
                                 </button>
                             </div>
                             <div class="price-calc">
-                                {{ $t('shopSettings.subscription.total') }} ${{ calculatePrice(plan,
-                                    getPlanDuration(plan.id)).final.toFixed(2) }}
+                                {{ $t('shopSettings.subscription.total') }} {{ calculatePrice(plan,
+                                    getPlanDuration(plan.id)).final > 0 ? formatPrice(calculatePrice(plan,
+                                        getPlanDuration(plan.id)).final) : ($t('shopSettings.subscription.free') || 'Free') }}
                             </div>
                         </div>
 
@@ -172,7 +171,7 @@
                         <select v-model="renewForm.plan_id" class="form-input">
                             <option v-for="plan in availablePlans?.filter(p => !p.is_trial)" :key="plan.id"
                                 :value="plan.id">
-                                {{ getLocalizedValue(plan, 'name') }} - ${{ plan.price }}/mo
+                                {{ getLocalizedValue(plan, 'name') }} - {{ formatPrice(plan.price) }}/mo
                             </option>
                         </select>
                     </div>
@@ -185,7 +184,7 @@
                                 :class="{ active: renewForm.duration_months === duration.months }">
                                 {{ duration.label }}
                                 <span v-if="duration.discount > 0" class="discount-pill">-{{ duration.discount
-                                    }}%</span>
+                                }}%</span>
                             </button>
                         </div>
                     </div>
@@ -193,7 +192,7 @@
                     <div class="price-summary" v-if="renewForm.plan_id">
                         <div class="summary-row total">
                             <span>{{ $t('shopSettings.subscription.total') }}</span>
-                            <span>${{ getRenewTotalPrice().final.toFixed(2) }}</span>
+                            <span>{{ formatPrice(getRenewTotalPrice().final) }}</span>
                         </div>
                     </div>
                 </div>
@@ -231,6 +230,7 @@ definePageMeta({
 
 const route = useRoute()
 const { t, locale } = useI18n()
+const { formatPrice } = useCurrency()
 const config = useRuntimeConfig()
 const toast = useToast()
 const { token } = useAuth()
@@ -242,6 +242,20 @@ const showCancelModal = ref(false)
 const modalMode = ref('new')
 const selectedPlan = ref(null)
 const planDurations = ref({})
+
+const expiryTitle = computed(() => {
+    if (!shop.value?.is_active) {
+        return t('shopSettings.subscription.shopInactive') || 'Shop Deactivated'
+    }
+    return t('shopSettings.subscription.expiredTitle') || 'Subscription Expired'
+})
+
+const expiryMessage = computed(() => {
+    if (!shop.value?.is_active) {
+        return t('shopSettings.subscription.contactSupport') || 'Your shop has been deactivated by the administrator. Please contact support.'
+    }
+    return t('shopSettings.subscription.expiredDesc') || 'Your subscription has ended. Please choose a plan below to reactive your shop and continue selling.'
+})
 
 const renewForm = reactive({
     plan_id: null,
