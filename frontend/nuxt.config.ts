@@ -5,7 +5,7 @@ export default defineNuxtConfig({
   modules: ['@nuxtjs/tailwindcss', '@nuxtjs/i18n'],
 
   experimental: {
-    autoImportTranslationFunctions: true
+    // autoImportTranslationFunctions: true // Removed as it is not a valid option in this version
   },
 
   runtimeConfig: {
@@ -14,10 +14,14 @@ export default defineNuxtConfig({
     }
   },
 
-  nitro: {
-    preset: 'node-server',
+  devServer: {
     host: '0.0.0.0',
     port: process.env.PORT ? parseInt(process.env.PORT) : 3000
+  },
+
+  nitro: {
+    preset: 'node-server',
+    // host and port are strictly environment/preset specific in newer Nitro versions
   },
 
   css: ['~/assets/css/main.css'],
