@@ -60,6 +60,15 @@
 
 
 <script setup lang="ts">
+import { ref, computed, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
+import { useAuth } from '../composables/useAuth'
+import { useToast } from '../composables/useToast'
+import { usePhoneFormatter } from '../composables/usePhoneFormatter'
+import { useShopContext } from '../composables/useShopContext'
+
+// @ts-ignore
 definePageMeta({
   layout: false
 })
@@ -243,7 +252,7 @@ const handleRegister = async () => {
 
 .form-row {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: 1fr;
   gap: 16px;
 }
 

@@ -103,6 +103,13 @@ const vClickOutside = {
     transform: translateY(-2px);
 }
 
+@media (max-width: 767px) {
+    .lang-btn {
+        height: 40px;
+        border-radius: 10px;
+    }
+}
+
 .chevron {
     transition: transform 0.2s;
     opacity: 0.6;
@@ -160,8 +167,8 @@ const vClickOutside = {
 }
 
 .lang-option.active {
-    background: #F0F9FF;
-    color: #0284C7;
+    background: #000000;
+    color: #ffffff;
     font-weight: 600;
 }
 
@@ -174,7 +181,7 @@ const vClickOutside = {
 }
 
 .lang-option.active .code-sm {
-    color: #0284C7;
+    color: #ffffff;
 }
 
 /* Transitions */

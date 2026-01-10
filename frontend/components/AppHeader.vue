@@ -32,7 +32,7 @@
           <!-- Actions -->
           <div class="header-actions">
             <!-- Language Switcher -->
-            <LanguageSwitcher class="desktop-only" />
+            <LanguageSwitcher />
 
             <!-- Favorites -->
             <a @click.prevent="navigateToAuth(localePath('/favorites'))" :href="localePath('/favorites')"
@@ -66,8 +66,20 @@
 
             <!-- Login/Register buttons (only for guests) -->
             <template v-if="!user">
-              <NuxtLink :to="localePath('/login')" class="btn-login">{{ $t('nav.login') }}</NuxtLink>
-              <NuxtLink :to="localePath('/register')" class="btn-register">{{ $t('nav.register') }}</NuxtLink>
+              <!-- Desktop Buttons -->
+              <div class="auth-buttons desktop-only">
+                <NuxtLink :to="localePath('/login')" class="btn-login">{{ $t('nav.login') }}</NuxtLink>
+                <NuxtLink :to="localePath('/register')" class="btn-register">{{ $t('nav.register') }}</NuxtLink>
+              </div>
+
+              <!-- Mobile Login Icon -->
+              <NuxtLink :to="localePath('/login')" class="icon-btn mobile-only">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+                  <polyline points="10 17 15 12 10 7"></polyline>
+                  <line x1="15" y1="12" x2="3" y2="12"></line>
+                </svg>
+              </NuxtLink>
             </template>
           </div>
         </div>
@@ -487,6 +499,16 @@ const getProfileLink = computed(() => {
   display: none;
 }
 
+/* Show only on mobile */
+.mobile-only {
+  display: flex;
+}
+
+.auth-buttons {
+  display: flex;
+  gap: 12px;
+}
+
 /* Mobile Navigation */
 .mobile-nav {
   display: flex;
@@ -558,6 +580,10 @@ const getProfileLink = computed(() => {
 
   .desktop-only {
     display: flex;
+  }
+
+  .mobile-only {
+    display: none;
   }
 
   .nav-link::after {

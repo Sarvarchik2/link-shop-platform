@@ -159,6 +159,8 @@
             "login_error": "Telefon raqam yoki parol noto'g'ri",
             "register_error": "Ro'yxatdan o'tishda xatolik. Bu raqam ro'yxatdan o'tgan bo'lishi mumkin."
         },
+        "login_required_modal_title": "Tizimga kirish talab qilinadi",
+        "login_required_modal_text": "Iltimos, davom etish uchun tizimga kiring yoki ro'yxatdan o'ting",
         "loggedOut": "Siz tizimdan chiqdingiz"
     },
     "common": {

@@ -44,7 +44,7 @@
                 <span v-if="item.selectedColor"> · {{ item.selectedColor.name }}</span>
                 <span v-if="item.selectedSize"> · {{ item.selectedSize }}</span>
               </p>
-              <p class="item-price">${{ item.price?.toFixed(2) }}</p>
+              <p class="item-price">{{ formatPrice(item.price) }}</p>
             </div>
             <div class="item-controls">
               <div class="item-quantity">
@@ -86,7 +86,7 @@
     <footer v-if="items.length > 0" class="cart-footer">
       <div class="total-section">
         <span class="total-label">{{ $t('cart.total') }}</span>
-        <span class="total-price">${{ totalPrice.toFixed(2) }}</span>
+        <span class="total-price">{{ formatPrice(totalPrice) }}</span>
       </div>
       <button @click="handleCheckout" class="btn-checkout">{{ $t('cart.checkout') }}</button>
     </footer>
@@ -101,6 +101,7 @@ const { items, removeItem, updateQuantity, totalPrice, clearCart } = useCart()
 const { token } = useAuth()
 const { t } = useI18n()
 const localePath = useLocalePath()
+const { formatPrice } = useCurrency()
 
 // Close auth modal when cart page is mounted (cart doesn't require auth)
 const { closeModal } = useAuthModal()
