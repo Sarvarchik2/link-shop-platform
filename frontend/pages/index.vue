@@ -3,7 +3,7 @@
     <nav class="fixed top-0 w-full z-50 glass border-b border-zinc-100/50 transition-all duration-300">
       <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
         <div class="flex items-center gap-8">
-          <NuxtLink to="/" class="text-lg font-semibold tracking-tight flex items-center gap-2">
+          <NuxtLink :to="localePath('/')" class="text-lg font-semibold tracking-tight flex items-center gap-2">
             <div class="w-5 h-5 bg-black rounded-md flex items-center justify-center text-white">
               <iconify-icon icon="lucide:box" width="12"></iconify-icon>
             </div>
@@ -21,7 +21,7 @@
           <NuxtLink v-if="!user" :to="localePath('/login')"
             class="text-sm font-medium text-zinc-500 hover:text-black transition-colors">{{ $t('nav.login') }}
           </NuxtLink>
-          <NuxtLink v-else :to="localePath('/profile')"
+          <NuxtLink v-else :to="localePath(profileLink)"
             class="text-sm font-medium text-zinc-500 hover:text-black transition-colors">{{ $t('nav.profile') }}
           </NuxtLink>
           <NuxtLink :to="localePath('/register-shop')"
@@ -403,7 +403,7 @@
               </div>
             </div>
 
-            <NuxtLink :to="plan.slug === 'business' ? '/register-shop?plan=business' : '/register-shop'"
+            <NuxtLink :to="localePath(plan.slug === 'business' ? '/register-shop?plan=business' : '/register-shop')"
               class="w-full py-3 rounded-lg text-sm font-semibold block text-center transition-smooth hover-lift"
               :class="plan.slug === 'basic' || index === Math.floor(plans.length / 2)
                 ? 'bg-black text-white hover:bg-zinc-800 shadow-lg'
@@ -459,7 +459,7 @@
       <div class="max-w-7xl mx-auto px-6">
         <div class="grid grid-cols-2 md:grid-cols-5 gap-12 mb-20">
           <div class="col-span-2">
-            <NuxtLink to="/" class="text-xl font-bold tracking-tight flex items-center gap-2 mb-6">
+            <NuxtLink :to="localePath('/')" class="text-xl font-bold tracking-tight flex items-center gap-2 mb-6">
               <div class="w-6 h-6 bg-black rounded-md flex items-center justify-center text-white">
                 <iconify-icon icon="lucide:box" width="14"></iconify-icon>
               </div>
@@ -571,8 +571,7 @@ const { data: myShops } = await useFetch(useRuntimeConfig().public.apiBase + '/p
 
 const profileLink = computed(() => {
   if (!user.value) return '/login'
-  if (user.value.role === 'platform_admin') return '/platform/admin'
-  if (myShops.value && myShops.value.length > 0) return '/profile'
+  if (user.value.role === 'platform_admin' || user.value.roles?.includes('admin')) return '/platform/admin'
   return '/profile'
 })
 

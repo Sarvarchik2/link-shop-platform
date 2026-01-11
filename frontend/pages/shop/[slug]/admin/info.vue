@@ -15,7 +15,7 @@
         </svg>
       </button>
       <span class="mobile-title">{{ $t('shopSettings.title') }}</span>
-      <NuxtLink :to="`/${shopSlug}`" class="home-btn">
+      <NuxtLink :to="localePath(`/${shopSlug}`)" class="home-btn">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
           <polyline points="9 22 9 12 15 12 15 22"></polyline>
@@ -183,7 +183,8 @@
             </div>
 
             <div class="form-footer">
-              <NuxtLink :to="`/shop/${shopSlug}/admin`" class="btn-cancel">{{ $t('common.cancel') }}</NuxtLink>
+              <NuxtLink :to="localePath(`/shop/${shopSlug}/admin`)" class="btn-cancel">{{ $t('common.cancel') }}
+              </NuxtLink>
               <button type="submit" class="btn-save" :disabled="loading">
                 <span v-if="loading" class="btn-spinner"></span>
                 {{ loading ? $t('common.saving') : $t('shopSettings.save') }}
@@ -214,6 +215,7 @@ const { data: shop, refresh } = await useFetch(`${useRuntimeConfig().public.apiB
   key: `shop-data-${shopSlug.value}`,
   server: false
 })
+const localePath = useLocalePath()
 
 const logoError = ref(false)
 const uploading = ref(false)

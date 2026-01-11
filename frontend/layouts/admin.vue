@@ -3,7 +3,8 @@
     <!-- Mobile Header -->
     <header class="mobile-header">
       <button class="menu-btn" @click="sidebarOpen = !sidebarOpen">
-        <svg v-if="!sidebarOpen" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg v-if="!sidebarOpen" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2">
           <line x1="3" y1="12" x2="21" y2="12"></line>
           <line x1="3" y1="6" x2="21" y2="6"></line>
           <line x1="3" y1="18" x2="21" y2="18"></line>
@@ -14,7 +15,7 @@
         </svg>
       </button>
       <span class="mobile-title">Boshqaruv paneli</span>
-      <NuxtLink to="/" class="home-btn">
+      <NuxtLink :to="localePath('/')" class="home-btn">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
           <polyline points="9 22 9 12 15 12 15 22"></polyline>
@@ -23,11 +24,7 @@
     </header>
 
     <!-- Sidebar Overlay -->
-    <div 
-      v-if="sidebarOpen" 
-      class="sidebar-overlay" 
-      @click="sidebarOpen = false"
-    ></div>
+    <div v-if="sidebarOpen" class="sidebar-overlay" @click="sidebarOpen = false"></div>
 
     <!-- Sidebar -->
     <aside class="sidebar" :class="{ open: sidebarOpen }">
@@ -35,7 +32,9 @@
         <div class="logo">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="3"></circle>
-            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            <path
+              d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+            </path>
           </svg>
           <span>Boshqaruv paneli</span>
         </div>
@@ -46,9 +45,9 @@
           </svg>
         </button>
       </div>
-      
+
       <nav class="nav">
-        <NuxtLink to="/admin" class="nav-item" @click="closeSidebar">
+        <NuxtLink :to="localePath('/admin')" class="nav-item" @click="closeSidebar">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="3" y="3" width="7" height="7"></rect>
             <rect x="14" y="3" width="7" height="7"></rect>
@@ -57,8 +56,8 @@
           </svg>
           <span>Boshqaruv</span>
         </NuxtLink>
-        
-        <NuxtLink to="/admin/banner" class="nav-item" @click="closeSidebar">
+
+        <NuxtLink :to="localePath('/admin/banner')" class="nav-item" @click="closeSidebar">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
             <line x1="8" y1="21" x2="16" y2="21"></line>
@@ -66,24 +65,24 @@
           </svg>
           <span>Banner</span>
         </NuxtLink>
-        
-        <NuxtLink to="/admin/products" class="nav-item" @click="closeSidebar">
+
+        <NuxtLink :to="localePath('/admin/products')" class="nav-item" @click="closeSidebar">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
             <line x1="1" y1="10" x2="23" y2="10"></line>
           </svg>
           <span>Mahsulotlar</span>
         </NuxtLink>
-        
-        <NuxtLink to="/admin/brands" class="nav-item" @click="closeSidebar">
+
+        <NuxtLink :to="localePath('/admin/brands')" class="nav-item" @click="closeSidebar">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
             <line x1="7" y1="7" x2="7.01" y2="7"></line>
           </svg>
           <span>Brendlar</span>
         </NuxtLink>
-        
-        <NuxtLink to="/admin/categories" class="nav-item" @click="closeSidebar">
+
+        <NuxtLink :to="localePath('/admin/categories')" class="nav-item" @click="closeSidebar">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <line x1="8" y1="6" x2="21" y2="6"></line>
             <line x1="8" y1="12" x2="21" y2="12"></line>
@@ -94,8 +93,8 @@
           </svg>
           <span>Kategoriyalar</span>
         </NuxtLink>
-        
-        <NuxtLink to="/admin/users" class="nav-item" @click="closeSidebar">
+
+        <NuxtLink :to="localePath('/admin/users')" class="nav-item" @click="closeSidebar">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
             <circle cx="9" cy="7" r="4"></circle>
@@ -104,8 +103,8 @@
           </svg>
           <span>Foydalanuvchilar</span>
         </NuxtLink>
-        
-        <NuxtLink to="/admin/orders" class="nav-item" @click="closeSidebar">
+
+        <NuxtLink :to="localePath('/admin/orders')" class="nav-item" @click="closeSidebar">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
             <polyline points="14 2 14 8 20 8"></polyline>
@@ -115,9 +114,9 @@
           <span>Buyurtmalar</span>
         </NuxtLink>
       </nav>
-      
+
       <div class="sidebar-footer">
-        <NuxtLink to="/" class="nav-item back-home" @click="closeSidebar">
+        <NuxtLink :to="localePath('/')" class="nav-item back-home" @click="closeSidebar">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
             <polyline points="16 17 21 12 16 7"></polyline>
@@ -127,7 +126,7 @@
         </NuxtLink>
       </div>
     </aside>
-    
+
     <main class="content">
       <slot />
     </main>
@@ -135,6 +134,7 @@
 </template>
 
 <script setup>
+const localePath = useLocalePath()
 const sidebarOpen = ref(false)
 
 const closeSidebar = () => {
@@ -345,26 +345,26 @@ watch(() => route.path, () => {
     padding: 20px 16px;
     padding-bottom: 40px;
   }
-  
+
   .content :deep(.page-title) {
     font-size: 1.5rem;
   }
-  
+
   .content :deep(.page-header) {
     flex-direction: column;
     align-items: stretch;
     margin-bottom: 20px;
     gap: 16px;
   }
-  
+
   .content :deep(.page-header > .page-title) {
     margin-bottom: 0;
   }
-  
+
   .content :deep(.page-header > .filters) {
     width: 100%;
   }
-  
+
   .content :deep(.page-header > .btn),
   .content :deep(.page-header > a.btn) {
     width: 100%;
@@ -377,20 +377,20 @@ watch(() => route.path, () => {
   .mobile-header {
     display: flex;
   }
-  
+
   .sidebar-overlay {
     display: block;
     opacity: 0;
     visibility: hidden;
     transition: all 0.3s;
   }
-  
+
   .sidebar-overlay.show,
-  .sidebar.open ~ .sidebar-overlay {
+  .sidebar.open~.sidebar-overlay {
     opacity: 1;
     visibility: visible;
   }
-  
+
   .sidebar {
     position: fixed;
     left: 0;
@@ -401,15 +401,15 @@ watch(() => route.path, () => {
     transition: transform 0.3s ease;
     box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
   }
-  
+
   .sidebar.open {
     transform: translateX(0);
   }
-  
+
   .close-btn {
     display: flex;
   }
-  
+
   .content {
     padding-top: 60px;
   }
@@ -420,7 +420,7 @@ watch(() => route.path, () => {
     width: 100%;
     max-width: 320px;
   }
-  
+
   .nav-item {
     padding: 16px;
     font-size: 1rem;

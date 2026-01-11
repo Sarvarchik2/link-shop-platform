@@ -15,7 +15,7 @@
         </svg>
       </button>
       <span class="mobile-title">{{ $t('platformAdmin.dashboard.title') }}</span>
-      <NuxtLink to="/" class="home-btn">
+      <NuxtLink :to="localePath('/')" class="home-btn">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
           <polyline points="9 22 9 12 15 12 15 22"></polyline>
@@ -56,7 +56,8 @@
             </svg>
             <p class="error-message">{{ $t('platformAdmin.dashboard.errorMessage', {
               message: error.message ||
-                $t('platformAdmin.dashboard.errorUnknown') }) }}</p>
+                $t('platformAdmin.dashboard.errorUnknown')
+            }) }}</p>
             <button @click="refresh" class="retry-btn">{{ $t('platformAdmin.dashboard.refresh') }}</button>
           </div>
 
@@ -94,14 +95,17 @@
                   <div class="stat-change positive" v-if="shopsRecentlyAdded > 0">
                     <span v-if="selectedPeriod === 'today'">{{ $t('platformAdmin.dashboard.stats.newToday', {
                       count:
-                      shopsRecentlyAdded }) }}</span>
+                        shopsRecentlyAdded
+                    }) }}</span>
                     <span v-else-if="selectedPeriod === 'week'">{{ $t('platformAdmin.dashboard.stats.newWeek', {
                       count:
-                      shopsRecentlyAdded }) }}</span>
+                        shopsRecentlyAdded
+                    }) }}</span>
                     <span v-else-if="selectedPeriod === 'month'">{{ $t('platformAdmin.dashboard.stats.newMonth', {
-                      count: shopsRecentlyAdded }) }}</span>
+                      count: shopsRecentlyAdded
+                    }) }}</span>
                     <span v-else>{{ $t('platformAdmin.dashboard.stats.newMonth', { count: shopsRecentlyAdded })
-                      }}</span>
+                    }}</span>
                   </div>
                 </div>
               </div>
@@ -132,11 +136,11 @@
                   <div class="stat-value">${{ subscriptionStats.monthlyRevenue.toFixed(0) }}</div>
                   <div class="stat-label">
                     <span v-if="selectedPeriod === 'today'">{{ $t('platformAdmin.dashboard.stats.revenueToday')
-                      }}</span>
+                    }}</span>
                     <span v-else-if="selectedPeriod === 'week'">{{ $t('platformAdmin.dashboard.stats.revenueWeek')
-                      }}</span>
+                    }}</span>
                     <span v-else-if="selectedPeriod === 'month'">{{ $t('platformAdmin.dashboard.stats.revenueMonth')
-                      }}</span>
+                    }}</span>
                     <span v-else>{{ $t('platformAdmin.dashboard.stats.revenue') }}/{{
                       $t('platformAdmin.dashboard.stats.revenuePerMonth') }}</span>
                   </div>
@@ -404,7 +408,7 @@
                       </div>
                     </div>
                   </div>
-                  <NuxtLink to="/platform/admin/shops" class="view-all-link">
+                  <NuxtLink :to="localePath('/platform/admin/shops')" class="view-all-link">
                     {{ $t('platformAdmin.dashboard.viewAllShops') }} →
                   </NuxtLink>
                 </div>
@@ -435,7 +439,7 @@
                         {{ getStatusText(shop.subscription_status) }}
                       </div>
                     </div>
-                    <NuxtLink to="/platform/admin/shops" class="view-all-link">
+                    <NuxtLink :to="localePath('/platform/admin/shops')" class="view-all-link">
                       {{ $t('platformAdmin.dashboard.viewAllShops') }} →
                     </NuxtLink>
                   </div>
@@ -458,6 +462,7 @@ definePageMeta({
 const route = useRoute()
 const { token, logout } = useAuth()
 const router = useRouter()
+const localePath = useLocalePath()
 
 const sidebarOpen = ref(false)
 

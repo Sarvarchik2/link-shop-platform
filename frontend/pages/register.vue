@@ -11,8 +11,9 @@
           </div>
           <h1 class="register-title">{{ $t('auth.register_title') }}</h1>
           <p class="register-subtitle">{{ $t('auth.register_subtitle') }}</p>
-          <p class="register-note">{{ $t('auth.shop_promo') }} <NuxtLink to="/register-shop" class="register-link">{{
-            $t('auth.create_shop_link') }}</NuxtLink>
+          <p class="register-note">{{ $t('auth.shop_promo') }} <NuxtLink :to="localePath('/register-shop')"
+              class="register-link">{{
+                $t('auth.create_shop_link') }}</NuxtLink>
           </p>
         </div>
 
@@ -67,6 +68,8 @@ import { useAuth } from '../composables/useAuth'
 import { useToast } from '../composables/useToast'
 import { usePhoneFormatter } from '../composables/usePhoneFormatter'
 import { useShopContext } from '../composables/useShopContext'
+
+const localePath = useLocalePath()
 
 // @ts-ignore
 definePageMeta({
@@ -139,9 +142,9 @@ const loginLink = computed(() => {
 
   const returnUrl = queryReturnUrl || storageReturnUrl.value
   if (returnUrl) {
-    return `/login?returnUrl=${encodeURIComponent(returnUrl)}`
+    return localePath(`/login?returnUrl=${encodeURIComponent(returnUrl)}`)
   }
-  return '/login'
+  return localePath('/login')
 })
 
 const handleRegister = async () => {

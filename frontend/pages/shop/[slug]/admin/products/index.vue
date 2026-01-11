@@ -15,7 +15,7 @@
         </svg>
       </button>
       <span class="mobile-title">{{ $t('productsPage.title') }}</span>
-      <NuxtLink :to="`/${shopSlug}`" class="home-btn">
+      <NuxtLink :to="localePath(`/${shopSlug}`)" class="home-btn">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
           <polyline points="9 22 9 12 15 12 15 22"></polyline>
@@ -54,7 +54,7 @@
                 </select>
               </div>
 
-              <NuxtLink :to="`/shop/${shopSlug}/admin/products/new`" class="btn btn-primary">
+              <NuxtLink :to="localePath(`/shop/${shopSlug}/admin/products/new`)" class="btn btn-primary">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <line x1="12" y1="5" x2="12" y2="19"></line>
                   <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -76,7 +76,7 @@
             </div>
             <h3>{{ $t('productsPage.emptyTitle') }}</h3>
             <p>{{ $t('productsPage.emptyDesc') }}</p>
-            <NuxtLink :to="`/shop/${shopSlug}/admin/products/new`" class="btn btn-primary">{{
+            <NuxtLink :to="localePath(`/shop/${shopSlug}/admin/products/new`)" class="btn btn-primary">{{
               $t('productsPage.titleNew') }}</NuxtLink>
           </div>
 
@@ -85,7 +85,8 @@
               <div class="product-image">
                 <img :src="product.image_url" :alt="product.name" />
                 <div class="product-actions">
-                  <NuxtLink :to="`/shop/${shopSlug}/admin/products/edit/${product.id}`" class="btn-action btn-edit">
+                  <NuxtLink :to="localePath(`/shop/${shopSlug}/admin/products/edit/${product.id}`)"
+                    class="btn-action btn-edit">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                       <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                       <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
@@ -136,6 +137,7 @@ const shopSlug = route.params.slug
 const { token, logout } = useAuth()
 const { t, locale } = useI18n()
 const { formatPrice } = useCurrency()
+const localePath = useLocalePath()
 
 const sidebarOpen = ref(false)
 const currentRoute = computed(() => 'products')

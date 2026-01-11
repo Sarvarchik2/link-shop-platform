@@ -186,7 +186,7 @@ const handleCheckout = () => {
     const { getShopSlug } = useShopContext()
     const shopSlug = getShopSlug()
     const returnUrl = shopSlug ? `/${shopSlug}/checkout` : '/checkout'
-    navigateTo(`/login?returnUrl=${encodeURIComponent(returnUrl)}`)
+    navigateTo(localePath(`/login?returnUrl=${encodeURIComponent(returnUrl)}`))
     return
   }
 
@@ -195,7 +195,7 @@ const handleCheckout = () => {
     return
   }
 
-  navigateTo('/checkout')
+  navigateTo(localePath('/checkout'))
 }
 </script>
 

@@ -21,7 +21,7 @@
         </svg>
         <h2>{{ $t('favorites.empty_title') }}</h2>
         <p>{{ $t('favorites.empty_text') }}</p>
-        <NuxtLink to="/" class="btn-explore">{{ $t('favorites.explore_button') }}</NuxtLink>
+        <NuxtLink :to="localePath('/')" class="btn-explore">{{ $t('favorites.explore_button') }}</NuxtLink>
       </div>
 
       <div v-else class="products-grid">
@@ -40,6 +40,7 @@ const config = useRuntimeConfig()
 const { data: products, pending, refresh } = await useFetch(`${config.public.apiBase}/products`, {
   server: false
 })
+const localePath = useLocalePath()
 
 const favoriteProducts = computed(() => {
   if (!products.value || !Array.isArray(products.value)) return []

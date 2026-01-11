@@ -28,7 +28,7 @@
           </div>
 
           <nav class="profile-nav">
-            <NuxtLink v-if="token" to="/orders" class="nav-item">
+            <NuxtLink v-if="token" :to="localePath('/orders')" class="nav-item">
               <div class="nav-icon">📦</div>
               <span>{{ $t('profile.actions.orders') }}</span>
               <div class="arrow-icon">
@@ -51,7 +51,7 @@
             <!-- Admin Links -->
             <template v-if="isAdmin">
               <div class="nav-divider"></div>
-              <NuxtLink to="/platform/admin" class="nav-item admin">
+              <NuxtLink :to="localePath('/platform/admin')" class="nav-item admin">
                 <div class="nav-icon">🛡️</div>
                 <span>{{ $t('profile.links.platformAdmin') }}</span>
               </NuxtLink>
@@ -69,7 +69,7 @@
                   </span>
                 </div>
                 <div class="shop-actions">
-                  <NuxtLink :to="`/shop/${shop.slug}/admin`" class="sub-nav-item">
+                  <NuxtLink :to="localePath(`/shop/${shop.slug}/admin`)" class="sub-nav-item">
                     {{ $t('profile.shops.actions.admin') }}
                   </NuxtLink>
                   <a :href="`http://${shop.slug}.localhost:3000`" target="_blank" class="sub-nav-item">
@@ -80,14 +80,15 @@
                       <line x1="10" y1="14" x2="21" y2="3"></line>
                     </svg>
                   </a>
-                  <NuxtLink :to="`/shop/${shop.slug}/admin/settings/subscription`" class="sub-nav-item highlight">
+                  <NuxtLink :to="localePath(`/shop/${shop.slug}/admin/settings/subscription`)"
+                    class="sub-nav-item highlight">
                     {{ $t('profile.shops.actions.subscription') }}
                   </NuxtLink>
                 </div>
               </div>
 
               <!-- Create Another Shop Button (if allowed) -->
-              <NuxtLink v-if="true" to="/register-shop" class="nav-item create-shop">
+              <NuxtLink v-if="true" :to="localePath('/register-shop')" class="nav-item create-shop">
                 <div class="nav-icon">✨</div>
                 <span>{{ $t('profile.links.createShop') }}</span>
               </NuxtLink>
@@ -143,7 +144,7 @@
               </div>
 
               <div class="card-footer">
-                <NuxtLink :to="`/shop/${shop.slug}/admin`" class="btn-dashboard">
+                <NuxtLink :to="localePath(`/shop/${shop.slug}/admin`)" class="btn-dashboard">
                   {{ $t('profile.shops.actions.admin') }}
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -159,7 +160,7 @@
             <div class="promo-content">
               <h2>{{ $t('profile.shopPromo.title') }}</h2>
               <p>{{ $t('profile.shopPromo.desc') }}</p>
-              <NuxtLink to="/register-shop" class="btn-create-shop">
+              <NuxtLink :to="localePath('/register-shop')" class="btn-create-shop">
                 {{ $t('profile.links.createShop') }}
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <line x1="12" y1="5" x2="12" y2="19"></line>
@@ -217,6 +218,7 @@ definePageMeta({
 const { user, token, logout, fetchUser } = useAuth()
 const { t } = useI18n()
 const config = useRuntimeConfig()
+const localePath = useLocalePath()
 
 // Initialize form with safe defaults
 const form = reactive({

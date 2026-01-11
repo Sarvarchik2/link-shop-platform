@@ -23,7 +23,7 @@
     <main class="admin-main">
       <div class="add-product-page">
         <div class="page-header">
-          <NuxtLink :to="`/shop/${shopSlug}/admin/products`" class="back-btn">
+          <NuxtLink :to="localePath(`/shop/${shopSlug}/admin/products`)" class="back-btn">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="19" y1="12" x2="5" y2="12"></line>
               <polyline points="12 19 5 12 12 5"></polyline>
@@ -38,7 +38,8 @@
           <div class="warning-content">
             <h3>{{ $t('productsPage.limitReachedTitle') }}</h3>
             <p>{{ $t('productsPage.limitReachedDesc', { limit: stats?.plan_limit_products }) }}</p>
-            <NuxtLink :to="`/shop/${shopSlug}/subscription`" class="btn-upgrade">{{ $t('productsPage.upgradePlan') }}
+            <NuxtLink :to="localePath(`/shop/${shopSlug}/subscription`)" class="btn-upgrade">{{
+              $t('productsPage.upgradePlan') }}
             </NuxtLink>
           </div>
         </div>
@@ -224,7 +225,8 @@
             </div>
 
             <div class="form-actions">
-              <NuxtLink :to="`/shop/${shopSlug}/admin/products`" class="btn btn-secondary">{{ $t('productsPage.cancel')
+              <NuxtLink :to="localePath(`/shop/${shopSlug}/admin/products`)" class="btn btn-secondary">{{
+                $t('productsPage.cancel')
               }}</NuxtLink>
               <button type="submit" class="btn btn-primary"
                 :disabled="loading || uploadedImages.length === 0 || limitReached">
@@ -238,7 +240,7 @@
   </div>
   <div v-else class="error-state">
     <p>{{ $t('productsPage.shopInfoError') }}</p>
-    <NuxtLink to="/profile" class="btn btn-primary">{{ $t('productsPage.backToProfile') }}</NuxtLink>
+    <NuxtLink :to="localePath('/profile')" class="btn btn-primary">{{ $t('productsPage.backToProfile') }}</NuxtLink>
   </div>
 </template>
 
@@ -288,6 +290,7 @@ const categoriesError = ref(null)
 const toast = useToast()
 const { t } = useI18n()
 const { getField } = useMultilingual()
+const localePath = useLocalePath()
 
 const getLanguageLabel = (lang) => {
   switch (lang) {
@@ -539,7 +542,7 @@ const handleSubmit = async () => {
 
     console.log('[Add Product] Товар создан успешно:', response)
     toast.success(t('alerts.shop.productCreated'))
-    navigateTo(`/shop/${shopSlug.value}/admin/products`)
+    navigateTo(localePath(`/shop/${shopSlug.value}/admin/products`))
   } catch (e) {
     console.error('[Add Product] Ошибка при создании товара:', e)
     console.error('[Add Product] Детали ошибки:', {

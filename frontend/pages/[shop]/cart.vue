@@ -26,7 +26,8 @@
                 </div>
                 <h2 class="empty-title">{{ $t('cart.empty_title') }}</h2>
                 <p class="empty-text">{{ $t('cart.empty_text') }}</p>
-                <NuxtLink :to="shopProductsLink" class="btn-shop">{{ $t('cart.continue_shopping') }}</NuxtLink>
+                <NuxtLink :to="localePath(shopProductsLink)" class="btn-shop">{{ $t('cart.continue_shopping') }}
+                </NuxtLink>
             </div>
 
             <div v-else class="cart-items">
@@ -199,7 +200,7 @@ const handleCheckout = () => {
     if (!token.value) {
         toast.warning(t('cart.login_required'))
         const returnUrl = `/${shopSlug}/checkout`
-        navigateTo(`/login?returnUrl=${encodeURIComponent(returnUrl)}`)
+        navigateTo(localePath(`/login?returnUrl=${encodeURIComponent(returnUrl)}`))
         return
     }
 
@@ -208,7 +209,7 @@ const handleCheckout = () => {
         return
     }
 
-    navigateTo(`/${shopSlug}/checkout`)
+    navigateTo(localePath(`/${shopSlug}/checkout`))
 }
 </script>
 

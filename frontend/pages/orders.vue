@@ -95,7 +95,7 @@
         </div>
         <h2 class="empty-title">{{ $t('orders.empty.title') }}</h2>
         <p class="empty-text">{{ $t('orders.empty.subtitle') }}</p>
-        <NuxtLink to="/products" class="btn-shop">{{ $t('orders.empty.action') }}</NuxtLink>
+        <NuxtLink :to="localePath('/products')" class="btn-shop">{{ $t('orders.empty.action') }}</NuxtLink>
       </div>
 
       <!-- Orders List -->
@@ -115,7 +115,7 @@
 
           <div class="order-items-preview">
             <NuxtLink v-for="(item, idx) in order.items?.slice(0, 2)" :key="idx"
-              :to="item.shop_slug ? `/${item.shop_slug}/products/${item.product_id}` : `/products/${item.product_id}`"
+              :to="localePath(item.shop_slug ? `/${item.shop_slug}/products/${item.product_id}` : `/products/${item.product_id}`)"
               class="item-preview">
               <img :src="item.product_image" :alt="item.product_name" class="item-img" />
               <div class="item-details">
@@ -220,7 +220,7 @@
               </h3>
               <div class="items-list">
                 <NuxtLink v-for="(item, idx) in order.items" :key="idx"
-                  :to="item.shop_slug ? `/${item.shop_slug}/products/${item.product_id}` : `/products/${item.product_id}`"
+                  :to="localePath(item.shop_slug ? `/${item.shop_slug}/products/${item.product_id}` : `/products/${item.product_id}`)"
                   class="item-full">
                   <img :src="item.product_image" :alt="item.product_name" class="item-img-full" />
                   <div class="item-info">
@@ -231,7 +231,7 @@
                     </div>
                     <span class="item-meta">{{ $t('orders.card.qty') }}: {{ item.quantity }} × {{
                       formatPrice(item.price)
-                    }}</span>
+                      }}</span>
                   </div>
                   <span class="item-total">{{ formatPrice(item.price * item.quantity) }}</span>
                 </NuxtLink>
@@ -260,6 +260,7 @@ const { data: orders, pending } = await useFetch(`${config.public.apiBase}/order
   headers: { Authorization: `Bearer ${token.value}` },
   server: false
 })
+const localePath = useLocalePath()
 
 const statuses = computed(() => [
   { value: 'all', label: t('orders.status.all') },

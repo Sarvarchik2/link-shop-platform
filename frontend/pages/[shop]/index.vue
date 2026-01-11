@@ -13,9 +13,9 @@
             <line x1="9" y1="9" x2="15" y2="15"></line>
           </svg>
         </div>
-        <h2 class="text-3xl font-black text-gray-900 mb-4">{{ $t('store.unavailableTitle') || 'Shop Temporarily Unavailable' }}</h2>
-        <p class="text-gray-500 max-w-md mx-auto">{{ $t('store.unavailableDesc') || 'This shop is currently inactive or its subscription has expired. Please check back later.' }}</p>
-        <NuxtLink to="/"
+        <h2 class="text-3xl font-black text-gray-900 mb-4">{{ unavailableTitle }}</h2>
+        <p class="text-gray-500 max-w-md mx-auto">{{ unavailableDesc }}</p>
+        <NuxtLink :to="localePath('/')"
           class="mt-8 inline-block px-8 py-3 bg-black text-white rounded-full font-bold hover:bg-gray-800 transition-all">
           {{ $t('common.backToHome') || 'Explore Other Shops' }}
         </NuxtLink>
@@ -34,8 +34,9 @@
                       v-html="(getLocalized(slide, 'title') ? getLocalized(slide, 'title').replace(/\n/g, '<br/>') : '')">
                     </h1>
                     <p class="hero-price">{{ getLocalized(slide, 'subtitle') }}</p>
-                    <NuxtLink :to="slide.button_link || `/${shopSlug}/products`" class="hero-btn">{{ getLocalized(slide,
-                      'button_text') }}
+                    <NuxtLink :to="localePath(slide.button_link || `/${shopSlug}/products`)" class="hero-btn">{{
+                      getLocalized(slide,
+                        'button_text') }}
                     </NuxtLink>
                   </div>
                   <div class="hero-image">
@@ -53,7 +54,7 @@
                   v-html="(getLocalized(banner[0], 'title') ? getLocalized(banner[0], 'title').replace(/\\n/g, '<br/>') : '')">
                 </h1>
                 <p class="hero-price">{{ getLocalized(banner[0], 'subtitle') }}</p>
-                <NuxtLink :to="banner[0].button_link || `/${shopSlug}/products`" class="hero-btn">{{
+                <NuxtLink :to="localePath(banner[0].button_link || `/${shopSlug}/products`)" class="hero-btn">{{
                   getLocalized(banner[0], 'button_text')
                   }}</NuxtLink>
               </div>
@@ -68,7 +69,7 @@
         <section class="mb-8">
           <div class="section-header">
             <h2 class="section-title">{{ $t('store.brands') }}</h2>
-            <NuxtLink :to="`/${shopSlug}/products`" class="view-all-btn">
+            <NuxtLink :to="localePath(`/${shopSlug}/products`)" class="view-all-btn">
               {{ $t('store.viewAll') }}
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -77,8 +78,8 @@
             </NuxtLink>
           </div>
           <div class="brand-grid">
-            <NuxtLink v-for="brand in displayedBrands" :key="brand.id" :to="`/${shopSlug}/products?brand=${brand.name}`"
-              class="brand-card">
+            <NuxtLink v-for="brand in displayedBrands" :key="brand.id"
+              :to="localePath(`/${shopSlug}/products?brand=${brand.name}`)" class="brand-card">
               <div class="brand-logo-wrapper">
                 <img :src="brand.logo_url" :alt="brand.name" class="brand-logo-img" />
               </div>
@@ -91,7 +92,7 @@
         <section class="mb-8">
           <div class="section-header">
             <h2 class="section-title">{{ $t('store.recommended') }}</h2>
-            <NuxtLink :to="`/${shopSlug}/products`" class="view-all-btn">
+            <NuxtLink :to="localePath(`/${shopSlug}/products`)" class="view-all-btn">
               {{ $t('store.viewAll') }}
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -110,7 +111,7 @@
 
           <!-- View All Products Button -->
           <div class="view-all-section">
-            <NuxtLink :to="`/${shopSlug}/products`" class="view-all-products-btn">
+            <NuxtLink :to="localePath(`/${shopSlug}/products`)" class="view-all-products-btn">
               <span>{{ $t('store.viewAllProducts') }}</span>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -218,6 +219,10 @@ register()
 const { t, locale } = useI18n()
 const route = useRoute()
 const shopSlug = route.params.shop
+const localePath = useLocalePath()
+
+const unavailableTitle = computed(() => t('store.unavailableTitle') || 'Shop Temporarily Unavailable')
+const unavailableDesc = computed(() => t('store.unavailableDesc') || 'This shop is currently inactive or its subscription has expired. Please check back later.')
 
 const getLocalized = (obj, field) => {
   if (!obj) return ''

@@ -1,9 +1,10 @@
 export default defineNuxtRouteMiddleware(async (to, from) => {
     const { token, user, fetchUser } = useAuth()
+    const localePath = useLocalePath()
 
     // If no token, redirect to login
     if (!token.value) {
-        return navigateTo('/login')
+        return navigateTo(localePath('/login'))
     }
 
     // If user not loaded yet, try to fetch
@@ -13,7 +14,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
         } catch (e) {
             console.error('[Shop Owner Middleware] Ошибка загрузки пользователя:', e)
             token.value = null
-            return navigateTo('/login')
+            return navigateTo(localePath('/login'))
         }
     }
 
@@ -21,7 +22,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
     const shopSlug = to.params.slug
 
     if (!shopSlug) {
-        return navigateTo('/profile')
+        return navigateTo(localePath('/profile'))
     }
 
     try {
@@ -47,18 +48,18 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
 
                 if ((isExpired || isInactive) && to.path !== subscriptionPath) {
                     console.warn('[Shop Owner Middleware] Shop expired/inactive, redirecting to subscription page')
-                    return navigateTo(subscriptionPath)
+                    return navigateTo(localePath(subscriptionPath))
                 }
             }
             return // Allow access
         }
 
         // User is not authorized
-        return navigateTo('/profile')
+        return navigateTo(localePath('/profile'))
     } catch (e) {
         // Shop not found or error
         console.error('[Shop Owner Middleware] Ошибка при проверке магазина:', e)
-        return navigateTo('/profile')
+        return navigateTo(localePath('/profile'))
     }
 })
 

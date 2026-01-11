@@ -16,7 +16,7 @@
                 </svg>
             </button>
             <span class="mobile-title">{{ $t('admin.delivery.title') }}</span>
-            <NuxtLink :to="`/${shopSlug}`" class="home-btn">
+            <NuxtLink :to="localePath(`/${shopSlug}`)" class="home-btn">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
                     <polyline points="9 22 9 12 15 12 15 22"></polyline>
@@ -140,6 +140,7 @@ const shopSlug = route.params.slug
 const toast = useToast()
 const { token } = useAuth()
 const sidebarOpen = ref(false)
+const localePath = useLocalePath()
 
 const regions = [
     'Toshkent', 'Samarqand', 'Buxoro', 'Namangan',
@@ -453,281 +454,291 @@ const saveSettings = async () => {
 <style scoped>
 /* Layout Styles */
 .shop-admin-page {
-  min-height: 100vh;
-  display: flex;
-  background: #FAFAFA;
+    min-height: 100vh;
+    display: flex;
+    background: #FAFAFA;
 }
 
 .admin-main {
-  flex: 1;
-  margin-left: 280px;
-  min-height: 100vh;
-  padding: 40px;
+    flex: 1;
+    margin-left: 280px;
+    min-height: 100vh;
+    padding: 40px;
 }
 
 /* Mobile Header */
 .mobile-header {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 60px;
-  background: white;
-  border-bottom: 1px solid #E5E7EB;
-  padding: 0 16px;
-  align-items: center;
-  justify-content: space-between;
-  z-index: 1000;
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: white;
+    border-bottom: 1px solid #E5E7EB;
+    padding: 0 16px;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 1000;
 }
 
 .menu-btn,
 .home-btn {
-  width: 44px;
-  height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #F3F4F6;
-  border: none;
-  border-radius: 12px;
-  cursor: pointer;
-  color: #111;
-  transition: all 0.2s;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #F3F4F6;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    color: #111;
+    transition: all 0.2s;
 }
 
 .menu-btn:hover,
 .home-btn:hover {
-  background: #111;
-  color: white;
+    background: #111;
+    color: white;
 }
 
 .mobile-title {
-  font-size: 1.125rem;
-  font-weight: 700;
-  color: #111;
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #111;
 }
 
 @media (max-width: 1024px) {
-  .admin-main {
-    margin-left: 0;
-    padding-top: 80px; /* Space for mobile header */
-  }
+    .admin-main {
+        margin-left: 0;
+        padding-top: 80px;
+        /* Space for mobile header */
+    }
 
-  .mobile-header {
-    display: flex;
-  }
+    .mobile-header {
+        display: flex;
+    }
 }
 
 /* Page Specific */
 .content-wrapper {
-  max-width: 800px;
-  margin: 0 auto;
+    max-width: 800px;
+    margin: 0 auto;
 }
 
 .page-title {
-  font-size: 2rem;
-  font-weight: 800;
-  color: #111;
-  margin-bottom: 8px;
-  letter-spacing: -0.02em;
+    font-size: 2rem;
+    font-weight: 800;
+    color: #111;
+    margin-bottom: 8px;
+    letter-spacing: -0.02em;
 }
 
 .page-subtitle {
-  color: #6B7280;
-  margin-bottom: 32px;
+    color: #6B7280;
+    margin-bottom: 32px;
 }
 
 .settings-card {
-  background: white;
-  border-radius: 16px;
-  padding: 24px;
-  margin-bottom: 24px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  border: 1px solid #E5E7EB;
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    border: 1px solid #E5E7EB;
 }
 
 .card-title {
-  font-size: 1.1rem;
-  font-weight: 700;
-  margin-bottom: 20px;
-  color: #111;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: #111;
 }
 
 .delivery-types {
-  display: grid;
-  gap: 16px;
+    display: grid;
+    gap: 16px;
 }
 
 .type-option {
-  display: flex;
-  align-items: flex-start;
-  gap: 16px;
-  padding: 16px;
-  border: 2px solid #E5E7EB;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: all 0.2s;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 16px;
+    border: 2px solid #E5E7EB;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
 }
 
 .type-option:hover {
-  border-color: #D1D5DB;
+    border-color: #D1D5DB;
 }
 
 .type-option.active {
-  border-color: #111;
-  background: #F9FAFB;
+    border-color: #111;
+    background: #F9FAFB;
 }
 
 .type-option input {
-  display: none;
+    display: none;
 }
 
 .type-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  background: #fff;
-  border: 1px solid #E5E7EB;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #111;
-  flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: #fff;
+    border: 1px solid #E5E7EB;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #111;
+    flex-shrink: 0;
 }
 
 .type-option.active .type-icon {
-  background: #111;
-  color: white;
-  border-color: #111;
+    background: #111;
+    color: white;
+    border-color: #111;
 }
 
 .type-info {
-  flex: 1;
+    flex: 1;
 }
 
 .type-name {
-  display: block;
-  font-weight: 700;
-  font-size: 1rem;
-  margin-bottom: 4px;
-  color: #111;
+    display: block;
+    font-weight: 700;
+    font-size: 1rem;
+    margin-bottom: 4px;
+    color: #111;
 }
 
 .type-desc {
-  font-size: 0.85rem;
-  color: #6B7280;
-  line-height: 1.4;
+    font-size: 0.85rem;
+    color: #6B7280;
+    line-height: 1.4;
 }
 
 .form-group {
-  margin-bottom: 0;
+    margin-bottom: 0;
 }
 
 .form-label {
-  display: block;
-  font-weight: 600;
-  margin-bottom: 8px;
-  color: #374151;
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #374151;
 }
 
 .form-input {
-  width: 100%;
-  padding: 12px 16px;
-  border: 2px solid #E5E7EB;
-  border-radius: 10px;
-  font-size: 1rem;
-  transition: all 0.2s;
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #E5E7EB;
+    border-radius: 10px;
+    font-size: 1rem;
+    transition: all 0.2s;
 }
 
 .form-input:focus {
-  border-color: #111;
-  outline: none;
+    border-color: #111;
+    outline: none;
 }
 
 .regional-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 16px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
 }
 
 .region-item {
-  background: #F9FAFB;
-  padding: 12px;
-  border-radius: 10px;
-  border: 1px solid #E5E7EB;
+    background: #F9FAFB;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #E5E7EB;
 }
 
 .region-name {
-  display: block;
-  font-weight: 600;
-  margin-bottom: 8px;
-  font-size: 0.9rem;
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
 }
 
 .price-input-wrapper {
-  position: relative;
+    position: relative;
 }
 
 .currency-suffix {
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #9CA3AF;
-  font-size: 0.85rem;
-  font-weight: 600;
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #9CA3AF;
+    font-size: 0.85rem;
+    font-weight: 600;
 }
 
 .form-actions {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 32px;
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 32px;
 }
 
 .save-btn {
-  background: #111;
-  color: white;
-  padding: 12px 32px;
-  border-radius: 12px;
-  font-weight: 700;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  transition: all 0.2s;
+    background: #111;
+    color: white;
+    padding: 12px 32px;
+    border-radius: 12px;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
 }
 
 .save-btn:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .save-btn:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
+    opacity: 0.7;
+    cursor: not-allowed;
 }
 
 .fade-in {
-  animation: fadeIn 0.3s ease-in-out;
+    animation: fadeIn 0.3s ease-in-out;
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .spinner-small {
-  width: 16px;
-  height: 16px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-top-color: white;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }
 </style>

@@ -15,7 +15,7 @@
         </svg>
       </button>
       <span class="mobile-title">{{ $t('bannerPage.title') }}</span>
-      <NuxtLink :to="`/${shopSlug}`" class="home-btn">
+      <NuxtLink :to="localePath(`/${shopSlug}`)" class="home-btn">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
           <polyline points="9 22 9 12 15 12 15 22"></polyline>
@@ -97,7 +97,7 @@
                     <p class="preview-subtitle">{{ form[`subtitle_${activeLang}`] || $t('bannerPage.previewSubtitle') }}
                     </p>
                     <span class="preview-btn">{{ form[`button_text_${activeLang}`] || $t('bannerPage.previewButton')
-                      }}</span>
+                    }}</span>
                   </div>
                   <div class="preview-image">
                     <img :src="form.image_url || '/placeholder.png'" alt="Banner" class="object-cover w-full h-full" />
@@ -190,6 +190,7 @@ const isEditing = ref(false)
 const editingId = ref(null)
 const toast = useToast()
 const activeLang = ref('en')
+const localePath = useLocalePath()
 
 const form = ref({
   badge_text: '',

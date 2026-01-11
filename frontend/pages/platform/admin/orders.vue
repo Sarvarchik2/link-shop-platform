@@ -15,7 +15,7 @@
         </svg>
       </button>
       <span class="mobile-title">Заказы</span>
-      <NuxtLink to="/" class="home-btn">
+      <NuxtLink :to="localePath('/')" class="home-btn">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
           <polyline points="9 22 9 12 15 12 15 22"></polyline>
@@ -79,7 +79,7 @@
             <div v-if="order.items && order.items.length > 0" class="order-items">
               <div class="items-title">Товары:</div>
               <NuxtLink v-for="item in order.items" :key="item.product_id"
-                :to="item.shop_slug ? `/${item.shop_slug}/products/${item.product_id}` : `/products/${item.product_id}`"
+                :to="localePath(item.shop_slug ? `/${item.shop_slug}/products/${item.product_id}` : `/products/${item.product_id}`)"
                 class="order-item">
                 <img v-if="item.product_image" :src="item.product_image" :alt="item.product_name" class="item-image" />
                 <div class="item-info">
@@ -105,6 +105,7 @@ definePageMeta({
 const { token, logout } = useAuth()
 const { formatPrice } = useCurrency()
 const router = useRouter()
+const localePath = useLocalePath()
 const sidebarOpen = ref(false)
 
 const handleLogout = () => {

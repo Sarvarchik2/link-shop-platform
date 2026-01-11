@@ -23,7 +23,7 @@
     <main class="admin-main">
       <div class="add-product-page">
         <div class="page-header">
-          <NuxtLink :to="`/shop/${shopSlug}/admin/products`" class="back-btn">
+          <NuxtLink :to="localePath(`/shop/${shopSlug}/admin/products`)" class="back-btn">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="19" y1="12" x2="5" y2="12"></line>
               <polyline points="12 19 5 12 12 5"></polyline>
@@ -207,8 +207,9 @@
             </div>
 
             <div class="form-actions">
-              <NuxtLink :to="`/shop/${shopSlug}/admin/products`" class="btn btn-secondary">{{ $t('productsPage.cancel')
-                }}</NuxtLink>
+              <NuxtLink :to="localePath(`/shop/${shopSlug}/admin/products`)" class="btn btn-secondary">{{
+                $t('productsPage.cancel')
+              }}</NuxtLink>
               <button type="submit" class="btn btn-primary" :disabled="loading || uploadedImages.length === 0">
                 {{ loading ? $t('productsPage.saving') : $t('productsPage.saveBtn') }}
               </button>
@@ -220,7 +221,7 @@
   </div>
   <div v-else class="error-state">
     <p>{{ $t('productsPage.shopInfoError') }}</p>
-    <NuxtLink to="/profile" class="btn btn-primary">{{ $t('productsPage.backToProfile') }}</NuxtLink>
+    <NuxtLink :to="localePath('/profile')" class="btn btn-primary">{{ $t('productsPage.backToProfile') }}</NuxtLink>
   </div>
 </template>
 
@@ -263,6 +264,7 @@ const variants = ref([{ size: '', color: '', colorHex: '#000000', stock: 0 }])
 const selectedCategory = ref(null)
 const selectedBrand = ref(null)
 const { getField } = useMultilingual()
+const localePath = useLocalePath()
 
 const currentLang = ref('uz')
 
@@ -510,7 +512,7 @@ const handleSubmit = async () => {
     })
 
     toast.success(t('alerts.shop.productUpdated'))
-    navigateTo(`/shop/${shopSlug.value}/admin/products`)
+    navigateTo(localePath(`/shop/${shopSlug.value}/admin/products`))
   } catch (e) {
     console.error('[Edit Product] Ошибка при обновлении:', e)
     toast.error(e.data?.detail || e.message || t('common.error'))

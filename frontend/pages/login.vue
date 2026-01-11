@@ -55,6 +55,7 @@ const loading = ref(false)
 const { login } = useAuth()
 const toast = useToast()
 const { formatPhoneNumber, unformatPhoneNumber } = usePhoneFormatter()
+const localePath = useLocalePath()
 
 // Initialize with formatted default
 onMounted(() => {
@@ -112,9 +113,9 @@ const registerLink = computed(() => {
 
   const returnUrl = queryReturnUrl || storageReturnUrl.value
   if (returnUrl) {
-    return `/register?returnUrl=${encodeURIComponent(returnUrl)}`
+    return localePath(`/register?returnUrl=${encodeURIComponent(returnUrl)}`)
   }
-  return '/register'
+  return localePath('/register')
 })
 
 const handleLogin = async () => {

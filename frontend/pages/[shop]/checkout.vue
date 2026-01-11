@@ -181,6 +181,7 @@ const route = useRoute()
 const shopSlug = route.params.shop
 const { t } = useI18n()
 const { formatPrice } = useCurrency()
+const localePath = useLocalePath()
 
 const { items, totalPrice, clearCart } = useCart()
 const { token, user } = useAuth()
@@ -237,7 +238,7 @@ const placeOrder = async () => {
 
     clearCart()
     toast.success(t('checkout.success'))
-    navigateTo(`/${shopSlug}/orders`)
+    navigateTo(localePath(`/${shopSlug}/orders`))
   } catch (e) {
     console.error(e)
     toast.error(t('checkout.error'))
@@ -248,7 +249,7 @@ const placeOrder = async () => {
 
 // Redirect if cart is empty
 if (items.value.length === 0) {
-  navigateTo(`/${shopSlug}/cart`)
+  navigateTo(localePath(`/${shopSlug}/cart`))
 }
 </script>
 

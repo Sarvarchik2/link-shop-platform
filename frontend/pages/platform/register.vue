@@ -14,8 +14,9 @@
           <h3>У вас уже есть магазин</h3>
           <p>На один аккаунт можно создать только один магазин.</p>
           <div class="auth-actions">
-            <NuxtLink :to="`/shop/${myShops[0].slug}/admin`" class="btn-primary">Перейти в админку магазина</NuxtLink>
-            <NuxtLink to="/profile" class="btn-secondary">Вернуться в профиль</NuxtLink>
+            <NuxtLink :to="localePath(`/shop/${myShops[0].slug}/admin`)" class="btn-primary">Перейти в админку магазина
+            </NuxtLink>
+            <NuxtLink :to="localePath('/profile')" class="btn-secondary">Вернуться в профиль</NuxtLink>
           </div>
         </div>
 
@@ -81,6 +82,7 @@ const { token, fetchUser, user } = useAuth()
 const router = useRouter()
 const toast = useToast()
 const { t } = useI18n()
+const localePath = useLocalePath()
 
 const form = reactive({
   name: '',
@@ -149,7 +151,7 @@ watch(user, async (newUser) => {
 
 const registerShop = async () => {
   if (!token.value) {
-    router.push('/login')
+    router.push(localePath('/login'))
     return
   }
 
@@ -172,7 +174,7 @@ const registerShop = async () => {
     await new Promise(resolve => setTimeout(resolve, 500))
 
     toast.success(t('alerts.shop.created'))
-    router.push(`/shop/${data.slug}/admin`)
+    router.push(localePath(`/shop/${data.slug}/admin`))
   } catch (e) {
     error.value = e.data?.detail || 'Ошибка при создании магазина'
     toast.error(error.value)

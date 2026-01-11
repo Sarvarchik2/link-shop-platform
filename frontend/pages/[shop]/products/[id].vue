@@ -200,6 +200,7 @@ const { t } = useI18n()
 const { formatPrice } = useCurrency()
 const { openModal } = useAuthModal()
 const config = useRuntimeConfig()
+const localePath = useLocalePath()
 
 const { data: product, pending, refresh } = await useFetch(() => `${config.public.apiBase}/products/${route.params.id}`, {
   server: false

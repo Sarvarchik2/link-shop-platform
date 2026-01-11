@@ -1,5 +1,5 @@
 <template>
-  <div class="product-card" @click="navigateTo(productUrl)">
+  <div class="product-card" @click="navigateTo(localePath(productUrl))">
     <div class="product-image">
       <button class="fav-btn" :class="{ 'is-fav': isFavoriteDisplay }" @click.stop="toggleFav">
         <svg width="20" height="20" viewBox="0 0 24 24" :fill="isFavoriteDisplay ? '#EF4444' : 'none'"
@@ -101,6 +101,7 @@ watch(() => user.value, (newUser) => {
 
 const { openModal } = useAuthModal()
 const { formatPrice } = useCurrency()
+const localePath = useLocalePath()
 
 const toggleFav = async () => {
   // Check if user is logged in

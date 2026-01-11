@@ -186,8 +186,11 @@ const localePath = useLocalePath()
 
 const navigateToAuth = (path) => {
   // Allow unauthenticated users to access cart page
-  if (path === '/cart') {
-    router.push(path)
+  // Check if path ends with /cart or is exactly /cart (handling locale prefix)
+  const isCart = path === '/cart' || path.endsWith('/cart')
+
+  if (isCart) {
+    navigateTo(path)
     return
   }
 
@@ -196,7 +199,7 @@ const navigateToAuth = (path) => {
     openModal()
     return
   }
-  router.push(path)
+  navigateTo(path)
 }
 
 // Only fetch shops if user is shop_owner or platform_admin

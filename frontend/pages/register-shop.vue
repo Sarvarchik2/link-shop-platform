@@ -4,9 +4,9 @@
       <div v-if="!user" class="max-w-md mx-auto auth-notice">
         <p>{{ $t('shopRegistration.authNotice.text') }}</p>
         <div class="auth-actions">
-          <NuxtLink :to="`/login?returnUrl=${route.fullPath}`" class="btn-primary">{{
+          <NuxtLink :to="localePath(`/login?returnUrl=${route.fullPath}`)" class="btn-primary">{{
             $t('shopRegistration.authNotice.login') }}</NuxtLink>
-          <NuxtLink :to="`/register?returnUrl=${route.fullPath}`" class="btn-secondary">{{
+          <NuxtLink :to="localePath(`/register?returnUrl=${route.fullPath}`)" class="btn-secondary">{{
             $t('shopRegistration.authNotice.register') }}</NuxtLink>
         </div>
       </div>
@@ -20,9 +20,10 @@
         <h3>{{ $t('shopRegistration.alreadyExists.title') }}</h3>
         <p>{{ $t('shopRegistration.alreadyExists.desc') }}</p>
         <div class="auth-actions">
-          <NuxtLink :to="`/shop/${myShops[0].slug}/admin`" class="btn-primary">{{
+          <NuxtLink :to="localePath(`/shop/${myShops[0].slug}/admin`)" class="btn-primary">{{
             $t('shopRegistration.alreadyExists.goToAdmin') }}</NuxtLink>
-          <NuxtLink to="/profile" class="btn-secondary">{{ $t('shopRegistration.alreadyExists.backToProfile') }}
+          <NuxtLink :to="localePath('/profile')" class="btn-secondary">{{
+            $t('shopRegistration.alreadyExists.backToProfile') }}
           </NuxtLink>
         </div>
       </div>
@@ -204,6 +205,7 @@ const toast = useToast()
 const config = useRuntimeConfig()
 const { locale } = useI18n()
 const { formatPrice } = useCurrency()
+const localePath = useLocalePath()
 
 const getLocalizedValue = (obj, key) => {
   if (!obj) return ''
@@ -386,7 +388,7 @@ watch(() => user.value, async (newUser) => {
 
 const registerShop = async () => {
   if (!token.value) {
-    router.push(`/login?returnUrl=${route.fullPath}`)
+    navigateTo(localePath(`/login?returnUrl=${route.fullPath}`))
     return
   }
 

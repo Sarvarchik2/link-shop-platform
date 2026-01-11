@@ -184,26 +184,26 @@
                 {{ item.selectedColor?.name || '' }} {{ item.selectedSize || '' }} × {{ item.quantity }}
               </span>
             </div>
-                <span class="summary-price">{{ formatPrice(item.price * item.quantity) }}</span>
-              </div>
-            </div>
+            <span class="summary-price">{{ formatPrice(item.price * item.quantity) }}</span>
+          </div>
+        </div>
 
-            <div class="summary-totals">
-              <div class="summary-row">
-                <span>{{ $t('checkout.summary.subtotal') }}</span>
-                <span>{{ formatPrice(totalPrice) }}</span>
-              </div>
-              <div class="summary-row">
-                <span>{{ $t('checkout.summary.shipping') }}</span>
-                <span :class="{ free: deliveryCost === 0 }">
-                  {{ deliveryCost > 0 ? formatPrice(deliveryCost) : $t('checkout.summary.free') }}
-                </span>
-              </div>
-              <div class="summary-row total">
-                <span>{{ $t('checkout.summary.total') }}</span>
-                <span>{{ formatPrice(totalPrice + deliveryCost) }}</span>
-              </div>
-            </div>
+        <div class="summary-totals">
+          <div class="summary-row">
+            <span>{{ $t('checkout.summary.subtotal') }}</span>
+            <span>{{ formatPrice(totalPrice) }}</span>
+          </div>
+          <div class="summary-row">
+            <span>{{ $t('checkout.summary.shipping') }}</span>
+            <span :class="{ free: deliveryCost === 0 }">
+              {{ deliveryCost > 0 ? formatPrice(deliveryCost) : $t('checkout.summary.free') }}
+            </span>
+          </div>
+          <div class="summary-row total">
+            <span>{{ $t('checkout.summary.total') }}</span>
+            <span>{{ formatPrice(totalPrice + deliveryCost) }}</span>
+          </div>
+        </div>
       </section>
     </main>
 
@@ -227,6 +227,7 @@ const { items, totalPrice, clearCart } = useCart()
 const { token, user } = useAuth()
 const { formatPhoneNumber, unformatPhoneNumber } = usePhoneFormatter()
 const { formatPrice } = useCurrency()
+const localePath = useLocalePath()
 
 const loading = ref(false)
 
@@ -352,7 +353,7 @@ const placeOrder = async () => {
 
     clearCart()
     toast.success(t('checkout.success'))
-    navigateTo('/orders')
+    navigateTo(localePath('/orders'))
   } catch (e) {
     console.error(e)
     toast.error(t('checkout.error'))

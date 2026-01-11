@@ -4,7 +4,7 @@
       <div class="container">
         <h1 class="platform-title">Link Shop Platform</h1>
         <p class="platform-subtitle">Создайте свой интернет-магазин за минуты</p>
-        <NuxtLink to="/platform/register" class="cta-button">
+        <NuxtLink :to="localePath('/platform/register')" class="cta-button">
           Создать магазин
         </NuxtLink>
       </div>
@@ -15,26 +15,16 @@
         <div class="section-header">
           <h2 class="section-title">Все магазины</h2>
         </div>
-        
+
         <div v-if="pending" class="text-center py-12 text-gray-400">
           <div class="loading-spinner"></div>
           <p class="mt-4">Магазины загружаются...</p>
         </div>
-        
+
         <div v-else-if="shops && shops.length > 0" class="shops-grid">
-          <NuxtLink 
-            v-for="shop in shops" 
-            :key="shop.id"
-            :to="`/${shop.slug}`"
-            class="shop-card"
-          >
+          <NuxtLink v-for="shop in shops" :key="shop.id" :to="localePath(`/${shop.slug}`)" class="shop-card">
             <div class="shop-logo-wrapper">
-              <img 
-                v-if="shop.logo_url" 
-                :src="shop.logo_url" 
-                :alt="shop.name" 
-                class="shop-logo-img" 
-              />
+              <img v-if="shop.logo_url" :src="shop.logo_url" :alt="shop.name" class="shop-logo-img" />
               <div v-else class="shop-logo-placeholder">
                 {{ shop.name.charAt(0).toUpperCase() }}
               </div>
@@ -48,7 +38,7 @@
             </div>
           </NuxtLink>
         </div>
-        
+
         <div v-else class="text-center py-12 text-gray-400">
           <p>Пока нет зарегистрированных магазинов</p>
         </div>
@@ -58,7 +48,9 @@
 </template>
 
 <script setup>
+
 const { data: shops, pending } = await useFetch(useRuntimeConfig().public.apiBase + '/platform/shops', { server: false })
+const localePath = useLocalePath()
 
 const getStatusClass = (status) => {
   const statusMap = {
@@ -116,12 +108,12 @@ const getStatusText = (status) => {
   font-weight: 700;
   font-size: 1rem;
   transition: all 0.3s;
-  box-shadow: 0 4px 20px rgba(255,255,255,0.2);
+  box-shadow: 0 4px 20px rgba(255, 255, 255, 0.2);
 }
 
 .cta-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(255,255,255,0.3);
+  box-shadow: 0 8px 30px rgba(255, 255, 255, 0.3);
 }
 
 .section-header {
@@ -159,7 +151,7 @@ const getStatusText = (status) => {
 .shop-card:hover {
   border-color: #111;
   transform: translateY(-4px);
-  box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
 }
 
 .shop-logo-wrapper {
@@ -241,27 +233,31 @@ const getStatusText = (status) => {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 @media (max-width: 768px) {
   .platform-title {
     font-size: 2rem;
   }
-  
+
   .platform-subtitle {
     font-size: 1rem;
   }
-  
+
   .shops-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 16px;
   }
-  
+
   .shop-card {
     padding: 24px;
   }
 }
 </style>
-

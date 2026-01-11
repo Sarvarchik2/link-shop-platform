@@ -15,7 +15,7 @@
         </svg>
       </button>
       <span class="mobile-title">{{ $t('categoriesPage.add') }}</span>
-      <NuxtLink :to="`/shop/${shopSlug}`" class="home-btn">
+      <NuxtLink :to="localePath(`/${shopSlug}`)" class="home-btn">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
           <polyline points="9 22 9 12 15 12 15 22"></polyline>
@@ -29,7 +29,7 @@
     <main class="admin-main">
       <div class="add-category-page">
         <div class="page-header">
-          <NuxtLink :to="`/shop/${shopSlug}/admin/categories`" class="back-link">
+          <NuxtLink :to="localePath(`/shop/${shopSlug}/admin/categories`)" class="back-link">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M19 12H5M12 19l-7-7 7-7" />
             </svg>
@@ -81,7 +81,8 @@
             </div>
 
             <div class="form-actions">
-              <NuxtLink :to="`/shop/${shopSlug}/admin/categories`" class="btn btn-outline">{{ $t('common.cancel') }}
+              <NuxtLink :to="localePath(`/shop/${shopSlug}/admin/categories`)" class="btn btn-outline">{{
+                $t('common.cancel') }}
               </NuxtLink>
               <button type="submit" class="btn btn-primary" :disabled="loading || !form.name || !imageUrl">
                 {{ loading ? $t('admin.creating') : $t('categoriesPage.createBtn') }}
@@ -113,6 +114,7 @@ const sidebarOpen = ref(false)
 
 const { t } = useI18n()
 const toast = useToast()
+const localePath = useLocalePath()
 const loading = ref(false)
 const isDragging = ref(false)
 const imageUrl = ref('')
@@ -190,7 +192,7 @@ const handleSubmit = async () => {
 
     console.log('[Add Category] Категория создана успешно:', response)
     toast.success(t('alerts.shop.categoryCreated'))
-    navigateTo(`/shop/${shopSlug}/admin/categories`)
+    navigateTo(localePath(`/shop/${shopSlug}/admin/categories`))
   } catch (e) {
     console.error('[Add Category] Ошибка при создании категории:', e)
     console.error('[Add Category] Детали ошибки:', {

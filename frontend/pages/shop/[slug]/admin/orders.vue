@@ -15,7 +15,7 @@
         </svg>
       </button>
       <span class="mobile-title">{{ $t('admin.ordersPage.title') }}</span>
-      <NuxtLink :to="`/${shopSlug}`" class="home-btn">
+      <NuxtLink :to="localePath(`/${shopSlug}`)" class="home-btn">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
           <polyline points="9 22 9 12 15 12 15 22"></polyline>
@@ -132,7 +132,7 @@
                   </h3>
                   <div class="items-list">
                     <NuxtLink v-for="(item, idx) in order.items" :key="idx"
-                      :to="`/${shopSlug}/products/${item.product_id}`" class="order-item">
+                      :to="localePath(`/${shopSlug}/products/${item.product_id}`)" class="order-item">
                       <img :src="item.product_image" :alt="item.product_name" class="item-image" />
                       <div class="item-info">
                         <span class="item-name">{{ item.product_name }}</span>
@@ -173,6 +173,7 @@
 <script setup>
 const { t, locale } = useI18n()
 const { formatPrice } = useCurrency()
+const localePath = useLocalePath()
 definePageMeta({
   middleware: ['auth', 'shop-owner']
 })
