@@ -490,7 +490,20 @@ const handleSubmit = async () => {
     return
   }
 
-  const validVariants = variants.value.filter(v => v.size?.trim() && v.color?.trim())
+  // Validation for variants: if size or color is entered, both must be present
+  const incompleteVariant = variants.value.find(v => (v.size?.trim() && !v.color?.trim()) || (!v.size?.trim() && v.color?.trim()))
+  if (incompleteVariant) {
+    toast.warning(t('alerts.shop.incompleteVariant') || 'Если введен размер или цвет, оба поля должны быть заполнены')
+    return
+  }
+
+  // Filter valid variants: either (size AND color filled) OR (only stock filled)
+  const validVariants = variants.value.filter(v => {
+    const hasSizeColor = v.size?.trim() && v.color?.trim()
+    const hasStockOnly = !v.size?.trim() && !v.color?.trim() && v.stock > 0
+    return hasSizeColor || hasStockOnly
+  })
+
   const totalStock = validVariants.reduce((acc, v) => acc + (v.stock || 0), 0)
 
   loading.value = true
@@ -613,22 +626,57 @@ const handleSubmit = async () => {
   }
 
   .variant-row {
-    grid-template-columns: 1fr 1fr 60px;
-    gap: 8px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 44px;
+    grid-template-rows: auto auto;
+    gap: 10px;
+    padding: 12px;
+    background: #F9FAFB;
+    border: 1px solid #E5E7EB;
+    border-radius: 16px;
+    align-items: center;
+  }
+
+  .variant-size-input {
+    grid-column: 1;
+    grid-row: 1;
+    width: 100%;
+  }
+
+  .variant-color-input {
+    grid-column: 2;
+    grid-row: 1;
+    width: 100%;
+  }
+
+  .color-picker {
+    grid-column: 1;
+    grid-row: 2;
+    width: 100%;
+    height: 48px;
+    margin: 0;
   }
 
   .stock-input {
-    grid-column: 1 / span 2;
+    grid-column: 2;
+    grid-row: 2;
+    width: 100%;
+    margin: 0;
   }
 
   .btn-remove {
     grid-column: 3;
     grid-row: 1 / span 2;
     height: 100%;
+    width: 44px;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background: #FEE2E2;
     color: #DC2626;
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     font-size: 1.2rem;
   }
 

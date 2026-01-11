@@ -1,5 +1,6 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, field_validator
 from typing import Optional, List
+import json
 
 class ProductBase(BaseModel):
     # Multilingual fields
@@ -29,6 +30,29 @@ class ProductBase(BaseModel):
     colors: Optional[str] = None
     variants: Optional[str] = None
     is_preorder_enabled: bool = False
+
+    @field_validator('variants')
+    @classmethod
+    def validate_variants(cls, v: Optional[str]) -> Optional[str]:
+        if not v:
+            return v
+        try:
+            items = json.loads(v)
+            if not isinstance(items, list):
+                return v
+            for i in items:
+                size = str(i.get('size', '')).strip()
+                color = str(i.get('color', '')).strip()
+                # If either size or color is provided, both must be present
+                if (size and not color) or (color and not size):
+                    raise ValueError("Если введен размер или цвет, оба поля должны быть заполнены")
+            return v
+        except json.JSONDecodeError:
+            return v
+        except Exception as e:
+            if isinstance(e, ValueError):
+                raise e
+            return v
 
 class ProductCreate(ProductBase):
     pass
@@ -60,6 +84,28 @@ class ProductUpdate(BaseModel):
     colors: Optional[str] = None
     variants: Optional[str] = None
     is_preorder_enabled: Optional[bool] = None
+
+    @field_validator('variants')
+    @classmethod
+    def validate_variants(cls, v: Optional[str]) -> Optional[str]:
+        if not v:
+            return v
+        try:
+            items = json.loads(v)
+            if not isinstance(items, list):
+                return v
+            for i in items:
+                size = str(i.get('size', '')).strip()
+                color = str(i.get('color', '')).strip()
+                if (size and not color) or (color and not size):
+                    raise ValueError("Если введен размер или цвет, оба поля должны быть заполнены")
+            return v
+        except json.JSONDecodeError:
+            return v
+        except Exception as e:
+            if isinstance(e, ValueError):
+                raise e
+            return v
 
 class ProductRead(ProductBase):
     id: int
