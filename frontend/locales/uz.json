@@ -164,6 +164,9 @@
         "loggedOut": "Siz tizimdan chiqdingiz"
     },
     "common": {
+        "optional": "ixtiyoriy",
+        "or": "yoki",
+        "upload": "Yuklash",
         "activated": "faollashtirildi",
         "deactivated": "faolsizlantirildi",
         "loading": "Yuklanmoqda...",
@@ -860,10 +863,12 @@
                 "slug": "Do'kon URL manzili (slug) *",
                 "slugPlaceholder": "nike",
                 "slugHint": "Faqat lotin harflari, raqamlar va defis. Masalan: nike, adidas-store",
+                "desc": "Tavsif",
                 "description": "Tavsif (ixtiyoriy)",
                 "descPlaceholder": "Do'koningiz haqida qisqacha ma'lumot",
                 "logo": "Do'kon logotipi",
                 "logoUrl": "yoki havola orqali",
+                "logoUrlPlaceholder": "Logotip URL",
                 "upload": "Yuklash",
                 "uploading": "Yuklanmoqda...",
                 "divider": "yoki",

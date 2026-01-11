@@ -25,7 +25,7 @@
             class="text-sm font-medium text-zinc-500 hover:text-black transition-colors">{{ $t('nav.profile') }}
           </NuxtLink>
           <NuxtLink :to="localePath('/register-shop')"
-            class="bg-black text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-zinc-800 shadow-lg shadow-zinc-200/50 transition-smooth hover-lift">
+            class="registr-shop-btn bg-black text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-zinc-800 shadow-lg shadow-zinc-200/50 transition-smooth hover-lift">
             {{ $t('nav.create_shop') }}
           </NuxtLink>
         </div>
@@ -427,16 +427,16 @@
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div v-for="offer in offers" :key="offer.id"
               class="bg-white rounded-2xl p-8 border-2 border-zinc-900 shadow-lg hover:shadow-xl transition-smooth hover-lift">
-              <div class="flex justify-between items-start mb-4">
-                <h3 class="text-xl font-semibold">{{ offer.title }}</h3>
-                <div v-if="offer.price || offer.price_text" class="text-right">
+              <div class="flex justify-between items-start mb-4 offer-title">
+                <h3 class="text-xl font-semibold">{{ getField(offer, 'title') }}</h3>
+                <div v-if="offer.price || getField(offer, 'price_text')" class="text-right">
                   <div v-if="offer.price" class="text-2xl font-bold">{{ formatPrice(offer.price) }}</div>
-                  <div v-else class="text-sm font-medium text-zinc-600">{{ offer.price_text }}</div>
+                  <div v-else class="text-sm font-medium text-zinc-600">{{ getField(offer, 'price_text') }}</div>
                 </div>
               </div>
-              <p class="text-sm text-zinc-600 mb-6">{{ offer.description }}</p>
+              <p class="text-sm text-zinc-600 mb-6">{{ getField(offer, 'description') }}</p>
               <div class="pt-6 border-t border-zinc-200">
-                <p class="text-xs text-zinc-500 mb-4">{{ offer.contact_text }}</p>
+                <p class="text-xs text-zinc-500 mb-4">{{ getField(offer, 'contact_text') }}</p>
                 <div class="flex gap-3">
                   <a v-if="offer.contact_email" :href="`mailto:${offer.contact_email}`"
                     class="flex-1 py-2.5 px-4 bg-zinc-100 hover:bg-zinc-900 hover:text-white rounded-lg text-sm font-semibold transition-colors text-center">
@@ -473,7 +473,7 @@
             <h4 class="font-semibold mb-6 text-sm">{{ $t('footer.product.title') }}</h4>
             <ul class="space-y-4 text-sm text-zinc-500">
               <li><a href="#features" class="hover:text-black transition-colors">{{ $t('footer.product.features')
-                  }}</a></li>
+              }}</a></li>
               <li><a href="#solutions" class="hover:text-black transition-colors">{{
                 $t('footer.product.integrations')
                   }}</a></li>
@@ -528,6 +528,7 @@ const route = useRoute()
 const localePath = useLocalePath()
 const { user, token } = useAuth()
 const { formatPrice } = useCurrency()
+const { getField } = useMultilingual()
 
 // Fetch subscription plans from API
 const { data: plans, pending: plansPending } = await useFetch(useRuntimeConfig().public.apiBase + '/subscription-plans', {
@@ -742,6 +743,17 @@ body {
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin: 0 auto;
+}
+
+.offer-title {
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width:600px) {
+  .registr-shop-btn {
+    font-size: 12px;
+  }
 }
 
 @keyframes spin {

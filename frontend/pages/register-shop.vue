@@ -72,7 +72,7 @@
                 </div>
               </div>
               <div class="mb-6">
-                <span class="text-3xl font-bold">${{ plan.price }}</span>
+                <span class="text-3xl font-bold">{{ formatPrice(plan.price) }}</span>
                 <span class="text-zinc-500">/{{ $t('home.pricing.month') }}</span>
               </div>
               <ul class="space-y-3 mb-6">
@@ -166,7 +166,7 @@
               {{ error }}
             </div>
 
-            <div class="flex gap-4">
+            <div class="flex flex-col sm:flex-row gap-4">
               <button type="button" class="btn-secondary w-full" @click="currentStep = 1">{{ $t('shopRegistration.back')
                 }}</button>
               <button type="submit" :disabled="loading" class="submit-button w-full">
@@ -203,6 +203,7 @@ const route = useRoute()
 const toast = useToast()
 const config = useRuntimeConfig()
 const { locale } = useI18n()
+const { formatPrice } = useCurrency()
 
 const getLocalizedValue = (obj, key) => {
   if (!obj) return ''
@@ -644,6 +645,13 @@ const registerShop = async () => {
   gap: 12px;
 }
 
+@media (max-width: 640px) {
+  .logo-input-wrapper {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
 .logo-input-wrapper {
   display: flex;
   align-items: center;
@@ -658,7 +666,9 @@ const registerShop = async () => {
 
 .btn-upload {
   display: inline-flex;
+  display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   padding: 10px 16px;
   background: white;

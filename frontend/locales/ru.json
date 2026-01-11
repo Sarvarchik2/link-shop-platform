@@ -162,6 +162,9 @@
         "loggedOut": "Вы вышли из аккаунта"
     },
     "common": {
+        "optional": "необязательно",
+        "or": "или",
+        "upload": "Загрузить",
         "activated": "активирован",
         "deactivated": "деактивирован",
         "loading": "Загрузка...",
@@ -890,10 +893,12 @@
             "slug": "URL магазина (slug) *",
             "slugPlaceholder": "nike",
             "slugHint": "Только латинские буквы, цифры и дефисы. Пример: nike, adidas-store",
+            "desc": "Описание",
             "description": "Описание (необязательно)",
             "descPlaceholder": "Краткое описание вашего магазина",
             "logo": "Логотип магазина",
             "logoUrl": "или по ссылке",
+            "logoUrlPlaceholder": "URL логотипа",
             "upload": "Загрузить",
             "uploading": "Загрузка...",
             "divider": "или",
