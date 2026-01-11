@@ -763,6 +763,75 @@
             "redirect": "Agar xaridor bo'lsangiz, xaridor profiliga o'ting"
         }
     },
+    "shopRegistration": {
+        "title": "Do'kon yaratish",
+        "subtitle": "O'z do'koningizni platformada ro'yxatdan o'tkazing",
+        "steps": {
+            "tariff": "Tarif",
+            "details": "Do'kon ma'lumotlari"
+        },
+        "authNotice": "Do'kon yaratish uchun tizimga kirishingiz kerak",
+        "login": "Kirish",
+        "register": "Ro'yxatdan o'tish",
+        "checking": "Tekshirilmoqda...",
+        "next": "Keyingi qadam",
+        "back": "Ortga",
+        "plans": {
+            "title": "Rejangizni tanlang",
+            "subtitle": "Biznesingiz uchun eng yaxshi rejani tanlang",
+            "select": "Rejani tanlash",
+            "selected": "Tanlangan"
+        },
+        "alreadyExists": {
+            "title": "Sizda allaqachon do'kon mavjud",
+            "desc": "Bitta akkauntda faqat bitta do'kon yaratish mumkin.",
+            "goToAdmin": "Do'kon boshqaruviga o'tish",
+            "backToProfile": "Profilga qaytish"
+        },
+        "form": {
+            "name": "Do'kon nomi *",
+            "namePlaceholder": "Masalan: Nike Store",
+            "slug": "Do'kon URL manzili (slug) *",
+            "slugPlaceholder": "nike",
+            "slugHint": "Faqat lotin harflari, raqamlar va defis. Masalan: nike, adidas-store",
+            "description": "Tavsif (ixtiyoriy)",
+            "descPlaceholder": "Do'koningiz haqida qisqacha ma'lumot",
+            "logo": "Do'kon logotipi",
+            "logoUrl": "yoki havola orqali",
+            "upload": "Yuklash",
+            "uploading": "Yuklanmoqda...",
+            "divider": "yoki",
+            "logoHint": "Tavsiya etilgan o'lcham: kengligi 200px gacha",
+            "preview": "Ko'rib chiqish:",
+            "remove": "O'chirish",
+            "submit": "Do'kon yaratish",
+            "submitting": "Yaratilmoqda..."
+        },
+        "info": {
+            "title": "Ro'yxatdan o'tish yakuni",
+            "trial": "Siz tanlangan rejaga muvofiq sinov davriga ega bo'lasiz",
+            "url": "Do'koningiz manzili:",
+            "features": "Mahsulotlar qo'shish va buyurtmalarni boshqarish imkoniyati",
+            "admin": "Boshqaruv paneli profilingizda paydo bo'ladi",
+            "planLabel": "Tanlangan reja:",
+            "urlLabel": "Do'kon URL manzili:"
+        },
+        "notifications": {
+            "imageRequired": "Iltimos, rasm tanlang",
+            "sizeLimit": "Fayl hajmi 2MB dan oshmasligi kerak",
+            "selectPlan": "Iltimos, avval rejani tanlang",
+            "shopCreated": "Do'kon muvaffaqiyatli yaratildi",
+            "brandCreationError": "Brend yaratishda xatolik",
+            "addOneImage": "Kamida bitta rasm yuklang",
+            "productUpdated": "Mahsulot yangilandi",
+            "errorLoadingData": "Yuklashda xatolik",
+            "loggedOut": "Tizimdan chiqildi",
+            "success": "Do'kon muvaffaqiyatli yaratildi!",
+            "error": "Do'kon yaratishda xatolik",
+            "logoSuccess": "Logotip muvaffaqiyatli yuklandi",
+            "logoError": "Logotip yuklashda xatolik"
+        }
+    },
     "shopSettings": {
         "title": "Do'kon sozlamalari",
         "infoTitle": "Do'kon ma'lumotlari",
@@ -828,75 +897,6 @@
             "expiredDesc": "Obuna muddati tugadi. Sotuvni davom ettirish uchun quyidagi rejalardan birini tanlang.",
             "total": "Jami:",
             "pendingStatus": "Kutilmoqda"
-        },
-        "shopRegistration": {
-            "title": "Do'kon yaratish",
-            "subtitle": "O'z do'koningizni platformada ro'yxatdan o'tkazing",
-            "steps": {
-                "tariff": "Tarif",
-                "details": "Do'kon ma'lumotlari"
-            },
-            "authNotice": "Do'kon yaratish uchun tizimga kirishingiz kerak",
-            "login": "Kirish",
-            "register": "Ro'yxatdan o'tish",
-            "checking": "Tekshirilmoqda...",
-            "next": "Keyingi qadam",
-            "back": "Ortga",
-            "plans": {
-                "title": "Rejangizni tanlang",
-                "subtitle": "Biznesingiz uchun eng yaxshi rejani tanlang",
-                "select": "Rejani tanlash",
-                "selected": "Tanlangan"
-            },
-            "alreadyExists": {
-                "title": "Sizda allaqachon do'kon mavjud",
-                "desc": "Bitta akkauntda faqat bitta do'kon yaratish mumkin.",
-                "goToAdmin": "Do'kon boshqaruviga o'tish",
-                "backToProfile": "Profilga qaytish"
-            },
-            "form": {
-                "name": "Do'kon nomi *",
-                "namePlaceholder": "Masalan: Nike Store",
-                "slug": "Do'kon URL manzili (slug) *",
-                "slugPlaceholder": "nike",
-                "slugHint": "Faqat lotin harflari, raqamlar va defis. Masalan: nike, adidas-store",
-                "description": "Tavsif (ixtiyoriy)",
-                "descPlaceholder": "Do'koningiz haqida qisqacha ma'lumot",
-                "logo": "Do'kon logotipi",
-                "logoUrl": "yoki havola orqali",
-                "upload": "Yuklash",
-                "uploading": "Yuklanmoqda...",
-                "divider": "yoki",
-                "logoHint": "Tavsiya etilgan o'lcham: kengligi 200px gacha",
-                "preview": "Ko'rib chiqish:",
-                "remove": "O'chirish",
-                "submit": "Do'kon yaratish",
-                "submitting": "Yaratilmoqda..."
-            },
-            "info": {
-                "title": "Ro'yxatdan o'tish yakuni",
-                "trial": "Siz tanlangan rejaga muvofiq sinov davriga ega bo'lasiz",
-                "url": "Do'koningiz manzili:",
-                "features": "Mahsulotlar qo'shish va buyurtmalarni boshqarish imkoniyati",
-                "admin": "Boshqaruv paneli profilingizda paydo bo'ladi",
-                "planLabel": "Tanlangan reja:",
-                "urlLabel": "Do'kon URL manzili:"
-            },
-            "notifications": {
-                "imageRequired": "Iltimos, rasm tanlang",
-                "sizeLimit": "Fayl hajmi 2MB dan oshmasligi kerak",
-                "selectPlan": "Iltimos, avval rejani tanlang",
-                "shopCreated": "Do'kon muvaffaqiyatli yaratildi",
-                "brandCreationError": "Brend yaratishda xatolik",
-                "addOneImage": "Kamida bitta rasm yuklang",
-                "productUpdated": "Mahsulot yangilandi",
-                "errorLoadingData": "Yuklashda xatolik",
-                "loggedOut": "Tizimdan chiqildi",
-                "success": "Do'kon muvaffaqiyatli yaratildi!",
-                "error": "Do'kon yaratishda xatolik",
-                "logoSuccess": "Logotip muvaffaqiyatli yuklandi",
-                "logoError": "Logotip yuklashda xatolik"
-            }
         },
         "alerts": {
             "preorder": {

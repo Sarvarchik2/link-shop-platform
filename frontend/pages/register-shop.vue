@@ -17,12 +17,13 @@
 
       <div v-else-if="myShops && myShops.length > 0" class="max-w-md mx-auto auth-notice already-has-shop">
         <div class="notice-icon">⚠️</div>
-        <h3>{{ $t('shopRegistration.existingShop.title') }}</h3>
-        <p>{{ $t('shopRegistration.existingShop.desc') }}</p>
+        <h3>{{ $t('shopRegistration.alreadyExists.title') }}</h3>
+        <p>{{ $t('shopRegistration.alreadyExists.desc') }}</p>
         <div class="auth-actions">
           <NuxtLink :to="`/shop/${myShops[0].slug}/admin`" class="btn-primary">{{
-            $t('shopRegistration.existingShop.admin') }}</NuxtLink>
-          <NuxtLink to="/profile" class="btn-secondary">{{ $t('shopRegistration.existingShop.profile') }}</NuxtLink>
+            $t('shopRegistration.alreadyExists.goToAdmin') }}</NuxtLink>
+          <NuxtLink to="/profile" class="btn-secondary">{{ $t('shopRegistration.alreadyExists.backToProfile') }}
+          </NuxtLink>
         </div>
       </div>
 
@@ -426,7 +427,7 @@ const registerShop = async () => {
       // Handle specific cases
       if (errorDetail.includes('User already has a shop')) {
         await checkExistingShop() // Refresh shops list to show redirect UI
-        toast.info(t('shopRegistration.existingShop.title'))
+        toast.info(t('shopRegistration.alreadyExists.title'))
         return
       }
     }
