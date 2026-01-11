@@ -75,7 +75,8 @@
             "select": "Choose",
             "contact": "Contact Us",
             "unlimited": "Unlimited",
-            "products": "products"
+            "products": "products",
+            "days": "days"
         },
         "offers": {
             "title": "Special Offers",
@@ -87,7 +88,6 @@
     "footer": {
         "contacts": "Contacts",
         "followUs": "Follow Us",
-        "rights": "© 2026 LinkShop Technologies Inc. All rights reserved.",
         "desc": "Operating system for modern commerce. We build tools that help entrepreneurs grow faster.",
         "product": {
             "title": "Product",
@@ -108,6 +108,69 @@
             "privacy": "Privacy",
             "terms": "Terms",
             "cookie": "Cookie Policy"
+        },
+        "rights": "© 2026 LinkShop Technologies Inc. All rights reserved."
+    },
+    "alerts": {
+        "cart": {
+            "loginRequired": "Login to add items to cart",
+            "selectColor": "Please select a color",
+            "selectSize": "Please select a size",
+            "colorOutOfStock": "This color is out of stock",
+            "success": "Added to cart!"
+        },
+        "favorites": {
+            "loginRequired": "Login to add to favorites"
+        },
+        "preorder": {
+            "loginRequired": "Login to pre-order",
+            "phoneRequired": "Phone number is required",
+            "success": "Pre-order placed successfully!",
+            "error": "Error placing pre-order. Please try again."
+        },
+        "shop": {
+            "created": "Shop created successfully!",
+            "exported": "Data exported",
+            "expiryRequired": "Expiry date required for active subscription",
+            "statusChanged": "Shop status changed to {status}",
+            "requestTheSame": "You already have an active request pending",
+            "planRequestSent": "Plan request for \"{plan}\" sent!",
+            "selectPlan": "Select a subscription plan",
+            "renewalSent": "Renewal request for \"{plan}\" sent!",
+            "subscriptionActivated": "Subscription activated",
+            "subscriptionUpdated": "Subscription updated",
+            "subscriptionCancelled": "Subscription cancelled",
+            "requestError": "Error sending request",
+            "renewalError": "Error sending renewal request",
+            "cancellationError": "Error cancelling subscription",
+            "logoRequired": "Please upload a logo",
+            "fileSize": "File size must be under 2MB",
+            "logoUploaded": "Logo uploaded successfully",
+            "logoError": "Error uploading logo",
+            "imageRequired": "Please upload an image",
+            "imageUploaded": "Image uploaded successfully",
+            "imageError": "Error uploading image",
+            "fillAll": "Please fill all fields",
+            "brandCreationError": "Error creating brand",
+            "brandCreated": "Brand created successfully!",
+            "categoryCreated": "Category created successfully!",
+            "productCreated": "Product created successfully!",
+            "productUpdated": "Product updated successfully!",
+            "productDeleted": "Product deleted",
+            "addOneImage": "Please add at least one image",
+            "errorLoadingData": "Error loading data",
+            "errorSaving": "Error saving data",
+            "deleteError": "Error deleting item",
+            "loggedOut": "Logged out successfully"
+        },
+        "checkout": {
+            "title": "Checkout",
+            "back": "Back",
+            "sections": {
+                "contact": "Contact Information",
+                "delivery": "Delivery Method",
+                "payment": "Payment Method"
+            }
         }
     },
     "cart": {
@@ -161,6 +224,9 @@
         "loggedOut": "You have logged out"
     },
     "common": {
+        "optional": "optional",
+        "or": "or",
+        "upload": "Upload",
         "activated": "activated",
         "deactivated": "deactivated",
         "loading": "Loading...",
@@ -239,7 +305,13 @@
         "add": "Add Category",
         "empty": "No categories found",
         "deleteConfirm": "Are you sure you want to delete this category?",
-        "deleteSuccess": "Category deleted"
+        "deleteSuccess": "Category deleted",
+        "nameLabel": "Category Name",
+        "namePlaceholder": "e.g. Sunglasses",
+        "imageLabel": "Category Image",
+        "imageHelp": "Click or drag to upload image",
+        "orUrl": "or enter URL",
+        "createBtn": "Create Category"
     },
     "brandsPage": {
         "title": "Brands",
@@ -637,11 +709,16 @@
         "upgrade": "Upgrade"
     },
     "platformAdmin": {
+        "notes": "Notes",
+        "approved": "Request Approved",
+        "rejected": "Request Rejected",
         "dashboard": {
             "title": "Dashboard",
             "subtitle": "Platform Management",
             "welcome": "Welcome to Platform Dashboard",
             "refresh": "Refresh",
+            "approved": "Request Approved",
+            "rejected": "Request Rejected",
             "error": "Error occurred",
             "errorMessage": "Error loading data: {message}",
             "errorUnknown": "Unknown error",
@@ -815,6 +892,7 @@
                 "price": "Price ($)",
                 "period": "Period (days)",
                 "maxProducts": "Max Products",
+                "maxBanners": "Max Banners",
                 "description": "Description",
                 "features": "Plan Features",
                 "addFeature": "Add",
@@ -973,6 +1051,7 @@
             "currentPlan": "Current Plan",
             "expires": "Expires",
             "products": "Products Limit",
+            "maxBanners": "Max Banners",
             "plans": "Available Plans",
             "month": "mo",
             "months": "months",
@@ -1003,7 +1082,8 @@
             "delivery": "Delivery Address",
             "payment": "Payment Method",
             "notes": "Order Notes (optional)",
-            "summary": "Order Summary"
+            "summary": "Order Summary",
+            "contact": "Contact Information"
         },
         "form": {
             "name": "Recipient Name",
@@ -1164,11 +1244,13 @@
             "namePlaceholder": "e.g. Nike Store",
             "slug": "Shop URL (slug) *",
             "slugPlaceholder": "nike",
-            "slugHint": "Latin letters, numbers and hyphens only. Example: nike, adidas-store",
+            "slugHint": "Latin letters, numbers and hyphens only. e.g.: nike, adidas-store",
             "description": "Description (optional)",
-            "descPlaceholder": "Short description of your shop",
+            "desc": "Description",
+            "descPlaceholder": "Brief shop description",
             "logo": "Shop Logo",
-            "logoUrl": "or via URL",
+            "logoUrl": "or by URL",
+            "logoUrlPlaceholder": "Logo URL",
             "upload": "Upload",
             "uploading": "Uploading...",
             "divider": "or",
@@ -1189,67 +1271,18 @@
         },
         "notifications": {
             "imageRequired": "Please select an image",
-            "sizeLimit": "File size should not exceed 2MB",
-            "selectPlan": "Please select a plan first",
+            "sizeLimit": "File size must not exceed 2MB",
+            "selectPlan": "Please select a plan",
             "shopCreated": "Shop created successfully",
+            "success": "Shop created successfully!",
+            "error": "Error creating shop",
+            "logoSuccess": "Logo uploaded successfully",
+            "logoError": "Error uploading logo",
             "brandCreationError": "Error creating brand",
             "addOneImage": "Please add at least one image",
             "productUpdated": "Product updated successfully",
             "errorLoadingData": "Error loading data",
-            "loggedOut": "Logged out successfully",
-            "logoError": "Error uploading logo"
-        }
-    },
-    "alerts": {
-        "preorder": {
-            "loginRequired": "Log in to pre-order",
-            "phoneRequired": "Please enter your phone number",
-            "success": "Pre-order placed successfully! We will notify you when the item is in stock.",
-            "error": "Error placing pre-order. Please try again."
-        },
-        "cart": {
-            "loginRequired": "Log in to add to cart",
-            "selectColor": "Please select a color",
-            "colorOutOfStock": "This color is out of stock",
-            "selectSize": "Please select a size",
-            "success": "Added to cart!"
-        },
-        "favorites": {
-            "loginRequired": "Log in to add to favorites"
-        },
-        "shop": {
-            "created": "Shop created successfully!",
-            "exported": "Data exported",
-            "expiryRequired": "Specify expiration date for active subscription",
-            "statusChanged": "Shop {status}",
-            "requestTheSame": "You already have an active request pending",
-            "planRequestSent": "Request for plan \"{plan}\" sent! Administrator will contact you.",
-            "selectPlan": "Select a subscription plan",
-            "renewalSent": "Request to renew subscription to \"{plan}\" sent!",
-            "subscriptionActivated": "Subscription activated",
-            "subscriptionUpdated": "Subscription updated",
-            "subscriptionCancelled": "Subscription successfully cancelled",
-            "requestError": "Error sending request",
-            "renewalError": "Error sending renewal request",
-            "cancellationError": "Error cancelling subscription",
-            "logoRequired": "Please select an image",
-            "fileSize": "File size must not exceed 2MB",
-            "logoUploaded": "Logo uploaded successfully",
-            "logoError": "Error uploading logo",
-            "imageRequired": "Please upload an image",
-            "imageUploaded": "Image uploaded!",
-            "imageError": "Error uploading image",
-            "fillAll": "Please fill in all fields",
-            "brandCreationError": "Error creating brand",
-            "brandCreated": "Brand created successfully!",
-            "categoryCreated": "Category created successfully!",
-            "productCreated": "Product created successfully!",
-            "productUpdated": "Product updated successfully!",
-            "addOneImage": "Please add at least one image",
-            "errorLoadingData": "Error loading product data",
-            "errorSaving": "Error saving data",
-            "deleteError": "Error deleting product",
-            "loggedOut": "You have logged out"
+            "loggedOut": "Logged out successfully"
         }
     }
 }
