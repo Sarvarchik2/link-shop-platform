@@ -41,6 +41,8 @@ class ShopService:
         
         return shop
 
+from app.features.subscriptions.models import SubscriptionPlan, SubscriptionRequest
+
     def register_shop(self, db: Session, shop_in: ShopCreate, owner_id: int):
         # Check if user already has a shop
         existing_user_shop = self.repository.get_by_owner_id(db, owner_id)
@@ -55,11 +57,53 @@ class ShopService:
         shop_data = shop_in.model_dump()
         shop_data["owner_id"] = owner_id
         
-        # Ensure subscription info is handled
+        # Handle subscription logic
+        requested_plan_id = shop_data.get("subscription_plan_id")
+        pending_plan_request = None
+        
+        if requested_plan_id:
+            requested_plan = db.query(SubscriptionPlan).filter(SubscriptionPlan.id == requested_plan_id).first()
+            
+            if requested_plan:
+                if requested_plan.price > 0:
+                    # Paid plan: Give Trial (7 days) on Free plan (or None)
+                    free_plan = db.query(SubscriptionPlan).filter(SubscriptionPlan.price == 0).first()
+                    
+                    # Store requested plan ID for creating request later
+                    pending_plan_request = requested_plan.id
+                    
+                    # Set shop to Free/Trial
+                    shop_data["subscription_plan_id"] = free_plan.id if free_plan else None
+                    shop_data["subscription_status"] = "trial"
+                    shop_data["subscription_expires_at"] = datetime.utcnow() + timedelta(days=7)
+                else:
+                    # Free plan: Activate immediately
+                    shop_data["subscription_status"] = "active"
+                    # Default to 1 month for now, or longer for free? Let's say 30 days renewable or long term. 
+                    # If it's truly free, expiry might not matter as much, but let's set it.
+                    period = requested_plan.period_days if requested_plan.period_days else 30
+                    shop_data["subscription_expires_at"] = datetime.utcnow() + timedelta(days=period)
+        
+        # Ensure subscription info is handled if not set above
         if "subscription_plan_id" not in shop_data:
              shop_data["subscription_plan_id"] = None
 
-        return self.repository.create(db, shop_data)
+        new_shop = self.repository.create(db, shop_data)
+        
+        # Create Subscription Request if it was a paid plan
+        if pending_plan_request:
+            new_request = SubscriptionRequest(
+                shop_id=new_shop.id,
+                plan_id=pending_plan_request,
+                type="new",
+                status="pending",
+                duration_months=1, # Default to 1 month for initial request
+                requested_at=datetime.utcnow()
+            )
+            db.add(new_request)
+            db.commit()
+            
+        return new_shop
 
     def update_shop(self, db: Session, slug: str, shop_in: ShopUpdate, current_user):
         check_active = (current_user.role != "platform_admin")
