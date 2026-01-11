@@ -9,7 +9,7 @@ from app.features.users.models import User
 from app.features.banners.models import Banner
 from .schemas import ShopCreate, ShopUpdate, DashboardStats, OrdersByStatus
 
-from app.features.subscriptions.models import SubscriptionPlan
+from app.features.subscriptions.models import SubscriptionPlan, SubscriptionRequest
 
 class ShopService:
     def __init__(self):
@@ -41,7 +41,6 @@ class ShopService:
         
         return shop
 
-from app.features.subscriptions.models import SubscriptionPlan, SubscriptionRequest
 
     def register_shop(self, db: Session, shop_in: ShopCreate, owner_id: int):
         # Check if user already has a shop
