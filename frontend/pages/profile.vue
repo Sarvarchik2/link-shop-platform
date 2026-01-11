@@ -58,7 +58,7 @@
             </template>
 
             <!-- Shop Owner Links -->
-            <template v-if="isShopOwner">
+            <!-- <template v-if="isShopOwner">
               <div class="nav-divider"></div>
               <div v-for="shop in shops" :key="shop.id" class="shop-nav-group">
                 <div class="nav-item shop-header">
@@ -87,12 +87,11 @@
                 </div>
               </div>
 
-              <!-- Create Another Shop Button (if allowed) -->
               <NuxtLink v-if="true" :to="localePath('/register-shop')" class="nav-item create-shop">
                 <div class="nav-icon">✨</div>
                 <span>{{ $t('profile.links.createShop') }}</span>
               </NuxtLink>
-            </template>
+            </template> -->
 
             <div class="nav-footer">
               <button @click="logout" class="logout-btn">
@@ -135,7 +134,7 @@
                     date:
                       formatDate(shop.subscription_expires_at)
                   })
-                    }}</span>
+                  }}</span>
                   <span class="value">{{ getDaysLeftText(shop.subscription_expires_at) }}</span>
                 </div>
                 <div class="progress-bar">
