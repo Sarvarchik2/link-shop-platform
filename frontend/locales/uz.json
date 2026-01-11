@@ -193,7 +193,12 @@
         "no": "Yo'q",
         "showing": "Ko'rsatilmoqda",
         "of": "dan",
-        "page": "Sahifa"
+        "page": "Sahifa",
+        "reject": "Rad etish",
+        "approve": "Tasdiqlash",
+        "saving": "Saqlanmoqda...",
+        "saved": "Saqlandi",
+        "deleted": "O'chirildi"
     },
     "periods": {
         "today": "Bugun",
@@ -449,6 +454,8 @@
                 "approved": "Tasdiqlangan",
                 "rejected": "Rad etilgan"
             },
+            "plan": "Tarif rejasi",
+            "duration": "Davomiyligi",
             "empty": "Kutilayotgan so'rovlar yo'q",
             "emptySubtitle": "Hozircha so'rovlar yo'q",
             "card": {
@@ -810,7 +817,12 @@
             "preview": "Ko'rib chiqish:",
             "remove": "O'chirish",
             "submit": "Do'kon yaratish",
-            "submitting": "Yaratilmoqda..."
+            "submitting": "Yaratilmoqda...",
+            "creating": "Yaratilmoqda..."
+        },
+        "success": {
+            "created": "Do'kon muvaffaqiyatli yaratildi!",
+            "logoUploaded": "Logotip muvaffaqiyatli yuklandi"
         },
         "info": {
             "title": "Ro'yxatdan o'tish yakuni",
@@ -898,6 +910,7 @@
             "maxBanners": "Maksimal bannerlar",
             "duration": "Muddat",
             "shopInactive": "Do'kon faol emas",
+            "free": "Bepul",
             "expiredTitle": "Obuna muddati tugadi",
             "contactSupport": "Do'koningiz administrator tomonidan o'chirildi. Iltimos, yordam xizmatiga murojaat qiling.",
             "expiredDesc": "Obuna muddati tugadi. Sotuvni davom ettirish uchun quyidagi rejalardan birini tanlang.",
@@ -1395,6 +1408,9 @@
         "analytics": "Analitika",
         "overview": "Umumiy ko'rinish",
         "orders": "Buyurtmalar",
+        "yourPlan": "Sizning rejangiz",
+        "usage": "Foydalanish",
+        "limitWarning": "Siz limitga yaqinlashmoqdasiz",
         "shop": "Do'kon",
         "viewShop": "Do'konni ko'rish",
         "products": "Mahsulotlar",

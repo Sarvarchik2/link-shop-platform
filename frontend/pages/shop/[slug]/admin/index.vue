@@ -40,7 +40,7 @@
               </span>
               <NuxtLink
                 v-if="shop && (shop?.subscription_status === 'trial' || shop?.subscription_status === 'expired')"
-                :to="`/shop/${shopSlug}/subscription`" class="upgrade-btn">
+                :to="localePath(`/shop/${shopSlug}/admin/settings/subscription`)" class="upgrade-btn">
                 {{ $t('admin.selectPlan') }}
               </NuxtLink>
             </div>
@@ -60,7 +60,7 @@
                   <h3 class="section-title mb-1">{{ $t('admin.yourPlan') }}: {{ stats.plan_name }}</h3>
                   <p class="text-sm text-gray-500">{{ $t('admin.usage') }}</p>
                 </div>
-                <NuxtLink :to="`/shop/${shopSlug}/subscription`" class="upgrade-link">
+                <NuxtLink :to="localePath(`/shop/${shopSlug}/admin/settings/subscription`)" class="upgrade-link">
                   {{ $t('admin.upgrade') }}
                 </NuxtLink>
               </div>
@@ -339,6 +339,7 @@
 <script setup>
 const { t } = useI18n()
 const { formatPrice } = useCurrency()
+const localePath = useLocalePath()
 definePageMeta({
   middleware: ['auth', 'shop-owner']
 })

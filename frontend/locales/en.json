@@ -252,7 +252,12 @@
         "no": "No",
         "showing": "Showing",
         "of": "of",
-        "page": "Page"
+        "page": "Page",
+        "reject": "Reject",
+        "approve": "Approve",
+        "saving": "Saving...",
+        "saved": "Saved",
+        "deleted": "Deleted"
     },
     "periods": {
         "today": "Today",
@@ -784,6 +789,8 @@
                 "approved": "Approved",
                 "rejected": "Rejected"
             },
+            "plan": "Plan",
+            "duration": "Duration",
             "empty": "No pending requests found",
             "emptySubtitle": "No pending requests at the moment",
             "card": {
@@ -1072,7 +1079,8 @@
             "expiredTitle": "Subscription Expired",
             "contactSupport": "Your shop has been deactivated by administrator. Please contact support.",
             "expiredDesc": "Your subscription has expired. Please select a plan below to reactivate your shop.",
-            "pendingStatus": "Pending"
+            "pendingStatus": "Pending",
+            "free": "Free"
         }
     },
     "checkout": {
@@ -1258,7 +1266,12 @@
             "preview": "Preview:",
             "remove": "Remove",
             "submit": "Create Shop",
-            "submitting": "Creating..."
+            "submitting": "Creating...",
+            "creating": "Creating..."
+        },
+        "success": {
+            "created": "Shop created successfully!",
+            "logoUploaded": "Logo uploaded successfully"
         },
         "info": {
             "title": "Registration Summary",

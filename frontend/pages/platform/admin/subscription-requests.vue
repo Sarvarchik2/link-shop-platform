@@ -19,7 +19,9 @@
             <h3 class="shop-name">{{ req.shop_name }}</h3>
             <span class="request-type" :class="req.type">{{ req.type }}</span>
           </div>
-          <span class="date">{{ formatDate(req.requested_at) }}</span>
+          <ClientOnly>
+            <span class="date">{{ formatDate(req.requested_at) }}</span>
+          </ClientOnly>
         </div>
 
         <div class="request-details">

@@ -57,7 +57,8 @@
         </div>
 
         <!-- Loading State -->
-        <div v-else-if="pending" class="loading-state">
+        <!-- Loading State -->
+        <div v-else-if="pending || !plans" class="loading-state">
           <div class="loading-spinner"></div>
           <p>{{ $t('platformAdmin.dashboard.loading') }}</p>
         </div>
@@ -72,7 +73,7 @@
                 <div class="plan-badges">
                   <span v-if="plan.is_trial" class="badge trial-badge">{{ $t('platformAdmin.plans.card.trial') }}</span>
                   <span v-if="!plan.is_active" class="badge inactive-badge">{{ $t('platformAdmin.plans.card.inactive')
-                    }}</span>
+                  }}</span>
                 </div>
               </div>
               <div class="plan-actions">

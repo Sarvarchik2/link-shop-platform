@@ -45,7 +45,9 @@
                     </div>
                     <div class="expiry-date" v-if="shop?.subscription_expires_at">
                         <span class="label">{{ $t('shopSettings.subscription.expires') }}</span>
-                        <span class="date ml-2">{{ formatDate(shop.subscription_expires_at) }}</span>
+                        <ClientOnly>
+                            <span class="date ml-2">{{ formatDate(shop.subscription_expires_at) }}</span>
+                        </ClientOnly>
                     </div>
                 </div>
 
@@ -117,7 +119,7 @@
                                 <span class="amount" v-if="plan.price > 0">{{ formatPrice(plan.price) }}</span>
                                 <span class="amount" v-else>{{ $t('shopSettings.subscription.free') || 'Free' }}</span>
                                 <span class="period" v-if="plan.price > 0">/ {{ $t('shopSettings.subscription.month')
-                                }}</span>
+                                    }}</span>
                             </div>
                         </div>
 
@@ -184,7 +186,7 @@
                                 :class="{ active: renewForm.duration_months === duration.months }">
                                 {{ duration.label }}
                                 <span v-if="duration.discount > 0" class="discount-pill">-{{ duration.discount
-                                }}%</span>
+                                    }}%</span>
                             </button>
                         </div>
                     </div>
