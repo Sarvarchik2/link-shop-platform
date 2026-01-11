@@ -56,7 +56,7 @@
                 <p class="hero-price">{{ getLocalized(banner[0], 'subtitle') }}</p>
                 <NuxtLink :to="localePath(banner[0].button_link || `/${shopSlug}/products`)" class="hero-btn">{{
                   getLocalized(banner[0], 'button_text')
-                  }}</NuxtLink>
+                }}</NuxtLink>
               </div>
               <div class="hero-image">
                 <img :src="banner[0].image_url" alt="Banner" />
@@ -656,7 +656,8 @@ const displayedBrands = computed(() => {
   background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
   color: white;
   margin-top: 60px;
-  padding: 60px 20px 40px;
+  padding: 60px 20px 100px;
+  /* Increased bottom padding for mobile nav */
 }
 
 .footer-container {

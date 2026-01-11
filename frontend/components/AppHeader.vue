@@ -64,16 +64,10 @@
               </svg>
             </a>
 
-            <!-- Login/Register buttons (only for guests) -->
+            <!-- Login/Register button (only for guests) -->
             <template v-if="!user">
-              <!-- Desktop Buttons -->
-              <div class="auth-buttons desktop-only">
-                <NuxtLink :to="localePath('/login')" class="btn-login">{{ $t('nav.login') }}</NuxtLink>
-                <NuxtLink :to="localePath('/register')" class="btn-register">{{ $t('nav.register') }}</NuxtLink>
-              </div>
-
-              <!-- Mobile Login Icon -->
-              <NuxtLink :to="localePath('/login')" class="icon-btn mobile-only">
+              <!-- Universal Login Icon -->
+              <NuxtLink :to="localePath('/login')" class="icon-btn">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
                   <polyline points="10 17 15 12 10 7"></polyline>

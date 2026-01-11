@@ -455,7 +455,7 @@
     </section>
 
     <!-- Footer -->
-    <footer class="bg-white border-t border-zinc-200 pt-20 pb-12">
+    <footer class="bg-white border-t border-zinc-100 pt-20 pb-24 md:pb-10">
       <div class="max-w-7xl mx-auto px-6">
         <div class="grid grid-cols-2 md:grid-cols-5 gap-12 mb-20">
           <div class="col-span-2">
@@ -473,7 +473,7 @@
             <h4 class="font-semibold mb-6 text-sm">{{ $t('footer.product.title') }}</h4>
             <ul class="space-y-4 text-sm text-zinc-500">
               <li><a href="#features" class="hover:text-black transition-colors">{{ $t('footer.product.features')
-              }}</a></li>
+                  }}</a></li>
               <li><a href="#solutions" class="hover:text-black transition-colors">{{
                 $t('footer.product.integrations')
                   }}</a></li>
