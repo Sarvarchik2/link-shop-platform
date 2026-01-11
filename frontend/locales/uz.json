@@ -198,7 +198,8 @@
         "approve": "Tasdiqlash",
         "saving": "Saqlanmoqda...",
         "saved": "Saqlandi",
-        "deleted": "O'chirildi"
+        "deleted": "O'chirildi",
+        "confirm": "Tasdiqlash"
     },
     "periods": {
         "today": "Bugun",

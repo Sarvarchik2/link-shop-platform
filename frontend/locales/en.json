@@ -257,7 +257,8 @@
         "approve": "Approve",
         "saving": "Saving...",
         "saved": "Saved",
-        "deleted": "Deleted"
+        "deleted": "Deleted",
+        "confirm": "Confirm"
     },
     "periods": {
         "today": "Today",
