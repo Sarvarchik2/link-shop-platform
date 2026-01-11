@@ -231,7 +231,7 @@
                     </div>
                     <span class="item-meta">{{ $t('orders.card.qty') }}: {{ item.quantity }} × {{
                       formatPrice(item.price)
-                      }}</span>
+                    }}</span>
                   </div>
                   <span class="item-total">{{ formatPrice(item.price * item.quantity) }}</span>
                 </NuxtLink>
@@ -522,6 +522,9 @@ const isStatusCompleted = (currentStatus, checkStatus) => {
 .empty-icon {
   color: #D1D5DB;
   margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .empty-title {

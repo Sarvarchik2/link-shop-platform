@@ -325,7 +325,9 @@
         "nameLabel": "Product Name",
         "descriptionLabel": "Description",
         "categoryLabel": "Category",
+        "selectCategory": "Select Category",
         "brandLabel": "Brand",
+        "selectBrand": "Select Brand",
         "priceLabel": "Price ($)",
         "discountLabel": "Discount (%)",
         "discountHelp": "Enter discount percentage (0-100)",
@@ -981,7 +983,17 @@
             "changeTitle": "Change Plan",
             "duration": "Duration",
             "total": "Total",
-            "requestSent": "Request sent successfully"
+            "requestSent": "Request sent successfully",
+            "cancelSubscription": "Cancel Subscription",
+            "keepSubscription": "No, Keep it",
+            "confirmCancel": "Yes, Cancel",
+            "cancelTitle": "Cancel Subscription",
+            "cancelDesc": "Are you sure you want to cancel your subscription?",
+            "shopInactive": "Shop Inactive",
+            "expiredTitle": "Subscription Expired",
+            "contactSupport": "Your shop has been deactivated by administrator. Please contact support.",
+            "expiredDesc": "Your subscription has expired. Please select a plan below to reactivate your shop.",
+            "pendingStatus": "Pending"
         }
     },
     "checkout": {

@@ -226,6 +226,7 @@ const { t } = useI18n()
 const { items, totalPrice, clearCart } = useCart()
 const { token, user } = useAuth()
 const { formatPhoneNumber, unformatPhoneNumber } = usePhoneFormatter()
+const { formatPrice } = useCurrency()
 
 const loading = ref(false)
 
