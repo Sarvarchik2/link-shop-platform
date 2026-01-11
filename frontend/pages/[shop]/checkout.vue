@@ -43,16 +43,31 @@
 
             <div class="form-group">
               <label class="form-label">{{ $t('checkout.form.city') }}</label>
-              <select v-model="form.delivery_city" class="form-input" required>
-                <option value="">{{ $t('checkout.form.selectCity') }}</option>
-                <option value="Toshkent">Toshkent</option>
-                <option value="Samarqand">Samarqand</option>
-                <option value="Buxoro">Buxoro</option>
-                <option value="Namangan">Namangan</option>
-                <option value="Andijon">Andijon</option>
-                <option value="Farg'ona">Farg'ona</option>
-                <option value="Boshqa">Boshqa</option>
-              </select>
+              <!-- Custom City Dropdown -->
+              <div class="custom-dropdown" v-click-outside="() => showCityDropdown = false">
+                <button type="button" class="dropdown-trigger" @click="showCityDropdown = !showCityDropdown"
+                  :class="{ 'active': showCityDropdown, 'has-selection': form.delivery_city }">
+                  <span class="selected-value">{{ form.delivery_city || $t('checkout.form.selectCity') }}</span>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    class="chevron">
+                    <path d="M6 9l6 6 6-6" />
+                  </svg>
+                </button>
+                <Transition name="dropdown">
+                  <div v-if="showCityDropdown" class="dropdown-menu">
+                    <div
+                      v-for="city in ['Toshkent', 'Samarqand', 'Buxoro', 'Namangan', 'Andijon', 'Farg\'ona', 'Boshqa']"
+                      :key="city" class="dropdown-item" :class="{ 'active': form.delivery_city === city }"
+                      @click="form.delivery_city = city; showCityDropdown = false">
+                      <span class="item-text">{{ city }}</span>
+                      <svg v-if="form.delivery_city === city" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="3">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                      </svg>
+                    </div>
+                  </div>
+                </Transition>
+              </div>
             </div>
 
             <div class="form-group">
@@ -188,6 +203,22 @@ const { token, user } = useAuth()
 const config = useRuntimeConfig()
 
 const loading = ref(false)
+const showCityDropdown = ref(false)
+
+// Directive to close dropdown when clicking outside
+const vClickOutside = {
+  mounted(el, binding) {
+    el.clickOutsideEvent = (event) => {
+      if (!(el === event.target || el.contains(event.target))) {
+        binding.value(event)
+      }
+    }
+    document.body.addEventListener('click', el.clickOutsideEvent)
+  },
+  unmounted(el) {
+    document.body.removeEventListener('click', el.clickOutsideEvent)
+  }
+}
 
 const form = reactive({
   recipient_name: '',
@@ -361,6 +392,115 @@ if (items.value.length === 0) {
 .form-input:focus {
   outline: none;
   border-color: #111;
+}
+
+/* Custom Dropdown Styles */
+.custom-dropdown {
+  position: relative;
+  width: 100%;
+}
+
+.dropdown-trigger {
+  width: 100%;
+  height: 48px;
+  padding: 0 16px;
+  background: white;
+  border: 2px solid #E5E7EB;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-weight: 500;
+  color: #374151;
+  font-size: 1rem;
+}
+
+.dropdown-trigger:hover {
+  border-color: #111;
+}
+
+.dropdown-trigger.active {
+  border-color: #111;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+}
+
+.dropdown-trigger.has-selection {
+  border-color: #111;
+  color: #111;
+}
+
+.selected-value {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-right: 12px;
+}
+
+.chevron {
+  transition: transform 0.3s ease;
+  flex-shrink: 0;
+  color: #9CA3AF;
+}
+
+.dropdown-trigger.active .chevron {
+  transform: rotate(180deg);
+  color: #111;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid #E5E7EB;
+  border-radius: 14px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+  padding: 6px;
+  z-index: 100;
+  max-height: 250px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.dropdown-item {
+  padding: 10px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.9375rem;
+  color: #4B5563;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.dropdown-item:hover {
+  background: #F3F4F6;
+  color: #111;
+}
+
+.dropdown-item.active {
+  background: #111;
+  color: white;
+}
+
+/* Transitions */
+.dropdown-enter-active,
+.dropdown-leave-active {
+  transition: all 0.2s ease-out;
+}
+
+.dropdown-enter-from,
+.dropdown-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
 }
 
 .payment-options {

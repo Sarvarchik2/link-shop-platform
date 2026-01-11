@@ -47,11 +47,30 @@
                     class="search-input" />
                 </div>
 
-                <select v-model="sortOption" class="sort-select">
-                  <option v-for="opt in sortOptions" :key="opt.value" :value="opt.value">
-                    {{ opt.label }}
-                  </option>
-                </select>
+                <!-- Custom Sort Dropdown -->
+                <div class="custom-dropdown" v-click-outside="() => showSortDropdown = false">
+                  <button class="dropdown-trigger" @click="showSortDropdown = !showSortDropdown"
+                    :class="{ 'active': showSortDropdown }">
+                    <span class="selected-value">{{ currentSort.label }}</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                      class="chevron">
+                      <path d="M6 9l6 6 6-6" />
+                    </svg>
+                  </button>
+                  <Transition name="dropdown">
+                    <div v-if="showSortDropdown" class="dropdown-menu">
+                      <div v-for="opt in sortOptions" :key="opt.value" class="dropdown-item"
+                        :class="{ 'active': sortOption === opt.value }"
+                        @click="sortOption = opt.value; showSortDropdown = false">
+                        <span class="item-text">{{ opt.label }}</span>
+                        <svg v-if="sortOption === opt.value" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                          stroke="currentColor" stroke-width="3">
+                          <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                      </div>
+                    </div>
+                  </Transition>
+                </div>
               </div>
 
               <NuxtLink :to="localePath(`/shop/${shopSlug}/admin/products/new`)" class="btn btn-primary">
@@ -153,6 +172,22 @@ const getProductName = (product) => {
 const searchQuery = ref('')
 const debouncedSearch = ref('')
 const sortOption = ref('newest')
+const showSortDropdown = ref(false)
+
+// Directive to close dropdown when clicking outside
+const vClickOutside = {
+  mounted(el, binding) {
+    el.clickOutsideEvent = (event) => {
+      if (!(el === event.target || el.contains(event.target))) {
+        binding.value(event)
+      }
+    }
+    document.body.addEventListener('click', el.clickOutsideEvent)
+  },
+  unmounted(el) {
+    document.body.removeEventListener('click', el.clickOutsideEvent)
+  }
+}
 
 // Debounce search input to avoid too many API calls
 watch(searchQuery, useDebounceFn((newVal) => {
@@ -343,34 +378,107 @@ const deleteProduct = async (id) => {
   color: #9CA3AF;
 }
 
-.sort-select {
+/* Custom Dropdown Styles */
+.custom-dropdown {
+  position: relative;
+  min-width: 220px;
+}
+
+.dropdown-trigger {
+  width: 100%;
   height: 48px;
-  /* Match height */
-  padding: 0 40px 0 16px;
+  padding: 0 20px;
+  background: white;
   border: 1px solid #E5E7EB;
   border-radius: 12px;
-  font-size: 0.95rem;
-  /* Match font size */
-  font-weight: 500;
-  outline: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   cursor: pointer;
-  background-color: white;
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg width='12' height='12' viewBox='0 0 12 12' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M2.5 4.5L6 8L9.5 4.5' stroke='%23111111' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 14px center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-weight: 600;
   color: #111;
-  min-width: 200px;
-  /* Wider select */
-  transition: all 0.2s;
+  font-size: 0.95rem;
 }
 
-.sort-select:hover {
-  border-color: #D1D5DB;
-}
-
-.sort-select:focus {
+.dropdown-trigger:hover {
   border-color: #111;
+}
+
+.dropdown-trigger.active {
+  border-color: #111;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+}
+
+.selected-value {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-right: 12px;
+}
+
+.chevron {
+  transition: transform 0.3s ease;
+  flex-shrink: 0;
+  color: #111;
+}
+
+.dropdown-trigger.active .chevron {
+  transform: rotate(180deg);
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(229, 231, 235, 0.5);
+  border-radius: 16px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -6px rgba(0, 0, 0, 0.04);
+  padding: 6px;
+  z-index: 100;
+  min-width: 240px;
+  max-height: 400px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.dropdown-item {
+  padding: 10px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.9375rem;
+  color: #4B5563;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.dropdown-item:hover {
+  background: #F3F4F6;
+  color: #111;
+}
+
+.dropdown-item.active {
+  background: #111;
+  color: white;
+}
+
+/* Transitions */
+.dropdown-enter-active,
+.dropdown-leave-active {
+  transition: all 0.2s ease-out;
+}
+
+.dropdown-enter-from,
+.dropdown-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
 }
 
 .page-title {

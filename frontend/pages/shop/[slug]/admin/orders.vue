@@ -61,14 +61,30 @@
                   <span class="customer-phone">{{ order.user?.phone }}</span>
                 </div>
                 <div class="order-total">{{ formatPrice(order.total_price) }}</div>
-                <select :value="order.status" @click.stop @change="updateStatus(order.id, $event.target.value)"
-                  class="status-select" :class="order.status">
-                  <option value="pending">{{ $t('admin.status.pending') }}</option>
-                  <option value="processing">{{ $t('admin.status.processing') }}</option>
-                  <option value="shipping">{{ $t('admin.status.shipping') }}</option>
-                  <option value="delivered">{{ $t('admin.status.delivered') }}</option>
-                  <option value="cancelled">{{ $t('admin.status.cancelled') }}</option>
-                </select>
+                <!-- Custom Status Dropdown -->
+                <div class="custom-dropdown" v-click-outside="() => activeOrderDropdown = null">
+                  <div class="status-badge" :class="order.status"
+                    @click.stop="activeOrderDropdown = activeOrderDropdown === order.id ? null : order.id">
+                    <span>{{ $t(`admin.status.${order.status}`) }}</span>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+                      class="chevron" :class="{ rotated: activeOrderDropdown === order.id }">
+                      <path d="M6 9l6 6 6-6" />
+                    </svg>
+                  </div>
+                  <Transition name="dropdown">
+                    <div v-if="activeOrderDropdown === order.id" class="dropdown-menu">
+                      <div v-for="s in ['pending', 'processing', 'shipping', 'delivered', 'cancelled']" :key="s"
+                        class="dropdown-item" :class="{ 'active': order.status === s }"
+                        @click.stop="updateStatus(order.id, s); activeOrderDropdown = null">
+                        <span class="item-text">{{ $t(`admin.status.${s}`) }}</span>
+                        <svg v-if="order.status === s" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                          stroke="currentColor" stroke-width="3">
+                          <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                      </div>
+                    </div>
+                  </Transition>
+                </div>
                 <button class="expand-btn" :class="{ expanded: expandedOrder === order.id }">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <polyline points="6 9 12 15 18 9"></polyline>
@@ -188,6 +204,22 @@ const currentRoute = computed(() => 'orders')
 
 const expandedOrder = ref(null)
 const selectedStatus = ref('all')
+const activeOrderDropdown = ref(null)
+
+// Directive to close dropdown when clicking outside
+const vClickOutside = {
+  mounted(el, binding) {
+    el.clickOutsideEvent = (event) => {
+      if (!(el === event.target || el.contains(event.target))) {
+        binding.value(event)
+      }
+    }
+    document.body.addEventListener('click', el.clickOutsideEvent)
+  },
+  unmounted(el) {
+    document.body.removeEventListener('click', el.clickOutsideEvent)
+  }
+}
 
 const statuses = computed(() => [
   { value: 'all', label: t('admin.periods.all') },
@@ -484,39 +516,113 @@ const updateStatus = async (id, newStatus) => {
   text-align: right;
 }
 
-.status-select {
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  border: none;
-  cursor: pointer;
-  min-width: 120px;
+/* Custom Status Dropdown Styles */
+.custom-dropdown {
+  position: relative;
+  min-width: 140px;
 }
 
-.status-select.pending {
+.status-badge {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.status-badge .chevron {
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.status-badge .chevron.rotated {
+  transform: rotate(180deg);
+}
+
+.status-badge.pending {
   background: #FFF3E0;
   color: #EF6C00;
 }
 
-.status-select.processing {
+.status-badge.processing {
   background: #E3F2FD;
   color: #1565C0;
 }
 
-.status-select.shipping {
+.status-badge.shipping {
   background: #FFF8E1;
   color: #F9A825;
 }
 
-.status-select.delivered {
+.status-badge.delivered {
   background: #E8F5E9;
   color: #2E7D32;
 }
 
-.status-select.cancelled {
+.status-badge.cancelled {
   background: #FFEBEE;
   color: #C62828;
+}
+
+.status-badge:hover {
+  filter: brightness(0.95);
+  transform: translateY(-1px);
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid #E5E7EB;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+  padding: 6px;
+  z-index: 100;
+  min-width: 160px;
+}
+
+.dropdown-item {
+  padding: 8px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.8125rem;
+  color: #4B5563;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.dropdown-item:hover {
+  background: #F3F4F6;
+  color: #111;
+}
+
+.dropdown-item.active {
+  background: #111;
+  color: white;
+}
+
+/* Transitions */
+.dropdown-enter-active,
+.dropdown-leave-active {
+  transition: all 0.2s ease-out;
+}
+
+.dropdown-enter-from,
+.dropdown-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
 }
 
 .expand-btn {

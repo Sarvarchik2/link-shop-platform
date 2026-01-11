@@ -52,22 +52,60 @@
               <!-- Common Fields -->
               <div class="form-group">
                 <label class="label">{{ $t('productsPage.categoryLabel') }} *</label>
-                <select v-model="selectedCategory" class="input" style="height: 50px;">
-                  <option :value="null" disabled>{{ $t('productsPage.selectCategory') || 'Select Category' }}</option>
-                  <option v-for="cat in categories" :key="cat.id" :value="cat">
-                    {{ getField(cat, 'name') }}
-                  </option>
-                </select>
+                <!-- Custom Category Dropdown -->
+                <div class="custom-dropdown" v-click-outside="() => showCategoryDropdown = false">
+                  <button type="button" class="dropdown-trigger" @click="showCategoryDropdown = !showCategoryDropdown"
+                    :class="{ 'active': showCategoryDropdown, 'has-selection': selectedCategory }">
+                    <span class="selected-value">{{ selectedCategory ? getField(selectedCategory, 'name') :
+                      $t('productsPage.selectCategory') }}</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                      class="chevron">
+                      <path d="M6 9l6 6 6-6" />
+                    </svg>
+                  </button>
+                  <Transition name="dropdown">
+                    <div v-if="showCategoryDropdown" class="dropdown-menu">
+                      <div v-for="cat in categories" :key="cat.id" class="dropdown-item"
+                        :class="{ 'active': selectedCategory?.id === cat.id }"
+                        @click="selectedCategory = cat; showCategoryDropdown = false">
+                        <span class="item-text">{{ getField(cat, 'name') }}</span>
+                        <svg v-if="selectedCategory?.id === cat.id" width="18" height="18" viewBox="0 0 24 24"
+                          fill="none" stroke="currentColor" stroke-width="3">
+                          <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                      </div>
+                    </div>
+                  </Transition>
+                </div>
               </div>
 
               <div class="form-group">
                 <label class="label">{{ $t('productsPage.brandLabel') }} *</label>
-                <select v-model="selectedBrand" class="input" style="height: 50px;">
-                  <option :value="null" disabled>{{ $t('productsPage.selectBrand') || 'Select Brand' }}</option>
-                  <option v-for="brand in brands" :key="brand.id" :value="brand">
-                    {{ brand.name }}
-                  </option>
-                </select>
+                <!-- Custom Brand Dropdown -->
+                <div class="custom-dropdown" v-click-outside="() => showBrandDropdown = false">
+                  <button type="button" class="dropdown-trigger" @click="showBrandDropdown = !showBrandDropdown"
+                    :class="{ 'active': showBrandDropdown, 'has-selection': selectedBrand }">
+                    <span class="selected-value">{{ selectedBrand ? selectedBrand.name : $t('productsPage.selectBrand')
+                    }}</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                      class="chevron">
+                      <path d="M6 9l6 6 6-6" />
+                    </svg>
+                  </button>
+                  <Transition name="dropdown">
+                    <div v-if="showBrandDropdown" class="dropdown-menu">
+                      <div v-for="brand in brands" :key="brand.id" class="dropdown-item"
+                        :class="{ 'active': selectedBrand?.id === brand.id }"
+                        @click="selectedBrand = brand; showBrandDropdown = false">
+                        <span class="item-text">{{ brand.name }}</span>
+                        <svg v-if="selectedBrand?.id === brand.id" width="18" height="18" viewBox="0 0 24 24"
+                          fill="none" stroke="currentColor" stroke-width="3">
+                          <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                      </div>
+                    </div>
+                  </Transition>
+                </div>
               </div>
 
               <!-- Language Tabs -->
@@ -227,7 +265,7 @@
             <div class="form-actions">
               <NuxtLink :to="localePath(`/shop/${shopSlug}/admin/products`)" class="btn btn-secondary">{{
                 $t('productsPage.cancel')
-              }}</NuxtLink>
+                }}</NuxtLink>
               <button type="submit" class="btn btn-primary"
                 :disabled="loading || uploadedImages.length === 0 || limitReached">
                 {{ loading ? $t('productsPage.creating') : $t('productsPage.createBtn') }}
@@ -291,6 +329,24 @@ const toast = useToast()
 const { t } = useI18n()
 const { getField } = useMultilingual()
 const localePath = useLocalePath()
+
+const showCategoryDropdown = ref(false)
+const showBrandDropdown = ref(false)
+
+// Directive to close dropdown when clicking outside
+const vClickOutside = {
+  mounted(el, binding) {
+    el.clickOutsideEvent = (event) => {
+      if (!(el === event.target || el.contains(event.target))) {
+        binding.value(event)
+      }
+    }
+    document.body.addEventListener('click', el.clickOutsideEvent)
+  },
+  unmounted(el) {
+    document.body.removeEventListener('click', el.clickOutsideEvent)
+  }
+}
 
 const getLanguageLabel = (lang) => {
   switch (lang) {
@@ -746,6 +802,116 @@ const handleSubmit = async () => {
   font-size: 0.75rem;
   color: #9CA3AF;
   margin-top: 8px;
+}
+
+/* Custom Dropdown Styles */
+.custom-dropdown {
+  position: relative;
+  width: 100%;
+}
+
+.dropdown-trigger {
+  width: 100%;
+  height: 52px;
+  padding: 0 16px;
+  background: #F9FAFB;
+  border: 2px solid #E5E7EB;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-weight: 500;
+  color: #374151;
+  font-size: 1rem;
+}
+
+.dropdown-trigger:hover {
+  border-color: #111;
+}
+
+.dropdown-trigger.active {
+  border-color: #111;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+}
+
+.dropdown-trigger.has-selection {
+  border-color: #111;
+  color: #111;
+}
+
+.selected-value {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-right: 12px;
+}
+
+.chevron {
+  transition: transform 0.3s ease;
+  flex-shrink: 0;
+  color: #9CA3AF;
+}
+
+.dropdown-trigger.active .chevron {
+  transform: rotate(180deg);
+  color: #111;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(229, 231, 235, 0.7);
+  border-radius: 14px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+  padding: 6px;
+  z-index: 100;
+  max-height: 300px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.dropdown-item {
+  padding: 10px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.9375rem;
+  color: #4B5563;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.dropdown-item:hover {
+  background: #F3F4F6;
+  color: #111;
+}
+
+.dropdown-item.active {
+  background: #111;
+  color: white;
+}
+
+/* Transitions */
+.dropdown-enter-active,
+.dropdown-leave-active {
+  transition: all 0.2s ease-out;
+}
+
+.dropdown-enter-from,
+.dropdown-leave-to {
+  opacity: 0;
+  transform: translateY(-8px);
 }
 
 .help-text-small {
