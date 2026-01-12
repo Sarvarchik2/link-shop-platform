@@ -22,6 +22,7 @@ export default defineNuxtConfig({
 
   nitro: {
     preset: 'node-server',
+    compatibilityDate: '2026-01-13',
     // host and port are strictly environment/preset specific in newer Nitro versions
   },
 
