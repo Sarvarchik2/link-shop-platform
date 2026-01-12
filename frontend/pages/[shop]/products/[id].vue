@@ -12,6 +12,14 @@
         <div class="product-gallery">
           <div class="main-image">
             <img :src="selectedImage || product.image_url" :alt="getField(product, 'name')" />
+            <div v-if="product.stock === 0 && (productVariants.length === 0 || totalColorStock === 0)"
+              class="out-of-stock-overlay">
+              <span>{{ $t('product.outOfStock') }}</span>
+            </div>
+            <div v-else-if="productVariants.length > 0 && selectedVariant && selectedVariant.stock === 0"
+              class="out-of-stock-overlay">
+              <span>{{ $t('product.outOfStock') }}</span>
+            </div>
           </div>
           <div v-if="productImages.length > 1" class="thumbnail-images">
             <div v-for="(img, index) in productImages" :key="index" class="thumbnail"
@@ -755,11 +763,69 @@ const toggleFavorite = async () => {
   padding: 40px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   height: 500px;
-  /* Fixed height */
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.out-of-stock-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  backdrop-filter: blur(4px);
+}
+
+.out-of-stock-overlay span {
+  background: #EF4444;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-weight: 800;
+  font-size: 1.25rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+  transform: rotate(-5deg);
+}
+
+.stock-badge {
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+}
+
+.stock-badge.in-stock {
+  background: #DCFCE7;
+  color: #166534;
+}
+
+.stock-badge.low-stock {
+  background: #FEF3C7;
+  color: #92400E;
+}
+
+.stock-badge.out-of-stock {
+  background: #FEE2E2;
+  color: #991B1B;
+}
+
+.btn-add-cart:disabled {
+  background: #E5E7EB;
+  color: #9CA3AF;
+  cursor: not-allowed;
 }
 
 .main-image img {

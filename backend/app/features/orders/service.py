@@ -157,10 +157,36 @@ class OrderService:
         
         # If status changed to delivered, update stock
         if new_status == "delivered" and old_status != "delivered":
+            import json
             items = self.repository.get_order_items(db, order_id)
             for item, _, _, _ in items:
                 product = self.product_service.get_product(db, item.product_id)
+                # Update main stock
                 new_stock = max(0, product.stock - item.quantity)
-                self.product_service.repository.update(db, product, {"stock": new_stock})
+                update_data = {"stock": new_stock}
+                
+                # Update variants if they exist
+                if product.variants:
+                    try:
+                        variants = json.loads(product.variants)
+                        found = False
+                        for v in variants:
+                            # Match color and size (handle nulls/empty strings)
+                            v_color = str(v.get('color') or '').strip()
+                            v_size = str(v.get('size') or '').strip()
+                            i_color = str(item.selected_color or '').strip()
+                            i_size = str(item.selected_size or '').strip()
+                            
+                            if v_color == i_color and v_size == i_size:
+                                v['stock'] = max(0, (v.get('stock') or 0) - item.quantity)
+                                found = True
+                                break
+                        
+                        if found:
+                            update_data["variants"] = json.dumps(variants)
+                    except Exception as e:
+                        print(f"Error updating variants for product {product.id}: {e}")
+                
+                self.product_service.repository.update(db, product, update_data)
                 
         return updated_order
