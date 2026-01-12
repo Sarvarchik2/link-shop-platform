@@ -199,7 +199,9 @@
         "saving": "Saqlanmoqda...",
         "saved": "Saqlandi",
         "deleted": "O'chirildi",
-        "confirm": "Tasdiqlash"
+        "confirm": "Tasdiqlash",
+        "filters": "Filtrlar",
+        "clearFilters": "Filtrlarni tozalash"
     },
     "periods": {
         "today": "Bugun",

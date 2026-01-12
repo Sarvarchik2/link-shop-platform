@@ -150,6 +150,8 @@
         "login_link_text": "Войти",
         "shop_promo": "Хотите создать магазин?",
         "create_shop_link": "Создать магазин",
+        "login_required_modal_title": "Требуется вход",
+        "login_required_modal_text": "Пожалуйста, войдите в аккаунт или зарегистрируйтесь, чтобы продолжить",
         "phone_placeholder": "+998901234567",
         "password_placeholder": "••••••••",
         "name_placeholder": "Иван",
@@ -181,6 +183,7 @@
         "filter": "Фильтр",
         "back": "Назад",
         "close": "Закрыть",
+        "backToHome": "Вернуться на главную",
         "sending": "Отправка...",
         "panel": "Панель управления",
         "analytics": "Аналитика",
@@ -196,7 +199,9 @@
         "saving": "Сохранение...",
         "saved": "Сохранено",
         "deleted": "Удалено",
-        "confirm": "Подтвердить"
+        "confirm": "Подтвердить",
+        "filters": "Фильтры",
+        "clearFilters": "Очистить все фильтры"
     },
     "periods": {
         "today": "Сегодня",
@@ -350,7 +355,9 @@
         "productsTitle": "Товары",
         "allCategories": "Все категории",
         "allBrands": "Все бренды",
-        "noProducts": "Товары не найдены"
+        "noProducts": "Товары не найдены",
+        "unavailableTitle": "Магазин не найден",
+        "unavailableDesc": "Этот магазин временно недоступен или был удален."
     },
     "product": {
         "loading": "Загрузка информации о товаре...",

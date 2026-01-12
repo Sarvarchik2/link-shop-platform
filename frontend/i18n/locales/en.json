@@ -212,6 +212,8 @@
         "login_link_text": "Sign In",
         "shop_promo": "Want to open a shop?",
         "create_shop_link": "Create Shop",
+        "login_required_modal_title": "Login Required",
+        "login_required_modal_text": "Please sign in or create an account to continue",
         "phone_placeholder": "+998901234567",
         "password_placeholder": "••••••••",
         "name_placeholder": "John",
@@ -243,6 +245,7 @@
         "filter": "Filter",
         "back": "Back",
         "close": "Close",
+        "backToHome": "Back to Home",
         "sending": "Sending...",
         "panel": "Control Panel",
         "analytics": "Analytics",
@@ -258,7 +261,9 @@
         "saving": "Saving...",
         "saved": "Saved",
         "deleted": "Deleted",
-        "confirm": "Confirm"
+        "confirm": "Confirm",
+        "filters": "Filters",
+        "clearFilters": "Clear all filters"
     },
     "periods": {
         "today": "Today",
@@ -451,7 +456,9 @@
         "productsTitle": "Products",
         "allCategories": "All Categories",
         "allBrands": "All Brands",
-        "noProducts": "No products found"
+        "noProducts": "No products found",
+        "unavailableTitle": "Shop Not Found",
+        "unavailableDesc": "This shop is temporarily unavailable or has been deleted."
     },
     "product": {
         "loading": "Loading product details...",

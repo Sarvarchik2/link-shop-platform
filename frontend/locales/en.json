@@ -120,7 +120,10 @@
             "success": "Added to cart!"
         },
         "favorites": {
-            "loginRequired": "Login to add to favorites"
+            "loginRequired": "Login to add to favorites",
+            "success": "Added to favorites!",
+            "removed": "Removed from favorites",
+            "error": "Failed to update favorites"
         },
         "preorder": {
             "loginRequired": "Login to pre-order",
@@ -212,6 +215,8 @@
         "login_link_text": "Sign In",
         "shop_promo": "Want to open a shop?",
         "create_shop_link": "Create Shop",
+        "login_required_modal_title": "Login Required",
+        "login_required_modal_text": "Please sign in or create an account to continue",
         "phone_placeholder": "+998901234567",
         "password_placeholder": "••••••••",
         "name_placeholder": "John",
@@ -219,9 +224,7 @@
         "validation": {
             "required": "Please fill in all fields",
             "login_error": "Invalid phone number or password",
-            "register_error": "Registration failed. This number might already be registered.",
-            "login_required_modal_title": "Login Required",
-            "login_required_modal_text": "Please sign in or create an account to continue"
+            "register_error": "Registration failed. This number might already be registered."
         },
         "loggedOut": "You have logged out"
     },
@@ -245,6 +248,7 @@
         "filter": "Filter",
         "back": "Back",
         "close": "Close",
+        "backToHome": "Back to Home",
         "sending": "Sending...",
         "panel": "Control Panel",
         "analytics": "Analytics",
@@ -455,7 +459,9 @@
         "productsTitle": "Products",
         "allCategories": "All Categories",
         "allBrands": "All Brands",
-        "noProducts": "No products found"
+        "noProducts": "No products found",
+        "unavailableTitle": "Shop Not Found",
+        "unavailableDesc": "This shop is temporarily unavailable or has been deleted."
     },
     "product": {
         "loading": "Loading product details...",

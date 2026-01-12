@@ -662,7 +662,7 @@ textarea.form-input {
 @media (max-width: 1024px) {
   .admin-main {
     margin-left: 0;
-    padding: 0px;
+    padding: 20px 16px;
     padding-top: 84px;
   }
 
@@ -681,51 +681,152 @@ textarea.form-input {
     padding: 0 20px;
   }
 
-  .menu-btn {
-    background: none;
-    border: none;
-    padding: 8px;
-    color: #111;
+  .menu-btn,
+  .home-btn {
+    width: 44px;
+    height: 44px;
     display: flex;
     align-items: center;
     justify-content: center;
+    background: #F3F4F6;
+    border: none;
+    border-radius: 12px;
     cursor: pointer;
+    color: #111;
+    transition: all 0.2s;
+  }
+
+  .menu-btn:hover,
+  .home-btn:hover {
+    background: #111;
+    color: white;
   }
 
   .mobile-title {
     font-weight: 700;
-    font-size: 1rem;
+    font-size: 1.125rem;
     color: #111;
   }
 
-  .home-btn {
-    color: #111;
-    padding: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  .page-header {
+    margin-bottom: 24px;
+  }
+
+  .page-title {
+    font-size: 1.75rem;
+  }
+
+  .page-subtitle {
+    font-size: 0.9rem;
   }
 
   .admin-content {
-    padding: 24px 16px;
-    border-radius: 16px;
+    padding: 24px 20px;
+    border-radius: 20px;
+  }
+
+  .form-section {
+    margin-bottom: 32px;
+    padding-bottom: 32px;
+  }
+
+  .section-title {
+    font-size: 1.05rem;
+    margin-bottom: 20px;
+  }
+
+  .form-group {
+    margin-bottom: 24px;
   }
 
   .form-grid {
     grid-template-columns: 1fr;
-    gap: 0;
+    gap: 24px;
   }
 
   .logo-area {
     flex-direction: column;
-    align-items: center;
-    text-align: center;
+    align-items: stretch;
+    gap: 16px;
   }
 
   .logo-preview-box {
     width: 100%;
-    max-width: 200px;
+    height: 160px;
+    margin: 0 auto;
+  }
+
+  .logo-actions {
+    min-height: auto;
+  }
+
+  .url-input-container {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .btn-file-upload {
+    width: 100%;
+    padding: 12px 16px;
+  }
+
+  .social-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .social-input-group {
+    padding: 16px;
+  }
+
+  .form-footer {
+    flex-direction: column-reverse;
+    gap: 12px;
+  }
+
+  .btn-cancel,
+  .btn-save {
+    width: 100%;
+    justify-content: center;
+    padding: 14px 24px;
+  }
+}
+
+@media (max-width: 640px) {
+  .admin-main {
+    padding: 16px 12px;
+    padding-top: 80px;
+  }
+
+  .page-title {
+    font-size: 1.5rem;
+  }
+
+  .admin-content {
+    padding: 20px 16px;
+    border-radius: 16px;
+  }
+
+  .form-section {
+    margin-bottom: 24px;
+    padding-bottom: 24px;
+  }
+
+  .section-title {
+    font-size: 1rem;
+  }
+
+  .form-input {
+    padding: 12px 14px;
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+
+  .logo-preview-box {
     height: 140px;
+  }
+
+  .social-input-group {
+    padding: 14px;
   }
 }
 </style>

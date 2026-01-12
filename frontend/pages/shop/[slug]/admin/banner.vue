@@ -792,13 +792,121 @@ const deleteBanner = async (id) => {
   grid-column: span 2;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
+  .admin-main {
+    padding: 20px 16px;
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .add-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .banners-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .modal-overlay {
+    padding: 0;
+    align-items: flex-end;
+  }
+
+  .modal-content {
+    max-width: 100%;
+    max-height: 95vh;
+    border-radius: 20px 20px 0 0;
+    animation: slideUpMobile 0.3s ease-out;
+  }
+
+  @keyframes slideUpMobile {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+
+  .modal-header {
+    padding: 16px 20px;
+  }
+
+  .modal-body {
+    padding: 20px;
+  }
+
+  .modal-footer {
+    padding: 16px 20px;
+    flex-direction: column-reverse;
+  }
+
+  .cancel-btn,
+  .save-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 14px 20px;
+  }
+
   .form-grid {
     grid-template-columns: 1fr;
+    gap: 12px;
   }
 
   .full-width {
     grid-column: span 1;
+  }
+
+  .banner-preview {
+    height: 180px;
+    padding: 20px;
+  }
+
+  .preview-title {
+    font-size: 1.25rem;
+  }
+
+  .image-upload-wrapper {
+    flex-direction: column;
+  }
+
+  .file-upload-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 12px 16px;
+  }
+
+  .tabs {
+    gap: 4px;
+  }
+
+  .tab-btn {
+    flex: 1;
+    text-align: center;
+  }
+}
+
+@media (max-width: 640px) {
+  .page-title {
+    font-size: 1.5rem;
+  }
+
+  .banner-preview {
+    height: 160px;
+    padding: 16px;
+  }
+
+  .preview-content {
+    max-width: 100%;
+  }
+
+  .preview-image {
+    opacity: 0.2;
   }
 }
 </style>
