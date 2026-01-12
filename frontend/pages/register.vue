@@ -60,22 +60,12 @@
 </template>
 
 
-<script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
-import { useI18n } from 'vue-i18n'
-import { useAuth } from '../composables/useAuth'
-import { useToast } from '../composables/useToast'
-import { usePhoneFormatter } from '../composables/usePhoneFormatter'
-import { useShopContext } from '../composables/useShopContext'
-
-const localePath = useLocalePath()
-
-// @ts-ignore
+<script setup>
 definePageMeta({
   layout: false
 })
 
+const localePath = useLocalePath()
 const { t } = useI18n()
 const route = useRoute()
 const firstName = ref('')
@@ -92,17 +82,17 @@ onMounted(() => {
   phone.value = formatPhoneNumber('998')
 })
 
-const handlePhoneInput = (e: Event) => {
-  const input = e.target as HTMLInputElement
+const handlePhoneInput = (e) => {
+  const input = e.target
   const formatted = formatPhoneNumber(input.value)
   phone.value = formatted
 }
 
-const storageReturnUrl = ref<string | null>(null)
+const storageReturnUrl = ref(null)
 
 // Save returnUrl when page loads
 onMounted(() => {
-  let returnUrl: string | null = null;
+  let returnUrl = null;
 
   if (Array.isArray(route.query.returnUrl)) {
     returnUrl = route.query.returnUrl[0] || null
@@ -132,7 +122,7 @@ onMounted(() => {
 
 // Preserve returnUrl when linking to login
 const loginLink = computed(() => {
-  let queryReturnUrl: string | null = null;
+  let queryReturnUrl = null;
 
   if (Array.isArray(route.query.returnUrl)) {
     queryReturnUrl = route.query.returnUrl[0] || null
@@ -159,7 +149,7 @@ const handleRegister = async () => {
   try {
     const rawPhone = unformatPhoneNumber(phone.value)
     await register(rawPhone, password.value, firstName.value, lastName.value)
-  } catch (e: any) {
+  } catch (e) {
     console.error('Register error details:', e)
     let errorMessage = t('auth.validation.register_error')
 

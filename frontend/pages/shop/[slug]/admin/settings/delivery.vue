@@ -27,7 +27,6 @@
         <ShopAdminSidebar :shop-slug="shopSlug" current-route="delivery" v-model="sidebarOpen" />
 
         <main class="admin-main">
-            <div class="content-wrapper">
                 <h1 class="page-title">{{ $t('admin.delivery.title') }}</h1>
                 <p class="page-subtitle">{{ $t('admin.deliverySettingsSubtitle') }}</p>
 
@@ -124,7 +123,6 @@
                         </button>
                     </div>
                 </form>
-            </div>
         </main>
     </div>
 </template>

@@ -565,7 +565,10 @@ const cancelSubscription = async () => {
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 24px;
 }
-
+.plan-actions{
+    width: 100%;
+    margin-top: 25px;
+}
 .plan-card {
     background: white;
     border-radius: 20px;

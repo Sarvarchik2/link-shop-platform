@@ -5,7 +5,7 @@
     <main class="products-container">
       <!-- Header with title and filter toggle -->
       <div class="page-header">
-        <h1 class="page-title">Barcha mahsulotlar</h1>
+        <h1 class="page-title">{{ $t('store.viewAllProducts') }}</h1>
         <button class="filter-toggle-btn" @click="showFilters = !showFilters">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <line x1="4" y1="21" x2="4" y2="14"></line>
@@ -15,7 +15,7 @@
             <line x1="20" y1="21" x2="20" y2="16"></line>
             <line x1="20" y1="12" x2="20" y2="3"></line>
           </svg>
-          <span>Filtrlar</span>
+          <span>{{ $t('common.filters') }}</span>
           <span v-if="activeFiltersCount > 0" class="filter-count">{{ activeFiltersCount }}</span>
         </button>
       </div>
@@ -25,7 +25,7 @@
         <div v-if="showFilters" class="filters-panel">
           <!-- Brands Filter -->
           <div class="filter-section">
-            <h3 class="filter-title">Brendlar</h3>
+            <h3 class="filter-title">{{ $t('store.brands') }}</h3>
             <div class="filter-chips">
               <button
                 v-for="brand in brands"
@@ -41,7 +41,7 @@
 
           <!-- Categories Filter -->
           <div class="filter-section">
-            <h3 class="filter-title">Kategoriyalar</h3>
+            <h3 class="filter-title">{{ $t('store.allCategories') }}</h3>
             <div class="filter-chips">
               <button
                 v-for="category in categories"
@@ -62,7 +62,7 @@
                 <line x1="18" y1="6" x2="6" y2="18"></line>
                 <line x1="6" y1="6" x2="18" y2="18"></line>
               </svg>
-              Barcha filtrlarni tozalash
+              {{ $t('common.clearFilters') }}
             </button>
           </div>
         </div>
@@ -90,19 +90,19 @@
 
       <!-- Products Count -->
       <div class="products-info">
-        <span class="products-count">{{ filteredProducts.length }} ta mahsulot</span>
+        <span class="products-count">{{ filteredProducts.length }} {{ $t('store.productsTitle').toLowerCase() }}</span>
       </div>
       
       <div v-if="pending" class="text-center py-12">
         <div class="loading-spinner"></div>
-        <p class="mt-4 text-gray-400">Mahsulotlar yuklanmoqda...</p>
+        <p class="mt-4 text-gray-400">{{ $t('store.loadingProducts') }}</p>
       </div>
       
       <div v-else-if="filteredProducts.length === 0" class="empty-state">
         <div class="empty-icon">🔍</div>
-        <h3>Mahsulotlar topilmadi</h3>
-        <p>Filtrlarni o'zgartirib ko'ring</p>
-        <button class="clear-filters-btn" @click="clearFilters">Filtrlarni tozalash</button>
+        <h3>{{ $t('store.noProducts') }}</h3>
+        <p>{{ $t('common.clearFilters') }}</p>
+        <button class="clear-filters-btn" @click="clearFilters">{{ $t('common.clearFilters') }}</button>
       </div>
       
       <div v-else class="products-grid">

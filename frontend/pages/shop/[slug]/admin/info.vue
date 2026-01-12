@@ -27,7 +27,6 @@
 
     <!-- Main Content -->
     <main class="admin-main">
-      <div class="container">
         <div class="page-header">
           <h1 class="page-title">{{ $t('shopSettings.infoTitle') }}</h1>
           <p class="page-subtitle">{{ $t('shopSettings.infoSubtitle') }}</p>
@@ -192,7 +191,6 @@
             </div>
           </form>
         </div>
-      </div>
     </main>
   </div>
 </template>
@@ -357,7 +355,6 @@ const handleSubmit = async () => {
   background: white;
   border-radius: 24px;
   padding: 40px;
-  max-width: 960px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 10px 40px rgba(0, 0, 0, 0.02);
   border: 1px solid #f1f1f1;
 }

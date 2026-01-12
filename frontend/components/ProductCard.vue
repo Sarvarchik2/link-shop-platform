@@ -27,7 +27,7 @@
         </div>
       </div>
       <div v-if="totalStock > 0 && totalStock <= 5" class="stock-warning">
-        Only {{ totalStock }} left!
+        {{ $t('product.lowStock', { count: totalStock }) }}
       </div>
     </div>
   </div>

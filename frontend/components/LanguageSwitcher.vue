@@ -1,6 +1,7 @@
 <template>
     <div class="language-switcher" :class="props.direction" v-click-outside="closeDropdown">
         <button @click="toggleDropdown" class="lang-btn">
+            <iconify-icon :icon="currentLocale.flag" class="flag"></iconify-icon>
             <span class="code">{{ currentLocale.code.toUpperCase() }}</span>
             <svg class="chevron" :class="{ rotated: isOpen }" width="14" height="14" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -12,6 +13,7 @@
             <div v-show="isOpen" class="lang-dropdown">
                 <button v-for="locale in availableLocales" :key="locale.code" @click="switchLanguage(locale.code)"
                     class="lang-option" :class="{ active: currentLocale.code === locale.code }">
+                    <iconify-icon :icon="locale.flag" class="flag-sm"></iconify-icon>
                     <span class="code-sm">{{ locale.code.toUpperCase() }}</span>
                     <span class="name">{{ locale.name }}</span>
                 </button>
@@ -25,9 +27,9 @@ const { locale, setLocale } = useI18n()
 const isOpen = ref(false)
 
 const locales = [
-    { code: 'uz', name: "O'zbek" },
-    { code: 'ru', name: 'Русский' },
-    { code: 'en', name: 'English' }
+    { code: 'uz', name: "O'zbek", flag: 'circle-flags:uz' },
+    { code: 'ru', name: 'Русский', flag: 'circle-flags:ru' },
+    { code: 'en', name: 'English', flag: 'circle-flags:us' }
 ]
 
 const props = defineProps({
@@ -95,6 +97,12 @@ const vClickOutside = {
     color: #111;
     font-weight: 700;
     font-size: 0.9rem;
+}
+
+.flag {
+    font-size: 20px;
+    display: flex;
+    align-items: center;
 }
 
 .lang-btn:hover {
@@ -178,6 +186,12 @@ const vClickOutside = {
     color: #9CA3AF;
     width: 24px;
     text-align: center;
+}
+
+.flag-sm {
+    font-size: 18px;
+    display: flex;
+    align-items: center;
 }
 
 .lang-option.active .code-sm {

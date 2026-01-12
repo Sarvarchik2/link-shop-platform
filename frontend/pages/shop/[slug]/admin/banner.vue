@@ -27,7 +27,6 @@
 
     <!-- Main Content -->
     <main class="admin-main">
-      <div class="container">
         <div class="page-header">
           <div>
             <h1 class="page-title">{{ $t('bannerPage.title') }}</h1>
@@ -168,7 +167,6 @@
           </div>
         </div>
 
-      </div>
     </main>
   </div>
 </template>

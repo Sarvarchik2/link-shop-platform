@@ -674,7 +674,6 @@ const handleSubmit = async () => {
   flex: 1;
   margin-left: 280px;
   padding: 40px;
-  max-width: 1400px;
 }
 
 /* Mobile Header */

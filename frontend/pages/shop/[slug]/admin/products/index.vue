@@ -27,7 +27,6 @@
 
     <!-- Main Content -->
     <main class="admin-main">
-      <div class="container">
         <div class="page-header">
           <div class="header-content">
             <div>
@@ -139,7 +138,6 @@
             </div>
           </div>
         </div>
-      </div>
     </main>
   </div>
 </template>

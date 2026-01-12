@@ -6,7 +6,7 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     # Priority: Env DATABASE_URL -> Env POSTGRES_URL -> Localhost
-    DATABASE_URL: str = os.getenv("DATABASE_URL") or os.getenv("POSTGRES_URL") or "postgresql://localhost/linkshop"
+    DATABASE_URL: str = os.getenv("DATABASE_URL") or os.getenv("POSTGRES_URL") or "sqlite:///./database.db"
     UPLOAD_DIR: str = "uploads"
     BASE_URL: str = "http://localhost:8000"
 

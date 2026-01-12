@@ -27,7 +27,6 @@
 
     <!-- Main Content -->
     <main class="admin-main">
-      <div class="container">
         <div class="page-header">
           <div>
             <h1 class="page-title">{{ $t('categoriesPage.title') }}</h1>
@@ -65,7 +64,6 @@
             </div>
           </div>
         </div>
-      </div>
     </main>
   </div>
 </template>
@@ -185,12 +183,6 @@ const deleteCategory = async (id) => {
   margin-left: 280px;
   min-height: 100vh;
   padding: 40px;
-  background: #fafafa;
-}
-
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
 }
 
 .page-header {

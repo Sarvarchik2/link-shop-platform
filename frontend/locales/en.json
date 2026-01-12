@@ -219,7 +219,9 @@
         "validation": {
             "required": "Please fill in all fields",
             "login_error": "Invalid phone number or password",
-            "register_error": "Registration failed. This number might already be registered."
+            "register_error": "Registration failed. This number might already be registered.",
+            "login_required_modal_title": "Login Required",
+            "login_required_modal_text": "Please sign in or create an account to continue"
         },
         "loggedOut": "You have logged out"
     },
@@ -258,7 +260,9 @@
         "saving": "Saving...",
         "saved": "Saved",
         "deleted": "Deleted",
-        "confirm": "Confirm"
+        "confirm": "Confirm",
+        "filters": "Filters",
+        "clearFilters": "Clear all filters"
     },
     "periods": {
         "today": "Today",
@@ -475,6 +479,7 @@
         "brand": "Brand",
         "category": "Category",
         "addToCart": "ADD TO CART",
+        "addedToCart": "Added to cart",
         "form": {
             "name": "Name",
             "phone": "Phone number"
