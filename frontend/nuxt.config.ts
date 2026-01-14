@@ -1,7 +1,11 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 // Force restart - updated locales
 export default defineNuxtConfig({
-  compatibilityDate: '2026-01-13',
+  compatibilityDate: '2025-12-09', // Latest stable Nuxt 3 Release date as a safe baseline
+  future: {
+    compatibilityVersion: 4,
+  },
+  srcDir: 'app',
   devtools: { enabled: true },
   modules: ['@nuxtjs/tailwindcss', '@nuxtjs/i18n'],
 

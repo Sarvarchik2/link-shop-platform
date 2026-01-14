@@ -368,6 +368,7 @@
         "brand": "Brend",
         "category": "Kategoriya",
         "addToCart": "SAVATGA QO'SHISH",
+        "addedToCart": "Savatga qo'shildi",
         "soldOut": "TUGADI",
         "outOfStock": "Sotuvda yo'q",
         "lowStock": "Shoshiling! {count} ta qoldi",
@@ -1347,68 +1348,6 @@
         },
         "buttons": {
             "upload": "Yuklash"
-        }
-    },
-    "alerts": {
-        "cart": {
-            "loginRequired": "Savatchaga qo'shish uchun tizimga kiring",
-            "selectColor": "Iltimos, rangni tanlang",
-            "selectSize": "Iltimos, o'lchamni tanlang",
-            "colorOutOfStock": "Bu rang sotuvda qolmagan",
-            "success": "Savatchaga qo'shildi!"
-        },
-        "favorites": {
-            "loginRequired": "Saralanganga qo'shish uchun tizimga kiring"
-        },
-        "preorder": {
-            "loginRequired": "Oldindan buyurtma berish uchun tizimga kiring",
-            "phoneRequired": "Telefon raqamingizni kiriting",
-            "success": "Oldindan buyurtma muvaffaqiyatli rasmiylashtirildi!",
-            "error": "Xatolik yuz berdi. Iltimos qaytadan urinib ko'ring."
-        },
-        "shop": {
-            "created": "Do'kon muvaffaqiyatli yaratildi!",
-            "exported": "Ma'lumotlar eksport qilindi",
-            "expiryRequired": "Faol obuna uchun tugash muddatini ko'rsating",
-            "statusChanged": "Do'kon statusi o'zgardi: {status}",
-            "requestTheSame": "Sizda ko'rib chiqilayotgan so'rov mavjud",
-            "planRequestSent": "\"{plan}\" rejasi uchun so'rov yuborildi!",
-            "selectPlan": "Obuna rejasini tanlang",
-            "renewalSent": "\"{plan}\" rejasini uzaytirish so'rovi yuborildi!",
-            "subscriptionActivated": "Obuna faollashtirildi",
-            "subscriptionUpdated": "Obuna yangilandi",
-            "subscriptionCancelled": "Obuna bekor qilindi",
-            "requestError": "So'rov yuborishda xatolik",
-            "renewalError": "Uzaytirish so'rovini yuborishda xatolik",
-            "cancellationError": "Obunani bekor qilishda xatolik",
-            "logoRequired": "Logotip yuklang",
-            "fileSize": "Fayl hajmi 2 MB dan oshmasligi kerak",
-            "logoUploaded": "Logotip yuklandi",
-            "logoError": "Logotip yuklashda xatolik",
-            "imageRequired": "Rasm yuklang",
-            "imageUploaded": "Rasm yuklandi",
-            "imageError": "Rasm yuklashda xatolik",
-            "fillAll": "Barcha maydonlarni to'ldiring",
-            "brandCreationError": "Brend yaratishda xatolik",
-            "brandCreated": "Brend yaratildi!",
-            "categoryCreated": "Kategoriya yaratildi!",
-            "productCreated": "Mahsulot yaratildi!",
-            "productUpdated": "Mahsulot yangilandi!",
-            "productDeleted": "Mahsulot o'chirildi",
-            "addOneImage": "Kamida bitta rasm yuklang",
-            "errorLoadingData": "Ma'lumotlarni yuklashda xatolik",
-            "errorSaving": "Saqlashda xatolik",
-            "deleteError": "O'chirishda xatolik",
-            "loggedOut": "Tizimdan chiqildi"
-        },
-        "checkout": {
-            "title": "Buyurtma rasmiylashtirish",
-            "back": "Ortga",
-            "sections": {
-                "contact": "Aloqa ma'lumotlari",
-                "delivery": "Yetkazib berish usuli",
-                "payment": "To'lov usuli"
-            }
         }
     },
     "admin": {

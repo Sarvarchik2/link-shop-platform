@@ -120,7 +120,10 @@
             "success": "Added to cart!"
         },
         "favorites": {
-            "loginRequired": "Login to add to favorites"
+            "loginRequired": "Login to add to favorites",
+            "success": "Added to favorites!",
+            "removed": "Removed from favorites",
+            "error": "Failed to update favorites"
         },
         "preorder": {
             "loginRequired": "Login to pre-order",
@@ -482,6 +485,7 @@
         "brand": "Brand",
         "category": "Category",
         "addToCart": "ADD TO CART",
+        "addedToCart": "Added to cart",
         "form": {
             "name": "Name",
             "phone": "Phone number"
