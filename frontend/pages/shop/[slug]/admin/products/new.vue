@@ -86,7 +86,7 @@
                   <button type="button" class="dropdown-trigger" @click="showBrandDropdown = !showBrandDropdown"
                     :class="{ 'active': showBrandDropdown, 'has-selection': selectedBrand }">
                     <span class="selected-value">{{ selectedBrand ? selectedBrand.name : $t('productsPage.selectBrand')
-                    }}</span>
+                      }}</span>
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                       class="chevron">
                       <path d="M6 9l6 6 6-6" />
@@ -308,7 +308,7 @@
             <div class="form-actions">
               <NuxtLink :to="localePath(`/shop/${shopSlug}/admin/products`)" class="btn btn-secondary">{{
                 $t('productsPage.cancel')
-                }}</NuxtLink>
+              }}</NuxtLink>
               <button type="submit" class="btn btn-primary"
                 :disabled="loading || uploadedImages.length === 0 || limitReached">
                 {{ loading ? $t('productsPage.creating') : $t('productsPage.createBtn') }}
@@ -413,25 +413,26 @@ onMounted(async () => {
     return
   }
 
+  const config = useRuntimeConfig()
   // Загружаем данные после монтирования
   try {
     console.log('[Add Product] Загрузка данных для shop:', shopSlug.value)
     const [brandsData, categoriesData, statsData] = await Promise.all([
-      $fetch(`${useRuntimeConfig().public.apiBase}/brands?shop_slug=${shopSlug.value}`, {
+      $fetch(`${config.public.apiBase}/brands?shop_slug=${shopSlug.value}`, {
         headers: { 'Authorization': `Bearer ${token.value}` }
       }).catch(e => {
         console.error('[Add Product] Ошибка загрузки брендов:', e)
         brandsError.value = e
         return []
       }),
-      $fetch(`${useRuntimeConfig().public.apiBase}/categories?shop_slug=${shopSlug.value}`, {
+      $fetch(`${config.public.apiBase}/categories?shop_slug=${shopSlug.value}`, {
         headers: { 'Authorization': `Bearer ${token.value}` }
       }).catch(e => {
         console.error('[Add Product] Ошибка загрузки категорий:', e)
         categoriesError.value = e
         return []
       }),
-      $fetch(`${useRuntimeConfig().public.apiBase}/shop/${shopSlug.value}/admin/stats`, {
+      $fetch(`${config.public.apiBase}/shop/${shopSlug.value}/admin/stats`, {
         headers: { 'Authorization': `Bearer ${token.value}` }
       }).catch(e => {
         console.error('[Add Product] Ошибка загрузки статистики магазина:', e)
@@ -524,7 +525,7 @@ const uploadFiles = async (files) => {
         const formData = new FormData()
         formData.append('file', file)
 
-        const response = await $fetch(useRuntimeConfig().public.apiBase + '/upload', {
+        const response = await $fetch(config.public.apiBase + '/upload', {
           method: 'POST',
           body: formData
         })
@@ -638,7 +639,7 @@ const handleSubmit = async () => {
       return
     }
 
-    const response = await $fetch(`${useRuntimeConfig().public.apiBase}/products?shop_slug=${shopSlug.value}`, {
+    const response = await $fetch(`${config.public.apiBase}/products?shop_slug=${shopSlug.value}`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${token.value}` },
       body: productData

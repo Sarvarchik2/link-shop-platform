@@ -1,7 +1,7 @@
 <template>
   <div class="products-page">
     <AppHeader />
-    
+
     <main class="products-container">
       <!-- Header with title and filter toggle -->
       <div class="page-header">
@@ -27,13 +27,8 @@
           <div class="filter-section">
             <h3 class="filter-title">{{ $t('store.brands') }}</h3>
             <div class="filter-chips">
-              <button
-                v-for="brand in brands"
-                :key="brand.id"
-                class="filter-chip"
-                :class="{ active: selectedBrands.includes(brand.name) }"
-                @click="toggleBrand(brand.name)"
-              >
+              <button v-for="brand in brands" :key="brand.id" class="filter-chip"
+                :class="{ active: selectedBrands.includes(brand.name) }" @click="toggleBrand(brand.name)">
                 {{ brand.name }}
               </button>
             </div>
@@ -43,13 +38,8 @@
           <div class="filter-section">
             <h3 class="filter-title">{{ $t('store.allCategories') }}</h3>
             <div class="filter-chips">
-              <button
-                v-for="category in categories"
-                :key="category.id"
-                class="filter-chip"
-                :class="{ active: selectedCategories.includes(category.name) }"
-                @click="toggleCategory(category.name)"
-              >
+              <button v-for="category in categories" :key="category.id" class="filter-chip"
+                :class="{ active: selectedCategories.includes(category.name) }" @click="toggleCategory(category.name)">
                 {{ category.name }}
               </button>
             </div>
@@ -70,19 +60,11 @@
 
       <!-- Active Filters Tags -->
       <div v-if="activeFiltersCount > 0 && !showFilters" class="active-filters">
-        <span
-          v-for="brand in selectedBrands"
-          :key="`brand-${brand}`"
-          class="active-filter-tag"
-        >
+        <span v-for="brand in selectedBrands" :key="`brand-${brand}`" class="active-filter-tag">
           {{ brand }}
           <button @click="toggleBrand(brand)" class="remove-tag">×</button>
         </span>
-        <span
-          v-for="category in selectedCategories"
-          :key="`cat-${category}`"
-          class="active-filter-tag category-tag"
-        >
+        <span v-for="category in selectedCategories" :key="`cat-${category}`" class="active-filter-tag category-tag">
           {{ category }}
           <button @click="toggleCategory(category)" class="remove-tag">×</button>
         </span>
@@ -92,19 +74,19 @@
       <div class="products-info">
         <span class="products-count">{{ filteredProducts.length }} {{ $t('store.productsTitle').toLowerCase() }}</span>
       </div>
-      
+
       <div v-if="pending" class="text-center py-12">
         <div class="loading-spinner"></div>
         <p class="mt-4 text-gray-400">{{ $t('store.loadingProducts') }}</p>
       </div>
-      
+
       <div v-else-if="filteredProducts.length === 0" class="empty-state">
         <div class="empty-icon">🔍</div>
         <h3>{{ $t('store.noProducts') }}</h3>
         <p>{{ $t('common.clearFilters') }}</p>
         <button class="clear-filters-btn" @click="clearFilters">{{ $t('common.clearFilters') }}</button>
       </div>
-      
+
       <div v-else class="products-grid">
         <ProductCard v-for="product in filteredProducts" :key="product.id" :product="product" />
       </div>
@@ -113,6 +95,7 @@
 </template>
 
 <script setup>
+const config = useRuntimeConfig()
 const route = useRoute()
 
 const showFilters = ref(false)
@@ -120,12 +103,12 @@ const selectedBrands = ref([])
 const selectedCategories = ref([])
 
 // Fetch data
-const { data: products, pending } = await useFetch(useRuntimeConfig().public.apiBase + '/products', {
+const { data: products, pending } = useFetch(config.public.apiBase + '/products', {
   server: false
 })
 
-const { data: brands } = await useFetch(useRuntimeConfig().public.apiBase + '/brands', { server: false })
-const { data: categories } = await useFetch(useRuntimeConfig().public.apiBase + '/categories', { server: false })
+const { data: brands } = useFetch(config.public.apiBase + '/brands', { server: false })
+const { data: categories } = useFetch(config.public.apiBase + '/categories', { server: false })
 
 // Check for brand filter in URL query
 watch(() => route.query.brand, (newBrand) => {
@@ -166,17 +149,17 @@ const activeFiltersCount = computed(() => {
 
 const filteredProducts = computed(() => {
   if (!products.value) return []
-  
+
   let result = [...products.value]
-  
+
   if (selectedBrands.value.length > 0) {
     result = result.filter(p => selectedBrands.value.includes(p.brand))
   }
-  
+
   if (selectedCategories.value.length > 0) {
     result = result.filter(p => selectedCategories.value.includes(p.category))
   }
-  
+
   return result
 })
 </script>
@@ -254,7 +237,7 @@ const filteredProducts = computed(() => {
   padding: 24px;
   margin-bottom: 24px;
   border: 1px solid #E5E7EB;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
 }
 
 .filter-section {
@@ -424,8 +407,13 @@ const filteredProducts = computed(() => {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Transitions */
@@ -447,29 +435,29 @@ const filteredProducts = computed(() => {
     align-items: flex-start;
     gap: 16px;
   }
-  
+
   .page-title {
     font-size: 1.5rem;
   }
-  
+
   .filter-toggle-btn {
     width: 100%;
     justify-content: center;
   }
-  
+
   .filters-panel {
     padding: 20px 16px;
   }
-  
+
   .filter-chips {
     gap: 6px;
   }
-  
+
   .filter-chip {
     padding: 8px 14px;
     font-size: 0.8rem;
   }
-  
+
   .products-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 12px;

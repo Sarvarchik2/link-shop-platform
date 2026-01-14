@@ -111,11 +111,11 @@ const checkExistingShop = async () => {
     return
   }
 
-  // Проверяем роль пользователя
+  const config = useRuntimeConfig()
   const userRole = user.value?.role
   if (userRole === 'shop_owner' || userRole === 'platform_admin') {
     try {
-      const shops = await $fetch(useRuntimeConfig().public.apiBase + '/platform/shops/me', {
+      const shops = await $fetch(config.public.apiBase + '/platform/shops/me', {
         headers: {
           'Authorization': `Bearer ${token.value}`
         }
@@ -159,7 +159,8 @@ const registerShop = async () => {
   error.value = ''
 
   try {
-    const data = await $fetch(useRuntimeConfig().public.apiBase + '/platform/shops/register', {
+    const config = useRuntimeConfig()
+    const data = await $fetch(config.public.apiBase + '/platform/shops/register', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token.value}`

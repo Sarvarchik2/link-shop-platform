@@ -157,7 +157,7 @@
           <div class="table-header">
             <div class="table-info">
               <span>{{ $t('common.showing') }} {{ displayedUsers.length }} {{ $t('common.of') }} {{ users?.length || 0
-                }}</span>
+              }}</span>
             </div>
             <div class="table-actions">
               <button @click="exportData" class="export-btn">
@@ -445,7 +445,8 @@ const currentRoute = computed(() => {
   return 'dashboard'
 })
 
-const { data: users, pending, error, refresh } = await useFetch(useRuntimeConfig().public.apiBase + '/platform/admin/users', {
+const config = useRuntimeConfig()
+const { data: users, pending, error, refresh } = useFetch(config.public.apiBase + '/platform/admin/users', {
   server: false,
   lazy: true,
   watch: [token],
@@ -455,7 +456,7 @@ const { data: users, pending, error, refresh } = await useFetch(useRuntimeConfig
 })
 
 // Fetch shops and orders for stats
-const { data: shops } = await useFetch(useRuntimeConfig().public.apiBase + '/platform/shops', {
+const { data: shops } = useFetch(config.public.apiBase + '/platform/shops', {
   server: false,
   lazy: true,
   headers: computed(() => ({
@@ -463,7 +464,7 @@ const { data: shops } = await useFetch(useRuntimeConfig().public.apiBase + '/pla
   }))
 })
 
-const { data: orders } = await useFetch(useRuntimeConfig().public.apiBase + '/platform/admin/orders', {
+const { data: orders } = useFetch(config.public.apiBase + '/platform/admin/orders', {
   server: false,
   lazy: true,
   headers: computed(() => ({

@@ -174,7 +174,7 @@ const closeSidebar = () => {
 }
 
 // Fetch shop data with a unique key per shop but shared across page instances
-const { data: shop } = await useFetch(() => `${config.public.apiBase}/platform/shops/${props.shopSlug}`, {
+const { data: shop } = useFetch(() => `${config.public.apiBase}/platform/shops/${props.shopSlug}`, {
   key: `shop-data-${props.shopSlug}`,
   server: false,
   watch: [() => props.shopSlug]

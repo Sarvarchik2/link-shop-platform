@@ -216,6 +216,7 @@ import { register } from 'swiper/element/bundle'
 
 register()
 
+const config = useRuntimeConfig()
 const { t, locale } = useI18n()
 const route = useRoute()
 const shopSlug = route.params.shop
@@ -229,8 +230,13 @@ const getLocalized = (obj, field) => {
   return obj[`${field}_${locale.value}`] || obj[field]
 }
 
+// SEO
+useHead({
+  title: computed(() => shop.value?.name || 'Shop'),
+})
+
 // Fetch Shop Information
-const { data: shop, error: shopError } = await useFetch(`${useRuntimeConfig().public.apiBase}/platform/shops/${shopSlug}`, {
+const { data: shop, error: shopError } = await useFetch(`${config.public.apiBase}/platform/shops/${shopSlug}`, {
   key: `shop-${shopSlug}`,
   onResponseError({ response }) {
     if (response.status === 403) {
@@ -239,19 +245,15 @@ const { data: shop, error: shopError } = await useFetch(`${useRuntimeConfig().pu
   }
 })
 
-// SEO
-useHead({
-  title: computed(() => shop.value?.name || 'Shop'),
-})
-
 // Fetch Banner
-const { data: banner } = await useFetch(`${useRuntimeConfig().public.apiBase}/banner?shop_slug=${shopSlug}`, {
+const { data: banner } = await useFetch(`${config.public.apiBase}/banner?shop_slug=${shopSlug}`, {
   key: `banner-${shopSlug}`
 })
 
-const { data: brands } = await useFetch(`${useRuntimeConfig().public.apiBase}/brands?shop_slug=${shopSlug}`, { server: false })
-const { data: products, pending } = await useFetch(`${useRuntimeConfig().public.apiBase}/products?shop_slug=${shopSlug}`, {
-  server: false
+const { data: brands } = useFetch(`${config.public.apiBase}/brands?shop_slug=${shopSlug}`, { server: false, lazy: true })
+const { data: products, pending } = useFetch(`${config.public.apiBase}/products?shop_slug=${shopSlug}`, {
+  server: false,
+  lazy: true
 })
 
 // Show only 4 featured products

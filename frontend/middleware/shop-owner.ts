@@ -1,4 +1,5 @@
 export default defineNuxtRouteMiddleware(async (to, from) => {
+    const config = useRuntimeConfig()
     const { token, user, fetchUser } = useAuth()
     const localePath = useLocalePath()
 
@@ -27,7 +28,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
 
     try {
         // Get shop info
-        const shop = await $fetch(`${useRuntimeConfig().public.apiBase}/platform/shops/${shopSlug}`, {
+        const shop = await $fetch(`${config.public.apiBase}/platform/shops/${shopSlug}`, {
             headers: {
                 'Authorization': `Bearer ${token.value}`
             }

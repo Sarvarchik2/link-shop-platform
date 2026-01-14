@@ -27,145 +27,145 @@
 
     <!-- Main Content -->
     <main class="admin-main">
-        <div class="page-header">
-          <div>
-            <h1 class="page-title">{{ $t('bannerPage.title') }}</h1>
-            <p class="page-subtitle">{{ $t('bannerPage.subtitle') }}</p>
-          </div>
-          <button @click="openCreateModal" class="add-btn">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="12" y1="5" x2="12" y2="19"></line>
-              <line x1="5" y1="12" x2="19" y2="12"></line>
-            </svg>
-            {{ $t('bannerPage.addBanner') }}
-          </button>
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">{{ $t('bannerPage.title') }}</h1>
+          <p class="page-subtitle">{{ $t('bannerPage.subtitle') }}</p>
         </div>
+        <button @click="openCreateModal" class="add-btn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          {{ $t('bannerPage.addBanner') }}
+        </button>
+      </div>
 
-        <div class="banners-grid">
-          <div v-for="banner in bannerList" :key="banner.id" class="banner-card">
-            <div class="banner-image">
-              <img :src="banner.image_url || '/placeholder.png'" alt="Banner">
-              <div class="banner-overlay">
-                <span class="banner-badge">{{ banner.badge_text }}</span>
-              </div>
-            </div>
-            <div class="banner-content">
-              <h3 class="banner-title">{{ banner.title }}</h3>
-              <p class="banner-subtitle">{{ banner.subtitle }}</p>
-              <div class="banner-actions">
-                <button @click="editBanner(banner)" class="action-btn edit" :title="$t('bannerPage.tooltips.edit')">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                  </svg>
-                </button>
-                <button @click="deleteBanner(banner.id)" class="action-btn delete"
-                  :title="$t('bannerPage.tooltips.delete')">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="3 6 5 6 21 6"></polyline>
-                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                  </svg>
-                </button>
-              </div>
+      <div class="banners-grid">
+        <div v-for="banner in bannerList" :key="banner.id" class="banner-card">
+          <div class="banner-image">
+            <img :src="banner.image_url || '/placeholder.png'" alt="Banner">
+            <div class="banner-overlay">
+              <span class="banner-badge">{{ banner.badge_text }}</span>
             </div>
           </div>
-
-          <div v-if="bannerList.length === 0" class="empty-state">
-            <p>{{ $t('bannerPage.noBanners') }}</p>
-            <button @click="openCreateModal">{{ $t('bannerPage.createFirst') }}</button>
-          </div>
-        </div>
-
-        <!-- Modal -->
-        <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h2>{{ isEditing ? $t('bannerPage.editBanner') : $t('bannerPage.createBanner') }}</h2>
-              <button @click="closeModal" class="close-btn">&times;</button>
-            </div>
-            <div class="modal-body">
-              <!-- Live Preview -->
-              <div class="banner-preview-wrapper mb-6">
-                <label class="block text-sm font-medium text-gray-700 mb-2">{{ $t('bannerPage.preview') }}</label>
-                <div class="banner-preview">
-                  <div class="preview-content">
-                    <div v-if="form.badge_text" class="preview-badge">{{ form.badge_text }}</div>
-                    <h3 class="preview-title"
-                      v-html="form[`title_${activeLang}`] ? form[`title_${activeLang}`].replace(/\\n/g, '<br/>') : $t('bannerPage.previewTitle')">
-                    </h3>
-                    <p class="preview-subtitle">{{ form[`subtitle_${activeLang}`] || $t('bannerPage.previewSubtitle') }}
-                    </p>
-                    <span class="preview-btn">{{ form[`button_text_${activeLang}`] || $t('bannerPage.previewButton')
-                    }}</span>
-                  </div>
-                  <div class="preview-image">
-                    <img :src="form.image_url || '/placeholder.png'" alt="Banner" class="object-cover w-full h-full" />
-                  </div>
-                </div>
-              </div>
-
-              <!-- Language Tabs -->
-              <div class="tabs mb-4">
-                <button v-for="lang in ['en', 'ru', 'uz']" :key="lang" @click="activeLang = lang"
-                  :class="['tab-btn', { active: activeLang === lang }]">
-                  {{ lang.toUpperCase() }}
-                </button>
-              </div>
-
-              <div class="form-grid">
-                <div class="form-group">
-                  <label>{{ $t('bannerPage.badgeLabel') }}</label>
-                  <input v-model="form.badge_text" type="text" :placeholder="$t('bannerPage.badgePlaceholder')" />
-                </div>
-
-                <!-- Multilingual Fields -->
-                <div class="form-group full-width">
-                  <label>{{ $t('bannerPage.titleLabel') }} ({{ activeLang.toUpperCase() }})</label>
-                  <input v-model="form[`title_${activeLang}`]" type="text"
-                    :placeholder="$t('bannerPage.titlePlaceholder')" />
-                </div>
-                <div class="form-group full-width">
-                  <label>{{ $t('bannerPage.subtitleLabel') }} ({{ activeLang.toUpperCase() }})</label>
-                  <input v-model="form[`subtitle_${activeLang}`]" type="text"
-                    :placeholder="$t('bannerPage.subtitlePlaceholder')" />
-                </div>
-                <div class="form-group full-width">
-                  <label>{{ $t('bannerPage.btnTextLabel') }} ({{ activeLang.toUpperCase() }})</label>
-                  <input v-model="form[`button_text_${activeLang}`]" type="text"
-                    :placeholder="$t('bannerPage.btnTextPlaceholder')" />
-                </div>
-
-                <div class="form-group">
-                  <label>{{ $t('bannerPage.btnLinkLabel') }}</label>
-                  <input v-model="form.button_link" type="text" :placeholder="$t('bannerPage.linkPlaceholder')" />
-                </div>
-                <div class="form-group full-width">
-                  <label>{{ $t('bannerPage.imageUrlLabel') }}</label>
-                  <div class="image-upload-wrapper">
-                    <input v-model="form.image_url" type="text" placeholder="https://..." class="url-input" />
-                    <label class="file-upload-btn">
-                      {{ $t('bannerPage.buttons.upload') }}
-                      <input type="file" accept="image/*" @change="uploadImage" hidden />
-                    </label>
-                  </div>
-                </div>
-                <div class="form-group checkbox-group full-width">
-                  <label>
-                    <input type="checkbox" v-model="form.is_active" />
-                    <span>{{ $t('bannerPage.activeLabel') }}</span>
-                  </label>
-                </div>
-              </div>
-            </div>
-            <div class="modal-footer">
-              <button @click="closeModal" class="cancel-btn">{{ $t('common.cancel') }}</button>
-              <button @click="saveBanner" class="save-btn" :disabled="saving">
-                <span v-if="saving" class="spinner-small"></span>
-                {{ saving ? $t('common.saving') : $t('common.save') }}
+          <div class="banner-content">
+            <h3 class="banner-title">{{ banner.title }}</h3>
+            <p class="banner-subtitle">{{ banner.subtitle }}</p>
+            <div class="banner-actions">
+              <button @click="editBanner(banner)" class="action-btn edit" :title="$t('bannerPage.tooltips.edit')">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                </svg>
+              </button>
+              <button @click="deleteBanner(banner.id)" class="action-btn delete"
+                :title="$t('bannerPage.tooltips.delete')">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="3 6 5 6 21 6"></polyline>
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                </svg>
               </button>
             </div>
           </div>
         </div>
+
+        <div v-if="bannerList.length === 0" class="empty-state">
+          <p>{{ $t('bannerPage.noBanners') }}</p>
+          <button @click="openCreateModal">{{ $t('bannerPage.createFirst') }}</button>
+        </div>
+      </div>
+
+      <!-- Modal -->
+      <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2>{{ isEditing ? $t('bannerPage.editBanner') : $t('bannerPage.createBanner') }}</h2>
+            <button @click="closeModal" class="close-btn">&times;</button>
+          </div>
+          <div class="modal-body">
+            <!-- Live Preview -->
+            <div class="banner-preview-wrapper mb-6">
+              <label class="block text-sm font-medium text-gray-700 mb-2">{{ $t('bannerPage.preview') }}</label>
+              <div class="banner-preview">
+                <div class="preview-content">
+                  <div v-if="form.badge_text" class="preview-badge">{{ form.badge_text }}</div>
+                  <h3 class="preview-title"
+                    v-html="form[`title_${activeLang}`] ? form[`title_${activeLang}`].replace(/\\n/g, '<br/>') : $t('bannerPage.previewTitle')">
+                  </h3>
+                  <p class="preview-subtitle">{{ form[`subtitle_${activeLang}`] || $t('bannerPage.previewSubtitle') }}
+                  </p>
+                  <span class="preview-btn">{{ form[`button_text_${activeLang}`] || $t('bannerPage.previewButton')
+                    }}</span>
+                </div>
+                <div class="preview-image">
+                  <img :src="form.image_url || '/placeholder.png'" alt="Banner" class="object-cover w-full h-full" />
+                </div>
+              </div>
+            </div>
+
+            <!-- Language Tabs -->
+            <div class="tabs mb-4">
+              <button v-for="lang in ['en', 'ru', 'uz']" :key="lang" @click="activeLang = lang"
+                :class="['tab-btn', { active: activeLang === lang }]">
+                {{ lang.toUpperCase() }}
+              </button>
+            </div>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label>{{ $t('bannerPage.badgeLabel') }}</label>
+                <input v-model="form.badge_text" type="text" :placeholder="$t('bannerPage.badgePlaceholder')" />
+              </div>
+
+              <!-- Multilingual Fields -->
+              <div class="form-group full-width">
+                <label>{{ $t('bannerPage.titleLabel') }} ({{ activeLang.toUpperCase() }})</label>
+                <input v-model="form[`title_${activeLang}`]" type="text"
+                  :placeholder="$t('bannerPage.titlePlaceholder')" />
+              </div>
+              <div class="form-group full-width">
+                <label>{{ $t('bannerPage.subtitleLabel') }} ({{ activeLang.toUpperCase() }})</label>
+                <input v-model="form[`subtitle_${activeLang}`]" type="text"
+                  :placeholder="$t('bannerPage.subtitlePlaceholder')" />
+              </div>
+              <div class="form-group full-width">
+                <label>{{ $t('bannerPage.btnTextLabel') }} ({{ activeLang.toUpperCase() }})</label>
+                <input v-model="form[`button_text_${activeLang}`]" type="text"
+                  :placeholder="$t('bannerPage.btnTextPlaceholder')" />
+              </div>
+
+              <div class="form-group">
+                <label>{{ $t('bannerPage.btnLinkLabel') }}</label>
+                <input v-model="form.button_link" type="text" :placeholder="$t('bannerPage.linkPlaceholder')" />
+              </div>
+              <div class="form-group full-width">
+                <label>{{ $t('bannerPage.imageUrlLabel') }}</label>
+                <div class="image-upload-wrapper">
+                  <input v-model="form.image_url" type="text" placeholder="https://..." class="url-input" />
+                  <label class="file-upload-btn">
+                    {{ $t('bannerPage.buttons.upload') }}
+                    <input type="file" accept="image/*" @change="uploadImage" hidden />
+                  </label>
+                </div>
+              </div>
+              <div class="form-group checkbox-group full-width">
+                <label>
+                  <input type="checkbox" v-model="form.is_active" />
+                  <span>{{ $t('bannerPage.activeLabel') }}</span>
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button @click="closeModal" class="cancel-btn">{{ $t('common.cancel') }}</button>
+            <button @click="saveBanner" class="save-btn" :disabled="saving">
+              <span v-if="saving" class="spinner-small"></span>
+              {{ saving ? $t('common.saving') : $t('common.save') }}
+            </button>
+          </div>
+        </div>
+      </div>
 
     </main>
   </div>
@@ -200,8 +200,9 @@ const form = ref({
   is_active: true
 })
 
+const config = useRuntimeConfig()
 // Fetch banners
-const { data: banners, refresh } = await useFetch(`${useRuntimeConfig().public.apiBase}/banner?shop_slug=${shopSlug}`, {
+const { data: banners, refresh } = useFetch(`${config.public.apiBase}/banner?shop_slug=${shopSlug}`, {
   server: false,
   headers: {
     'Authorization': `Bearer ${token.value}`
@@ -245,7 +246,7 @@ const uploadImage = async (event) => {
   formData.append('file', file)
 
   try {
-    const result = await $fetch(useRuntimeConfig().public.apiBase + '/upload', {
+    const result = await $fetch(config.public.apiBase + '/upload', {
       method: 'POST',
       body: formData
     })
@@ -261,14 +262,14 @@ const saveBanner = async () => {
   try {
     if (isEditing.value) {
       // Update
-      await $fetch(`${useRuntimeConfig().public.apiBase}/banner/${editingId.value}?shop_slug=${shopSlug}`, {
+      await $fetch(`${config.public.apiBase}/banner/${editingId.value}?shop_slug=${shopSlug}`, {
         method: 'PUT',
         headers: { Authorization: `Bearer ${token.value}` },
         body: form.value
       })
     } else {
       // Create
-      await $fetch(`${useRuntimeConfig().public.apiBase}/banner?shop_slug=${shopSlug}`, {
+      await $fetch(`${config.public.apiBase}/banner?shop_slug=${shopSlug}`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token.value}` },
         body: form.value
@@ -292,7 +293,7 @@ const deleteBanner = async (id) => {
   if (!confirm(t('bannerPage.confirmDelete'))) return
 
   try {
-    await $fetch(`${useRuntimeConfig().public.apiBase}/banner/${id}?shop_slug=${shopSlug}`, {
+    await $fetch(`${config.public.apiBase}/banner/${id}?shop_slug=${shopSlug}`, {
       method: 'DELETE',
       headers: { Authorization: `Bearer ${token.value}` }
     })
@@ -828,6 +829,7 @@ const deleteBanner = async (id) => {
     from {
       transform: translateY(100%);
     }
+
     to {
       transform: translateY(0);
     }

@@ -27,117 +27,117 @@
 
     <!-- Main Content -->
     <main class="admin-main">
-        <div class="page-header">
-          <div class="header-content">
-            <div>
-              <h1 class="page-title">{{ $t('productsPage.title') }}</h1>
-              <p class="page-subtitle">{{ $t('productsPage.subtitle') }}</p>
-            </div>
+      <div class="page-header">
+        <div class="header-content">
+          <div>
+            <h1 class="page-title">{{ $t('productsPage.title') }}</h1>
+            <p class="page-subtitle">{{ $t('productsPage.subtitle') }}</p>
+          </div>
 
-            <div class="header-actions">
-              <div class="search-sort-bar">
-                <div class="search-input-wrapper">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    class="search-icon">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                  </svg>
-                  <input v-model="searchQuery" type="text" :placeholder="$t('productsPage.searchPlaceholder')"
-                    class="search-input" />
-                </div>
-
-                <!-- Custom Sort Dropdown -->
-                <div class="custom-dropdown" v-click-outside="() => showSortDropdown = false">
-                  <button class="dropdown-trigger" @click="showSortDropdown = !showSortDropdown"
-                    :class="{ 'active': showSortDropdown }">
-                    <span class="selected-value">{{ currentSort.label }}</span>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                      class="chevron">
-                      <path d="M6 9l6 6 6-6" />
-                    </svg>
-                  </button>
-                  <Transition name="dropdown">
-                    <div v-if="showSortDropdown" class="dropdown-menu">
-                      <div v-for="opt in sortOptions" :key="opt.value" class="dropdown-item"
-                        :class="{ 'active': sortOption === opt.value }"
-                        @click="sortOption = opt.value; showSortDropdown = false">
-                        <span class="item-text">{{ opt.label }}</span>
-                        <svg v-if="sortOption === opt.value" width="18" height="18" viewBox="0 0 24 24" fill="none"
-                          stroke="currentColor" stroke-width="3">
-                          <polyline points="20 6 9 17 4 12"></polyline>
-                        </svg>
-                      </div>
-                    </div>
-                  </Transition>
-                </div>
+          <div class="header-actions">
+            <div class="search-sort-bar">
+              <div class="search-input-wrapper">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  class="search-icon">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input v-model="searchQuery" type="text" :placeholder="$t('productsPage.searchPlaceholder')"
+                  class="search-input" />
               </div>
 
-              <NuxtLink :to="localePath(`/shop/${shopSlug}/admin/products/new`)" class="btn btn-primary">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <line x1="12" y1="5" x2="12" y2="19"></line>
-                  <line x1="5" y1="12" x2="19" y2="12"></line>
-                </svg>
-                <span class="btn-text">{{ $t('productsPage.titleNew') }}</span>
-              </NuxtLink>
+              <!-- Custom Sort Dropdown -->
+              <div class="custom-dropdown" v-click-outside="() => showSortDropdown = false">
+                <button class="dropdown-trigger" @click="showSortDropdown = !showSortDropdown"
+                  :class="{ 'active': showSortDropdown }">
+                  <span class="selected-value">{{ currentSort.label }}</span>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    class="chevron">
+                    <path d="M6 9l6 6 6-6" />
+                  </svg>
+                </button>
+                <Transition name="dropdown">
+                  <div v-if="showSortDropdown" class="dropdown-menu">
+                    <div v-for="opt in sortOptions" :key="opt.value" class="dropdown-item"
+                      :class="{ 'active': sortOption === opt.value }"
+                      @click="sortOption = opt.value; showSortDropdown = false">
+                      <span class="item-text">{{ opt.label }}</span>
+                      <svg v-if="sortOption === opt.value" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="3">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                      </svg>
+                    </div>
+                  </div>
+                </Transition>
+              </div>
             </div>
+
+            <NuxtLink :to="localePath(`/shop/${shopSlug}/admin/products/new`)" class="btn btn-primary">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+              <span class="btn-text">{{ $t('productsPage.titleNew') }}</span>
+            </NuxtLink>
           </div>
         </div>
+      </div>
 
-        <div class="admin-content">
-          <div v-if="!products || products.length === 0" class="empty-state">
-            <div class="empty-icon">
-              <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-                <line x1="3" y1="6" x2="21" y2="6"></line>
-                <path d="M16 10a4 4 0 0 1-8 0"></path>
-              </svg>
-            </div>
-            <h3>{{ $t('productsPage.emptyTitle') }}</h3>
-            <p>{{ $t('productsPage.emptyDesc') }}</p>
-            <NuxtLink :to="localePath(`/shop/${shopSlug}/admin/products/new`)" class="btn btn-primary">{{
-              $t('productsPage.titleNew') }}</NuxtLink>
+      <div class="admin-content">
+        <div v-if="!products || products.length === 0" class="empty-state">
+          <div class="empty-icon">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <path d="M16 10a4 4 0 0 1-8 0"></path>
+            </svg>
           </div>
+          <h3>{{ $t('productsPage.emptyTitle') }}</h3>
+          <p>{{ $t('productsPage.emptyDesc') }}</p>
+          <NuxtLink :to="localePath(`/shop/${shopSlug}/admin/products/new`)" class="btn btn-primary">{{
+            $t('productsPage.titleNew') }}</NuxtLink>
+        </div>
 
-          <div v-else class="products-grid">
-            <div v-for="product in products" :key="product.id" class="product-card">
-              <div class="product-image">
-                <img :src="product.image_url" :alt="product.name" />
-                <div class="product-actions">
-                  <NuxtLink :to="localePath(`/shop/${shopSlug}/admin/products/edit/${product.id}`)"
-                    class="btn-action btn-edit">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                    </svg>
-                  </NuxtLink>
-                  <button @click="deleteProduct(product.id)" class="btn-action btn-delete">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <polyline points="3 6 5 6 21 6"></polyline>
-                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                    </svg>
-                  </button>
-                </div>
+        <div v-else class="products-grid">
+          <div v-for="product in products" :key="product.id" class="product-card">
+            <div class="product-image">
+              <img :src="product.image_url" :alt="product.name" />
+              <div class="product-actions">
+                <NuxtLink :to="localePath(`/shop/${shopSlug}/admin/products/edit/${product.id}`)"
+                  class="btn-action btn-edit">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                  </svg>
+                </NuxtLink>
+                <button @click="deleteProduct(product.id)" class="btn-action btn-delete">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
+                </button>
               </div>
-              <div class="product-info">
-                <div class="product-category">{{ product.category }}</div>
-                <h3 class="product-name">{{ getProductName(product) }}</h3>
-                <div class="product-brand">{{ product.brand }}</div>
-                <div class="product-footer">
-                  <div class="product-price">{{ formatPrice(product.price) }}</div>
-                  <div class="product-meta">
-                    <div class="product-sold" v-if="product.sold_count > 0">
-                      🔥 {{ product.sold_count }} {{ $t('productsPage.sold') }}
-                    </div>
-                    <div class="product-stock" :class="{ 'out-of-stock': product.stock === 0 }">
-                      {{ product.stock > 0 ? `${product.stock} ${$t('productsPage.inStock')}` :
-                        $t('productsPage.outOfStock') }}
-                    </div>
+            </div>
+            <div class="product-info">
+              <div class="product-category">{{ product.category }}</div>
+              <h3 class="product-name">{{ getProductName(product) }}</h3>
+              <div class="product-brand">{{ product.brand }}</div>
+              <div class="product-footer">
+                <div class="product-price">{{ formatPrice(product.price) }}</div>
+                <div class="product-meta">
+                  <div class="product-sold" v-if="product.sold_count > 0">
+                    🔥 {{ product.sold_count }} {{ $t('productsPage.sold') }}
+                  </div>
+                  <div class="product-stock" :class="{ 'out-of-stock': product.stock === 0 }">
+                    {{ product.stock > 0 ? `${product.stock} ${$t('productsPage.inStock')}` :
+                      $t('productsPage.outOfStock') }}
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
+      </div>
     </main>
   </div>
 </template>
@@ -214,7 +214,8 @@ const queryParams = computed(() => {
   }
 })
 
-const { data: products, error, refresh } = await useFetch(useRuntimeConfig().public.apiBase + '/products', {
+const config = useRuntimeConfig()
+const { data: products, error, refresh } = useFetch(config.public.apiBase + '/products', {
   server: false,
   lazy: true,
   query: queryParams,
@@ -232,7 +233,7 @@ watch(error, (newError) => {
 const deleteProduct = async (id) => {
   if (!confirm(t('productsPage.deleteConfirm'))) return
   try {
-    await $fetch(`${useRuntimeConfig().public.apiBase}/products/${id}`, {
+    await $fetch(`${config.public.apiBase}/products/${id}`, {
       method: 'DELETE',
       headers: { Authorization: `Bearer ${token.value}` }
     })

@@ -263,19 +263,20 @@ const renewForm = reactive({
     plan_id: null,
     duration_months: 1
 })
-
 // --- Data Fetching ---
-
-const { data: shop, pending: shopPending, refresh: refreshShop, error: shopError } = await useFetch(`${config.public.apiBase}/platform/shops/${shopSlug}`, {
-    headers: { Authorization: `Bearer ${token.value}` }
+const { data: shop, pending: shopPending, refresh: refreshShop, error: shopError } = useFetch(`${config.public.apiBase}/platform/shops/${shopSlug}`, {
+    headers: { Authorization: `Bearer ${token.value}` },
+    server: false
 })
 
-const { data: availablePlans, pending: plansPending, error: plansError } = await useFetch(`${config.public.apiBase}/subscription-plans`, {
-    headers: { Authorization: `Bearer ${token.value}` }
+const { data: availablePlans, pending: plansPending, error: plansError } = useFetch(`${config.public.apiBase}/subscription-plans`, {
+    headers: { Authorization: `Bearer ${token.value}` },
+    server: false
 })
 
-const { data: stats, pending: statsPending, refresh: refreshStats } = await useFetch(`${config.public.apiBase}/shop/${shopSlug}/admin/stats`, {
-    headers: { Authorization: `Bearer ${token.value}` }
+const { data: stats, pending: statsPending, refresh: refreshStats } = useFetch(`${config.public.apiBase}/shop/${shopSlug}/admin/stats`, {
+    headers: { Authorization: `Bearer ${token.value}` },
+    server: false
 })
 
 // Subscription Requests
@@ -565,10 +566,12 @@ const cancelSubscription = async () => {
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 24px;
 }
-.plan-actions{
+
+.plan-actions {
     width: 100%;
     margin-top: 25px;
 }
+
 .plan-card {
     background: white;
     border-radius: 20px;

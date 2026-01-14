@@ -70,7 +70,7 @@
                 <h3 class="offer-name">{{ getLocalizedValue(offer, 'title') }}</h3>
                 <div class="offer-badges">
                   <span v-if="!offer.is_active" class="badge inactive-badge">{{ $t('platformAdmin.plans.card.inactive')
-                  }}</span>
+                    }}</span>
                 </div>
               </div>
               <div class="offer-actions">
@@ -229,7 +229,7 @@
 
               <div class="modal-actions">
                 <button type="button" @click="closeModal" class="btn-secondary">{{ $t('platformAdmin.plans.cancel')
-                }}</button>
+                  }}</button>
                 <button type="submit" class="btn-primary" :disabled="saving">
                   {{ saving ? $t('common.saving') : (editingOffer ? $t('platformAdmin.plans.save') :
                     $t('platformAdmin.plans.create')) }}
@@ -269,7 +269,8 @@ const currentRoute = computed(() => {
   return 'dashboard'
 })
 
-const { data: offers, pending, error, refresh } = await useFetch(useRuntimeConfig().public.apiBase + '/platform/admin/offers', {
+const config = useRuntimeConfig()
+const { data: offers, pending, error, refresh } = useFetch(config.public.apiBase + '/platform/admin/offers', {
   server: false,
   headers: {
     'Authorization': `Bearer ${token.value}`
@@ -383,7 +384,7 @@ const saveOffer = async () => {
     }
 
     if (editingOffer.value) {
-      await $fetch(`${useRuntimeConfig().public.apiBase}/platform/admin/offers/${editingOffer.value.id}`, {
+      await $fetch(`${config.public.apiBase}/platform/admin/offers/${editingOffer.value.id}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token.value}`
@@ -392,7 +393,7 @@ const saveOffer = async () => {
       })
       toast.success(t('common.saved'))
     } else {
-      await $fetch(useRuntimeConfig().public.apiBase + '/platform/admin/offers', {
+      await $fetch(config.public.apiBase + '/platform/admin/offers', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token.value}`
@@ -413,7 +414,7 @@ const saveOffer = async () => {
 
 const toggleActive = async (offer) => {
   try {
-    await $fetch(`${useRuntimeConfig().public.apiBase}/platform/admin/offers/${offer.id}`, {
+    await $fetch(`${config.public.apiBase}/platform/admin/offers/${offer.id}`, {
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${token.value}`
@@ -435,7 +436,7 @@ const deleteOffer = async (offer) => {
   }
 
   try {
-    await $fetch(`${useRuntimeConfig().public.apiBase}/platform/admin/offers/${offer.id}`, {
+    await $fetch(`${config.public.apiBase}/platform/admin/offers/${offer.id}`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${token.value}`

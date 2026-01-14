@@ -107,14 +107,14 @@ const selectBrand = (brand) => {
   showBrandDropdown.value = false
 }
 
-const { data: categories } = await useFetch(`${config.public.apiBase}/categories?shop_slug=${shopSlug}`)
-const { data: brands } = await useFetch(`${config.public.apiBase}/brands?shop_slug=${shopSlug}`)
-const { data: products, pending } = await useFetch(`${config.public.apiBase}/products?shop_slug=${shopSlug}`)
-
 // SEO
 useHead({
   title: computed(() => t('store.productsTitle')),
 })
+
+const { data: categories } = await useFetch(`${config.public.apiBase}/categories?shop_slug=${shopSlug}`)
+const { data: brands } = await useFetch(`${config.public.apiBase}/brands?shop_slug=${shopSlug}`)
+const { data: products, pending } = await useFetch(`${config.public.apiBase}/products?shop_slug=${shopSlug}`)
 
 // Directive to close dropdown when clicking outside
 const vClickOutside = {

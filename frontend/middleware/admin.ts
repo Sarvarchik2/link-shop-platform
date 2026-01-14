@@ -1,4 +1,5 @@
 export default defineNuxtRouteMiddleware(async (to, from) => {
+    const config = useRuntimeConfig()
     const { token, user, fetchUser } = useAuth()
     const localePath = useLocalePath()
 
@@ -24,7 +25,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
     if (!userData || userData.role !== 'platform_admin') {
         // Если у пользователя есть магазины, перенаправить в админку магазина
         try {
-            const shops = await $fetch<any[]>(useRuntimeConfig().public.apiBase + '/platform/shops/me', {
+            const shops = await $fetch<any[]>(config.public.apiBase + '/platform/shops/me', {
                 headers: {
                     'Authorization': `Bearer ${token.value}`
                 }

@@ -304,7 +304,7 @@ const { getCurrentShopSlug, clearShopContext } = useShopContext()
 const shopSlug = computed(() => getCurrentShopSlug(route))
 
 // Fetch current shop data if on shop page
-const { data: currentShop } = await useFetch(() => {
+const { data: currentShop } = useFetch(() => {
   // Only fetch if we have a slug AND we are not on a platform page that might misinterpret slug
   if (!shopSlug.value) return null
   if (shopSlug.value === 'platform' || shopSlug.value === 'shop' || shopSlug.value === 'undefined') return null

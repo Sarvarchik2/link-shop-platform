@@ -244,7 +244,6 @@ const { formatPhoneNumber, unformatPhoneNumber } = usePhoneFormatter()
 const { formatPrice } = useCurrency()
 const localePath = useLocalePath()
 const config = useRuntimeConfig()
-
 const loading = ref(false)
 const showCityDropdown = ref(false)
 
@@ -298,7 +297,7 @@ const fetchDeliverySettings = async () => {
   if (!shopSlug) return
 
   try {
-    const { data } = await useFetch(`${useRuntimeConfig().public.apiBase}/platform/shops/${shopSlug}`, {
+    const { data } = await useFetch(`${config.public.apiBase}/platform/shops/${shopSlug}`, {
       headers: { Authorization: `Bearer ${token.value}` }
     })
     if (data.value) {
@@ -367,8 +366,8 @@ const placeOrder = async () => {
     // Get shop_slug from first item if available
     const shopSlug = items.value[0]?.shopSlug || null
     const url = shopSlug
-      ? `${useRuntimeConfig().public.apiBase}/orders?shop_slug=${shopSlug}`
-      : useRuntimeConfig().public.apiBase + '/orders'
+      ? `${config.public.apiBase}/orders?shop_slug=${shopSlug}`
+      : config.public.apiBase + '/orders'
 
     // Prepare data with unformatted phone
     const orderData = {

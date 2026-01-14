@@ -27,102 +27,102 @@
         <ShopAdminSidebar :shop-slug="shopSlug" current-route="delivery" v-model="sidebarOpen" />
 
         <main class="admin-main">
-                <h1 class="page-title">{{ $t('admin.delivery.title') }}</h1>
-                <p class="page-subtitle">{{ $t('admin.deliverySettingsSubtitle') }}</p>
+            <h1 class="page-title">{{ $t('admin.delivery.title') }}</h1>
+            <p class="page-subtitle">{{ $t('admin.deliverySettingsSubtitle') }}</p>
 
-                <div v-if="pending" class="loading-state">
-                    <div class="spinner"></div>
+            <div v-if="pending" class="loading-state">
+                <div class="spinner"></div>
+            </div>
+
+            <form v-else @submit.prevent="saveSettings" class="settings-form">
+                <!-- Delivery Mode Selection -->
+                <div class="settings-card">
+                    <h3 class="card-title">{{ $t('admin.deliveryType') }}</h3>
+
+                    <div class="delivery-types">
+                        <label class="type-option" :class="{ active: settings.type === 'free' }">
+                            <input type="radio" v-model="settings.type" value="free" />
+                            <div class="type-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+                                </svg>
+                            </div>
+                            <div class="type-info">
+                                <span class="type-name">{{ $t('admin.deliveryFree') }}</span>
+                                <span class="type-desc">{{ $t('admin.deliveryFreeDesc') }}</span>
+                            </div>
+                        </label>
+
+                        <label class="type-option" :class="{ active: settings.type === 'fixed' }">
+                            <input type="radio" v-model="settings.type" value="fixed" />
+                            <div class="type-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <rect x="1" y="3" width="15" height="13"></rect>
+                                    <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+                                    <circle cx="5.5" cy="18.5" r="2.5"></circle>
+                                    <circle cx="18.5" cy="18.5" r="2.5"></circle>
+                                </svg>
+                            </div>
+                            <div class="type-info">
+                                <span class="type-name">{{ $t('admin.deliveryFixed') }}</span>
+                                <span class="type-desc">{{ $t('admin.deliveryFixedDesc') }}</span>
+                            </div>
+                        </label>
+
+                        <label class="type-option" :class="{ active: settings.type === 'regional' }">
+                            <input type="radio" v-model="settings.type" value="regional" />
+                            <div class="type-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                    <circle cx="12" cy="10" r="3"></circle>
+                                </svg>
+                            </div>
+                            <div class="type-info">
+                                <span class="type-name">{{ $t('admin.deliveryRegional') }}</span>
+                                <span class="type-desc">{{ $t('admin.deliveryRegionalDesc') }}</span>
+                            </div>
+                        </label>
+                    </div>
                 </div>
 
-                <form v-else @submit.prevent="saveSettings" class="settings-form">
-                    <!-- Delivery Mode Selection -->
-                    <div class="settings-card">
-                        <h3 class="card-title">{{ $t('admin.deliveryType') }}</h3>
-
-                        <div class="delivery-types">
-                            <label class="type-option" :class="{ active: settings.type === 'free' }">
-                                <input type="radio" v-model="settings.type" value="free" />
-                                <div class="type-icon">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                        stroke-width="2">
-                                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
-                                    </svg>
-                                </div>
-                                <div class="type-info">
-                                    <span class="type-name">{{ $t('admin.deliveryFree') }}</span>
-                                    <span class="type-desc">{{ $t('admin.deliveryFreeDesc') }}</span>
-                                </div>
-                            </label>
-
-                            <label class="type-option" :class="{ active: settings.type === 'fixed' }">
-                                <input type="radio" v-model="settings.type" value="fixed" />
-                                <div class="type-icon">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                        stroke-width="2">
-                                        <rect x="1" y="3" width="15" height="13"></rect>
-                                        <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
-                                        <circle cx="5.5" cy="18.5" r="2.5"></circle>
-                                        <circle cx="18.5" cy="18.5" r="2.5"></circle>
-                                    </svg>
-                                </div>
-                                <div class="type-info">
-                                    <span class="type-name">{{ $t('admin.deliveryFixed') }}</span>
-                                    <span class="type-desc">{{ $t('admin.deliveryFixedDesc') }}</span>
-                                </div>
-                            </label>
-
-                            <label class="type-option" :class="{ active: settings.type === 'regional' }">
-                                <input type="radio" v-model="settings.type" value="regional" />
-                                <div class="type-icon">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                        stroke-width="2">
-                                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                                        <circle cx="12" cy="10" r="3"></circle>
-                                    </svg>
-                                </div>
-                                <div class="type-info">
-                                    <span class="type-name">{{ $t('admin.deliveryRegional') }}</span>
-                                    <span class="type-desc">{{ $t('admin.deliveryRegionalDesc') }}</span>
-                                </div>
-                            </label>
-                        </div>
+                <!-- Fixed Price Input -->
+                <div v-if="settings.type === 'fixed'" class="settings-card fade-in">
+                    <h3 class="card-title">{{ $t('admin.deliveryFixed') }}</h3>
+                    <div class="form-group">
+                        <label class="form-label">{{ $t('admin.deliveryPrice') }} (UZS)</label>
+                        <input v-model.number="settings.price" type="number" class="form-input" placeholder="20000"
+                            min="0" required />
                     </div>
+                </div>
 
-                    <!-- Fixed Price Input -->
-                    <div v-if="settings.type === 'fixed'" class="settings-card fade-in">
-                        <h3 class="card-title">{{ $t('admin.deliveryFixed') }}</h3>
-                        <div class="form-group">
-                            <label class="form-label">{{ $t('admin.deliveryPrice') }} (UZS)</label>
-                            <input v-model.number="settings.price" type="number" class="form-input" placeholder="20000"
-                                min="0" required />
-                        </div>
-                    </div>
+                <!-- Regional Settings -->
+                <div v-if="settings.type === 'regional'" class="settings-card fade-in">
+                    <h3 class="card-title">{{ $t('admin.deliveryRegional') }}</h3>
+                    <p class="section-desc">{{ $t('admin.deliveryRegionalInfo') }}</p>
 
-                    <!-- Regional Settings -->
-                    <div v-if="settings.type === 'regional'" class="settings-card fade-in">
-                        <h3 class="card-title">{{ $t('admin.deliveryRegional') }}</h3>
-                        <p class="section-desc">{{ $t('admin.deliveryRegionalInfo') }}</p>
-
-                        <div class="regional-grid">
-                            <div v-for="region in regions" :key="region" class="region-item">
-                                <label class="region-name">{{ region }}</label>
-                                <div class="price-input-wrapper">
-                                    <input v-model.number="settings.regions[region]" type="number" class="form-input"
-                                        placeholder="0" min="0" />
-                                    <span class="currency-suffix">UZS</span>
-                                </div>
+                    <div class="regional-grid">
+                        <div v-for="region in regions" :key="region" class="region-item">
+                            <label class="region-name">{{ region }}</label>
+                            <div class="price-input-wrapper">
+                                <input v-model.number="settings.regions[region]" type="number" class="form-input"
+                                    placeholder="0" min="0" />
+                                <span class="currency-suffix">UZS</span>
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Submit Button -->
-                    <div class="form-actions">
-                        <button type="submit" class="save-btn" :disabled="saving">
-                            <span v-if="saving" class="spinner-small"></span>
-                            {{ saving ? $t('common.saving') : $t('common.save') }}
-                        </button>
-                    </div>
-                </form>
+                <!-- Submit Button -->
+                <div class="form-actions">
+                    <button type="submit" class="save-btn" :disabled="saving">
+                        <span v-if="saving" class="spinner-small"></span>
+                        {{ saving ? $t('common.saving') : $t('common.save') }}
+                    </button>
+                </div>
+            </form>
         </main>
     </div>
 </template>
@@ -160,11 +160,13 @@ regions.forEach(r => {
 
 const saving = ref(false)
 
+const config = useRuntimeConfig()
 // Fetch initial data
-const { data: shop, pending } = await useFetch(`${useRuntimeConfig().public.apiBase}/platform/shops/${shopSlug}`, {
+const { data: shop, pending } = useFetch(`${config.public.apiBase}/platform/shops/${shopSlug}`, {
     headers: {
         'Authorization': `Bearer ${token.value}`
-    }
+    },
+    server: false
 })
 
 // Watch for data and populate form
@@ -193,7 +195,7 @@ const saveSettings = async () => {
             }
         }
 
-        await $fetch(`${useRuntimeConfig().public.apiBase}/shop/${shopSlug}/admin/info`, {
+        await $fetch(`${config.public.apiBase}/shop/${shopSlug}/admin/info`, {
             method: 'PUT',
             headers: {
                 'Authorization': `Bearer ${token.value}`

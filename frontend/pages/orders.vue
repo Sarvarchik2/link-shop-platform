@@ -231,7 +231,7 @@
                     </div>
                     <span class="item-meta">{{ $t('orders.card.qty') }}: {{ item.quantity }} × {{
                       formatPrice(item.price)
-                      }}</span>
+                    }}</span>
                   </div>
                   <span class="item-total">{{ formatPrice(item.price * item.quantity) }}</span>
                 </NuxtLink>
@@ -252,11 +252,11 @@ definePageMeta({
   middleware: 'auth'
 })
 
+const config = useRuntimeConfig()
 const { token } = useAuth()
 const { t } = useI18n()
 const { formatPrice } = useCurrency()
-const config = useRuntimeConfig()
-const { data: orders, pending } = await useFetch(`${config.public.apiBase}/orders/me`, {
+const { data: orders, pending } = useFetch(`${config.public.apiBase}/orders/me`, {
   headers: { Authorization: `Bearer ${token.value}` },
   server: false
 })

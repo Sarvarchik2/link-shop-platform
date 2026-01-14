@@ -636,7 +636,8 @@ const currentRoute = computed(() => {
   return 'dashboard'
 })
 
-const { data: shops, pending, refresh, error } = await useFetch(useRuntimeConfig().public.apiBase + '/platform/shops', {
+const config = useRuntimeConfig()
+const { data: shops, pending, refresh, error } = useFetch(config.public.apiBase + '/platform/shops', {
   server: false,
   lazy: true,
   watch: [token],
@@ -706,14 +707,14 @@ const confirmPasswordAction = async () => {
     const { type, shop } = pendingAction.value
 
     if (type === 'activate') {
-      await $fetch(`${useRuntimeConfig().public.apiBase}/platform/admin/shops/${shop.id}/activate`, {
+      await $fetch(`${config.public.apiBase}/platform/admin/shops/${shop.id}/activate`, {
         method: 'PUT',
         headers: { 'Authorization': `Bearer ${token.value}` },
         body: { is_active: !shop.is_active, password: passwordInput.value }
       })
       toast.success(shop.is_active ? t('platformAdmin.shops.shopDeactivated') : t('platformAdmin.shops.shopActivated'))
     } else if (type === 'delete') {
-      await $fetch(`${useRuntimeConfig().public.apiBase}/platform/admin/shops/${shop.id}/delete`, {
+      await $fetch(`${config.public.apiBase}/platform/admin/shops/${shop.id}/delete`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token.value}` },
         body: { password: passwordInput.value }

@@ -115,7 +115,8 @@ const handleLogout = () => {
 
 const currentRoute = computed(() => 'orders')
 
-const { data: orders, pending, error, refresh } = await useFetch(useRuntimeConfig().public.apiBase + '/platform/admin/orders', {
+const config = useRuntimeConfig()
+const { data: orders, pending, error, refresh } = useFetch(config.public.apiBase + '/platform/admin/orders', {
   server: false,
   lazy: true,
   watch: [token],

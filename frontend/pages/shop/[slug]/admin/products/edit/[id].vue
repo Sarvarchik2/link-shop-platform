@@ -78,7 +78,7 @@
                   <button type="button" class="dropdown-trigger" @click="showBrandDropdown = !showBrandDropdown"
                     :class="{ 'active': showBrandDropdown, 'has-selection': selectedBrand }">
                     <span class="selected-value">{{ selectedBrand ? selectedBrand.name : $t('productsPage.selectBrand')
-                      }}</span>
+                    }}</span>
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                       class="chevron">
                       <path d="M6 9l6 6 6-6" />
@@ -291,7 +291,7 @@
             <div class="form-actions">
               <NuxtLink :to="localePath(`/shop/${shopSlug}/admin/products`)" class="btn btn-secondary">{{
                 $t('productsPage.cancel')
-              }}</NuxtLink>
+                }}</NuxtLink>
               <button type="submit" class="btn btn-primary" :disabled="loading || uploadedImages.length === 0">
                 {{ loading ? $t('productsPage.saving') : $t('productsPage.saveBtn') }}
               </button>
@@ -394,10 +394,11 @@ const handleLogout = () => {
 
 onMounted(async () => {
   if (!shopSlug.value || !productId.value) return
+  const config = useRuntimeConfig()
 
   try {
     // 1. Fetch product data
-    const product = await $fetch(`${useRuntimeConfig().public.apiBase}/products/${productId.value}`, {
+    const product = await $fetch(`${config.public.apiBase}/products/${productId.value}`, {
       headers: { Authorization: `Bearer ${token.value}` }
     })
 
@@ -464,10 +465,10 @@ onMounted(async () => {
 
     // 2. Fetch brands and categories
     const [brandsData, categoriesData] = await Promise.all([
-      $fetch(`${useRuntimeConfig().public.apiBase}/brands?shop_slug=${shopSlug.value}`, {
+      $fetch(`${config.public.apiBase}/brands?shop_slug=${shopSlug.value}`, {
         headers: { Authorization: `Bearer ${token.value}` }
       }),
-      $fetch(`${useRuntimeConfig().public.apiBase}/categories?shop_slug=${shopSlug.value}`, {
+      $fetch(`${config.public.apiBase}/categories?shop_slug=${shopSlug.value}`, {
         headers: { Authorization: `Bearer ${token.value}` }
       })
     ])
@@ -552,7 +553,7 @@ const uploadFiles = async (files) => {
       try {
         const formData = new FormData()
         formData.append('file', file)
-        const response = await $fetch(useRuntimeConfig().public.apiBase + '/upload', {
+        const response = await $fetch(config.public.apiBase + '/upload', {
           method: 'POST',
           body: formData
         })
@@ -636,7 +637,7 @@ const handleSubmit = async () => {
       stock: totalStock || 0
     }
 
-    await $fetch(`${useRuntimeConfig().public.apiBase}/products/${productId.value}`, {
+    await $fetch(`${config.public.apiBase}/products/${productId.value}`, {
       method: 'PUT',
       headers: { Authorization: `Bearer ${token.value}` },
       body: productData

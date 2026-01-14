@@ -369,7 +369,8 @@ const periods = computed(() => [
   { key: 'all', label: t('admin.periods.all') }
 ])
 
-const { data: shop } = await useFetch(`${useRuntimeConfig().public.apiBase}/platform/shops/${shopSlug}`, {
+const config = useRuntimeConfig()
+const { data: shop } = useFetch(`${config.public.apiBase}/platform/shops/${shopSlug}`, {
   server: false,
   lazy: true,
   headers: computed(() => ({
@@ -378,7 +379,7 @@ const { data: shop } = await useFetch(`${useRuntimeConfig().public.apiBase}/plat
   watch: [token]
 })
 
-const { data: stats, pending, refresh, error } = await useFetch(`${useRuntimeConfig().public.apiBase}/shop/${shopSlug}/admin/stats`, {
+const { data: stats, pending, refresh, error } = useFetch(`${config.public.apiBase}/shop/${shopSlug}/admin/stats`, {
   server: false,
   lazy: true,
   headers: computed(() => ({

@@ -45,14 +45,19 @@
                 <div v-else class="stock-badge in-stock">{{ selectedSize }} / {{ selectedColor.name }}: {{
                   $t('product.inStock', { count: selectedVariant.stock }) }}</div>
               </div>
-              <div v-else-if="selectedColor && !selectedSize" class="stock-badge select-color">{{ $t('product.selectSize') }}</div>
-              <div v-else-if="!selectedColor && selectedSize" class="stock-badge select-color">{{ $t('product.selectColor') }}</div>
+              <div v-else-if="selectedColor && !selectedSize" class="stock-badge select-color">{{
+                $t('product.selectSize') }}</div>
+              <div v-else-if="!selectedColor && selectedSize" class="stock-badge select-color">{{
+                $t('product.selectColor') }}</div>
               <div v-else class="stock-badge select-color">{{ $t('product.selectVariant') }}</div>
             </template>
             <!-- Stock badge for products without variants -->
             <template v-else>
               <div v-if="product.stock === 0" class="stock-badge out-of-stock">{{ $t('product.soldOut') }}</div>
-              <div v-else-if="product.stock <= 5" class="stock-badge low-stock">{{ $t('product.lowStock', { count: product.stock }) }}
+              <div v-else-if="product.stock <= 5" class="stock-badge low-stock">{{ $t('product.lowStock', {
+                count:
+                  product.stock
+              }) }}
               </div>
               <div v-else class="stock-badge in-stock">{{ $t('product.inStock', { count: product.stock }) }}</div>
             </template>
@@ -186,7 +191,8 @@ const { t } = useI18n()
 const localePath = useLocalePath()
 const { formatPrice } = useCurrency()
 
-const { data: product, pending, refresh } = await useFetch(`${useRuntimeConfig().public.apiBase}/products/${route.params.id}`, {
+const config = useRuntimeConfig()
+const { data: product, pending, refresh } = useFetch(`${config.public.apiBase}/products/${route.params.id}`, {
   server: false
 })
 
@@ -582,7 +588,7 @@ const submitPreorder = async () => {
 
   try {
     const { token } = useAuth()
-    await $fetch(`${useRuntimeConfig().public.apiBase}/products/${route.params.id}/preorder`, {
+    await $fetch(`${config.public.apiBase}/products/${route.params.id}/preorder`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token.value}`
@@ -678,7 +684,7 @@ const toggleFavorite = async () => {
   }
 
   try {
-    await $fetch(`${useRuntimeConfig().public.apiBase}/products/${route.params.id}/favorite`, { method: 'POST' })
+    await $fetch(`${config.public.apiBase}/products/${route.params.id}/favorite`, { method: 'POST' })
     refresh()
   } catch (e) {
     console.error(e)

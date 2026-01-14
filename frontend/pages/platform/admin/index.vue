@@ -105,7 +105,7 @@
                       count: shopsRecentlyAdded
                     }) }}</span>
                     <span v-else>{{ $t('platformAdmin.dashboard.stats.newMonth', { count: shopsRecentlyAdded })
-                    }}</span>
+                      }}</span>
                   </div>
                 </div>
               </div>
@@ -136,11 +136,11 @@
                   <div class="stat-value">${{ subscriptionStats.monthlyRevenue.toFixed(0) }}</div>
                   <div class="stat-label">
                     <span v-if="selectedPeriod === 'today'">{{ $t('platformAdmin.dashboard.stats.revenueToday')
-                    }}</span>
+                      }}</span>
                     <span v-else-if="selectedPeriod === 'week'">{{ $t('platformAdmin.dashboard.stats.revenueWeek')
-                    }}</span>
+                      }}</span>
                     <span v-else-if="selectedPeriod === 'month'">{{ $t('platformAdmin.dashboard.stats.revenueMonth')
-                    }}</span>
+                      }}</span>
                     <span v-else>{{ $t('platformAdmin.dashboard.stats.revenue') }}/{{
                       $t('platformAdmin.dashboard.stats.revenuePerMonth') }}</span>
                   </div>
@@ -486,7 +486,8 @@ const currentRoute = computed(() => {
   return 'dashboard'
 })
 
-const { data: stats, pending, refresh, error } = await useFetch(useRuntimeConfig().public.apiBase + '/platform/admin/stats', {
+const config = useRuntimeConfig()
+const { data: stats, pending, refresh, error } = useFetch(config.public.apiBase + '/platform/admin/stats', {
   server: false,
   lazy: true,
   watch: [token],
@@ -495,7 +496,7 @@ const { data: stats, pending, refresh, error } = await useFetch(useRuntimeConfig
   }))
 })
 
-const { data: shops } = await useFetch(useRuntimeConfig().public.apiBase + '/platform/shops', {
+const { data: shops } = useFetch(config.public.apiBase + '/platform/shops', {
   server: false,
   lazy: true,
   headers: computed(() => ({

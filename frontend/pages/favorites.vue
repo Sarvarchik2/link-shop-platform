@@ -37,7 +37,7 @@ definePageMeta({
 })
 
 const config = useRuntimeConfig()
-const { data: products, pending, refresh } = await useFetch(`${config.public.apiBase}/products`, {
+const { data: products, pending, refresh } = useFetch(`${config.public.apiBase}/products`, {
   server: false
 })
 const localePath = useLocalePath()

@@ -49,7 +49,8 @@
 
 <script setup>
 
-const { data: shops, pending } = await useFetch(useRuntimeConfig().public.apiBase + '/platform/shops', { server: false })
+const config = useRuntimeConfig()
+const { data: shops, pending } = useFetch(config.public.apiBase + '/platform/shops', { server: false })
 const localePath = useLocalePath()
 
 const getStatusClass = (status) => {

@@ -27,159 +27,159 @@
 
     <!-- Main Content -->
     <main class="admin-main">
-        <div class="page-header">
-          <div>
-            <h1 class="page-title">{{ $t('admin.ordersPage.title') }}</h1>
-            <p class="page-subtitle">{{ $t('admin.ordersPage.subtitle') }}</p>
-          </div>
-          <div class="filters">
-            <button v-for="status in statuses" :key="status.value" @click="selectedStatus = status.value"
-              class="filter-btn" :class="{ active: selectedStatus === status.value, [status.value]: true }">
-              {{ status.label }}
-              <span v-if="getStatusCount(status.value) > 0" class="filter-count">
-                {{ getStatusCount(status.value) }}
-              </span>
-            </button>
-          </div>
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">{{ $t('admin.ordersPage.title') }}</h1>
+          <p class="page-subtitle">{{ $t('admin.ordersPage.subtitle') }}</p>
+        </div>
+        <div class="filters">
+          <button v-for="status in statuses" :key="status.value" @click="selectedStatus = status.value"
+            class="filter-btn" :class="{ active: selectedStatus === status.value, [status.value]: true }">
+            {{ status.label }}
+            <span v-if="getStatusCount(status.value) > 0" class="filter-count">
+              {{ getStatusCount(status.value) }}
+            </span>
+          </button>
+        </div>
+      </div>
+
+      <div class="admin-content">
+        <div v-if="!filteredOrders || filteredOrders.length === 0" class="empty-state">
+          <p>{{ $t('admin.ordersPage.empty') }}</p>
         </div>
 
-        <div class="admin-content">
-          <div v-if="!filteredOrders || filteredOrders.length === 0" class="empty-state">
-            <p>{{ $t('admin.ordersPage.empty') }}</p>
-          </div>
-
-          <div v-else class="orders-list">
-            <div v-for="order in filteredOrders" :key="order.id" class="order-card">
-              <div class="order-header" @click="toggleOrder(order.id)">
-                <div class="order-main-info">
-                  <span class="order-id">#{{ order.id }}</span>
-                  <span class="order-date">{{ formatDate(order.created_at) }}</span>
-                </div>
-                <div class="order-customer">
-                  <span class="customer-name">{{ order.user?.first_name }} {{ order.user?.last_name }}</span>
-                  <span class="customer-phone">{{ order.user?.phone }}</span>
-                </div>
-                <div class="order-total">{{ formatPrice(order.total_price) }}</div>
-                <!-- Custom Status Dropdown -->
-                <div class="custom-dropdown" v-click-outside="() => activeOrderDropdown = null">
-                  <div class="status-badge" :class="order.status"
-                    @click.stop="activeOrderDropdown = activeOrderDropdown === order.id ? null : order.id">
-                    <span>{{ $t(`admin.status.${order.status}`) }}</span>
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
-                      class="chevron" :class="{ rotated: activeOrderDropdown === order.id }">
-                      <path d="M6 9l6 6 6-6" />
-                    </svg>
-                  </div>
-                  <Transition name="dropdown">
-                    <div v-if="activeOrderDropdown === order.id" class="dropdown-menu">
-                      <div v-for="s in ['pending', 'processing', 'shipping', 'delivered', 'cancelled']" :key="s"
-                        class="dropdown-item" :class="{ 'active': order.status === s }"
-                        @click.stop="updateStatus(order.id, s); activeOrderDropdown = null">
-                        <span class="item-text">{{ $t(`admin.status.${s}`) }}</span>
-                        <svg v-if="order.status === s" width="14" height="14" viewBox="0 0 24 24" fill="none"
-                          stroke="currentColor" stroke-width="3">
-                          <polyline points="20 6 9 17 4 12"></polyline>
-                        </svg>
-                      </div>
-                    </div>
-                  </Transition>
-                </div>
-                <button class="expand-btn" :class="{ expanded: expandedOrder === order.id }">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="6 9 12 15 18 9"></polyline>
+        <div v-else class="orders-list">
+          <div v-for="order in filteredOrders" :key="order.id" class="order-card">
+            <div class="order-header" @click="toggleOrder(order.id)">
+              <div class="order-main-info">
+                <span class="order-id">#{{ order.id }}</span>
+                <span class="order-date">{{ formatDate(order.created_at) }}</span>
+              </div>
+              <div class="order-customer">
+                <span class="customer-name">{{ order.user?.first_name }} {{ order.user?.last_name }}</span>
+                <span class="customer-phone">{{ order.user?.phone }}</span>
+              </div>
+              <div class="order-total">{{ formatPrice(order.total_price) }}</div>
+              <!-- Custom Status Dropdown -->
+              <div class="custom-dropdown" v-click-outside="() => activeOrderDropdown = null">
+                <div class="status-badge" :class="order.status"
+                  @click.stop="activeOrderDropdown = activeOrderDropdown === order.id ? null : order.id">
+                  <span>{{ $t(`admin.status.${order.status}`) }}</span>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+                    class="chevron" :class="{ rotated: activeOrderDropdown === order.id }">
+                    <path d="M6 9l6 6 6-6" />
                   </svg>
-                </button>
+                </div>
+                <Transition name="dropdown">
+                  <div v-if="activeOrderDropdown === order.id" class="dropdown-menu">
+                    <div v-for="s in ['pending', 'processing', 'shipping', 'delivered', 'cancelled']" :key="s"
+                      class="dropdown-item" :class="{ 'active': order.status === s }"
+                      @click.stop="updateStatus(order.id, s); activeOrderDropdown = null">
+                      <span class="item-text">{{ $t(`admin.status.${s}`) }}</span>
+                      <svg v-if="order.status === s" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="3">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                      </svg>
+                    </div>
+                  </div>
+                </Transition>
+              </div>
+              <button class="expand-btn" :class="{ expanded: expandedOrder === order.id }">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </button>
+            </div>
+
+            <div v-if="expandedOrder === order.id" class="order-details">
+              <!-- Delivery Info -->
+              <div class="detail-section">
+                <h3 class="detail-title">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                  </svg>
+                  {{ $t('admin.ordersPage.delivery') }}
+                </h3>
+                <div class="detail-grid">
+                  <div class="detail-item">
+                    <span class="detail-label">{{ $t('admin.ordersPage.recipient') }}</span>
+                    <span class="detail-value">{{ order.recipient_name || $t('common.na') }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-label">{{ $t('admin.ordersPage.phone') }}</span>
+                    <span class="detail-value">{{ order.delivery_phone || $t('common.na') }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-label">{{ $t('admin.ordersPage.city') }}</span>
+                    <span class="detail-value">{{ order.delivery_city || $t('common.na') }}</span>
+                  </div>
+                  <div class="detail-item full-width">
+                    <span class="detail-label">{{ $t('admin.ordersPage.address') }}</span>
+                    <span class="detail-value">{{ order.delivery_address || $t('common.na') }}</span>
+                  </div>
+                </div>
               </div>
 
-              <div v-if="expandedOrder === order.id" class="order-details">
-                <!-- Delivery Info -->
-                <div class="detail-section">
-                  <h3 class="detail-title">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                      <circle cx="12" cy="10" r="3"></circle>
-                    </svg>
-                    {{ $t('admin.ordersPage.delivery') }}
-                  </h3>
-                  <div class="detail-grid">
-                    <div class="detail-item">
-                      <span class="detail-label">{{ $t('admin.ordersPage.recipient') }}</span>
-                      <span class="detail-value">{{ order.recipient_name || $t('common.na') }}</span>
-                    </div>
-                    <div class="detail-item">
-                      <span class="detail-label">{{ $t('admin.ordersPage.phone') }}</span>
-                      <span class="detail-value">{{ order.delivery_phone || $t('common.na') }}</span>
-                    </div>
-                    <div class="detail-item">
-                      <span class="detail-label">{{ $t('admin.ordersPage.city') }}</span>
-                      <span class="detail-value">{{ order.delivery_city || $t('common.na') }}</span>
-                    </div>
-                    <div class="detail-item full-width">
-                      <span class="detail-label">{{ $t('admin.ordersPage.address') }}</span>
-                      <span class="detail-value">{{ order.delivery_address || $t('common.na') }}</span>
-                    </div>
-                  </div>
+              <!-- Payment Info -->
+              <div class="detail-section">
+                <h3 class="detail-title">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                    <line x1="1" y1="10" x2="23" y2="10"></line>
+                  </svg>
+                  {{ $t('admin.ordersPage.payment') }}
+                </h3>
+                <div class="payment-badge" :class="order.payment_method">
+                  {{ order.payment_method === 'cash' ? $t('admin.ordersPage.cash') : $t('admin.ordersPage.card') }}
                 </div>
+              </div>
 
-                <!-- Payment Info -->
-                <div class="detail-section">
-                  <h3 class="detail-title">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
-                      <line x1="1" y1="10" x2="23" y2="10"></line>
-                    </svg>
-                    {{ $t('admin.ordersPage.payment') }}
-                  </h3>
-                  <div class="payment-badge" :class="order.payment_method">
-                    {{ order.payment_method === 'cash' ? $t('admin.ordersPage.cash') : $t('admin.ordersPage.card') }}
-                  </div>
-                </div>
-
-                <!-- Order Items -->
-                <div class="detail-section">
-                  <h3 class="detail-title">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-                      <line x1="3" y1="6" x2="21" y2="6"></line>
-                      <path d="M16 10a4 4 0 0 1-8 0"></path>
-                    </svg>
-                    {{ $t('admin.ordersPage.items') }} ({{ order.items?.length || 0 }})
-                  </h3>
-                  <div class="items-list">
-                    <NuxtLink v-for="(item, idx) in order.items" :key="idx"
-                      :to="localePath(`/${shopSlug}/products/${item.product_id}`)" class="order-item">
-                      <img :src="item.product_image" :alt="item.product_name" class="item-image" />
-                      <div class="item-info">
-                        <span class="item-name">{{ item.product_name }}</span>
-                        <div class="item-options" v-if="item.selected_color || item.selected_size">
-                          <span v-if="item.selected_color" class="item-option color">{{ item.selected_color }}</span>
-                          <span v-if="item.selected_size" class="item-option size">{{ item.selected_size }}</span>
-                        </div>
-                        <span class="item-meta">{{ $t('admin.ordersPage.qty') }}: {{ item.quantity }} × {{
-                          formatPrice(item.price) }}</span>
+              <!-- Order Items -->
+              <div class="detail-section">
+                <h3 class="detail-title">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <path d="M16 10a4 4 0 0 1-8 0"></path>
+                  </svg>
+                  {{ $t('admin.ordersPage.items') }} ({{ order.items?.length || 0 }})
+                </h3>
+                <div class="items-list">
+                  <NuxtLink v-for="(item, idx) in order.items" :key="idx"
+                    :to="localePath(`/${shopSlug}/products/${item.product_id}`)" class="order-item">
+                    <img :src="item.product_image" :alt="item.product_name" class="item-image" />
+                    <div class="item-info">
+                      <span class="item-name">{{ item.product_name }}</span>
+                      <div class="item-options" v-if="item.selected_color || item.selected_size">
+                        <span v-if="item.selected_color" class="item-option color">{{ item.selected_color }}</span>
+                        <span v-if="item.selected_size" class="item-option size">{{ item.selected_size }}</span>
                       </div>
-                      <span class="item-total">{{ formatPrice(item.quantity * item.price) }}</span>
-                    </NuxtLink>
-                  </div>
+                      <span class="item-meta">{{ $t('admin.ordersPage.qty') }}: {{ item.quantity }} × {{
+                        formatPrice(item.price) }}</span>
+                    </div>
+                    <span class="item-total">{{ formatPrice(item.quantity * item.price) }}</span>
+                  </NuxtLink>
                 </div>
+              </div>
 
-                <!-- Notes -->
-                <div v-if="order.notes" class="detail-section">
-                  <h3 class="detail-title">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                      <polyline points="14 2 14 8 20 8"></polyline>
-                      <line x1="16" y1="13" x2="8" y2="13"></line>
-                      <line x1="16" y1="17" x2="8" y2="17"></line>
-                    </svg>
-                    {{ $t('admin.ordersPage.notes') }}
-                  </h3>
-                  <p class="notes-text">{{ order.notes }}</p>
-                </div>
+              <!-- Notes -->
+              <div v-if="order.notes" class="detail-section">
+                <h3 class="detail-title">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                  </svg>
+                  {{ $t('admin.ordersPage.notes') }}
+                </h3>
+                <p class="notes-text">{{ order.notes }}</p>
               </div>
             </div>
           </div>
         </div>
+      </div>
     </main>
   </div>
 </template>
@@ -228,7 +228,8 @@ const statuses = computed(() => [
   { value: 'cancelled', label: t('admin.status.cancelled') }
 ])
 
-const { data: orders, refresh } = await useFetch(`${useRuntimeConfig().public.apiBase}/shop/${shopSlug}/admin/orders`, {
+const config = useRuntimeConfig()
+const { data: orders, refresh } = useFetch(`${config.public.apiBase}/shop/${shopSlug}/admin/orders`, {
   headers: { Authorization: `Bearer ${token.value}` },
   server: false
 })
@@ -261,7 +262,7 @@ const formatDate = (dateStr) => {
 
 const updateStatus = async (id, newStatus) => {
   try {
-    await $fetch(`${useRuntimeConfig().public.apiBase}/shop/${shopSlug}/admin/orders/${id}`, {
+    await $fetch(`${config.public.apiBase}/shop/${shopSlug}/admin/orders/${id}`, {
       method: 'PUT',
       headers: { Authorization: `Bearer ${token.value}` },
       body: { status: newStatus }

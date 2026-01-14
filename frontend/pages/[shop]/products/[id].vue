@@ -210,13 +210,13 @@ const { openModal } = useAuthModal()
 const config = useRuntimeConfig()
 const localePath = useLocalePath()
 
-const { data: product, pending, refresh } = await useFetch(() => `${config.public.apiBase}/products/${route.params.id}`, {
+const { data: product, pending, refresh } = useFetch(() => `${config.public.apiBase}/products/${route.params.id}`, {
   server: false
 })
 
 // Fetch related products (same shop)
 // Prioritize category for related items
-const { data: relatedProductsData } = await useFetch(() => `${config.public.apiBase}/products`, {
+const { data: relatedProductsData } = useFetch(() => `${config.public.apiBase}/products`, {
   params: {
     shop_slug: shopSlug,
     category: product.value?.category,
