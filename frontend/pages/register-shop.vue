@@ -41,7 +41,7 @@
             <div class="flex items-center gap-2">
               <div :class="['step-circle', { active: currentStep === 2 }]">2</div>
               <span :class="['step-label', { active: currentStep === 2 }]">{{ $t('shopRegistration.steps.details')
-              }}</span>
+                }}</span>
             </div>
           </div>
         </div>
@@ -155,7 +155,7 @@
                   <div class="preview-header">
                     <span class="preview-label">{{ $t('shopRegistration.form.preview') }}:</span>
                     <button type="button" class="btn-remove-logo" @click="form.logo_url = ''">{{ $t('common.delete')
-                      }}</button>
+                    }}</button>
                   </div>
                   <img :src="form.logo_url" alt="Logo" class="preview-image" @error="logoError = true" />
                   <p v-if="logoError" class="preview-error">{{ $t('shopRegistration.form.uploadError') }}</p>
@@ -169,7 +169,7 @@
 
             <div class="flex flex-col sm:flex-row gap-4">
               <button type="button" class="btn-secondary w-full" @click="currentStep = 1">{{ $t('shopRegistration.back')
-                }}</button>
+              }}</button>
               <button type="submit" :disabled="loading" class="submit-button w-full">
                 <span v-if="loading">{{ $t('shopRegistration.form.creating') }}</span>
                 <span v-else>{{ $t('shopRegistration.form.submit') }}</span>
@@ -181,9 +181,9 @@
             <h3>{{ $t('shopRegistration.info.title') }}</h3>
             <ul>
               <li>{{ $t('shopRegistration.info.planLabel') }} <strong>{{ getLocalizedValue(selectedPlan, 'name')
-              }}</strong></li>
+                  }}</strong></li>
               <li>{{ $t('shopRegistration.info.urlLabel') }} <strong>link-platform-shop.uz/{{ form.slug || 'your-slug'
-              }}</strong></li>
+                  }}</strong></li>
             </ul>
           </div>
         </div>
@@ -245,7 +245,7 @@ const currentStep = ref(1)
 const selectedPlan = ref(null)
 
 // Step 1: Fetch Plans
-const { data: plans, pending: plansPending } = await useFetch(useRuntimeConfig().public.apiBase + '/subscription-plans', {
+const { data: plans, pending: plansPending } = await useFetch(config.public.apiBase + '/subscription-plans', {
   server: false,
   transform: (data) => {
     if (!Array.isArray(data)) return []

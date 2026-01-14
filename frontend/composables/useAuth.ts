@@ -1,4 +1,5 @@
 export const useAuth = () => {
+    const config = useRuntimeConfig()
     const token = useCookie('auth_token')
     const user = useState('user', () => null)
     const localePath = useLocalePath()
@@ -9,7 +10,7 @@ export const useAuth = () => {
             formData.append('username', phone)
             formData.append('password', password)
 
-            const data: any = await $fetch(useRuntimeConfig().public.apiBase + '/token', {
+            const data: any = await $fetch(config.public.apiBase + '/token', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
@@ -51,7 +52,7 @@ export const useAuth = () => {
 
     const register = async (phone: string, password: string, first_name: string, last_name: string) => {
         try {
-            const data: any = await $fetch(useRuntimeConfig().public.apiBase + '/register', {
+            const data: any = await $fetch(config.public.apiBase + '/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -92,7 +93,7 @@ export const useAuth = () => {
     const fetchUser = async () => {
         if (!token.value) return
         try {
-            user.value = await $fetch(useRuntimeConfig().public.apiBase + '/users/me', {
+            user.value = await $fetch(config.public.apiBase + '/users/me', {
                 headers: { Authorization: `Bearer ${token.value}` }
             })
         } catch (e) {

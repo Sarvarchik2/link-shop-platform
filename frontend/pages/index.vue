@@ -529,17 +529,15 @@ const localePath = useLocalePath()
 const { user, token } = useAuth()
 const { formatPrice } = useCurrency()
 const { getField } = useMultilingual()
+const config = useRuntimeConfig()
 
-// Fetch subscription plans from API
-const { data: plans, pending: plansPending } = await useFetch(useRuntimeConfig().public.apiBase + '/subscription-plans', {
+const { data: plans, pending: plansPending } = useFetch(config.public.apiBase + '/subscription-plans', {
   server: false,
   transform: (data) => {
-    // Sort by display_order and filter active plans
     const filteredPlans = data
       ?.filter(plan => plan.is_active)
       ?.sort((a, b) => (a.display_order || 0) - (b.display_order || 0)) || []
 
-    // Ensure features_list is parsed if features exists
     return filteredPlans.map(plan => {
       if (plan.features && !plan.features_list) {
         try {
@@ -554,12 +552,12 @@ const { data: plans, pending: plansPending } = await useFetch(useRuntimeConfig()
 })
 
 // Fetch active offers from API
-const { data: offers } = await useFetch(useRuntimeConfig().public.apiBase + '/offers', {
+const { data: offers } = useFetch(config.public.apiBase + '/offers', {
   server: false
 })
 
 // Get user's shops to determine profile link
-const { data: myShops } = await useFetch(useRuntimeConfig().public.apiBase + '/platform/shops/me', {
+const { data: myShops } = useFetch(config.public.apiBase + '/platform/shops/me', {
   server: false,
   headers: token.value ? {
     'Authorization': `Bearer ${token.value}`

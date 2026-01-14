@@ -172,6 +172,7 @@ const props = defineProps({
   }
 })
 
+const config = useRuntimeConfig()
 const { totalItems } = useCart()
 const { user, token } = useAuth()
 const router = useRouter()
@@ -221,7 +222,7 @@ const refreshShops = async () => {
   shopsError.value = null
 
   try {
-    const shops = await $fetch(useRuntimeConfig().public.apiBase + '/platform/shops/me', {
+    const shops = await $fetch(config.public.apiBase + '/platform/shops/me', {
       headers: {
         'Authorization': `Bearer ${token.value}`
       },
@@ -308,7 +309,7 @@ const { data: currentShop } = await useFetch(() => {
   if (!shopSlug.value) return null
   if (shopSlug.value === 'platform' || shopSlug.value === 'shop' || shopSlug.value === 'undefined') return null
 
-  return `${useRuntimeConfig().public.apiBase}/platform/shops/${shopSlug.value}`
+  return `${config.public.apiBase}/platform/shops/${shopSlug.value}`
 }, {
   server: false,
   watch: [shopSlug],
