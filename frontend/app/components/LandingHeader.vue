@@ -2,11 +2,8 @@
     <nav class="fixed top-0 w-full z-50 glass border-b border-zinc-100/50 transition-all duration-300">
         <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
             <div class="flex items-center gap-8">
-                <NuxtLink :to="localePath('/')" class="text-lg font-semibold tracking-tight flex items-center gap-2">
-                    <div class="w-5 h-5 bg-black rounded-md flex items-center justify-center text-white">
-                        <iconify-icon icon="lucide:box" width="12"></iconify-icon>
-                    </div>
-                    Storely
+                <NuxtLink :to="localePath('/')" class="flex items-center">
+                    <img src="/img/logo.jpg" alt="Storely" class="h-8 w-auto" />
                 </NuxtLink>
                 <div class="hidden md:flex items-center gap-6 text-sm font-medium text-zinc-500">
                     <NuxtLink :to="localePath('/') + '#features'" class="hover:text-black transition-colors">{{

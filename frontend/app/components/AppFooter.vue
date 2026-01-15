@@ -10,13 +10,8 @@
                 <!-- Brand and Newsletter -->
                 <div class="lg:col-span-5 space-y-10">
                     <div>
-                        <NuxtLink :to="localePath('/')"
-                            class="text-2xl font-bold tracking-tight flex items-center gap-2 mb-6 text-white group">
-                            <div
-                                class="w-8 h-8 bg-white rounded-lg flex items-center justify-center text-black group-hover:scale-110 transition-transform">
-                                <iconify-icon icon="lucide:box" width="18"></iconify-icon>
-                            </div>
-                            Storely
+                        <NuxtLink :to="localePath('/')" class="flex items-center mb-6">
+                            <img src="/img/logo.jpg" alt="Storely" class="h-10 w-auto brightness-0 invert" />
                         </NuxtLink>
                         <p class="text-zinc-400 text-base max-w-sm leading-relaxed mb-8">
                             {{ $t('footer.desc') }}
@@ -44,15 +39,15 @@
                         </h4>
                         <ul class="space-y-4 text-sm">
                             <li><a href="#features" class="hover:text-white transition-colors">{{
-                                    $t('footer.product.features') }}</a>
+                                $t('footer.product.features') }}</a>
                             </li>
                             <li><a href="#solutions" class="hover:text-white transition-colors">{{
                                 $t('footer.product.integrations')
                                     }}</a></li>
                             <li><a href="#" class="hover:text-white transition-colors">{{ $t('footer.product.templates')
-                                    }}</a></li>
+                            }}</a></li>
                             <li><a href="#" class="hover:text-white transition-colors">{{ $t('footer.product.roadmap')
-                                    }}</a></li>
+                            }}</a></li>
                         </ul>
                     </div>
                     <div>
@@ -118,6 +113,11 @@
                         class="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center hover:bg-blue-500 hover:text-white hover:border-blue-500 transition-all duration-300"
                         title="Telegram">
                         <iconify-icon icon="lucide:send" width="18"></iconify-icon>
+                    </a>
+                    <a href="https://www.youtube.com/@storelyuz" target="_blank"
+                        class="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center hover:bg-red-600 hover:text-white hover:border-red-600 transition-all duration-300"
+                        title="YouTube">
+                        <iconify-icon icon="lucide:youtube" width="18"></iconify-icon>
                     </a>
                 </div>
             </div>

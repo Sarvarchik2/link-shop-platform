@@ -4,10 +4,7 @@
       <div class="login-card">
         <div class="login-header">
           <div class="logo-wrapper">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
-              <line x1="1" y1="10" x2="23" y2="10"></line>
-            </svg>
+            <img src="/img/logo.jpg" alt="Storely" class="h-8 w-auto" />
           </div>
           <h1 class="login-title">{{ $t('auth.login_title') }}</h1>
           <p class="login-subtitle">{{ $t('auth.login_subtitle') }}</p>
@@ -180,7 +177,8 @@ const handleLogin = async () => {
 .logo-wrapper {
   width: 64px;
   height: 64px;
-  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+  background: white;
+  border: 1px solid #E5E7EB;
   border-radius: 16px;
   display: flex;
   align-items: center;

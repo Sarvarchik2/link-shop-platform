@@ -13,11 +13,7 @@
               <span class="shop-name-text">{{ currentShop.name }}</span>
             </template>
             <template v-else>
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
-                <line x1="1" y1="10" x2="23" y2="10"></line>
-              </svg>
-              <span>Storely</span>
+              <img src="/img/logo.jpg" alt="Storely" class="h-8 w-auto" />
             </template>
           </NuxtLink>
 
