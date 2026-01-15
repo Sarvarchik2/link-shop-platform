@@ -7,7 +7,7 @@
             <div class="w-5 h-5 bg-black rounded-md flex items-center justify-center text-white">
               <iconify-icon icon="lucide:box" width="12"></iconify-icon>
             </div>
-            LinkShop
+            Storely
           </NuxtLink>
           <div class="hidden md:flex items-center gap-6 text-sm font-medium text-zinc-500">
             <a href="#features" class="hover:text-black transition-colors">{{ $t('nav.features') }}</a>
@@ -44,7 +44,7 @@
               <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
               <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
             </span>
-            LinkShop 2.0 уже доступен
+            Storely 2.0 yaqin kunda
           </div> -->
 
           <h1 class="text-5xl md:text-7xl font-semibold tracking-tight text-zinc-900 mb-8 leading-[1.1]">
@@ -81,7 +81,7 @@
             </div>
             <div
               class="mx-auto w-1/3 h-4 bg-white rounded flex items-center justify-center text-[10px] text-zinc-400 font-medium shadow-sm border border-zinc-100">
-              linkshop.uz/dashboard
+              storely.uz/dashboard
             </div>
           </div>
 
@@ -147,6 +147,24 @@
             </div>
           </div>
         </div>
+
+        <!-- Stats Bar -->
+        <div class="mt-24 border-t border-zinc-100 pt-16 reveal" :class="{ active: heroRevealed }">
+          <div class="grid grid-cols-2 md:grid-cols-3 gap-8 text-center max-w-4xl mx-auto">
+            <div>
+              <div class="text-3xl font-bold mb-1">1,200+</div>
+              <div class="text-sm text-zinc-500">{{ $t('home.stats.active_shops') }}</div>
+            </div>
+            <div>
+              <div class="text-3xl font-bold mb-1">25k+</div>
+              <div class="text-sm text-zinc-500">{{ $t('home.stats.daily_orders') }}</div>
+            </div>
+            <div class="col-span-2 md:col-span-1">
+              <div class="text-3xl font-bold mb-1">98%</div>
+              <div class="text-sm text-zinc-500">{{ $t('home.stats.happy_merchants') }}</div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -160,128 +178,255 @@
           <p class="text-lg text-zinc-500">{{ $t('home.features_new.subtitle') }}</p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[minmax(300px,auto)]">
-          <div
-            class="md:col-span-2 bg-white rounded-2xl border border-zinc-200/80 p-8 shadow-sm hover:shadow-xl transition-all duration-300 group overflow-hidden relative reveal"
-            :class="{ active: featuresRevealed }">
-            <div class="relative z-10">
-              <div class="w-10 h-10 rounded-lg bg-zinc-100 flex items-center justify-center mb-6 text-zinc-700">
-                <iconify-icon icon="lucide:layers" width="20"></iconify-icon>
-              </div>
-              <h3 class="text-xl font-semibold mb-2">{{ $t('home.features_new.smart_warehouse.title') }}</h3>
-              <p class="text-zinc-500 text-sm max-w-sm">{{ $t('home.features_new.smart_warehouse.desc') }}</p>
-            </div>
-
-            <div
-              class="absolute right-0 bottom-0 w-3/4 md:w-1/2 h-4/5 bg-zinc-50 border-t border-l border-zinc-200 rounded-tl-2xl p-6 shadow-inner group-hover:scale-[1.02] transition-transform duration-500 origin-bottom-right">
-              <table class="w-full text-xs text-left">
-                <thead class="text-zinc-400 border-b border-zinc-200">
-                  <tr>
-                    <th class="pb-2 font-medium">SKU</th>
-                    <th class="pb-2 font-medium">{{ $t('home.features_new.smart_warehouse.table.product') }}</th>
-                    <th class="pb-2 font-medium">Stock</th>
-                    <th class="pb-2 font-medium text-right">{{ $t('home.features_new.smart_warehouse.table.status') }}
-                    </th>
-                  </tr>
-                </thead>
-                <tbody class="text-zinc-700">
-                  <tr class="border-b border-zinc-100">
-                    <td class="py-3 font-mono text-[10px] text-zinc-400">#8021</td>
-                    <td class="py-3 font-medium">Cotton Tee</td>
-                    <td class="py-3">124</td>
-                    <td class="py-3 text-right">
-                      <span class="bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-[10px]">OK</span>
-                    </td>
-                  </tr>
-                  <tr class="border-b border-zinc-100">
-                    <td class="py-3 font-mono text-[10px] text-zinc-400">#8022</td>
-                    <td class="py-3 font-medium">Linen Pants</td>
-                    <td class="py-3">12</td>
-                    <td class="py-3 text-right">
-                      <span class="bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full text-[10px]">Low</span>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="py-3 font-mono text-[10px] text-zinc-400">#8023</td>
-                    <td class="py-3 font-medium">Wool Hat</td>
-                    <td class="py-3">0</td>
-                    <td class="py-3 text-right">
-                      <span class="bg-red-100 text-red-700 px-2 py-0.5 rounded-full text-[10px]">Out</span>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-auto">
+          <!-- Block 1: Analitika -->
           <div
             class="md:col-span-1 bg-white rounded-2xl border border-zinc-200/80 p-8 shadow-sm hover:shadow-xl transition-all duration-300 group overflow-hidden relative reveal"
             :class="{ active: featuresRevealed }">
-            <div class="relative z-10">
-              <div class="w-10 h-10 rounded-lg bg-zinc-100 flex items-center justify-center mb-6 text-zinc-700">
-                <iconify-icon icon="lucide:bar-chart-2" width="20"></iconify-icon>
+            <div class="relative z-10 flex flex-col h-full">
+              <div class="flex justify-between items-start mb-6">
+                <div class="w-10 h-10 rounded-lg bg-zinc-100 flex items-center justify-center text-zinc-700">
+                  <iconify-icon icon="lucide:bar-chart-3" width="20"></iconify-icon>
+                </div>
+                <!-- Period Switcher -->
+                <div class="flex bg-zinc-100 p-1 rounded-lg text-[10px] font-medium transition-smooth">
+                  <button v-for="p in ['Bugun', 'Bu hafta', 'Barcha vaqt']" :key="p" @click="analyticsPeriod = p"
+                    :class="['px-2 py-1 rounded-md transition-all', analyticsPeriod === p ? 'bg-white shadow-sm text-black' : 'text-zinc-400 hover:text-zinc-600']">
+                    {{ p === 'Bugun' ? $t('periods.today') : p === 'Bu hafta' ? $t('periods.week') : $t('periods.all')
+                    }}
+                  </button>
+                </div>
               </div>
-              <h3 class="text-xl font-semibold mb-2">{{ $t('home.features_new.analytics.title') }}</h3>
-              <p class="text-zinc-500 text-sm">{{ $t('home.features_new.analytics.desc') }}</p>
-            </div>
 
-            <div class="absolute bottom-6 left-6 right-6 h-32 group-hover:scale-105 transition-transform duration-500">
-              <svg class="w-full h-full overflow-visible" viewBox="0 0 100 50" preserveAspectRatio="none">
-                <path d="M0,50 L20,35 L40,42 L60,15 L80,25 L100,5" fill="none" stroke="black" stroke-width="1.5"
-                  class="animate-draw" />
-                <circle cx="100" cy="5" r="3" fill="white" stroke="black" stroke-width="1.5" />
-              </svg>
+              <h3 class="text-xl font-semibold mb-2">{{ $t('home.features_new.analytics_v2.title') }}</h3>
+              <p class="text-zinc-500 text-sm mb-8 leading-relaxed">{{ $t('home.features_new.analytics_v2.desc') }}
+              </p>
+
+              <div class="mt-auto space-y-6">
+                <div>
+                  <div class="text-[10px] uppercase tracking-wider text-zinc-400 font-bold mb-1">{{
+                    $t('home.features_new.analytics_v2.revenue') }}</div>
+                  <div class="text-3xl font-bold text-zinc-900 transition-all duration-500 tabular-nums">
+                    {{ formatPrice(analyticsData.revenue) }}
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                  <div class="bg-zinc-50 p-3 rounded-xl border border-zinc-100">
+                    <div class="text-[10px] uppercase text-zinc-400 font-bold mb-0.5">{{
+                      $t('home.features_new.analytics_v2.customers') }}</div>
+                    <div class="text-xl font-bold tabular-nums">{{ analyticsData.customers }}</div>
+                  </div>
+                  <div class="bg-zinc-50 p-3 rounded-xl border border-zinc-100">
+                    <div class="text-[10px] uppercase text-zinc-400 font-bold mb-0.5">{{
+                      $t('home.features_new.analytics_v2.orders') }}</div>
+                    <div class="text-xl font-bold tabular-nums">{{ analyticsData.orders }}</div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
+          <!-- Block 2: KILLER-FEATURE - Telegram Web App Integration -->
           <div
-            class="md:col-span-1 bg-zinc-900 text-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 group overflow-hidden relative reveal"
+            class="md:col-span-2 bg-zinc-900 text-white rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-500 group overflow-hidden relative reveal overflow-hidden"
             :class="{ active: featuresRevealed }">
-            <div class="relative z-10">
-              <div
-                class="w-10 h-10 rounded-lg bg-zinc-800 flex items-center justify-center mb-6 text-white border border-zinc-700">
-                <iconify-icon icon="lucide:zap" width="20"></iconify-icon>
-              </div>
-              <h3 class="text-xl font-semibold mb-2">{{ $t('home.features_new.speed.title') }}</h3>
-              <p class="text-zinc-400 text-sm">{{ $t('home.features_new.speed.desc') }}</p>
-            </div>
+            <!-- Background Glow -->
             <div
-              class="absolute bottom-4 right-4 text-6xl font-bold text-zinc-800 select-none opacity-20 group-hover:opacity-40 transition-opacity">
-              99
+              class="absolute -right-20 -top-20 w-80 h-80 bg-blue-500/10 rounded-full blur-[100px] group-hover:bg-blue-500/20 transition-all duration-700">
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 h-full relative z-10">
+              <div class="flex flex-col justify-center">
+                <div
+                  class="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center mb-6 text-blue-400 border border-blue-500/30">
+                  <iconify-icon icon="lucide:send" width="24"></iconify-icon>
+                </div>
+                <h2 class="text-2xl md:text-3xl font-bold mb-4 tracking-tight">{{
+                  $t('home.features_new.telegram.title') }}</h2>
+                <p class="text-zinc-400 text-sm md:text-base leading-relaxed mb-8">
+                  {{ $t('home.features_new.telegram.desc') }}
+                </p>
+                <div class="flex items-center gap-4">
+                  <div class="flex -space-x-2">
+                    <div v-for="i in 3" :key="i"
+                      class="w-8 h-8 rounded-full border-2 border-zinc-900 bg-zinc-800 flex items-center justify-center text-[10px] font-bold">
+                      <iconify-icon :icon="['lucide:user', 'lucide:zap', 'lucide:star'][i - 1]"></iconify-icon>
+                    </div>
+                  </div>
+                  <span class="text-xs text-zinc-500 font-medium">+1,200 stores integrated</span>
+                </div>
+              </div>
+
+              <div class="relative flex items-center justify-center perspective-1000">
+                <!-- Phone Mockup -->
+                <div
+                  class="w-[240px] h-[480px] bg-zinc-800 rounded-[40px] border-[8px] border-zinc-700 shadow-2xl relative overflow-hidden transform rotate-6 group-hover:rotate-3 transition-transform duration-700 group-hover:scale-105">
+                  <!-- Screen Content -->
+                  <div class="absolute inset-0 bg-white">
+                    <!-- Telegram Header -->
+                    <div class="h-14 bg-[#517da2] flex items-center px-4 gap-3">
+                      <div class="w-8 h-8 rounded-full bg-white/20"></div>
+                      <div class="flex-1">
+                        <div class="h-2 w-20 bg-white/40 rounded"></div>
+                        <div class="h-1.5 w-12 bg-white/20 rounded mt-1"></div>
+                      </div>
+                    </div>
+                    <!-- Chat Area -->
+                    <div class="p-4 space-y-4">
+                      <div class="w-3/4 h-20 bg-zinc-50 rounded-2xl rounded-tl-none border border-zinc-100 p-3">
+                        <div class="h-2 w-full bg-zinc-200 rounded"></div>
+                        <div class="h-2 w-2/3 bg-zinc-100 rounded mt-2"></div>
+                        <div class="h-2 w-1/2 bg-zinc-100 rounded mt-2"></div>
+                      </div>
+                    </div>
+                    <!-- Bottom Menu Button Overlay -->
+                    <div class="absolute bottom-0 inset-x-0 p-4 bg-white/80 backdrop-blur-md border-t border-zinc-100">
+                      <div
+                        class="w-full py-3 bg-[#2481cc] text-white rounded-xl text-center text-sm font-bold shadow-lg shadow-blue-500/20 animate-pulse-slow">
+                        {{ $t('home.features_new.telegram.button') }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Floating Labels -->
+                <div
+                  class="absolute -left-4 top-1/4 bg-white text-black p-3 rounded-2xl shadow-xl border border-zinc-100 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-x-4 group-hover:translate-x-0">
+                  <div class="flex items-center gap-2">
+                    <div class="w-2 h-2 rounded-full bg-green-500"></div>
+                    <span class="text-[10px] font-bold">Menu Button API</span>
+                  </div>
+                </div>
+                <div
+                  class="absolute -right-8 bottom-1/4 bg-white text-black p-3 rounded-2xl shadow-xl border border-zinc-100 opacity-0 group-hover:opacity-100 transition-all duration-500 delay-100 -translate-x-4 group-hover:translate-x-0">
+                  <div class="flex items-center gap-2">
+                    <iconify-icon icon="lucide:link-2" width="12" class="text-blue-500"></iconify-icon>
+                    <span class="text-[10px] font-bold">t.me/your_bot</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
-          <!-- Card 4: Sync -->
+          <!-- Block 3: Order Lifecycle -->
           <div
-            class="md:col-span-2 bg-white rounded-2xl border border-zinc-200/80 p-8 shadow-sm hover:shadow-xl transition-all duration-300 group overflow-hidden relative flex items-center justify-between reveal"
+            class="md:col-span-1 bg-white rounded-2xl border border-zinc-200/80 p-8 shadow-sm hover:shadow-xl transition-all duration-300 group overflow-hidden relative reveal"
             :class="{ active: featuresRevealed }">
-            <div class="relative z-10 max-w-xs">
+            <div class="relative z-10 flex flex-col h-full">
               <div class="w-10 h-10 rounded-lg bg-zinc-100 flex items-center justify-center mb-6 text-zinc-700">
-                <iconify-icon icon="lucide:refresh-ccw" width="20"></iconify-icon>
+                <iconify-icon icon="lucide:workflow" width="20"></iconify-icon>
               </div>
-              <h3 class="text-xl font-semibold mb-2">{{ $t('home.features_new.sync.title') }}</h3>
-              <p class="text-zinc-500 text-sm">{{ $t('home.features_new.sync.desc') }}</p>
+              <h3 class="text-xl font-semibold mb-2">{{ $t('home.features_new.orders_v2.title') }}</h3>
+              <p class="text-zinc-500 text-sm mb-10 leading-relaxed">{{ $t('home.features_new.orders_v2.desc') }}
+              </p>
+
+              <!-- Vertical Timeline -->
+              <div class="space-y-4">
+                <div v-for="(step, idx) in orderSteps" :key="step.key" class="relative">
+                  <div v-if="idx < orderSteps.length - 1"
+                    class="absolute left-5 top-10 bottom-0 w-0.5 bg-zinc-100 -mb-4"></div>
+                  <div class="flex items-center gap-4 group/item">
+                    <div
+                      :class="[step.bg, step.color, 'w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 group-hover/item:scale-110 z-10 border-2 border-white shadow-sm']">
+                      <iconify-icon :icon="step.icon" width="18"></iconify-icon>
+                    </div>
+                    <div class="flex-1">
+                      <div class="flex justify-between items-center">
+                        <span class="text-xs font-bold text-zinc-900">{{ $t(`status.${step.key}`) }}</span>
+                        <span class="text-[10px] font-bold bg-zinc-100 px-2 py-0.5 rounded-full text-zinc-500"
+                          v-if="step.count > 0">{{ step.count }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
+          </div>
 
-            <!-- Visual: Sync Animation -->
-            <div class="hidden md:flex items-center gap-8 pr-12 opacity-80 group-hover:opacity-100 transition-opacity">
-              <div
-                class="w-24 h-32 bg-zinc-50 border border-zinc-200 rounded-lg flex flex-col items-center justify-center shadow-sm">
-                <iconify-icon icon="lucide:store" width="32" class="text-zinc-400 mb-2"></iconify-icon>
-                <span class="text-[10px] font-mono text-zinc-400 uppercase">Storefront</span>
+          <!-- Block 4: Catalog and Limits -->
+          <div
+            class="md:col-span-1 bg-white rounded-2xl border border-zinc-200/80 p-8 shadow-sm hover:shadow-xl transition-all duration-300 group overflow-hidden relative reveal"
+            :class="{ active: featuresRevealed }">
+            <div class="relative z-10 flex flex-col h-full">
+              <div class="w-10 h-10 rounded-lg bg-zinc-100 flex items-center justify-center mb-6 text-zinc-700">
+                <iconify-icon icon="lucide:layout-grid" width="20"></iconify-icon>
               </div>
+              <h3 class="text-xl font-semibold mb-2">{{ $t('home.features_new.catalog.title') }}</h3>
+              <p class="text-zinc-500 text-sm mb-8 leading-relaxed">{{ $t('home.features_new.catalog.desc') }}</p>
 
-              <div class="flex flex-col items-center gap-2 text-zinc-300">
-                <iconify-icon icon="lucide:arrow-right" width="24"
-                  class="group-hover:translate-x-2 transition-transform duration-500"></iconify-icon>
-                <iconify-icon icon="lucide:arrow-left" width="24"
-                  class="group-hover:-translate-x-2 transition-transform duration-500 delay-75"></iconify-icon>
+              <div class="mt-auto space-y-6">
+                <!-- Limit Bar -->
+                <div class="bg-zinc-50 p-4 rounded-xl border border-zinc-100">
+                  <div class="flex justify-between text-[10px] font-bold text-zinc-400 uppercase mb-2">
+                    <span>{{ $t('home.features_new.catalog.products') }}</span>
+                    <span>2 / 100</span>
+                  </div>
+                  <div class="h-2 w-full bg-zinc-200 rounded-full overflow-hidden">
+                    <div class="h-full w-[2%] bg-black rounded-full transition-all duration-1000 ease-out"></div>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                  <div
+                    class="border border-zinc-100 p-4 rounded-xl flex flex-col items-center gap-2 hover:bg-zinc-50 transition-colors cursor-default group/btn">
+                    <iconify-icon icon="lucide:folder-tree" width="20"
+                      class="text-zinc-400 group-hover/btn:text-black transition-colors"></iconify-icon>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-zinc-500">{{
+                      $t('home.features_new.catalog.categories') }}</span>
+                  </div>
+                  <div
+                    class="border border-zinc-100 p-4 rounded-xl flex flex-col items-center gap-2 hover:bg-zinc-50 transition-colors cursor-default group/btn">
+                    <iconify-icon icon="lucide:award" width="20"
+                      class="text-zinc-400 group-hover/btn:text-black transition-colors"></iconify-icon>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-zinc-500">{{
+                      $t('home.features_new.catalog.brand') }}</span>
+                  </div>
+                </div>
               </div>
+            </div>
+          </div>
 
-              <div
-                class="w-24 h-32 bg-zinc-900 border border-zinc-800 rounded-lg flex flex-col items-center justify-center shadow-lg">
-                <iconify-icon icon="lucide:database" width="32" class="text-zinc-500 mb-2"></iconify-icon>
-                <span class="text-[10px] font-mono text-zinc-500 uppercase">Admin</span>
+          <!-- Block 5: Logistics and Branding -->
+          <div
+            class="md:col-span-1 bg-white rounded-2xl border border-zinc-200/80 p-8 shadow-sm hover:shadow-xl transition-all duration-300 group overflow-hidden relative reveal"
+            :class="{ active: featuresRevealed }">
+            <div class="relative z-10 flex flex-col h-full">
+              <div class="w-10 h-10 rounded-lg bg-zinc-100 flex items-center justify-center mb-6 text-zinc-700">
+                <iconify-icon icon="lucide:settings-2" width="20"></iconify-icon>
+              </div>
+              <h3 class="text-xl font-semibold mb-2">{{ $t('home.features_new.settings.title') }}</h3>
+              <p class="text-zinc-500 text-sm mb-8 leading-relaxed">{{ $t('home.features_new.settings.desc') }}</p>
+
+              <div class="grid grid-cols-1 gap-4 mt-auto">
+                <div
+                  class="bg-zinc-50 rounded-xl p-4 border border-zinc-100 relative overflow-hidden group/card shadow-sm">
+                  <div class="flex items-center gap-4 relative z-10">
+                    <div class="w-10 h-10 rounded-lg bg-white shadow-sm flex items-center justify-center text-zinc-900">
+                      <iconify-icon icon="lucide:map-pin" width="20"></iconify-icon>
+                    </div>
+                    <div>
+                      <div class="text-xs font-bold">{{ $t('home.features_new.settings.delivery') }}</div>
+                      <div class="text-[10px] text-zinc-400">12 ta viloyat sozlangan</div>
+                    </div>
+                  </div>
+                  <iconify-icon icon="lucide:chevron-right"
+                    class="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-300 group-hover/card:translate-x-1 transition-transform"></iconify-icon>
+                </div>
+
+                <div
+                  class="bg-zinc-900 rounded-xl p-4 border border-zinc-800 relative overflow-hidden group/card shadow-sm">
+                  <div class="flex items-center gap-4 relative z-10">
+                    <div class="w-10 h-10 rounded-lg bg-zinc-800 flex items-center justify-center text-white">
+                      <iconify-icon icon="lucide:image" width="20"></iconify-icon>
+                    </div>
+                    <div>
+                      <div class="text-xs font-bold text-white">{{ $t('home.features_new.settings.banner') }}</div>
+                      <div class="text-[10px] text-zinc-500">2 ta faol promo bannerlar</div>
+                    </div>
+                  </div>
+                  <iconify-icon icon="lucide:chevron-right"
+                    class="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-700 group-hover/card:translate-x-1 transition-transform"></iconify-icon>
+                </div>
               </div>
             </div>
           </div>
@@ -289,54 +434,79 @@
       </div>
     </section>
 
-    <section id="solutions" class="py-32 bg-white relative">
-      <div class="max-w-4xl mx-auto px-6">
-        <h2 class="text-center text-3xl md:text-5xl font-semibold tracking-tight text-zinc-900 mb-24 reveal"
-          :class="{ active: timelineRevealed }">{{ $t('home.timeline.title') }}</h2>
+    <section id="solutions" class="py-32 bg-white relative overflow-hidden">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center mb-24">
+          <h2 class="text-3xl md:text-5xl font-semibold tracking-tight text-zinc-900 mb-6 reveal"
+            :class="{ active: timelineRevealed }">{{ $t('home.timeline.title') }}</h2>
+          <div class="h-1.5 w-24 bg-black mx-auto rounded-full reveal" :class="{ active: timelineRevealed }"></div>
+        </div>
 
         <div class="relative">
-          <div class="absolute left-8 md:left-1/2 top-0 bottom-0 w-px bg-zinc-100 -translate-x-1/2"></div>
-          <div ref="timelineLine"
-            class="absolute left-8 md:left-1/2 top-0 w-px bg-black -translate-x-1/2 transition-all duration-300"
-            :style="{ height: timelineProgress + '%' }"></div>
-
-          <div class="relative flex flex-col md:flex-row items-center  md:gap-24 mb-32 group reveal"
-            :class="{ active: timelineRevealed }">
-            <div class="md:w-1/2 text-left md:text-right order-2 md:order-1">
-              <h3 class="text-2xl font-semibold mb-2">{{ $t('home.timeline.step1.title') }}</h3>
-              <p class="text-zinc-500">{{ $t('home.timeline.step1.desc') }}</p>
-            </div>
-            <div
-              class="absolute left-8 md:left-1/2 -translate-x-1/2 w-16 h-16 bg-white border border-zinc-200 rounded-full flex items-center justify-center z-10 shadow-lg group-hover:scale-110 transition-transform duration-300 order-1 md:order-2">
-              <iconify-icon icon="lucide:user" width="24"></iconify-icon>
-            </div>
-            <div class="md:w-1/2 order-3 pl-16 md:pl-0"></div>
+          <!-- Desktop Connecting Line -->
+          <div
+            class="hidden md:block absolute top-[120px] left-[15%] right-[15%] h-px border-t-2 border-dashed border-zinc-200 z-0">
           </div>
 
-          <div class="relative flex flex-col md:flex-row items-center  md:gap-24 mb-32 group reveal"
-            :class="{ active: timelineRevealed }">
-            <div class="md:w-1/2 order-2 md:order-1"></div>
-            <div
-              class="absolute left-8 md:left-1/2 -translate-x-1/2 w-16 h-16 bg-white border border-zinc-200 rounded-full flex items-center justify-center z-10 shadow-lg group-hover:scale-110 transition-transform duration-300 order-1 md:order-2">
-              <iconify-icon icon="lucide:upload-cloud" width="24"></iconify-icon>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8 relative z-10 transition-smooth">
+            <!-- Step 1 -->
+            <div class="flex flex-col items-center text-center group reveal" :class="{ active: timelineRevealed }">
+              <div class="relative mb-10 w-24 h-24 flex items-center justify-center">
+                <div
+                  class="absolute inset-0 bg-zinc-50 rounded-3xl border border-zinc-200 rotate-6 group-hover:rotate-12 transition-transform duration-500 shadow-sm">
+                </div>
+                <div
+                  class="absolute inset-0 bg-white rounded-3xl border border-zinc-200 group-hover:-rotate-3 transition-transform duration-500 shadow-md flex items-center justify-center text-zinc-900">
+                  <iconify-icon icon="lucide:user-plus" width="32"></iconify-icon>
+                </div>
+                <div
+                  class="absolute -top-3 -right-3 w-8 h-8 bg-black text-white rounded-full flex items-center justify-center text-xs font-bold border-4 border-white">
+                  01</div>
+              </div>
+              <h3 class="text-2xl font-bold mb-4 group-hover:text-black transition-colors">{{
+                $t('home.timeline.step1.title') }}</h3>
+              <p class="text-zinc-500 text-sm leading-relaxed max-w-[280px]">{{ $t('home.timeline.step1.desc') }}</p>
             </div>
-            <div class="md:w-1/2 text-left order-2 md:order-3">
-              <h3 class="text-2xl font-semibold mb-2">{{ $t('home.timeline.step2.title') }}</h3>
-              <p class="text-zinc-500">{{ $t('home.timeline.step2.desc') }}</p>
-            </div>
-          </div>
 
-          <div class="relative flex flex-col md:flex-row items-center  md:gap-24 group reveal"
-            :class="{ active: timelineRevealed }">
-            <div class="md:w-1/2 text-left md:text-right order-2 md:order-1">
-              <h3 class="text-2xl font-semibold mb-2">{{ $t('home.timeline.step3.title') }}</h3>
-              <p class="text-zinc-500">{{ $t('home.timeline.step3.desc') }}</p>
+            <!-- Step 2 -->
+            <div class="flex flex-col items-center text-center group reveal delay-200"
+              :class="{ active: timelineRevealed }">
+              <div class="relative mb-10 w-24 h-24 flex items-center justify-center">
+                <div
+                  class="absolute inset-0 bg-zinc-50 rounded-3xl border border-zinc-200 -rotate-6 group-hover:-rotate-12 transition-transform duration-500 shadow-sm">
+                </div>
+                <div
+                  class="absolute inset-0 bg-white rounded-3xl border border-zinc-200 group-hover:rotate-3 transition-transform duration-500 shadow-md flex items-center justify-center text-zinc-900">
+                  <iconify-icon icon="lucide:upload-cloud" width="32"></iconify-icon>
+                </div>
+                <div
+                  class="absolute -top-3 -right-3 w-8 h-8 bg-black text-white rounded-full flex items-center justify-center text-xs font-bold border-4 border-white">
+                  02</div>
+              </div>
+              <h3 class="text-2xl font-bold mb-4 group-hover:text-black transition-colors">{{
+                $t('home.timeline.step2.title') }}</h3>
+              <p class="text-zinc-500 text-sm leading-relaxed max-w-[280px]">{{ $t('home.timeline.step2.desc') }}</p>
             </div>
-            <div
-              class="absolute left-8 md:left-1/2 -translate-x-1/2 w-16 h-16 bg-black text-white border border-black rounded-full flex items-center justify-center z-10 shadow-lg group-hover:scale-110 transition-transform duration-300 order-1 md:order-2">
-              <iconify-icon icon="lucide:rocket" width="24"></iconify-icon>
+
+            <!-- Step 3 -->
+            <div class="flex flex-col items-center text-center group reveal delay-400"
+              :class="{ active: timelineRevealed }">
+              <div class="relative mb-10 w-24 h-24 flex items-center justify-center">
+                <div
+                  class="absolute inset-0 bg-black rounded-3xl rotate-12 group-hover:rotate-6 transition-transform duration-500 shadow-xl">
+                </div>
+                <div
+                  class="absolute inset-0 bg-zinc-900 rounded-3xl border border-zinc-800 group-hover:rotate-0 transition-transform duration-500 shadow-2xl flex items-center justify-center text-white">
+                  <iconify-icon icon="lucide:rocket" width="32"></iconify-icon>
+                </div>
+                <div
+                  class="absolute -top-3 -right-3 w-8 h-8 bg-white text-black rounded-full flex items-center justify-center text-xs font-bold border-4 border-zinc-900">
+                  03</div>
+              </div>
+              <h3 class="text-2xl font-bold mb-4 group-hover:text-black transition-colors">{{
+                $t('home.timeline.step3.title') }}</h3>
+              <p class="text-zinc-500 text-sm leading-relaxed max-w-[280px]">{{ $t('home.timeline.step3.desc') }}</p>
             </div>
-            <div class="md:w-1/2 order-3 pl-16 md:pl-0"></div>
           </div>
         </div>
       </div>
@@ -451,70 +621,129 @@
             </div>
           </div>
         </div>
+        <!-- FAQ Section -->
+        <div class="mt-40 max-w-3xl mx-auto px-6 mb-40 reveal" :class="{ active: pricingRevealed }">
+          <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-5xl font-semibold tracking-tight text-zinc-900 mb-6">{{ $t('home.faq.title') }}
+            </h2>
+            <p class="text-lg text-zinc-500">{{ $t('home.faq.subtitle') }}</p>
+          </div>
+
+          <div class="space-y-4">
+            <div v-for="i in 4" :key="i"
+              class="border border-zinc-100 rounded-2xl overflow-hidden transition-all duration-300"
+              :class="activeFaq === i ? 'bg-zinc-50 shadow-sm border-zinc-200' : 'bg-white hover:bg-zinc-50'">
+              <button @click="toggleFaq(i)" class="w-full h-full p-6 text-left flex justify-between items-center group">
+                <span class="font-medium text-lg pr-8">{{ $t(`home.faq.q${i}.q`) }}</span>
+                <iconify-icon icon="lucide:chevron-down" width="20"
+                  class="transition-transform duration-300 flex-shrink-0 text-zinc-400 group-hover:text-black"
+                  :class="{ 'rotate-180': activeFaq === i }"></iconify-icon>
+              </button>
+              <div v-show="activeFaq === i"
+                class="px-6 pb-6 text-zinc-500 text-sm leading-relaxed animate-in fade-in slide-in-from-top-2 duration-300">
+                {{ $t(`home.faq.q${i}.a`) }}
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
     <!-- Footer -->
-    <footer class="bg-white border-t border-zinc-100 pt-20 pb-24 md:pb-10">
-      <div class="max-w-7xl mx-auto px-6">
-        <div class="grid grid-cols-2 md:grid-cols-5 gap-12 mb-20">
-          <div class="col-span-2">
-            <NuxtLink :to="localePath('/')" class="text-xl font-bold tracking-tight flex items-center gap-2 mb-6">
-              <div class="w-6 h-6 bg-black rounded-md flex items-center justify-center text-white">
-                <iconify-icon icon="lucide:box" width="14"></iconify-icon>
+    <footer class="bg-zinc-950 text-zinc-300 pt-24 pb-12 border-t border-zinc-900 relative overflow-hidden">
+      <!-- Decorative background blur -->
+      <div
+        class="absolute top-0 right-0 w-[500px] h-[500px] bg-zinc-900/20 blur-[120px] rounded-full pointer-events-none">
+      </div>
+
+      <div class="max-w-7xl mx-auto px-6 relative z-10">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-16 mb-20">
+          <!-- Brand and Newsletter -->
+          <div class="lg:col-span-5 space-y-10">
+            <div>
+              <NuxtLink :to="localePath('/')"
+                class="text-2xl font-bold tracking-tight flex items-center gap-2 mb-6 text-white group">
+                <div
+                  class="w-8 h-8 bg-white rounded-lg flex items-center justify-center text-black group-hover:scale-110 transition-transform">
+                  <iconify-icon icon="lucide:box" width="18"></iconify-icon>
+                </div>
+                Storely
+              </NuxtLink>
+              <p class="text-zinc-400 text-base max-w-sm leading-relaxed mb-8">
+                {{ $t('footer.desc') }}
+              </p>
+
+              <div class="space-y-4">
+                <div class="flex items-center gap-3 text-zinc-400 hover:text-white transition-colors">
+                  <iconify-icon icon="lucide:map-pin" width="20"></iconify-icon>
+                  <span class="text-sm">{{ $t('footer.address') }}</span>
+                </div>
+                <div class="flex items-center gap-3 text-zinc-400 hover:text-white transition-colors">
+                  <iconify-icon icon="lucide:phone" width="20"></iconify-icon>
+                  <a :href="`tel:${$t('footer.phone').replace(/\s/g, '')}`" class="text-sm">{{ $t('footer.phone') }}</a>
+                </div>
               </div>
-              LinkShop
-            </NuxtLink>
-            <p class="text-zinc-500 text-sm max-w-xs leading-relaxed">
-              {{ $t('footer.desc') }}
-            </p>
+            </div>
           </div>
-          <div>
-            <h4 class="font-semibold mb-6 text-sm">{{ $t('footer.product.title') }}</h4>
-            <ul class="space-y-4 text-sm text-zinc-500">
-              <li><a href="#features" class="hover:text-black transition-colors">{{ $t('footer.product.features')
-                  }}</a></li>
-              <li><a href="#solutions" class="hover:text-black transition-colors">{{
-                $t('footer.product.integrations')
-                  }}</a></li>
-              <li><a href="#" class="hover:text-black transition-colors">{{ $t('footer.product.templates') }}</a>
-              </li>
-              <li><a href="#" class="hover:text-black transition-colors">{{ $t('footer.product.roadmap') }}</a>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <h4 class="font-semibold mb-6 text-sm">{{ $t('footer.company.title') }}</h4>
-            <ul class="space-y-4 text-sm text-zinc-500">
-              <li><a href="#" class="hover:text-black transition-colors">{{ $t('footer.company.about') }}</a></li>
-              <li><a href="#" class="hover:text-black transition-colors">{{ $t('footer.company.careers') }}</a>
-              </li>
-              <li><a href="#" class="hover:text-black transition-colors">{{ $t('footer.company.blog') }}</a></li>
-              <li><a href="#" class="hover:text-black transition-colors">{{ $t('footer.company.brand') }}</a></li>
-            </ul>
-          </div>
-          <div>
-            <h4 class="font-semibold mb-6 text-sm">{{ $t('footer.legal.title') }}</h4>
-            <ul class="space-y-4 text-sm text-zinc-500">
-              <li><a href="#" class="hover:text-black transition-colors">{{ $t('footer.legal.privacy') }}</a></li>
-              <li><a href="#" class="hover:text-black transition-colors">{{ $t('footer.legal.terms') }}</a></li>
-              <li><a href="#" class="hover:text-black transition-colors">{{ $t('footer.legal.cookie') }}</a></li>
-            </ul>
+
+          <!-- Links Grid -->
+          <div class="lg:col-span-7 grid grid-cols-2 md:grid-cols-3 gap-12">
+            <div>
+              <h4 class="text-white font-semibold mb-8 text-sm uppercase tracking-wider">{{ $t('footer.product.title')
+                }}
+              </h4>
+              <ul class="space-y-4 text-sm">
+                <li><a href="#features" class="hover:text-white transition-colors">{{ $t('footer.product.features')
+                    }}</a>
+                </li>
+                <li><a href="#solutions" class="hover:text-white transition-colors">{{ $t('footer.product.integrations')
+                    }}</a></li>
+                <li><a href="#" class="hover:text-white transition-colors">{{ $t('footer.product.templates') }}</a></li>
+                <li><a href="#" class="hover:text-white transition-colors">{{ $t('footer.product.roadmap') }}</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 class="text-white font-semibold mb-8 text-sm uppercase tracking-wider">{{ $t('footer.company.title')
+                }}
+              </h4>
+              <ul class="space-y-4 text-sm">
+                <li><a href="#" class="hover:text-white transition-colors">{{ $t('footer.company.about') }}</a></li>
+                <li><a href="#" class="hover:text-white transition-colors">{{ $t('footer.company.careers') }}</a></li>
+                <li><a href="#" class="hover:text-white transition-colors">{{ $t('footer.company.blog') }}</a></li>
+                <li><a href="#" class="hover:text-white transition-colors">{{ $t('footer.company.brand') }}</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 class="text-white font-semibold mb-8 text-sm uppercase tracking-wider">{{ $t('footer.legal.title') }}
+              </h4>
+              <ul class="space-y-4 text-sm">
+                <li><a href="#" class="hover:text-white transition-colors">{{ $t('footer.legal.privacy') }}</a></li>
+                <li><a href="#" class="hover:text-white transition-colors">{{ $t('footer.legal.terms') }}</a></li>
+                <li><a href="#" class="hover:text-white transition-colors">{{ $t('footer.legal.cookie') }}</a></li>
+              </ul>
+            </div>
           </div>
         </div>
 
+        <!-- Bottom Strip -->
         <div
-          class="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-zinc-100 text-sm text-zinc-400">
+          class="pt-10 border-t border-zinc-900 flex flex-col md:flex-row justify-between items-center gap-6 text-sm text-zinc-500">
           <p>{{ $t('footer.rights') }}</p>
-          <div class="flex gap-6 mt-4 md:mt-0">
-            <a href="#" class="hover:text-black transition-colors">
-              <iconify-icon icon="lucide:twitter" width="20"></iconify-icon>
+          <div class="flex gap-4">
+            <a href="https://linkdigital.uz" target="_blank"
+              class="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center hover:bg-white hover:text-black hover:border-white transition-all duration-300"
+              title="LinkDigital">
+              <iconify-icon icon="lucide:globe" width="18"></iconify-icon>
             </a>
-            <a href="#" class="hover:text-black transition-colors">
-              <iconify-icon icon="lucide:github" width="20"></iconify-icon>
+            <a href="https://www.instagram.com/storely.uz/" target="_blank"
+              class="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center hover:bg-pink-500 hover:text-white hover:border-pink-500 transition-all duration-300"
+              title="Instagram">
+              <iconify-icon icon="lucide:instagram" width="18"></iconify-icon>
             </a>
-            <a href="#" class="hover:text-black transition-colors">
-              <iconify-icon icon="lucide:linkedin" width="20"></iconify-icon>
+            <a href="https://t.me/storely_uz" target="_blank"
+              class="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center hover:bg-blue-500 hover:text-white hover:border-blue-500 transition-all duration-300"
+              title="Telegram">
+              <iconify-icon icon="lucide:send" width="18"></iconify-icon>
             </a>
           </div>
         </div>
@@ -579,6 +808,32 @@ const featuresRevealed = ref(false)
 const timelineRevealed = ref(false)
 const pricingRevealed = ref(false)
 const timelineProgress = ref(0)
+
+// Analytics state for v2 block
+const analyticsPeriod = ref('Bugun')
+const analyticsData = computed(() => {
+  const data = {
+    'Bugun': { revenue: 3820100, customers: 2, orders: 8 },
+    'Bu hafta': { revenue: 24500000, customers: 14, orders: 42 },
+    'Barcha vaqt': { revenue: 852000000, customers: 156, orders: 1240 }
+  }
+  return data[analyticsPeriod.value]
+})
+
+// Order lifecycle steps
+const orderSteps = [
+  { key: 'pending', count: 2, icon: 'lucide:clock-4', color: 'text-amber-500', bg: 'bg-amber-50' },
+  { key: 'processing', count: 0, icon: 'lucide:package', color: 'text-blue-500', bg: 'bg-blue-50' },
+  { key: 'shipping', count: 0, icon: 'lucide:truck', color: 'text-indigo-500', bg: 'bg-indigo-50' },
+  { key: 'delivered', count: 6, icon: 'lucide:check-circle-2', color: 'text-green-500', bg: 'bg-green-50' },
+  { key: 'cancelled', count: 0, icon: 'lucide:x-circle', color: 'text-red-500', bg: 'bg-red-50' }
+]
+
+// FAQ State
+const activeFaq = ref(null)
+const toggleFaq = (idx) => {
+  activeFaq.value = activeFaq.value === idx ? null : idx
+}
 
 // Refs for DOM elements
 const heroDashboard = ref(null)
@@ -761,5 +1016,27 @@ body {
   100% {
     transform: rotate(360deg);
   }
+}
+
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+@keyframes pulse-slow {
+
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.8;
+    transform: scale(0.98);
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 </style>

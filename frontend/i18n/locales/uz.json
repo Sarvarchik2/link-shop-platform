@@ -19,7 +19,7 @@
         "hero": {
             "title_1": "O'z mahsulotlaringizni",
             "title_2": "platformamizda soting",
-            "subtitle": "Biznesingizni avtomat imkoniyatlar bilan boshqaring. LinkShop bilan minutlar ichida o'z internet-do'koningizni yarating",
+            "subtitle": "Biznesingizni avtomat imkoniyatlar bilan boshqaring. Storely bilan minutlar ichida o'z internet-do'koningizni yarating",
             "start_free": "Bepul boshlash",
             "demo_video": "Demo video"
         },
@@ -49,6 +49,35 @@
             "sync": {
                 "title": "Avto-Sinxronizatsiya",
                 "desc": "Ombordagi o'zgarishlar darhol vitrinada aks etadi. Hech qanday kechikishlarsiz."
+            },
+            "analytics_v2": {
+                "title": "Momental tahlillar",
+                "desc": "Barcha ko'rsatkichlar bir joyda. Umumiy tushum, mijozlar soni va buyurtmalar统计ikasini real vaqt rejimida kuzatib boring.",
+                "revenue": "Umumiy tushum",
+                "customers": "Mijozlar",
+                "orders": "Buyurtmalar"
+            },
+            "telegram": {
+                "title": "Telegram Web App Integratsiya",
+                "desc": "Do'koningiz endi Telegram ichida. Mijozlaringiz bot menyusidagi maxsus tugma orqali do'koningizni ochishadi. Hech qanday tashqi havolalarsiz — to'liq Web App imkoniyatlari.",
+                "button": "Do'konni ochish"
+            },
+            "orders_v2": {
+                "title": "Buyurtmalar hayotiy sikli",
+                "desc": "Buyurtmalarni aqlli boshqarish. Har bir buyurtma holatini nazorat qiling — qabul qilishdan tortib, mijoz qo'liga yetib borguncha."
+            },
+            "catalog": {
+                "title": "Katalog va Limitlar",
+                "desc": "Mahsulotlar va kategoriyalar boshqaruvi. Ombor qoldiqlarini nazorat qiling va o'z brendingizni yarating. Tarif rejalaringizga qarab mahsulotlar qo'shish imkoniyati.",
+                "products": "Mahsulotlar",
+                "categories": "Kategoriyalar",
+                "brand": "Brend"
+            },
+            "settings": {
+                "title": "Sozlamalar va Logistika",
+                "desc": "Logistika va brending. Yetkazib berish hududlarini sozlang, bannerlar yuklang va do'koningizni o'z uslubingizga moslashtiring.",
+                "delivery": "Yetkazib berish",
+                "banner": "Banner"
             }
         },
         "timeline": {
@@ -78,6 +107,31 @@
             "products": "ta mahsulot",
             "days": "kun"
         },
+        "stats": {
+            "active_shops": "Faol do'konlar",
+            "daily_orders": "Kunlik buyurtmalar",
+            "happy_merchants": "Mamnun sotuvchilar"
+        },
+        "faq": {
+            "title": "Ko'p beriladigan savollar",
+            "subtitle": "Storely platformasi haqida hamma narsani bilib oling",
+            "q1": {
+                "q": "Do'konni qanchalik tez ishga tushirishim mumkin?",
+                "a": "Siz 30 soniyadan kamroq vaqt ichida to'liq ishlaydigan do'konni ishga tushirishing. Shunchaki ro'yxatdan o'ting, mahsulotlarni qo'shing va Telegram botingizni ulang."
+            },
+            "q2": {
+                "q": "Menga texnik bilimlar kerakmi?",
+                "a": "Mutlaqo yo'q. Bizning interfeysimiz intuitiv tushunarli, Telegram integratsiyasi esa bir necha marta bosish orqali amalga oshiriladi."
+            },
+            "q3": {
+                "q": "Qanday to'lov usullari qo'llab-quvvatlanadi?",
+                "a": "Biz Payme, Click va yetkazib berish vaqtida naqd pul orqali to'lovlarni qo'llab-quvvatlaymiz. Ularni boshqaruv panelida sozlashingiz mumkin."
+            },
+            "q4": {
+                "q": "Bepul sinov muddati bormi?",
+                "a": "Ha, biz yangi foydalanuvchilar uchun platformaning barcha imkoniyatlarini sinab ko'rishlari uchun sinov muddatini taklif qilamiz."
+            }
+        },
         "offers": {
             "title": "Maxsus takliflar",
             "subtitle": "Qo'shimcha xizmatlar va yechimlar",
@@ -89,7 +143,8 @@
         "contacts": "Aloqa",
         "followUs": "Biz ijtimoiy tarmoqlarda",
         "desc": "Zamonaviy savdo uchun operatsion tizim. Tadbirkorlarga tezroq o'sishga yordam beradigan vositalarni yaratamiz.",
-        "rights": "© 6 LinkShop Technologies Inc. Barcha huquqlar himoyalangan.",
+        "address": "Toshkent, Mirobod tumani, Shahrisabz ko'chasi, 3",
+        "phone": "+998 90 123 58 53",
         "product": {
             "title": "Mahsulot",
             "features": "Imkoniyatlar",
@@ -109,7 +164,8 @@
             "privacy": "Maxfiylik",
             "terms": "Shartlar",
             "cookie": "Cookie siyosati"
-        }
+        },
+        "rights": "© 2026 Storely Technologies Inc. Barcha huquqlar himoyalangan."
     },
     "cart": {
         "title": "Savatcha",

@@ -19,7 +19,7 @@
         "hero": {
             "title_1": "Sell your products",
             "title_2": "on our platform",
-            "subtitle": "Manage your business with automated capabilities. Create your online store in minutes with LinkShop",
+            "subtitle": "Manage your business with automated capabilities. Create your online store in minutes with Storely",
             "start_free": "Start Free",
             "demo_video": "Demo Video"
         },
@@ -49,6 +49,35 @@
             "sync": {
                 "title": "Auto-Sync",
                 "desc": "Stock changes are instantly reflected in the storefront. No delays."
+            },
+            "analytics_v2": {
+                "title": "Instant Analytics",
+                "desc": "All metrics in one place. Monitor total revenue, customer count, and order statistics in real-time.",
+                "revenue": "Total Revenue",
+                "customers": "Customers",
+                "orders": "Orders"
+            },
+            "telegram": {
+                "title": "Telegram Web App Integration",
+                "desc": "Your store is now inside Telegram. Customers open your store via a special button in the bot menu. No external links — full Web App capabilities.",
+                "button": "Open Store"
+            },
+            "orders_v2": {
+                "title": "Order Lifecycle",
+                "desc": "Smart order management. Control every order status — from receipt to delivery into the customer's hands."
+            },
+            "catalog": {
+                "title": "Catalog and Limits",
+                "desc": "Product and category management. Control stock levels and create your own brand. Add products based on your subscription plan.",
+                "products": "Products",
+                "categories": "Categories",
+                "brand": "Brand"
+            },
+            "settings": {
+                "title": "Settings and Logistics",
+                "desc": "Logistics and branding. Configure delivery zones, upload banners, and tailor your store to your style.",
+                "delivery": "Delivery",
+                "banner": "Banner"
             }
         },
         "timeline": {
@@ -78,6 +107,31 @@
             "products": "products",
             "days": "days"
         },
+        "stats": {
+            "active_shops": "Active Stores",
+            "daily_orders": "Daily Orders",
+            "happy_merchants": "Happy Merchants"
+        },
+        "faq": {
+            "title": "Frequently Asked Questions",
+            "subtitle": "Everything you need to know about Storely platform",
+            "q1": {
+                "q": "How fast can I launch my store?",
+                "a": "You can launch a fully functional store in less than 30 seconds. Just register, add products, and connect your Telegram bot."
+            },
+            "q2": {
+                "q": "Do I need technical skills?",
+                "a": "Absolutely not. Our interface is intuitive, and Telegram integration happens in a few clicks."
+            },
+            "q3": {
+                "q": "What payment methods are supported?",
+                "a": "We support Payme, Click, and cash on delivery. You can configure them in your admin panel."
+            },
+            "q4": {
+                "q": "Is there a free trial period?",
+                "a": "Yes, we offer a trial period for new users to test all the features of the platform."
+            }
+        },
         "offers": {
             "title": "Special Offers",
             "subtitle": "Additional services and solutions",
@@ -89,6 +143,8 @@
         "contacts": "Contacts",
         "followUs": "Follow Us",
         "desc": "Operating system for modern commerce. We build tools that help entrepreneurs grow faster.",
+        "address": "Tashkent, Mirabad district, Shakhrisabz street, 3",
+        "phone": "+998 90 123 58 53",
         "product": {
             "title": "Product",
             "features": "Features",
@@ -105,11 +161,11 @@
         },
         "legal": {
             "title": "Legal",
-            "privacy": "Privacy",
-            "terms": "Terms",
+            "privacy": "Privacy Policy",
+            "terms": "Terms of Service",
             "cookie": "Cookie Policy"
         },
-        "rights": "© 2026 LinkShop Technologies Inc. All rights reserved."
+        "rights": "© 2026 Storely Technologies Inc. All rights reserved."
     },
     "alerts": {
         "cart": {
