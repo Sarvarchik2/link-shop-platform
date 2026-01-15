@@ -690,14 +690,14 @@
           <div class="lg:col-span-7 grid grid-cols-2 md:grid-cols-3 gap-12">
             <div>
               <h4 class="text-white font-semibold mb-8 text-sm uppercase tracking-wider">{{ $t('footer.product.title')
-                }}
+              }}
               </h4>
               <ul class="space-y-4 text-sm">
                 <li><a href="#features" class="hover:text-white transition-colors">{{ $t('footer.product.features')
-                    }}</a>
+                }}</a>
                 </li>
                 <li><a href="#solutions" class="hover:text-white transition-colors">{{ $t('footer.product.integrations')
-                    }}</a></li>
+                }}</a></li>
                 <li><a href="#" class="hover:text-white transition-colors">{{ $t('footer.product.templates') }}</a></li>
                 <li><a href="#" class="hover:text-white transition-colors">{{ $t('footer.product.roadmap') }}</a></li>
               </ul>
@@ -707,10 +707,14 @@
                 }}
               </h4>
               <ul class="space-y-4 text-sm">
-                <li><a href="#" class="hover:text-white transition-colors">{{ $t('footer.company.about') }}</a></li>
-                <li><a href="#" class="hover:text-white transition-colors">{{ $t('footer.company.careers') }}</a></li>
-                <li><a href="#" class="hover:text-white transition-colors">{{ $t('footer.company.blog') }}</a></li>
-                <li><a href="#" class="hover:text-white transition-colors">{{ $t('footer.company.brand') }}</a></li>
+                <li><a href="https://linkdigital.uz" target="_blank" class="hover:text-white transition-colors">{{
+                  $t('footer.company.about') }}</a></li>
+                <li><a href="https://linkdigital.uz" target="_blank" class="hover:text-white transition-colors">{{
+                  $t('footer.company.careers') }}</a></li>
+                <li><a href="https://linkdigital.uz" target="_blank" class="hover:text-white transition-colors">{{
+                  $t('footer.company.blog') }}</a></li>
+                <li><a href="https://linkdigital.uz" target="_blank" class="hover:text-white transition-colors">{{
+                  $t('footer.company.brand') }}</a></li>
               </ul>
             </div>
             <div>
