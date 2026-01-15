@@ -43,11 +43,13 @@ app.add_middleware(
         "http://localhost:8000",
         "http://127.0.0.1:8000",
         "https://link-shop-frontend-production.up.railway.app",
+        "https://link-shop-platform-production.up.railway.app",
     ],
     allow_origin_regex=r"https://.*\.up\.railway\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"],
 )
 
 # Static files
