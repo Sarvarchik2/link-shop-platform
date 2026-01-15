@@ -1,18 +1,7 @@
 <template>
   <div class="orders-page">
-    <!-- Desktop Header -->
-    <AppHeader class="desktop-header" :hideMobileNav="true" />
-
-    <!-- Mobile Header -->
-    <header class="orders-header mobile-header">
-      <button @click="$router.back()" class="back-btn">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M19 12H5M12 19l-7-7 7-7" />
-        </svg>
-      </button>
-      <h1 class="page-title">{{ $t('orders.title') }}</h1>
-      <div class="spacer"></div>
-    </header>
+    <!-- Navigation Header -->
+    <AppHeader />
 
     <main class="orders-content">
       <!-- Search -->
@@ -231,7 +220,7 @@
                     </div>
                     <span class="item-meta">{{ $t('orders.card.qty') }}: {{ item.quantity }} × {{
                       formatPrice(item.price)
-                    }}</span>
+                      }}</span>
                   </div>
                   <span class="item-total">{{ formatPrice(item.price * item.quantity) }}</span>
                 </NuxtLink>
@@ -241,9 +230,6 @@
         </div>
       </div>
     </main>
-
-    <!-- Mobile Bottom Navigation -->
-    <MobileBottomNav />
   </div>
 </template>
 
@@ -340,69 +326,12 @@ const isStatusCompleted = (currentStatus, checkStatus) => {
   background: #F5F5F5;
 }
 
-/* Desktop header hidden on mobile */
-.desktop-header {
-  display: none;
-}
-
-/* Mobile header */
-.mobile-header {
-  display: flex;
-}
-
-.orders-header {
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 20px;
-  background: white;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  border-bottom: 1px solid #f0f0f0;
-}
-
-.back-btn {
-  width: 44px;
-  height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: #111;
-  border-radius: 50%;
-  transition: background 0.2s;
-}
-
-.back-btn:hover {
-  background: #f5f5f5;
-}
-
-.page-title {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #111;
-}
-
-.spacer {
-  width: 44px;
-}
-
 .orders-content {
   padding: 16px;
   padding-bottom: 40px;
   max-width: 600px;
   margin: 0 auto;
   width: 100%;
-}
-
-/* Add padding for mobile bottom nav */
-@media (max-width: 767px) {
-  .orders-content {
-    padding-bottom: calc(40px + 80px);
-    /* Base padding + bottom nav height */
-  }
 }
 
 .search-box {
