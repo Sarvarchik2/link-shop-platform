@@ -1,7 +1,6 @@
 from fastapi import APIRouter, File, UploadFile
-import os
 import uuid
-from app.core.config import settings
+from app.core.storage import storage
 
 router = APIRouter()
 
@@ -10,12 +9,10 @@ async def upload_image(file: UploadFile = File(...)):
     # Generate unique filename
     ext = file.filename.split(".")[-1] if "." in file.filename else "jpg"
     filename = f"{uuid.uuid4()}.{ext}"
-    filepath = os.path.join(settings.UPLOAD_DIR, filename)
     
-    # Save file
+    # Save file to Minio
     content = await file.read()
-    with open(filepath, "wb") as f:
-        f.write(content)
+    url = storage.upload_file(filename, content, file.content_type)
     
     # Return URL
-    return {"url": f"{settings.BASE_URL}/uploads/{filename}"}
+    return {"url": url}

@@ -9,6 +9,13 @@ class Settings(BaseSettings):
     DATABASE_URL: str = os.getenv("DATABASE_URL") or os.getenv("POSTGRES_URL") or "sqlite:///./database.db"
     UPLOAD_DIR: str = "uploads"
     BASE_URL: str = "http://localhost:8000"
+    
+    # Minio settings
+    MINIO_ENDPOINT: str = os.getenv("MINIO_ENDPOINT", "localhost:9000")
+    MINIO_ACCESS_KEY: str = os.getenv("MINIO_ACCESS_KEY", "minioadmin")
+    MINIO_SECRET_KEY: str = os.getenv("MINIO_SECRET_KEY", "minioadmin")
+    MINIO_BUCKET_NAME: str = os.getenv("MINIO_BUCKET_NAME", "media")
+    MINIO_SECURE: bool = os.getenv("MINIO_SECURE", "False").lower() == "true"
 
     @property
     def SQLALCHEMY_DATABASE_URI(self) -> str:
