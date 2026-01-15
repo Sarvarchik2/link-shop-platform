@@ -33,7 +33,8 @@ def get_shop_admin_details(
 
 @router.get("/platform/shops/{shop_slug}", response_model=ShopRead)
 def get_shop(shop_slug: str, db: Session = Depends(get_db)):
-    return shop_service.get_shop_by_slug(db, shop_slug, check_active=True)
+    # Public endpoint - don't check active status to allow viewing
+    return shop_service.get_shop_by_slug(db, shop_slug, check_active=False)
 
 @router.put("/shop/{shop_slug}/admin/info", response_model=ShopRead)
 def update_shop_settings(

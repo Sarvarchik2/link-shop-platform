@@ -4,7 +4,8 @@
 
     <main class="container py-8">
 
-      <div v-if="shopError || (shop && (!shop.is_active || shop.subscription_status === 'expired'))"
+      <!-- Only show error if shop not found, not if subscription expired -->
+      <div v-if="shopError"
         class="unavailable-state py-24 text-center">
         <div class="mb-6 inline-flex p-4 rounded-full bg-red-50 text-red-500">
           <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
