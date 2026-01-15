@@ -1,10 +1,19 @@
 export const useAuth = () => {
     const config = useRuntimeConfig()
-    const localePath = useLocalePath()
     const token = useCookie('auth_token')
-    const user = useState('user', () => null)
+    const user = useState<any>('user', () => null)
+
+    // Lazy load localePath to avoid SSR issues
+    const getLocalePath = () => {
+        try {
+            return useLocalePath()
+        } catch (e) {
+            return (path: string) => path
+        }
+    }
 
     const login = async (phone: string, password: string, redirect: boolean = true) => {
+        const localePath = getLocalePath()
         try {
             const formData = new URLSearchParams()
             formData.append('username', phone)
@@ -51,6 +60,7 @@ export const useAuth = () => {
     }
 
     const register = async (phone: string, password: string, first_name: string, last_name: string) => {
+        const localePath = getLocalePath()
         try {
             const data: any = await $fetch(config.public.apiBase + '/register', {
                 method: 'POST',
@@ -103,6 +113,7 @@ export const useAuth = () => {
     }
 
     const logout = () => {
+        const localePath = getLocalePath()
         token.value = null
         user.value = null
         navigateTo(localePath('/login'))
