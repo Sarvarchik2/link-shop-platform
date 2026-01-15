@@ -26,10 +26,11 @@
                   </svg>
                 </div>
                 <div v-for="cat in categories" :key="cat.id" class="dropdown-item"
-                  :class="{ 'active': selectedCategory === cat.name }" @click="selectCategory(cat.name)">
-                  <span class="item-text">{{ cat.name }}</span>
-                  <svg v-if="selectedCategory === cat.name" width="18" height="18" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="3">
+                  :class="{ 'active': selectedCategory === getField(cat, 'name') }"
+                  @click="selectCategory(getField(cat, 'name'))">
+                  <span class="item-text">{{ getField(cat, 'name') }}</span>
+                  <svg v-if="selectedCategory === getField(cat, 'name')" width="18" height="18" viewBox="0 0 24 24"
+                    fill="none" stroke="currentColor" stroke-width="3">
                     <polyline points="20 6 9 17 4 12"></polyline>
                   </svg>
                 </div>
@@ -57,10 +58,11 @@
                   </svg>
                 </div>
                 <div v-for="brand in brands" :key="brand.id" class="dropdown-item"
-                  :class="{ 'active': selectedBrand === brand.name }" @click="selectBrand(brand.name)">
-                  <span class="item-text">{{ brand.name }}</span>
-                  <svg v-if="selectedBrand === brand.name" width="18" height="18" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="3">
+                  :class="{ 'active': selectedBrand === getField(brand, 'name') }"
+                  @click="selectBrand(getField(brand, 'name'))">
+                  <span class="item-text">{{ getField(brand, 'name') }}</span>
+                  <svg v-if="selectedBrand === getField(brand, 'name')" width="18" height="18" viewBox="0 0 24 24"
+                    fill="none" stroke="currentColor" stroke-width="3">
                     <polyline points="20 6 9 17 4 12"></polyline>
                   </svg>
                 </div>
@@ -91,6 +93,7 @@ const route = useRoute()
 const shopSlug = route.params.shop
 const config = useRuntimeConfig()
 const { t } = useI18n()
+const { getField } = useMultilingual()
 
 const selectedCategory = ref('')
 const selectedBrand = ref('')
@@ -109,7 +112,7 @@ const selectBrand = (brand) => {
 
 // SEO
 useHead({
-  title: computed(() => t('store.productsTitle')),
+  title: t('store.productsTitle'),
 })
 
 const { data: categories } = await useFetch(`${config.public.apiBase}/categories?shop_slug=${shopSlug}`)
@@ -136,11 +139,17 @@ const filteredProducts = computed(() => {
   let filtered = products.value
 
   if (selectedCategory.value) {
-    filtered = filtered.filter(p => p.category === selectedCategory.value)
+    filtered = filtered.filter(p => {
+      const productCategory = getField(p, 'category')
+      return productCategory === selectedCategory.value
+    })
   }
 
   if (selectedBrand.value) {
-    filtered = filtered.filter(p => p.brand === selectedBrand.value)
+    filtered = filtered.filter(p => {
+      const productBrand = getField(p, 'brand')
+      return productBrand === selectedBrand.value
+    })
   }
 
   return filtered

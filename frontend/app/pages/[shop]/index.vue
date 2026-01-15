@@ -5,8 +5,7 @@
     <main class="container py-8">
 
       <!-- Only show error if shop not found, not if subscription expired -->
-      <div v-if="shopError"
-        class="unavailable-state py-24 text-center">
+      <div v-if="shopError" class="unavailable-state py-24 text-center">
         <div class="mb-6 inline-flex p-4 rounded-full bg-red-50 text-red-500">
           <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="10"></circle>
@@ -57,7 +56,7 @@
                 <p class="hero-price">{{ getLocalized(banner[0], 'subtitle') }}</p>
                 <NuxtLink :to="localePath(banner[0].button_link || `/${shopSlug}/products`)" class="hero-btn">{{
                   getLocalized(banner[0], 'button_text')
-                }}</NuxtLink>
+                  }}</NuxtLink>
               </div>
               <div class="hero-image">
                 <img :src="banner[0].image_url" alt="Banner" />
@@ -215,7 +214,10 @@
 <script setup>
 import { register } from 'swiper/element/bundle'
 
-register()
+// Register swiper only on client side
+if (process.client) {
+  register()
+}
 
 const config = useRuntimeConfig()
 const { t, locale } = useI18n()
@@ -231,11 +233,6 @@ const getLocalized = (obj, field) => {
   return obj[`${field}_${locale.value}`] || obj[field]
 }
 
-// SEO
-useHead({
-  title: computed(() => shop.value?.name || 'Shop'),
-})
-
 // Fetch Shop Information
 const { data: shop, error: shopError } = await useFetch(`${config.public.apiBase}/platform/shops/${shopSlug}`, {
   key: `shop-${shopSlug}`,
@@ -246,15 +243,22 @@ const { data: shop, error: shopError } = await useFetch(`${config.public.apiBase
   }
 })
 
+// SEO - Set after shop data is fetched
+useHead({
+  title: shop.value?.name || 'Shop',
+})
+
 // Fetch Banner
 const { data: banner } = await useFetch(`${config.public.apiBase}/banner?shop_slug=${shopSlug}`, {
   key: `banner-${shopSlug}`
 })
 
-const { data: brands } = useFetch(`${config.public.apiBase}/brands?shop_slug=${shopSlug}`, { server: false, lazy: true })
-const { data: products, pending } = useFetch(`${config.public.apiBase}/products?shop_slug=${shopSlug}`, {
-  server: false,
-  lazy: true
+// Fetch brands and products on both server and client to prevent hydration mismatch
+const { data: brands } = await useFetch(`${config.public.apiBase}/brands?shop_slug=${shopSlug}`, {
+  key: `brands-${shopSlug}`
+})
+const { data: products, pending } = await useFetch(`${config.public.apiBase}/products?shop_slug=${shopSlug}`, {
+  key: `products-${shopSlug}`
 })
 
 // Show only 4 featured products
@@ -267,6 +271,23 @@ const featuredProducts = computed(() => {
 const displayedBrands = computed(() => {
   if (!brands.value) return []
   return brands.value.slice(0, 6)
+})
+
+// Cleanup swiper instances on unmount
+onBeforeUnmount(() => {
+  if (process.client) {
+    // Find all swiper containers and dispose them safely
+    const swipers = document.querySelectorAll('swiper-container')
+    swipers.forEach(swiper => {
+      if (swiper && typeof swiper.swiper !== 'undefined' && swiper.swiper) {
+        try {
+          swiper.swiper.destroy(true, true)
+        } catch (e) {
+          console.warn('Failed to destroy swiper:', e)
+        }
+      }
+    })
+  }
 })
 </script>
 
