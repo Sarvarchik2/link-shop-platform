@@ -12,8 +12,7 @@
                         $t('nav.solutions') }}</NuxtLink>
                     <NuxtLink :to="localePath('/') + '#pricing'" class="hover:text-black transition-colors">{{
                         $t('nav.pricing') }}</NuxtLink>
-                    <NuxtLink :to="localePath('/') + '#clients'" class="hover:text-black transition-colors">{{
-                        $t('nav.clients') }}</NuxtLink>
+
                 </div>
             </div>
             <div class="flex items-center gap-4">
