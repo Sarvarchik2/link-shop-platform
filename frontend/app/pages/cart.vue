@@ -25,7 +25,7 @@
         </div>
         <h2 class="empty-title">{{ $t('cart.empty_title') }}</h2>
         <p class="empty-text">{{ $t('cart.empty_text') }}</p>
-        <NuxtLink :to="localePath('/products')" class="btn-shop">{{ $t('cart.continue_shopping') }}</NuxtLink>
+        <NuxtLink :to="localePath(productsLink)" class="btn-shop">{{ $t('cart.continue_shopping') }}</NuxtLink>
       </div>
 
       <div v-else class="cart-items">
@@ -102,6 +102,19 @@ const { token } = useAuth()
 const { t } = useI18n()
 const localePath = useLocalePath()
 const { formatPrice } = useCurrency()
+const route = useRoute()
+const { getCurrentShopSlug } = useShopContext()
+
+// Get shop slug from saved context
+const shopSlug = computed(() => getCurrentShopSlug(route))
+
+// Determine products link - if have saved shop context, link to shop products, otherwise to platform products
+const productsLink = computed(() => {
+  if (shopSlug.value) {
+    return `/${shopSlug.value}/products`
+  }
+  return '/products'
+})
 
 // Close auth modal when cart page is mounted (cart doesn't require auth)
 const { closeModal } = useAuthModal()
@@ -499,10 +512,9 @@ const handleCheckout = () => {
 /* Adjust footer position on mobile to be above bottom nav */
 @media (max-width: 767px) {
   .cart-footer {
-    bottom: 80px;
+    bottom: 77px;
     /* Height of mobile bottom nav */
     border-radius: 20px 20px 0 0;
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
   }
 }
 
@@ -518,13 +530,16 @@ const handleCheckout = () => {
 }
 
 .total-price {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: 800;
   color: #111;
+  white-space: nowrap;
 }
 
 .btn-checkout {
-  padding: 16px 40px;
+  flex: 1;
+  max-width: 200px;
+  padding: 14px 20px;
   background: #111;
   color: white;
   border: none;
@@ -534,6 +549,7 @@ const handleCheckout = () => {
   cursor: pointer;
   transition: all 0.2s;
   letter-spacing: 0.5px;
+  white-space: nowrap;
 }
 
 .btn-checkout:hover {
@@ -567,7 +583,6 @@ const handleCheckout = () => {
     left: 50%;
     transform: translateX(-50%);
     border-radius: 20px 20px 0 0;
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
     bottom: 0;
     /* Reset bottom position on desktop */
   }

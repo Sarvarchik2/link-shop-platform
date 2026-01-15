@@ -21,7 +21,7 @@
         </svg>
         <h2>{{ $t('favorites.empty_title') }}</h2>
         <p>{{ $t('favorites.empty_text') }}</p>
-        <NuxtLink :to="localePath('/')" class="btn-explore">{{ $t('favorites.explore_button') }}</NuxtLink>
+        <NuxtLink :to="localePath(productsLink)" class="btn-explore">{{ $t('favorites.explore_button') }}</NuxtLink>
       </div>
 
       <div v-else class="products-grid">
@@ -37,10 +37,32 @@ definePageMeta({
 })
 
 const config = useRuntimeConfig()
-const { data: products, pending, refresh } = useFetch(`${config.public.apiBase}/products`, {
+const localePath = useLocalePath()
+const route = useRoute()
+const { getCurrentShopSlug } = useShopContext()
+
+// Get shop slug from saved context
+const shopSlug = computed(() => getCurrentShopSlug(route))
+
+// Fetch products - if have shop context, fetch only for that shop
+const fetchUrl = computed(() => {
+  if (shopSlug.value) {
+    return `${config.public.apiBase}/products?shop_slug=${shopSlug.value}`
+  }
+  return `${config.public.apiBase}/products`
+})
+
+const { data: products, pending, refresh } = useFetch(fetchUrl, {
   server: false
 })
-const localePath = useLocalePath()
+
+// Determine products link
+const productsLink = computed(() => {
+  if (shopSlug.value) {
+    return `/${shopSlug.value}/products`
+  }
+  return '/products'
+})
 
 const favoriteProducts = computed(() => {
   if (!products.value || !Array.isArray(products.value)) return []

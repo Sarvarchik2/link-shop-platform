@@ -84,7 +84,7 @@
         </div>
         <h2 class="empty-title">{{ $t('orders.empty.title') }}</h2>
         <p class="empty-text">{{ $t('orders.empty.subtitle') }}</p>
-        <NuxtLink :to="localePath('/products')" class="btn-shop">{{ $t('orders.empty.action') }}</NuxtLink>
+        <NuxtLink :to="localePath(productsLink)" class="btn-shop">{{ $t('orders.empty.action') }}</NuxtLink>
       </div>
 
       <!-- Orders List -->
@@ -247,6 +247,19 @@ const { data: orders, pending } = useFetch(`${config.public.apiBase}/orders/me`,
   server: false
 })
 const localePath = useLocalePath()
+const route = useRoute()
+const { getCurrentShopSlug } = useShopContext()
+
+// Get shop slug from saved context
+const shopSlug = computed(() => getCurrentShopSlug(route))
+
+// Determine products link - if have saved shop context, link to shop products, otherwise to platform products
+const productsLink = computed(() => {
+  if (shopSlug.value) {
+    return `/${shopSlug.value}/products`
+  }
+  return '/products'
+})
 
 const statuses = computed(() => [
   { value: 'all', label: t('orders.status.all') },
