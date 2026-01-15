@@ -1,8 +1,8 @@
 export const useAuth = () => {
     const config = useRuntimeConfig()
+    const localePath = useLocalePath()
     const token = useCookie('auth_token')
     const user = useState('user', () => null)
-    const localePath = useLocalePath()
 
     const login = async (phone: string, password: string, redirect: boolean = true) => {
         try {
