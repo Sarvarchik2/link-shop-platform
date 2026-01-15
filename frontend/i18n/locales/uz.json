@@ -1642,5 +1642,49 @@
                 "free": "Bepul"
             }
         }
+    },
+    "legal": {
+        "general": {
+            "intro": "Kirish",
+            "data_collection": "Ma'lumotlarni yig'ish",
+            "data_usage": "Ma'lumotlardan foydalanish",
+            "data_protection": "Ma'lumotlarni himoya qilish",
+            "rights": "Sizning huquqlaringiz",
+            "acceptance": "Shartlarni qabul qilish",
+            "registration": "Ro'yxatdan o'tish",
+            "responsibilities": "Mas'uliyat",
+            "intellectual_property": "Intellektual mulk",
+            "termination": "Amal qilishni to'xtatish",
+            "what_are_cookies": "Cookies nima",
+            "how_we_use_cookies": "Cookies dan qanday foydalanamiz",
+            "types_of_cookies": "Foydalaniladigan cookies turlari",
+            "managing_cookies": "Cookies ni boshqarish"
+        },
+        "privacy": {
+            "intro_text": "Biz sizning maxfiyligingizga jiddiy qaraymiz. Ushbu hujjatda qanday ma'lumotlarni yig'ishimiz va ulardan qanday foydalanishimiz tasvirlangan.",
+            "data_collection_text": "Biz faqat platforma ishlashi uchun zarur bo'lgan ma'lumotlarni yig'amiz:",
+            "data_items": [
+                "Avtorizatsiya uchun telefon raqami",
+                "Ism va familiya",
+                "Buyurtmalar va xaridlar haqidagi ma'lumotlar",
+                "Brauzer va qurilma haqida texnik ma'lumotlar"
+            ],
+            "data_usage_text": "Sizning ma'lumotlaringiz buyurtmalarni qayta ishlash, xizmatni yaxshilash va hisobingiz bo'yicha siz bilan bog'lanish uchun ishlatiladi.",
+            "data_protection_text": "Ma'lumotlaringizni himoya qilish uchun biz zamonaviy shifrlash usullari va xavfsiz serverlardan foydalanamiz.",
+            "rights_text": "Siz so'rov bo'yicha o'z ma'lumotlaringizga kirish, ularni tuzatish yoki o'chirish huquqiga egasiz."
+        },
+        "terms": {
+            "acceptance_text": "Storely dan foydalanish orqali siz ushbu foydalanish shartlariga to'liq rozilik bildirasiz.",
+            "registration_text": "Ro'yxatdan o'tishda siz to'g'ri ma'lumotlarni taqdim etish majburiyatini olasiz.",
+            "responsibilities_text": "Foydalanuvchilar o'z parollarining xavfsizligi va o'z hisoblari orqali amalga oshirilgan har qanday harakatlar uchun javobgardir.",
+            "intellectual_property_text": "Platformada joylashtirilgan barcha materiallar mualliflik huquqi to'g'risidagi qonun bilan himoyalangan.",
+            "termination_text": "Ushbu qoidalar buzilgan taqdirda biz hisobga kirishni to'xtatib qo'yish huquqini o'zimizda saqlab qolamiz."
+        },
+        "cookie": {
+            "what_are_cookies_text": "Cookies — bu saytga tashrif buyurganingizda qurilmangizda saqlanadigan kichik matnli fayllar.",
+            "how_we_use_cookies_text": "Biz cookies fayllaridan sizning afzalliklaringizni saqlash, savatdagi mahsulotlarni eslab qolish va tahlillar uchun foydalanamiz.",
+            "types_of_cookies_text": "Biz zaruriy (sayt ishlashi uchun) va tahliliy cookies fayllaridan foydalanamiz.",
+            "managing_cookies_text": "Siz brauzeringiz sozlamalarida cookies fayllarini o'chirib qo'yishingiz mumkin, ammo bu saytning ba'zi funksiyalari ishlashiga ta'sir qilishi mumkin."
+        }
     }
 }

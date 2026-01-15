@@ -1370,5 +1370,49 @@
             "errorLoadingData": "Error loading data",
             "loggedOut": "Logged out successfully"
         }
+    },
+    "legal": {
+        "general": {
+            "intro": "Introduction",
+            "data_collection": "Data Collection",
+            "data_usage": "Data Usage",
+            "data_protection": "Data Protection",
+            "rights": "Your Rights",
+            "acceptance": "Acceptance of Terms",
+            "registration": "Registration",
+            "responsibilities": "Responsibilities",
+            "intellectual_property": "Intellectual Property",
+            "termination": "Termination",
+            "what_are_cookies": "What are cookies",
+            "how_we_use_cookies": "How we use cookies",
+            "types_of_cookies": "Types of cookies we use",
+            "managing_cookies": "Managing cookies"
+        },
+        "privacy": {
+            "intro_text": "We take your privacy seriously. This document describes what data we collect and how we use it.",
+            "data_collection_text": "We only collect data necessary for the platform to function:",
+            "data_items": [
+                "Phone number for authorization",
+                "First and last name",
+                "Order and purchase information",
+                "Technical information about browser and device"
+            ],
+            "data_usage_text": "Your data is used to process orders, improve our service, and communicate with you about your account.",
+            "data_protection_text": "We use modern encryption methods and secure servers to protect your information.",
+            "rights_text": "You have the right to access your data, correct it, or request deletion."
+        },
+        "terms": {
+            "acceptance_text": "By using Storely, you agree to these terms of use in full.",
+            "registration_text": "When registering, you agree to provide accurate information.",
+            "responsibilities_text": "Users are responsible for the security of their passwords and any actions taken under their account.",
+            "intellectual_property_text": "All materials posted on the platform are protected by copyright law.",
+            "termination_text": "We reserve the right to suspend account access in case of violation of these rules."
+        },
+        "cookie": {
+            "what_are_cookies_text": "Cookies are small text files that are stored on your device when you visit a website.",
+            "how_we_use_cookies_text": "We use cookies to save your preferences, remember items in your cart, and for analytics.",
+            "types_of_cookies_text": "We use necessary (for site operation) and analytical cookies.",
+            "managing_cookies_text": "You can disable cookies in your browser settings, but this may affect some site features."
+        }
     }
 }

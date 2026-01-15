@@ -1,36 +1,6 @@
 <template>
   <div class="antialiased selection:bg-zinc-900 selection:text-white">
-    <nav class="fixed top-0 w-full z-50 glass border-b border-zinc-100/50 transition-all duration-300">
-      <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-        <div class="flex items-center gap-8">
-          <NuxtLink :to="localePath('/')" class="text-lg font-semibold tracking-tight flex items-center gap-2">
-            <div class="w-5 h-5 bg-black rounded-md flex items-center justify-center text-white">
-              <iconify-icon icon="lucide:box" width="12"></iconify-icon>
-            </div>
-            Storely
-          </NuxtLink>
-          <div class="hidden md:flex items-center gap-6 text-sm font-medium text-zinc-500">
-            <a href="#features" class="hover:text-black transition-colors">{{ $t('nav.features') }}</a>
-            <a href="#solutions" class="hover:text-black transition-colors">{{ $t('nav.solutions') }}</a>
-            <a href="#pricing" class="hover:text-black transition-colors">{{ $t('nav.pricing') }}</a>
-            <a href="#clients" class="hover:text-black transition-colors">{{ $t('nav.clients') }}</a>
-          </div>
-        </div>
-        <div class="flex items-center gap-4">
-          <LanguageSwitcher />
-          <NuxtLink v-if="!user" :to="localePath('/login')"
-            class="text-sm font-medium text-zinc-500 hover:text-black transition-colors">{{ $t('nav.login') }}
-          </NuxtLink>
-          <NuxtLink v-else :to="localePath(profileLink)"
-            class="text-sm font-medium text-zinc-500 hover:text-black transition-colors">{{ $t('nav.profile') }}
-          </NuxtLink>
-          <NuxtLink :to="localePath('/register-shop')"
-            class="registr-shop-btn bg-black text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-zinc-800 shadow-lg shadow-zinc-200/50 transition-smooth hover-lift">
-            {{ $t('nav.create_shop') }}
-          </NuxtLink>
-        </div>
-      </div>
-    </nav>
+    <LandingHeader />
 
     <section class="relative pt-32 pb-20 overflow-hidden perspective-container">
       <div
@@ -649,110 +619,7 @@
       </div>
     </section>
 
-    <!-- Footer -->
-    <footer class="bg-zinc-950 text-zinc-300 pt-24 pb-12 border-t border-zinc-900 relative overflow-hidden">
-      <!-- Decorative background blur -->
-      <div
-        class="absolute top-0 right-0 w-[500px] h-[500px] bg-zinc-900/20 blur-[120px] rounded-full pointer-events-none">
-      </div>
-
-      <div class="max-w-7xl mx-auto px-6 relative z-10">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-16 mb-20">
-          <!-- Brand and Newsletter -->
-          <div class="lg:col-span-5 space-y-10">
-            <div>
-              <NuxtLink :to="localePath('/')"
-                class="text-2xl font-bold tracking-tight flex items-center gap-2 mb-6 text-white group">
-                <div
-                  class="w-8 h-8 bg-white rounded-lg flex items-center justify-center text-black group-hover:scale-110 transition-transform">
-                  <iconify-icon icon="lucide:box" width="18"></iconify-icon>
-                </div>
-                Storely
-              </NuxtLink>
-              <p class="text-zinc-400 text-base max-w-sm leading-relaxed mb-8">
-                {{ $t('footer.desc') }}
-              </p>
-
-              <div class="space-y-4">
-                <div class="flex items-center gap-3 text-zinc-400 hover:text-white transition-colors">
-                  <iconify-icon icon="lucide:map-pin" width="20"></iconify-icon>
-                  <span class="text-sm">{{ $t('footer.address') }}</span>
-                </div>
-                <div class="flex items-center gap-3 text-zinc-400 hover:text-white transition-colors">
-                  <iconify-icon icon="lucide:phone" width="20"></iconify-icon>
-                  <a :href="`tel:${$t('footer.phone').replace(/\s/g, '')}`" class="text-sm">{{ $t('footer.phone') }}</a>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Links Grid -->
-          <div class="lg:col-span-7 grid grid-cols-2 md:grid-cols-3 gap-12">
-            <div>
-              <h4 class="text-white font-semibold mb-8 text-sm uppercase tracking-wider">{{ $t('footer.product.title')
-              }}
-              </h4>
-              <ul class="space-y-4 text-sm">
-                <li><a href="#features" class="hover:text-white transition-colors">{{ $t('footer.product.features')
-                }}</a>
-                </li>
-                <li><a href="#solutions" class="hover:text-white transition-colors">{{ $t('footer.product.integrations')
-                }}</a></li>
-                <li><a href="#" class="hover:text-white transition-colors">{{ $t('footer.product.templates') }}</a></li>
-                <li><a href="#" class="hover:text-white transition-colors">{{ $t('footer.product.roadmap') }}</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 class="text-white font-semibold mb-8 text-sm uppercase tracking-wider">{{ $t('footer.company.title')
-                }}
-              </h4>
-              <ul class="space-y-4 text-sm">
-                <li><a href="https://linkdigital.uz" target="_blank" class="hover:text-white transition-colors">{{
-                  $t('footer.company.about') }}</a></li>
-                <li><a href="https://linkdigital.uz" target="_blank" class="hover:text-white transition-colors">{{
-                  $t('footer.company.careers') }}</a></li>
-                <li><a href="https://linkdigital.uz" target="_blank" class="hover:text-white transition-colors">{{
-                  $t('footer.company.blog') }}</a></li>
-                <li><a href="https://linkdigital.uz" target="_blank" class="hover:text-white transition-colors">{{
-                  $t('footer.company.brand') }}</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 class="text-white font-semibold mb-8 text-sm uppercase tracking-wider">{{ $t('footer.legal.title') }}
-              </h4>
-              <ul class="space-y-4 text-sm">
-                <li><a href="#" class="hover:text-white transition-colors">{{ $t('footer.legal.privacy') }}</a></li>
-                <li><a href="#" class="hover:text-white transition-colors">{{ $t('footer.legal.terms') }}</a></li>
-                <li><a href="#" class="hover:text-white transition-colors">{{ $t('footer.legal.cookie') }}</a></li>
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        <!-- Bottom Strip -->
-        <div
-          class="pt-10 border-t border-zinc-900 flex flex-col md:flex-row justify-between items-center gap-6 text-sm text-zinc-500">
-          <p>{{ $t('footer.rights') }}</p>
-          <div class="flex gap-4">
-            <a href="https://linkdigital.uz" target="_blank"
-              class="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center hover:bg-white hover:text-black hover:border-white transition-all duration-300"
-              title="LinkDigital">
-              <iconify-icon icon="lucide:globe" width="18"></iconify-icon>
-            </a>
-            <a href="https://www.instagram.com/storely.uz/" target="_blank"
-              class="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center hover:bg-pink-500 hover:text-white hover:border-pink-500 transition-all duration-300"
-              title="Instagram">
-              <iconify-icon icon="lucide:instagram" width="18"></iconify-icon>
-            </a>
-            <a href="https://t.me/storely_uz" target="_blank"
-              class="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center hover:bg-blue-500 hover:text-white hover:border-blue-500 transition-all duration-300"
-              title="Telegram">
-              <iconify-icon icon="lucide:send" width="18"></iconify-icon>
-            </a>
-          </div>
-        </div>
-      </div>
-    </footer>
+    <AppFooter />
   </div>
 </template>
 
@@ -787,23 +654,6 @@ const { data: plans, pending: plansPending } = useFetch(config.public.apiBase + 
 // Fetch active offers from API
 const { data: offers } = useFetch(config.public.apiBase + '/offers', {
   server: false
-})
-
-// Get user's shops to determine profile link
-const { data: myShops } = useFetch(config.public.apiBase + '/platform/shops/me', {
-  server: false,
-  headers: token.value ? {
-    'Authorization': `Bearer ${token.value}`
-  } : {},
-  watch: [token],
-  immediate: false,
-  lazy: true
-})
-
-const profileLink = computed(() => {
-  if (!user.value) return '/login'
-  if (user.value.role === 'platform_admin' || user.value.roles?.includes('admin')) return '/platform/admin'
-  return '/profile'
 })
 
 // Animation states
