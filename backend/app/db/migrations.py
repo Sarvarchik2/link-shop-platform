@@ -19,6 +19,84 @@ def run_migrations(engine):
             if is_postgres:
                 # PostgreSQL migrations
                 migrations = [
+                    # ============ USER TABLE MIGRATIONS ============
+                    # Add email to user
+                    """
+                    DO $$ 
+                    BEGIN
+                        IF NOT EXISTS (
+                            SELECT 1 FROM information_schema.columns 
+                            WHERE table_name='user' AND column_name='email'
+                        ) THEN
+                            ALTER TABLE "user" ADD COLUMN email VARCHAR UNIQUE;
+                            CREATE INDEX IF NOT EXISTS ix_user_email ON "user"(email);
+                        END IF;
+                    END $$;
+                    """,
+                    
+                    # Add email verification fields
+                    """
+                    DO $$ 
+                    BEGIN
+                        IF NOT EXISTS (
+                            SELECT 1 FROM information_schema.columns 
+                            WHERE table_name='user' AND column_name='is_email_verified'
+                        ) THEN
+                            ALTER TABLE "user" ADD COLUMN is_email_verified BOOLEAN DEFAULT FALSE;
+                        END IF;
+                    END $$;
+                    """,
+                    
+                    """
+                    DO $$ 
+                    BEGIN
+                        IF NOT EXISTS (
+                            SELECT 1 FROM information_schema.columns 
+                            WHERE table_name='user' AND column_name='email_verification_code'
+                        ) THEN
+                            ALTER TABLE "user" ADD COLUMN email_verification_code VARCHAR;
+                        END IF;
+                    END $$;
+                    """,
+                    
+                    """
+                    DO $$ 
+                    BEGIN
+                        IF NOT EXISTS (
+                            SELECT 1 FROM information_schema.columns 
+                            WHERE table_name='user' AND column_name='verification_expires_at'
+                        ) THEN
+                            ALTER TABLE "user" ADD COLUMN verification_expires_at TIMESTAMP;
+                        END IF;
+                    END $$;
+                    """,
+                    
+                    # Add password reset fields
+                    """
+                    DO $$ 
+                    BEGIN
+                        IF NOT EXISTS (
+                            SELECT 1 FROM information_schema.columns 
+                            WHERE table_name='user' AND column_name='reset_password_token'
+                        ) THEN
+                            ALTER TABLE "user" ADD COLUMN reset_password_token VARCHAR;
+                        END IF;
+                    END $$;
+                    """,
+                    
+                    """
+                    DO $$ 
+                    BEGIN
+                        IF NOT EXISTS (
+                            SELECT 1 FROM information_schema.columns 
+                            WHERE table_name='user' AND column_name='reset_password_expires_at'
+                        ) THEN
+                            ALTER TABLE "user" ADD COLUMN reset_password_expires_at TIMESTAMP;
+                        END IF;
+                    END $$;
+                    """,
+                    
+                    # ============ SUBSCRIPTION PLAN MIGRATIONS ============
                     # Add can_broadcast to subscriptionplan
                     """
                     DO $$ 
@@ -31,6 +109,8 @@ def run_migrations(engine):
                         END IF;
                     END $$;
                     """,
+                    
+                    # ============ SHOP TABLE MIGRATIONS ============
                     
                     # Add telegram_bot_token to shop
                     """
