@@ -1,4 +1,5 @@
 import httpx
+import os
 from datetime import datetime
 from app.core.celery_app import celery_app
 from app.db.session import SessionLocal
