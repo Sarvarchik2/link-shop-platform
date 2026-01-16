@@ -167,6 +167,130 @@
         },
         "rights": "© 2026 Storely Technologies Inc. All rights reserved."
     },
+    "features_page": {
+        "hero": {
+            "title": "The most powerful tools for your business",
+            "subtitle": "All the features you need to manage sales and automate your business in one toolkit."
+        },
+        "items": {
+            "catalog": {
+                "title": "Smart Catalog",
+                "desc": "Easily manage products and categories. Variations, stock control, and multi-level structure.",
+                "points": {
+                    "1": "Unlimited products",
+                    "2": "Smart search & filters",
+                    "3": "Export & Import (Excel)"
+                }
+            },
+            "orders": {
+                "title": "Order Management",
+                "desc": "Track every order through statuses. Easy communication with customers and order history.",
+                "points": {
+                    "1": "Automatic statuses",
+                    "2": "Courier tracking",
+                    "3": "Order history"
+                }
+            },
+            "analytics": {
+                "title": "Deep Analytics",
+                "desc": "Get a complete picture of your sales, customers, and most popular products.",
+                "points": {
+                    "1": "Real-time mode",
+                    "2": "Revenue charts",
+                    "3": "Customer reports"
+                }
+            },
+            "marketing": {
+                "title": "Marketing Tools",
+                "desc": "Attract customers with discounts, promo codes, and banners to increase sales.",
+                "points": {
+                    "1": "Promo code system",
+                    "2": "Advertising banners",
+                    "3": "SEO optimization"
+                }
+            },
+            "inventory": {
+                "title": "Inventory System",
+                "desc": "Monitor stock levels in real-time. Receive notifications about low stock.",
+                "points": {
+                    "1": "Auto-booking",
+                    "2": "Stock analysis",
+                    "3": "Multi-warehouse support"
+                }
+            },
+            "teams": {
+                "title": "Team Collaboration",
+                "desc": "Assign roles to employees and control access to important data.",
+                "points": {
+                    "1": "Manager roles",
+                    "2": "Activity logs",
+                    "3": "Secure access"
+                }
+            }
+        },
+        "telegram": {
+            "title": "Telegram Web App — Future of Commerce",
+            "subtitle": "Your store is now inside Telegram. Customers buy without leaving the messenger.",
+            "features": {
+                "1": {
+                    "title": "Instant Entry",
+                    "desc": "Store opens in a second via the bot menu button."
+                },
+                "2": {
+                    "title": "Native UI",
+                    "desc": "An interface that feels like a native mobile app."
+                },
+                "3": {
+                    "title": "Push Notifications",
+                    "desc": "Notify customers about order status instantly."
+                }
+            }
+        },
+        "cta": {
+            "title": "Ready? Start your business today.",
+            "button": "Start for Free"
+        }
+    },
+    "integrations": {
+        "hero": {
+            "title": "All your favorite services in one place",
+            "subtitle": "Connect Storely with the world's best payment, marketing, and analytics tools.",
+            "cta": "Start Integrating"
+        },
+        "active": "Available",
+        "categories": {
+            "payments": {
+                "title": "Payment Systems",
+                "subtitle": "Accept payments in the most convenient way for you."
+            },
+            "marketing": {
+                "title": "Marketing & Analytics",
+                "subtitle": "Analyze traffic and increase the number of customers."
+            }
+        }
+    },
+    "templates": {
+        "hero": {
+            "title": "Perfect design for every business",
+            "subtitle": "Use ready-made templates from our experts and launch your store in minutes.",
+            "cta": "View Templates"
+        },
+        "cta": {
+            "title": "Create your own style",
+            "button": "Start Now"
+        }
+    },
+    "roadmap": {
+        "hero": {
+            "title": "Our Development Path",
+            "subtitle": "From a small startup to a modern ecosystem. We work every day to improve the platform."
+        },
+        "cta": {
+            "title": "Have any suggestions?",
+            "subtitle": "We'd love to hear your feedback. Let's develop the platform together.",
+            "button": "Send Suggestion"
+        }
+    },
     "alerts": {
         "cart": {
             "loginRequired": "Login to add items to cart",

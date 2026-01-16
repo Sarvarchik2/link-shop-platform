@@ -167,6 +167,130 @@
         },
         "rights": "© 2026 Storely Technologies Inc. Barcha huquqlar himoyalangan."
     },
+    "features_page": {
+        "hero": {
+            "title": "Biznesingiz uchun eng kuchli vositalar",
+            "subtitle": "Biznesingizni boshqarish va sotuvlarni oshirish uchun kerak bo'lgan barcha imkoniyatlar bir joyda."
+        },
+        "items": {
+            "catalog": {
+                "title": "Aqlli Katalog",
+                "desc": "Mahsulotlar va kategoriyalarni oson boshqaring. Variatsiyalar, zaxira nazorati va ko'p darajali kategoriyalar.",
+                "points": {
+                    "1": "Cheksiz mahsulotlar",
+                    "2": "Topilma va filtrlar",
+                    "3": "Eksport va Import (Excel)"
+                }
+            },
+            "orders": {
+                "title": "Buyurtmalar boshqaruvi",
+                "desc": "Har bir buyurtmani statuslar bo'yicha kuzatib boring. Mijozlar bilan oson muloqot va hisob-fakturalar.",
+                "points": {
+                    "1": "Avtomatik statuslar",
+                    "2": "Kuryerlar uchun yo'lov nomi",
+                    "3": "Buyurtma tarixi"
+                }
+            },
+            "analytics": {
+                "title": "Chuqur Analitika",
+                "desc": "Sotuvlaringiz, mijozlaringiz va eng mashhur mahsulotlaringiz haqida to'liq tasavvurga ega bo'ling.",
+                "points": {
+                    "1": "Real vaqt rejimi",
+                    "2": "Tushum grafiklari",
+                    "3": "Mijozlar hisoboti"
+                }
+            },
+            "marketing": {
+                "title": "Marketing Asboblari",
+                "desc": "Chegirmalar, promokodlar va bannerlar orqali mijozlar e'tiborini torting va sotuvlarni oshiring.",
+                "points": {
+                    "1": "Promokodlar tizimi",
+                    "2": "Reklama bannerlari",
+                    "3": "SEO optimallashtirish"
+                }
+            },
+            "inventory": {
+                "title": "Ombor Tizimi",
+                "desc": "Mahsulot qoldiqlarini real vaqtda kuzatib boring. Kam qolgan zaxiralar haqida xabar oling.",
+                "points": {
+                    "1": "Avto-bronlash",
+                    "2": "Qoldiqlar tahlili",
+                    "3": "Ko'p omborli tizim"
+                }
+            },
+            "teams": {
+                "title": "Jamoa bilan ishlash",
+                "desc": "Xodimlaringizga cheklangan ruxsatnomalar bering va ishlarni taqsimlang.",
+                "points": {
+                    "1": "Manager rollari",
+                    "2": "Harakatlar logi",
+                    "3": "Xavfsiz kirish"
+                }
+            }
+        },
+        "telegram": {
+            "title": "Telegram Web App — Savdoning kelajagi",
+            "subtitle": "Do'koningiz endi Telegram messenjerining ichida. Mijozlaringiz platformadan chiqmasdan xarid qilishadi.",
+            "features": {
+                "1": {
+                    "title": "Tezkor Kirish",
+                    "desc": "Bot menyusidagi tugma orqali do'koningiz bir soniyada ochiladi."
+                },
+                "2": {
+                    "title": "Native UI",
+                    "desc": "Xuddi mobil ilovadek qulay va tezkor interfeys."
+                },
+                "3": {
+                    "title": "Push-xabarlar",
+                    "desc": "Mijozlarga buyurtma holati haqida darhol xabar bering."
+                }
+            }
+        },
+        "cta": {
+            "title": "Tayyormisiz? Biznesingizni bugun boshlang.",
+            "button": "Bepul boshlash"
+        }
+    },
+    "integrations": {
+        "hero": {
+            "title": "Barcha sevimli servislar bitta joyda",
+            "subtitle": "Storely platformasini dunyodagi eng mashhur to'lov, marketing va analitika vositalari bilan bog'lang.",
+            "cta": "Integratsiyani boshlash"
+        },
+        "active": "Mavjud",
+        "categories": {
+            "payments": {
+                "title": "To'lov Tizimlari",
+                "subtitle": "Mijozlaringizdan to'lovlarni o'zingizga qulay usulda qabul qiling."
+            },
+            "marketing": {
+                "title": "Marketing va Analitika",
+                "subtitle": "Reklamani to'g'ri tahlil qiling va mijozlar sonini oshiring."
+            }
+        }
+    },
+    "templates": {
+        "hero": {
+            "title": "Har bir biznes uchun mukammal dizayn",
+            "subtitle": "Mutaxassislarimiz tomonidan yaratilgan tayyor andozalardan foydalaning va do'koningizni bir necha daqiqada ishga tushiring.",
+            "cta": "Andozalarni ko'rish"
+        },
+        "cta": {
+            "title": "O'z uslubingizni yarating",
+            "button": "Hozir boshlash"
+        }
+    },
+    "roadmap": {
+        "hero": {
+            "title": "Bizning rivojlanish yo'limiz",
+            "subtitle": "Kichik startapdan zamonaviy e-tijorat ekotizimigacha. Biz har kuni platformani mukammallashtirish ustida ishlayapmiz."
+        },
+        "cta": {
+            "title": "Sizda takliflar bormi?",
+            "subtitle": "Biz sizning fikringizni eshitishdan xursandmiz. Platformani birgalikda rivojlantiraylik.",
+            "button": "Taklif yuborish"
+        }
+    },
     "cart": {
         "title": "Savatcha",
         "empty_title": "Savatchangiz bo'sh",

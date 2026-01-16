@@ -38,16 +38,26 @@
                             $t('footer.product.title') }}
                         </h4>
                         <ul class="space-y-4 text-sm">
-                            <li><a href="#features" class="hover:text-white transition-colors">{{
-                                $t('footer.product.features') }}</a>
+                            <li>
+                                <NuxtLink :to="localePath('/features')" class="hover:text-white transition-colors">{{
+                                    $t('footer.product.features') }}</NuxtLink>
                             </li>
-                            <li><a href="#solutions" class="hover:text-white transition-colors">{{
-                                $t('footer.product.integrations')
-                                    }}</a></li>
-                            <li><a href="#" class="hover:text-white transition-colors">{{ $t('footer.product.templates')
-                            }}</a></li>
-                            <li><a href="#" class="hover:text-white transition-colors">{{ $t('footer.product.roadmap')
-                            }}</a></li>
+                            <li>
+                                <NuxtLink :to="localePath('/integrations')" class="hover:text-white transition-colors">
+                                    {{
+                                        $t('footer.product.integrations')
+                                    }}</NuxtLink>
+                            </li>
+                            <li>
+                                <NuxtLink :to="localePath('/templates')" class="hover:text-white transition-colors">{{
+                                    $t('footer.product.templates')
+                                }}</NuxtLink>
+                            </li>
+                            <li>
+                                <NuxtLink :to="localePath('/roadmap')" class="hover:text-white transition-colors">{{
+                                    $t('footer.product.roadmap')
+                                }}</NuxtLink>
+                            </li>
                         </ul>
                     </div>
                     <div>

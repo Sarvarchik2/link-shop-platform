@@ -57,41 +57,7 @@
               </NuxtLink>
             </template>
 
-            <!-- Shop Owner Links -->
-            <!-- <template v-if="isShopOwner">
-              <div class="nav-divider"></div>
-              <div v-for="shop in shops" :key="shop.id" class="shop-nav-group">
-                <div class="nav-item shop-header">
-                  <div class="nav-icon">🏪</div>
-                  <span>{{ shop.name }}</span>
-                  <span class="shop-status-badge" :class="shop.subscription_status">
-                    {{ getShopStatusText(shop.subscription_status) }}
-                  </span>
-                </div>
-                <div class="shop-actions">
-                  <NuxtLink :to="localePath(`/shop/${shop.slug}/admin`)" class="sub-nav-item">
-                    {{ $t('profile.shops.actions.admin') }}
-                  </NuxtLink>
-                  <a :href="`http://${shop.slug}.localhost:3000`" target="_blank" class="sub-nav-item">
-                    {{ $t('profile.shops.actions.open') }}
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                      <polyline points="15 3 21 3 21 9"></polyline>
-                      <line x1="10" y1="14" x2="21" y2="3"></line>
-                    </svg>
-                  </a>
-                  <NuxtLink :to="localePath(`/shop/${shop.slug}/admin/settings/subscription`)"
-                    class="sub-nav-item highlight">
-                    {{ $t('profile.shops.actions.subscription') }}
-                  </NuxtLink>
-                </div>
-              </div>
 
-              <NuxtLink v-if="true" :to="localePath('/register-shop')" class="nav-item create-shop">
-                <div class="nav-icon">✨</div>
-                <span>{{ $t('profile.links.createShop') }}</span>
-              </NuxtLink>
-            </template> -->
 
             <div class="nav-footer">
               <button @click="logout" class="logout-btn">
@@ -134,7 +100,7 @@
                     date:
                       formatDate(shop.subscription_expires_at)
                   })
-                    }}</span>
+                  }}</span>
                   <span class="value">{{ getDaysLeftText(shop.subscription_expires_at) }}</span>
                 </div>
                 <div class="progress-bar">
