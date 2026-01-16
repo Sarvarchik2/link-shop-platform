@@ -79,12 +79,12 @@ async def send_broadcast(
         from app.core.config import settings
         
         # Simple check if redis is reachable
-        r = redis.from_url(settings.DATABASE_URL.replace("sqlite", "redis") if "redis" not in os.getenv("REDIS_URL", "") else os.getenv("REDIS_URL")) # Simplified
-        # Better check:
         broker_url = celery_app.conf.broker_url
-        if broker_url.startswith("redis"):
+        if broker_url and (broker_url.startswith("redis://") or broker_url.startswith("rediss://")):
+             from app.features.broadcasts import tasks
              tasks.send_broadcast_task.delay(broadcast.id)
         else:
+             from app.features.broadcasts import tasks
              background_tasks.add_task(tasks.send_broadcast_task, broadcast.id)
     except Exception as e:
         print(f"Celery delivery failed, using BackgroundTasks: {e}")

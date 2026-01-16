@@ -136,6 +136,9 @@ async def handle_start_command(chat_id: int, telegram_user: dict, shop: Shop, db
         logger.info(f"Registered user {user_id} for broadcasts in shop {shop.id}")
         
         # Send welcome message
+        token_prefix = shop.telegram_bot_token[:5] + "..." if shop.telegram_bot_token else "None"
+        logger.info(f"Sending welcome with token prefix: {token_prefix} to chat {chat_id}")
+        
         await send_telegram_message(
             shop.telegram_bot_token,
             chat_id,
