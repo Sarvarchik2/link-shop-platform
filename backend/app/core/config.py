@@ -5,6 +5,7 @@ class Settings(BaseSettings):
     SECRET_KEY: str = "your-secret-key-here"
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    TELEGRAM_ENCRYPTION_KEY: str = os.getenv("TELEGRAM_ENCRYPTION_KEY", "uE9H5v6q2_JmNp_8zX4v_LxP9z5_Mv7QzX8v_LxP9z4=") # 32 byte base64 key
     # Priority: Env DATABASE_URL -> Env POSTGRES_URL -> Localhost
     DATABASE_URL: str = os.getenv("DATABASE_URL") or os.getenv("POSTGRES_URL") or "sqlite:///./database.db"
     UPLOAD_DIR: str = "uploads"

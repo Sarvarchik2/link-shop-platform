@@ -16,7 +16,7 @@ export const useAuth = () => {
         const localePath = getLocalePath()
         try {
             const formData = new URLSearchParams()
-            formData.append('username', phone)
+            formData.append('username', '+' + phone)
             formData.append('password', password)
 
             const data: any = await $fetch(config.public.apiBase + '/token', {
@@ -67,7 +67,7 @@ export const useAuth = () => {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ phone, password, first_name, last_name })
+                body: JSON.stringify({ phone: '+' + phone, password, first_name, last_name })
             })
             token.value = data.access_token
             await fetchUser()

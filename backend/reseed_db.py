@@ -141,9 +141,9 @@ def reseed_database():
         print("👗 Seeding Fashion Data...")
         
         # Categories
-        cat_men = Category(name="Men", shop_id=style_haven.id)
-        cat_women = Category(name="Women", shop_id=style_haven.id)
-        cat_acc = Category(name="Accessories", shop_id=style_haven.id)
+        cat_men = Category(name_uz="Erkaklar", name_ru="Мужчины", name_en="Men", shop_id=style_haven.id)
+        cat_women = Category(name_uz="Ayollar", name_ru="Женщины", name_en="Women", shop_id=style_haven.id)
+        cat_acc = Category(name_uz="Aksessuarlar", name_ru="Аксессуары", name_en="Accessories", shop_id=style_haven.id)
         db.add_all([cat_men, cat_women, cat_acc])
         db.commit()
 
@@ -158,12 +158,20 @@ def reseed_database():
         fashion_products = []
         for i in range(10):
             p = Product(
-                name=f"Premium T-Shirt {i+1}",
-                description="High quality cotton t-shirt with modern fit.",
+                name_uz=f"Premium futbolka {i+1}",
+                name_ru=f"Premium футболка {i+1}",
+                name_en=f"Premium T-Shirt {i+1}",
+                description_uz="Zamonaviy dizayndagi yuqori sifatli paxta futbolka.",
+                description_ru="Высококачественная хлопковая футболка современного кроя.",
+                description_en="High quality cotton t-shirt with modern fit.",
                 price=25.0 + i,
                 image_url="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=500&q=80",
-                category=cat_men.name if i % 2 == 0 else cat_women.name,
-                brand=brand_nike.name if i % 2 == 0 else brand_zara.name,
+                category_uz=cat_men.name_uz if i % 2 == 0 else cat_women.name_uz,
+                category_ru=cat_men.name_ru if i % 2 == 0 else cat_women.name_ru,
+                category_en=cat_men.name_en if i % 2 == 0 else cat_women.name_en,
+                brand_uz=brand_nike.name if i % 2 == 0 else brand_zara.name,
+                brand_ru=brand_nike.name if i % 2 == 0 else brand_zara.name,
+                brand_en=brand_nike.name if i % 2 == 0 else brand_zara.name,
                 stock=100,
                 shop_id=style_haven.id,
                 is_preorder_enabled=False
@@ -172,12 +180,20 @@ def reseed_database():
         
         for i in range(10):
              p = Product(
-                name=f"Designer Jacket {i+1}",
-                description="Winter collection jacket.",
+                name_uz=f"Dizayner kurtkasi {i+1}",
+                name_ru=f"Дизайнерская куртка {i+1}",
+                name_en=f"Designer Jacket {i+1}",
+                description_uz="Qishki kolleksiyadan kurtka.",
+                description_ru="Куртка из зимней коллекции.",
+                description_en="Winter collection jacket.",
                 price=120.0 + (i*5),
                 image_url="https://images.unsplash.com/photo-1551028919-ac66e6246958?auto=format&fit=crop&w=500&q=80",
-                category=cat_women.name,
-                brand=brand_gucci.name,
+                category_uz=cat_women.name_uz,
+                category_ru=cat_women.name_ru,
+                category_en=cat_women.name_en,
+                brand_uz=brand_gucci.name,
+                brand_ru=brand_gucci.name,
+                brand_en=brand_gucci.name,
                 stock=50,
                 shop_id=style_haven.id,
                 is_preorder_enabled=False
@@ -226,8 +242,8 @@ def reseed_database():
         print("📱 Seeding Tech Data...")
         
         # Categories
-        cat_phones = Category(name="Phones", shop_id=gizmo_world.id)
-        cat_laptops = Category(name="Laptops", shop_id=gizmo_world.id)
+        cat_phones = Category(name_uz="Telefonlar", name_ru="Телефоны", name_en="Phones", shop_id=gizmo_world.id)
+        cat_laptops = Category(name_uz="Noutbuklar", name_ru="Ноутбуки", name_en="Laptops", shop_id=gizmo_world.id)
         db.add_all([cat_phones, cat_laptops])
         db.commit()
 
@@ -248,12 +264,20 @@ def reseed_database():
         
         for name, price, cat, brand, img in tech_items:
             p = Product(
-                name=name,
-                description=f"Latest flagship {name}.",
+                name_uz=name,
+                name_ru=name,
+                name_en=name,
+                description_uz=f"{name} ning so'nggi flagmani.",
+                description_ru=f"Последний флагман {name}.",
+                description_en=f"Latest flagship {name}.",
                 price=price,
                 image_url=img,
-                category=cat.name,
-                brand=brand.name,
+                category_uz=cat.name_uz,
+                category_ru=cat.name_ru,
+                category_en=cat.name_en,
+                brand_uz=brand.name,
+                brand_ru=brand.name,
+                brand_en=brand.name,
                 stock=20,
                 shop_id=gizmo_world.id
             )

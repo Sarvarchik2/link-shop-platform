@@ -80,6 +80,18 @@
       </div>
 
       <div class="nav-section">
+        <div class="nav-section-title">{{ $t('admin.broadcasts.title') }}</div>
+        <NuxtLink :to="localePath(`/shop/${shopSlug}/admin/broadcasts`)" class="nav-item"
+          :class="{ active: currentRoute === 'broadcasts' }" @click="closeSidebar">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M22 2L11 13"></path>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+          </svg>
+          <span>{{ $t('admin.broadcasts.title') }}</span>
+        </NuxtLink>
+      </div>
+
+      <div class="nav-section">
         <div class="nav-section-title">{{ $t('admin.settings') }}</div>
         <NuxtLink :to="localePath(`/shop/${shopSlug}/admin/banner`)" class="nav-item"
           :class="{ active: currentRoute === 'banner' }" @click="closeSidebar">
@@ -108,6 +120,14 @@
             <circle cx="18.5" cy="18.5" r="2.5"></circle>
           </svg>
           <span>{{ $t('admin.delivery.title') }}</span>
+        </NuxtLink>
+        <NuxtLink :to="localePath(`/shop/${shopSlug}/admin/settings/telegram`)" class="nav-item"
+          :class="{ active: currentRoute === 'telegram' }" @click="closeSidebar">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M22 2L11 13"></path>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+          </svg>
+          <span>{{ $t('admin.telegram.title') }}</span>
         </NuxtLink>
         <NuxtLink :to="localePath(`/shop/${shopSlug}/admin/settings/subscription`)" class="nav-item"
           :class="{ active: currentRoute === 'subscription' }" @click="closeSidebar">

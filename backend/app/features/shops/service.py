@@ -10,6 +10,10 @@ from app.features.banners.models import Banner
 from .schemas import ShopCreate, ShopUpdate, DashboardStats, OrdersByStatus
 
 from app.features.subscriptions.models import SubscriptionPlan, SubscriptionRequest
+import httpx
+from app.core.crypto import crypto
+from .models import Shop, UserStoreTelegram
+from .schemas import ShopCreate, ShopUpdate, DashboardStats, OrdersByStatus, TelegramBotTestResponse
 
 class ShopService:
     def __init__(self):
@@ -113,7 +117,47 @@ class ShopService:
             raise HTTPException(status_code=403, detail="Not authorized")
             
         update_data = shop_in.model_dump(exclude_unset=True)
+        
+        # Handle Telegram Bot Token encryption
+        if "telegram_bot_token" in update_data and update_data["telegram_bot_token"]:
+             # If it's a new token (not masked)
+             if not update_data["telegram_bot_token"].endswith("..."):
+                 update_data["telegram_bot_token"] = crypto.encrypt(update_data["telegram_bot_token"])
+        
         return self.repository.update(db, shop, update_data)
+
+    async def verify_bot_token(self, token: str) -> TelegramBotTestResponse:
+        async with httpx.AsyncClient() as client:
+            try:
+                response = await client.get(f"https://api.telegram.org/bot{token}/getMe")
+                if response.status_code == 200:
+                    data = response.json()
+                    return TelegramBotTestResponse(is_valid=True, bot_info=data.get("result"))
+                else:
+                    return TelegramBotTestResponse(is_valid=False, error=response.json().get("description", "Unknown error"))
+            except Exception as e:
+                return TelegramBotTestResponse(is_valid=False, error=str(e))
+
+    def sync_telegram_chat(self, db: Session, shop_slug: str, user_id: int, chat_id: str):
+        shop = self.get_shop_by_slug(db, shop_slug)
+        mapping = db.query(UserStoreTelegram).filter(
+            UserStoreTelegram.user_id == user_id,
+            UserStoreTelegram.store_id == shop.id
+        ).first()
+        
+        if mapping:
+            mapping.telegram_chat_id = chat_id
+        else:
+            mapping = UserStoreTelegram(
+                user_id=user_id,
+                store_id=shop.id,
+                telegram_chat_id=chat_id
+            )
+            db.add(mapping)
+        
+        db.commit()
+        return mapping
+
 
     def get_all_shops_for_admin(self, db: Session):
         shops_with_owners = self.repository.get_all_with_owners(db)
@@ -151,6 +195,24 @@ class ShopService:
         }
         shop_data.pop("_sa_instance_state", None)
         return shop_data
+
+    def _mask_token(self, encrypted_token: str) -> str:
+        if not encrypted_token:
+            return None
+        token = crypto.decrypt(encrypted_token)
+        if not token or ":" not in token:
+            return "Invalid Token"
+        parts = token.split(":")
+        prefix = parts[0]
+        suffix = parts[1]
+        return f"{prefix}:{suffix[:4]}...{suffix[-4:]}"
+
+    def prepare_for_read(self, shop: Shop) -> Shop:
+        """Mask sensitive info before sending to client"""
+        if shop.telegram_bot_token:
+            shop.telegram_bot_token = self._mask_token(shop.telegram_bot_token)
+        return shop
+
 
     def get_my_shops(self, db: Session, user_id: int):
         return self.repository.get_by_owner_id(db, user_id)
@@ -237,27 +299,25 @@ class ShopService:
         )
 
     def get_platform_stats(self, db: Session):
-        shops = db.query(Shop).all()
-        total_shops = len(shops)
-        active_shops = len([s for s in shops if s.is_active])
+        from sqlalchemy import func
         
-        users = db.query(User).all()
-        total_users = len(users)
+        total_shops = db.query(Shop).count()
+        active_shops = db.query(Shop).filter(Shop.is_active == True).count()
         
-        products = db.query(Product).all()
-        total_products = len(products)
+        total_users = db.query(User).count()
+        total_products = db.query(Product).count()
         
-        orders = db.query(Order).all()
-        total_orders = len(orders)
-        
-        total_sales = sum(o.total_price for o in orders if o.status != "cancelled")
+        # Orders statistics
+        orders_query = db.query(Order).filter(Order.status != "cancelled")
+        total_orders = db.query(Order).count()
+        total_sales = db.query(func.sum(Order.total_price)).filter(Order.status != "cancelled").scalar() or 0.0
         
         orders_by_status = OrdersByStatus(
-            pending=sum(1 for o in orders if o.status == "pending"),
-            processing=sum(1 for o in orders if o.status == "processing"),
-            shipping=sum(1 for o in orders if o.status == "shipping"),
-            delivered=sum(1 for o in orders if o.status == "delivered"),
-            cancelled=sum(1 for o in orders if o.status == "cancelled")
+            pending=db.query(Order).filter(Order.status == "pending").count(),
+            processing=db.query(Order).filter(Order.status == "processing").count(),
+            shipping=db.query(Order).filter(Order.status == "shipping").count(),
+            delivered=db.query(Order).filter(Order.status == "delivered").count(),
+            cancelled=db.query(Order).filter(Order.status == "cancelled").count()
         )
         
         now = datetime.utcnow()
@@ -265,31 +325,30 @@ class ShopService:
         week_start = today_start - timedelta(days=now.weekday())
         month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
         
-        today_orders_list = [o for o in orders if o.created_at >= today_start and o.status != "cancelled"]
-        week_orders_list = [o for o in orders if o.created_at >= week_start and o.status != "cancelled"]
-        month_orders_list = [o for o in orders if o.created_at >= month_start and o.status != "cancelled"]
+        today_sales = db.query(func.sum(Order.total_price)).filter(Order.created_at >= today_start, Order.status != "cancelled").scalar() or 0.0
+        today_orders = db.query(Order).filter(Order.created_at >= today_start, Order.status != "cancelled").count()
         
-        month_orders_list = [o for o in orders if o.created_at >= month_start and o.status != "cancelled"]
+        week_sales = db.query(func.sum(Order.total_price)).filter(Order.created_at >= week_start, Order.status != "cancelled").scalar() or 0.0
+        week_orders = db.query(Order).filter(Order.created_at >= week_start, Order.status != "cancelled").count()
+        
+        month_sales = db.query(func.sum(Order.total_price)).filter(Order.created_at >= month_start, Order.status != "cancelled").scalar() or 0.0
+        month_orders = db.query(Order).filter(Order.created_at >= month_start, Order.status != "cancelled").count()
         
         # Subscription Stats
-        subscriptions_active = 0
-        subscriptions_trial = 0
-        subscriptions_expired = 0
-        subscriptions_mrr = 0.0
+        subscriptions_active = db.query(Shop).filter(Shop.subscription_status == 'active').count()
+        subscriptions_trial = db.query(Shop).filter(Shop.subscription_status == 'trial').count()
+        subscriptions_expired = db.query(Shop).filter(Shop.subscription_status == 'expired').count()
         
-        # Helper map for plan prices
+        # Calculate MRR
+        # We need plan prices
         plans = db.query(SubscriptionPlan).all()
         plan_prices = {p.id: p.price for p in plans}
         
-        for s in shops:
-            if s.subscription_status == 'active':
-                subscriptions_active += 1
-                if s.subscription_plan_id in plan_prices:
-                    subscriptions_mrr += plan_prices[s.subscription_plan_id]
-            elif s.subscription_status == 'trial':
-                subscriptions_trial += 1
-            elif s.subscription_status == 'expired':
-                subscriptions_expired += 1
+        subscriptions_mrr = 0.0
+        active_shops_list = db.query(Shop).filter(Shop.subscription_status == 'active').all()
+        for s in active_shops_list:
+            if s.subscription_plan_id in plan_prices:
+                subscriptions_mrr += plan_prices[s.subscription_plan_id]
         
         return DashboardStats(
             total_sales=total_sales,
@@ -297,12 +356,12 @@ class ShopService:
             total_users=total_users,
             total_products=total_products,
             orders_by_status=orders_by_status,
-            today_sales=sum(o.total_price for o in today_orders_list),
-            today_orders=len(today_orders_list),
-            week_sales=sum(o.total_price for o in week_orders_list),
-            week_orders=len(week_orders_list),
-            month_sales=sum(o.total_price for o in month_orders_list),
-            month_orders=len(month_orders_list),
+            today_sales=today_sales,
+            today_orders=today_orders,
+            week_sales=week_sales,
+            week_orders=week_orders,
+            month_sales=month_sales,
+            month_orders=month_orders,
             total_shops=total_shops,
             active_shops=active_shops,
             subscriptions_mrr=subscriptions_mrr,

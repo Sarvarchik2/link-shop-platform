@@ -27,6 +27,7 @@ class SubscriptionPlan(Base):
     display_order = Column(Integer, default=0)
     max_products = Column(Integer, nullable=True)
     max_banners = Column(Integer, default=1)
+    can_broadcast = Column(Boolean, default=False)
     created_at = Column(DateTime, default=datetime.utcnow)
 
 class SubscriptionRequest(Base):

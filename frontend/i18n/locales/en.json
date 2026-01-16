@@ -789,6 +789,50 @@
                 "free": "Free"
             }
         },
+        "telegram": {
+            "title": "Telegram Bot",
+            "pageTitle": "Telegram Bot Integration",
+            "pageSubtitle": "Connect your own bot for Web App and notifications",
+            "tokenLabel": "Telegram Bot Token",
+            "botActive": "Bot is Active",
+            "testBtn": "Test Token",
+            "saveBtn": "Save Settings",
+            "instructionsTitle": "Setup Instructions",
+            "step1": "Open {'@'}BotFather in Telegram",
+            "step2": "Create a new bot with /newbot command",
+            "step3": "Copy the API Token and paste it above",
+            "step4": "Set the Web App URL in BotFather to: https://storely.uz/s/{slug}",
+            "setMenuButton": "Set Menu Button URL",
+            "botStatus": "Bot Status",
+            "botValid": "Bot is valid and connected!",
+            "botInvalid": "Invalid token or bot not found.",
+            "webAppLink": "Your Web App Link"
+        },
+        "broadcasts": {
+            "title": "Broadcasts",
+            "pageTitle": "Marketing Broadcasts",
+            "pageSubtitle": "Send messages to your customers via Telegram bot",
+            "createNew": "Create New Broadcast",
+            "message": "Message text",
+            "media": "Photo/Video (optional)",
+            "buttonText": "Button Text",
+            "buttonUrl": "Button URL",
+            "audience": "Target Audience",
+            "audienceAll": "All Customers",
+            "audienceRecent": "Customers from last 30 days",
+            "sendNow": "Send Now",
+            "schedule": "Schedule",
+            "status": {
+                "draft": "Draft",
+                "pending": "Pending",
+                "sending": "Sending",
+                "completed": "Completed"
+            },
+            "history": "Broadcast History",
+            "sent": "Sent",
+            "failed": "Failed",
+            "limitNote": "Note: To avoid bans, broadcasts are limited to once per 24 hours."
+        },
         "dashboardStats": {
             "ordersCount": "{count} orders",
             "revenue": "Revenue",

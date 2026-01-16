@@ -2,7 +2,7 @@
   <div class="platform-page">
     <div class="platform-header">
       <div class="container">
-        <h1 class="platform-title">Link Shop Platform</h1>
+        <h1 class="platform-title">Storely.uz</h1>
         <p class="platform-subtitle">Создайте свой интернет-магазин за минуты</p>
         <NuxtLink :to="localePath('/platform/register')" class="cta-button">
           Создать магазин

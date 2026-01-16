@@ -19,8 +19,13 @@
 
           <div class="form-group">
             <label class="form-label">{{ $t('auth.password_label') }}</label>
-            <input v-model="password" type="password" required class="form-input"
-              :placeholder="$t('auth.password_placeholder')" />
+            <div class="password-input-wrapper">
+              <input v-model="password" :type="showPassword ? 'text' : 'password'" required class="form-input"
+                :placeholder="$t('auth.password_placeholder')" />
+              <button type="button" class="password-toggle" @click="showPassword = !showPassword">
+                <iconify-icon :icon="showPassword ? 'lucide:eye-off' : 'lucide:eye'" class="toggle-icon"></iconify-icon>
+              </button>
+            </div>
           </div>
 
           <button type="submit" :disabled="loading" class="btn-submit">
@@ -55,6 +60,7 @@ const password = ref('')
 const loading = ref(false)
 const { login } = useAuth()
 const toast = useToast()
+const showPassword = ref(false)
 const { formatPhoneNumber, unformatPhoneNumber } = usePhoneFormatter()
 const localePath = useLocalePath()
 
@@ -175,7 +181,7 @@ const handleLogin = async () => {
 
 .login-header {
   text-align: center;
-  margin-bottom: 40px;
+  margin-bottom: 32px;
 }
 
 .logo-wrapper {
@@ -245,8 +251,41 @@ const handleLogin = async () => {
   box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.05);
 }
 
+.password-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-input-wrapper .form-input {
+  width: 100%;
+  padding-right: 50px;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 16px;
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  color: #9CA3AF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+}
+
+.password-toggle:hover {
+  color: #111;
+}
+
+.toggle-icon {
+  font-size: 20px;
+}
+
 .btn-submit {
-  padding: 18px;
+  padding: 16px;
   background: #111;
   color: white;
   border: none;

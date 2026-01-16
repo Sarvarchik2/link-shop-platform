@@ -4,6 +4,7 @@ from .repository import OrderRepository
 from .schemas import OrderCreate
 from app.features.products.service import ProductService
 from app.features.shops.service import ShopService
+from app.features.shops.telegram_service import telegram_notification_service
 
 class OrderService:
     def __init__(self):
@@ -142,7 +143,7 @@ class OrderService:
         orders = self.repository.get_all_orders(db)
         return self._populate_order_items(db, orders)
 
-    def update_order_status(self, db: Session, order_id: int, new_status: str, current_user):
+    async def update_order_status(self, db: Session, order_id: int, new_status: str, current_user):
         order = self.repository.get_by_id(db, order_id)
         if not order:
             raise HTTPException(status_code=404, detail="Order not found")
@@ -188,5 +189,18 @@ class OrderService:
                         print(f"Error updating variants for product {product.id}: {e}")
                 
                 self.product_service.repository.update(db, product, update_data)
+                
+        # Send Telegram notification (async)
+        try:
+            await telegram_notification_service.send_order_status_update(
+                db, 
+                order_id=order_id, 
+                shop_id=order.shop_id, 
+                user_id=order.user_id, 
+                new_status=new_status,
+                shop_name=shop.name if shop else "Магазин"
+            )
+        except Exception as e:
+            print(f"Failed to send Telegram notification: {e}")
                 
         return updated_order

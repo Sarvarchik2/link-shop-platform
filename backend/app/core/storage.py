@@ -14,10 +14,14 @@ class MinioStorage:
             secure=settings.MINIO_SECURE
         )
         self.bucket_name = settings.MINIO_BUCKET_NAME
-        self._ensure_bucket()
+        self._bucket_ensured = False
 
     def _ensure_bucket(self):
+        if self._bucket_ensured:
+            return
         try:
+            # Set a very short timeout for bucket check if it's the first time
+            # But the minio client doesn't easily expose this per call without complex config
             if not self.client.bucket_exists(self.bucket_name):
                 self.client.make_bucket(self.bucket_name)
                 # Set public policy for the bucket so images can be accessed directly
@@ -41,10 +45,13 @@ class MinioStorage:
                 import json
                 self.client.set_bucket_policy(self.bucket_name, json.dumps(policy))
                 logger.info(f"Created Minio bucket: {self.bucket_name}")
+            self._bucket_ensured = True
         except Exception as e:
             logger.error(f"Error ensuring Minio bucket: {e}")
+            self._bucket_ensured = False # Try again next time if it failed due to network
 
     def upload_file(self, filename: str, content: bytes, content_type: str) -> str:
+        self._ensure_bucket()
         try:
             self.client.put_object(
                 self.bucket_name,

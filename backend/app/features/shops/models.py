@@ -25,6 +25,22 @@ class Shop(Base):
     twitter = Column(String, nullable=True)
     whatsapp = Column(String, nullable=True)
     
+    # Telegram Bot Integration
+    telegram_bot_token = Column(String, nullable=True)
+    is_bot_active = Column(Boolean, default=False)
+    
     # Delivery Settings
     # { "type": "free" | "fixed" | "regional", "price": 0, "regions": { "Toshkent": 10000 } }
     delivery_settings = Column(JSON, nullable=True, default={})
+
+class UserStoreTelegram(Base):
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
+    store_id = Column(Integer, ForeignKey("shop.id"), nullable=False)
+    telegram_chat_id = Column(String, nullable=False) # Storely uses BigInt, but String is safer for all IDs
+    
+    # Ensure a user can only have one chat_id per shop
+    __table_args__ = (
+        # UniqueConstraint('user_id', 'store_id', name='inx_user_store_telegram'),
+    )
+

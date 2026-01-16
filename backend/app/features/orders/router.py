@@ -68,16 +68,16 @@ def get_all_orders_admin(
         raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")
 
 @router.put("/orders/{order_id}/status", response_model=OrderRead)
-def update_order_status(
+async def update_order_status(
     order_id: int,
     status_update: OrderStatusUpdate,
     db: Session = Depends(get_db),
     current_user = Depends(get_current_user)
 ):
-    return order_service.update_order_status(db, order_id, status_update.status, current_user)
+    return await order_service.update_order_status(db, order_id, status_update.status, current_user)
 
 @router.put("/shop/{shop_slug}/admin/orders/{order_id}", response_model=OrderRead)
-def update_order_status_shop(
+async def update_order_status_shop(
     shop_slug: str,
     order_id: int,
     status_update: OrderStatusUpdate,
@@ -85,4 +85,4 @@ def update_order_status_shop(
     current_user = Depends(get_current_user),
     shop = Depends(check_shop_active)
 ):
-    return order_service.update_order_status(db, order_id, status_update.status, current_user)
+    return await order_service.update_order_status(db, order_id, status_update.status, current_user)

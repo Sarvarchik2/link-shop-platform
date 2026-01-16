@@ -18,6 +18,7 @@ from app.features.subscriptions.models import SubscriptionPlan, SubscriptionRequ
 from app.features.banners.models import Banner
 from app.features.offers.models import Offer
 from app.features.preorders.models import PreOrder
+from app.features.broadcasts.models import Broadcast
 
 # Import routers
 from app.features.auth.router import router as auth_router
@@ -31,8 +32,9 @@ from app.features.media.router import router as media_router
 from app.features.subscriptions.router import router as subscriptions_router
 from app.features.offers.router import router as offers_router
 from app.features.users.router import router as users_router
+from app.features.broadcasts.router import router as broadcasts_router
 
-app = FastAPI(title="Link Shop Platform API")
+app = FastAPI(title="Storely Platform API")
 
 # CORS
 app.add_middleware(
@@ -42,7 +44,7 @@ app.add_middleware(
         "http://127.0.0.1:3000",
         "http://localhost:8000",
         "http://127.0.0.1:8000",
-        "https://link-shop-frontend-production.up.railway.app",
+        "https://storely.up.railway.app",
         "https://link-shop-platform-production.up.railway.app",
     ],
     allow_origin_regex=r"https://.*\.up\.railway\.app",
@@ -68,6 +70,7 @@ app.include_router(orders_router, tags=["Orders"])
 app.include_router(media_router, tags=["Media"])
 app.include_router(subscriptions_router, tags=["Subscriptions"])
 app.include_router(offers_router, tags=["Offers"])
+app.include_router(broadcasts_router, tags=["Broadcasts"])
 
 @app.on_event("startup")
 def on_startup():
@@ -99,15 +102,17 @@ def on_startup():
                     description="Попробуйте все возможности платформы бесплатно в течение 30 дней",
                     features="Полный доступ к платформе,До 50 товаров,Базовая аналитика",
                     is_trial=True,
+                    can_broadcast=False,
                     display_order=1
                 ),
                 SubscriptionPlan(
-                    name="Базовый",
-                    slug="basic",
+                    name="Бизнес",
+                    slug="business",
                     price=29.0,
                     period_days=30,
-                    description="Идеально для небольших магазинов",
-                    features="До 200 товаров,Приоритетная поддержка,Расширенная аналитика",
+                    description="Идеально для растущих магазинов с рассылками",
+                    features="До 200 товаров,Рассылки в Telegram (до 500/мес),Приоритетная поддержка",
+                    can_broadcast=True,
                     display_order=2
                 ),
                 SubscriptionPlan(
@@ -115,8 +120,9 @@ def on_startup():
                     slug="premium",
                     price=79.0,
                     period_days=30,
-                    description="Для растущего бизнеса с большими объемами",
-                    features="Безлимитные товары,Личный менеджер,Индивидуальный дизайн",
+                    description="Безлимитные возможности для вашего бренда",
+                    features="Безлимитные товары,Безлимитные рассылки,Подробная статистика,Личный менеджер",
+                    can_broadcast=True,
                     display_order=3
                 )
             ]
@@ -180,4 +186,4 @@ def on_startup():
 
 @app.get("/")
 def read_root():
-    return {"message": "Welcome to Link Shop Platform API"}
+    return {"message": "Welcome to Storely Platform API"}

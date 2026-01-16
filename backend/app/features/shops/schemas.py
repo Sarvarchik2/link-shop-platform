@@ -36,6 +36,8 @@ class ShopUpdate(BaseModel):
     subscription_status: Optional[str] = None
     subscription_expires_at: Optional[datetime] = None
     subscription_plan_id: Optional[int] = None
+    telegram_bot_token: Optional[str] = None
+    is_bot_active: Optional[bool] = None
 
 class ShopRead(ShopBase):
     id: int
@@ -45,6 +47,8 @@ class ShopRead(ShopBase):
     subscription_plan_id: Optional[int] = None
     created_at: datetime
     is_active: bool
+    is_bot_active: bool
+    telegram_bot_token: Optional[str] = None # Will be masked on read
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -91,3 +95,16 @@ class AdminActionRequest(BaseModel):
 class ShopStatusUpdate(BaseModel):
     is_active: bool
     password: str
+
+class TelegramBotTestRequest(BaseModel):
+    token: str
+
+class TelegramBotTestResponse(BaseModel):
+    is_valid: bool
+    bot_info: Optional[dict] = None
+    error: Optional[str] = None
+
+class TelegramSyncChatRequest(BaseModel):
+    chat_id: str
+    init_data: Optional[str] = None
+

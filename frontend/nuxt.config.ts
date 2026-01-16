@@ -71,6 +71,7 @@ export default defineNuxtConfig({
         { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap' }
       ],
       script: [
+        { src: 'https://telegram.org/js/telegram-web-app.js' },
         { src: 'https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js', defer: true }
       ]
     }

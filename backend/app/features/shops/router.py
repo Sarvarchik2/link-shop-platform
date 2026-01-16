@@ -5,7 +5,11 @@ from app.db.session import get_db
 from app.core.dependencies import get_current_user, get_current_platform_admin
 from app.core.security import verify_password
 from .service import ShopService
-from .schemas import ShopCreate, ShopRead, ShopReadWithOwner, ShopUpdate, DashboardStats, ShopStatusUpdate, AdminActionRequest
+from .schemas import (
+    ShopCreate, ShopRead, ShopReadWithOwner, ShopUpdate, DashboardStats, 
+    ShopStatusUpdate, AdminActionRequest, TelegramBotTestRequest, 
+    TelegramBotTestResponse, TelegramSyncChatRequest
+)
 
 router = APIRouter()
 shop_service = ShopService()
@@ -17,7 +21,10 @@ def register_shop(shop: ShopCreate, db: Session = Depends(get_db), current_user 
 @router.get("/platform/shops/me", response_model=List[ShopRead])
 def get_my_shops(db: Session = Depends(get_db), current_user = Depends(get_current_user)):
     shop = shop_service.get_my_shops(db, current_user.id)
-    return [shop] if shop else []
+    if shop:
+        shop = shop_service.prepare_for_read(shop)
+        return [shop]
+    return []
 
 @router.get("/platform/shops", response_model=List[ShopReadWithOwner])
 def get_all_shops(db: Session = Depends(get_db), admin = Depends(get_current_platform_admin)):
@@ -43,7 +50,32 @@ def update_shop_settings(
     db: Session = Depends(get_db), 
     current_user = Depends(get_current_user)
 ):
-    return shop_service.update_shop(db, shop_slug, shop_in, current_user)
+    shop = shop_service.update_shop(db, shop_slug, shop_in, current_user)
+    return shop_service.prepare_for_read(shop)
+
+@router.post("/shop/{shop_slug}/admin/telegram/test", response_model=TelegramBotTestResponse)
+async def test_telegram_bot(
+    shop_slug: str,
+    request: TelegramBotTestRequest,
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+    # Check permissions
+    shop = shop_service.get_shop_by_slug(db, shop_slug)
+    if shop.owner_id != current_user.id and current_user.role != "platform_admin":
+        raise HTTPException(status_code=403, detail="Not authorized")
+    
+    return await shop_service.verify_bot_token(request.token)
+
+@router.post("/shop/{shop_slug}/telegram/sync")
+def sync_chat_id(
+    shop_slug: str,
+    request: TelegramSyncChatRequest,
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+    shop_service.sync_telegram_chat(db, shop_slug, current_user.id, request.chat_id)
+    return {"status": "success"}
 
 @router.get("/shop/{shop_slug}/admin/stats", response_model=DashboardStats)
 def get_shop_admin_stats(

@@ -9,3 +9,7 @@ python-jose[cryptography]
 python-dotenv
 psycopg2-binary
 minio
+celery
+redis
+flower
+httpx
