@@ -191,8 +191,8 @@ const { data: shop, refresh } = await useFetch(`${config.public.apiBase}/platfor
 watch(shop, (newShop) => {
   if (newShop?.telegram_bot_token) {
     botToken.value = newShop.telegram_bot_token
-    // Auto-test if token exists
-    handleTestToken()
+    // Don't auto-test - only set the value
+    // User will click "Test Token" button manually
   }
 }, { immediate: true })
 
