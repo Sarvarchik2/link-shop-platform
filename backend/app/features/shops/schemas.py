@@ -100,8 +100,9 @@ class TelegramBotTestRequest(BaseModel):
     token: str
 
 class TelegramBotTestResponse(BaseModel):
-    is_valid: bool
-    bot_info: Optional[dict] = None
+    valid: bool  # Changed from is_valid to match frontend
+    bot_name: Optional[str] = None
+    username: Optional[str] = None
     error: Optional[str] = None
 
 class TelegramSyncChatRequest(BaseModel):

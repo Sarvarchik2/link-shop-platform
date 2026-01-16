@@ -132,11 +132,19 @@ class ShopService:
                 response = await client.get(f"https://api.telegram.org/bot{token}/getMe")
                 if response.status_code == 200:
                     data = response.json()
-                    return TelegramBotTestResponse(is_valid=True, bot_info=data.get("result"))
+                    result = data.get("result", {})
+                    return TelegramBotTestResponse(
+                        valid=True, 
+                        bot_name=result.get("first_name"),
+                        username=result.get("username")
+                    )
                 else:
-                    return TelegramBotTestResponse(is_valid=False, error=response.json().get("description", "Unknown error"))
+                    return TelegramBotTestResponse(
+                        valid=False, 
+                        error=response.json().get("description", "Unknown error")
+                    )
             except Exception as e:
-                return TelegramBotTestResponse(is_valid=False, error=str(e))
+                return TelegramBotTestResponse(valid=False, error=str(e))
 
     def sync_telegram_chat(self, db: Session, shop_slug: str, user_id: int, chat_id: str):
         shop = self.get_shop_by_slug(db, shop_slug)
