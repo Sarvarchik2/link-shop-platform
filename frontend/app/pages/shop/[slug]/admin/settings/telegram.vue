@@ -60,6 +60,7 @@
               <div class="input-with-action">
                 <input 
                   v-model="botToken" 
+                  @input="isValid = false"
                   type="password" 
                   class="form-input" 
                   placeholder="123456789:ABCDefGhIJKlmNoPQRsTUVwxyZ"
@@ -74,6 +75,10 @@
                 </button>
               </div>
               <p class="input-hint">Enter the token received from @BotFather</p>
+              
+              <div v-if="isValid" class="success-hint">
+                <p>✅ <strong>Important:</strong> Open your bot in Telegram and press <strong>/start</strong> to subscribe to notifications!</p>
+              </div>
             </div>
 
             <!-- Bot Result Info -->
@@ -191,8 +196,10 @@ const { data: shop, refresh } = await useFetch(`${config.public.apiBase}/platfor
 watch(shop, (newShop) => {
   if (newShop?.telegram_bot_token) {
     botToken.value = newShop.telegram_bot_token
-    // Don't auto-test - only set the value
-    // User will click "Test Token" button manually
+    // Restore active state if previously saved as active
+    if (newShop.is_bot_active) {
+      isValid.value = true
+    }
   }
 }, { immediate: true })
 
@@ -586,10 +593,22 @@ const copyToClipboard = (text) => {
   padding-top: 4px;
 }
 
+
 .step-item.highlight .step-num {
   background: #8B5CF6;
   color: white;
 }
+
+.success-hint {
+  margin-top: 16px;
+  padding: 12px;
+  background: #ECFDF5;
+  border: 1px solid #10B981;
+  border-radius: 12px;
+  color: #065F46;
+  font-size: 0.9rem;
+}
+
 
 .copy-box {
   margin-top: 8px;
