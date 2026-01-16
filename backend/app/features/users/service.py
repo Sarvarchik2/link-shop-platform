@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from typing import List
 from .repository import UserRepository
+from .models import User
 from .schemas import UserCreate, UserRead
 from app.core.security import get_password_hash, verify_password
 
@@ -10,6 +11,15 @@ class UserService:
 
     def get_user_by_phone(self, db: Session, phone: str):
         return self.repository.get_by_phone(db, phone)
+
+    def get_user_by_email(self, db: Session, email: str):
+        return self.repository.get_by_email(db, email)
+
+    def get_user_by_reset_token(self, db: Session, token: str):
+        return self.repository.get_by_reset_token(db, token)
+
+    def update_user(self, db: Session, user: User, update_data: dict):
+        return self.repository.update(db, user, update_data)
 
     def get_all_users(self, db: Session, skip: int = 0, limit: int = 100) -> List[UserRead]:
         return self.repository.get_all(db, skip, limit)

@@ -282,7 +282,19 @@
             "login_error": "Invalid phone number or password",
             "register_error": "Registration failed. This number might already be registered."
         },
-        "loggedOut": "You have logged out"
+        "loggedOut": "You have logged out",
+        "forgot_password": "Forgot password?",
+        "reset_password_title": "Reset Password",
+        "reset_password_button": "Reset Password",
+        "email_not_verified_error": "Password reset is not possible. Your email was not verified in your profile",
+        "reset_password_success": "Password successfully reset",
+        "reset_password_confirm_placeholder": "Confirm new password",
+        "request_reset_success": "Password reset link sent to your email",
+        "verify_email_modal_title": "Email Verification",
+        "verify_email_code_placeholder": "6-digit code",
+        "verify_email_success": "Email successfully verified",
+        "verify_email_error": "Invalid code or expired",
+        "verification_code_sent": "Verification code sent to your email"
     },
     "common": {
         "optional": "optional",
@@ -1229,7 +1241,11 @@
             "firstName": "First Name",
             "lastName": "Last Name",
             "phone": "Phone",
-            "phoneChangeHint": "Phone number cannot be changed"
+            "phoneChangeHint": "Phone number cannot be changed",
+            "email_verified": "Verified",
+            "email_unverified": "Unverified",
+            "verify_email": "Verify",
+            "email_label": "Email"
         },
         "shops": {
             "title": "My Shops",

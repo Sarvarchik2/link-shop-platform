@@ -29,6 +29,10 @@
           </button>
 
           <div class="form-footer">
+            <NuxtLink :to="localePath('/forgot-password')" class="forgot-link">{{ $t('auth.forgot_password') }}</NuxtLink>
+          </div>
+
+          <div class="form-footer">
             <span class="footer-text">{{ $t('auth.no_account') }}</span>
             <NuxtLink :to="registerLink" class="footer-link">{{ $t('auth.register_link_text') }}</NuxtLink>
           </div>
@@ -279,15 +283,18 @@ const handleLogin = async () => {
   font-size: 0.875rem;
 }
 
-.footer-link {
+.footer-link,
+.forgot-link {
   color: #111;
   font-weight: 600;
   margin-left: 4px;
   text-decoration: none;
   transition: color 0.2s;
+  font-size: 0.875rem;
 }
 
-.footer-link:hover {
+.footer-link:hover,
+.forgot-link:hover {
   text-decoration: underline;
 }
 

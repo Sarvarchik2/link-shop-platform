@@ -273,7 +273,19 @@
             "login_error": "Неверный номер телефона или пароль",
             "register_error": "Ошибка при регистрации. Этот номер телефона уже зарегистрирован."
         },
-        "loggedOut": "Вы вышли из аккаунта"
+        "loggedOut": "Вы вышли из аккаунта",
+        "forgot_password": "Забыли пароль?",
+        "reset_password_title": "Сброс пароля",
+        "reset_password_button": "Сменить пароль",
+        "email_not_verified_error": "Сброс пароля невозможен. Ваша почта не была подтверждена в профиле",
+        "reset_password_success": "Пароль успешно изменен",
+        "reset_password_confirm_placeholder": "Подтвердите новый пароль",
+        "request_reset_success": "Ссылка для сброса пароля отправлена на ваш email",
+        "verify_email_modal_title": "Подтверждение Email",
+        "verify_email_code_placeholder": "6-значный код",
+        "verify_email_success": "Email успешно подтвержден",
+        "verify_email_error": "Неверный код или срок действия истек",
+        "verification_code_sent": "Код подтверждения отправлен на ваш email"
     },
     "common": {
         "optional": "необязательно",
@@ -931,7 +943,11 @@
             "firstName": "Имя",
             "lastName": "Фамилия",
             "phone": "Телефон",
-            "phoneChangeHint": "Номер телефона изменить нельзя"
+            "phoneChangeHint": "Номер телефона изменить нельзя",
+            "email_verified": "Подтвержден",
+            "email_unverified": "Не подтвержден",
+            "verify_email": "Подтвердить",
+            "email_label": "Email"
         },
         "shops": {
             "title": "Мои магазины",

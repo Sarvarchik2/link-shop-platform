@@ -217,7 +217,19 @@
         },
         "login_required_modal_title": "Tizimga kirish talab qilinadi",
         "login_required_modal_text": "Iltimos, davom etish uchun tizimga kiring yoki ro'yxatdan o'ting",
-        "loggedOut": "Siz tizimdan chiqdingiz"
+        "loggedOut": "Siz tizimdan chiqdingiz",
+        "forgot_password": "Parolni unutdingizmi?",
+        "reset_password_title": "Parolni tiklash",
+        "reset_password_button": "Parolni o'zgartirish",
+        "email_not_verified_error": "Spro's paroli mumkin emas. Sizning pochtangiz profilda tasdiqlanmagan",
+        "reset_password_success": "Parol muvaffaqiyatli o'zgartirildi",
+        "reset_password_confirm_placeholder": "Yangi parolni tasdiqlang",
+        "request_reset_success": "Parolni tiklash havolasi emailingizga yuborildi",
+        "verify_email_modal_title": "Emailni tasdiqlash",
+        "verify_email_code_placeholder": "6 xonali kod",
+        "verify_email_success": "Email muvaffaqiyatli tasdiqlandi",
+        "verify_email_error": "Tasdiqlash kodi noto'g'ri yoki muddati o'tgan",
+        "verification_code_sent": "Tasdiqlash kodi emailingizga yuborildi"
     },
     "common": {
         "optional": "ixtiyoriy",
@@ -797,19 +809,23 @@
             "createShop": "Do'kon yaratish",
             "customerProfile": "Xaridor profili"
         },
+        "info": {
+            "email_verified": "Tasdiqlangan",
+            "email_unverified": "Tasdiqlanmagan",
+            "verify_email": "Tasdiqlash",
+            "email_label": "Email",
+            "phone": "Telefon",
+            "firstName": "Ism",
+            "lastName": "Familiya",
+            "title": "Shaxsiy ma'lumotlar",
+            "phoneChangeHint": "Telefon raqamini o'zgartirish uchun qo'llab-quvvatlash xizmatiga murojaat qiling"
+        },
         "actions": {
             "orders": "Buyurtmalarim",
             "favorites": "Sevimlilar",
             "cart": "Savatcha",
             "products": "Mahsulotlar",
             "logout": "Chiqish"
-        },
-        "info": {
-            "title": "Shaxsiy ma'lumotlar",
-            "firstName": "Ism",
-            "lastName": "Familiya",
-            "phone": "Telefon raqam",
-            "phoneChangeHint": "Telefon raqamni o'zgartirib bo'lmaydi"
         },
         "shops": {
             "title": "Mening do'konlarim",
@@ -1065,7 +1081,7 @@
             "titlePlaceholder": "Yozgi kolleksiya 2024",
             "subtitleLabel": "Quyi sarlavha",
             "subtitlePlaceholder": "$299 dan boshlab",
-            "linkPlaceholder": "https://link-shop.uz/collection/summer",
+            "linkPlaceholder": "https://storely.uz/collection/summer",
             "tooltips": {
                 "edit": "Tahrirlash",
                 "delete": "O'chirish"

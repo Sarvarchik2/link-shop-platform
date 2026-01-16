@@ -19,6 +19,12 @@ class UserRepository:
         db.refresh(db_user)
         return db_user
 
+    def get_by_email(self, db: Session, email: str):
+        return db.query(User).filter(User.email == email).first()
+
+    def get_by_reset_token(self, db: Session, token: str):
+        return db.query(User).filter(User.reset_password_token == token).first()
+
     def update(self, db: Session, db_user: User, update_data: dict):
         for field, value in update_data.items():
             setattr(db_user, field, value)

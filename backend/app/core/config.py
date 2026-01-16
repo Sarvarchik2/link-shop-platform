@@ -22,6 +22,15 @@ class Settings(BaseSettings):
         if self.DATABASE_URL.startswith("postgres://"):
              return self.DATABASE_URL.replace("postgres://", "postgresql://", 1)
         return self.DATABASE_URL
+    
+    # SMTP settings
+    SMTP_HOST: str = os.getenv("SMTP_HOST", "smtp.gmail.com")
+    SMTP_PORT: int = int(os.getenv("SMTP_PORT", 587))
+    SMTP_USER: str = os.getenv("SMTP_USER", "sarvarikvarvarik@gmail.com")
+    SMTP_PASSWORD: str = os.getenv("SMTP_PASSWORD", "lxxh dgbo fsfv wiyb")
+    SMTP_FROM_EMAIL: str = os.getenv("SMTP_FROM_EMAIL", "sarvarikvarvarik@gmail.com")
+    
+    FRONTEND_URL: str = os.getenv("FRONTEND_URL", "http://localhost:3000")
 
     class Config:
         env_file = ".env"
