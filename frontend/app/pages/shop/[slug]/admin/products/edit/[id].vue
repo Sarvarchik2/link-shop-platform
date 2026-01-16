@@ -392,9 +392,11 @@ const handleLogout = () => {
   toast.success(t('alerts.shop.loggedOut'))
 }
 
+// Move config to top level so it's accessible in all functions
+const config = useRuntimeConfig()
+
 onMounted(async () => {
   if (!shopSlug.value || !productId.value) return
-  const config = useRuntimeConfig()
 
   try {
     // 1. Fetch product data

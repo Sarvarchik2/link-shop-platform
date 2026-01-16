@@ -405,6 +405,9 @@ const limitReached = computed(() => {
   return stats.value.total_products >= stats.value.plan_limit_products
 })
 
+// Move config to top level so it's accessible in all functions
+const config = useRuntimeConfig()
+
 onMounted(async () => {
   console.log('[Add Product] Компонент смонтирован, shopSlug:', shopSlug.value)
 
@@ -413,7 +416,6 @@ onMounted(async () => {
     return
   }
 
-  const config = useRuntimeConfig()
   // Загружаем данные после монтирования
   try {
     console.log('[Add Product] Загрузка данных для shop:', shopSlug.value)
