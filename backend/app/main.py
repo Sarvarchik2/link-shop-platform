@@ -81,6 +81,14 @@ def on_startup():
         print(f"Startup: Connecting to database host: {db_host}")
     except:
         print("Startup: Connecting to database...")
+    
+    # Run migrations before creating tables
+    try:
+        from app.db.migrations import run_migrations
+        print("Running database migrations...")
+        run_migrations(engine)
+    except Exception as e:
+        print(f"Migration warning: {e}")
         
     Base.metadata.create_all(bind=engine)
     
