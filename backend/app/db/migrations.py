@@ -147,6 +147,11 @@ def run_migrations(engine):
                     UPDATE subscriptionplan SET can_broadcast = TRUE 
                     WHERE slug IN ('business', 'basic', 'premium') AND can_broadcast IS NULL;
                     """,
+                    
+                    # Enable broadcasts for ALL plans (for demo/testing)
+                    """
+                    UPDATE subscriptionplan SET can_broadcast = TRUE WHERE can_broadcast = FALSE OR can_broadcast IS NULL;
+                    """,
                 ]
                 
                 for migration in migrations:
