@@ -2,7 +2,6 @@ import httpx
 import logging
 from sqlalchemy.orm import Session
 from app.features.shops.models import Shop, UserStoreTelegram
-from app.core.crypto import crypto
 
 logger = logging.getLogger(__name__)
 
@@ -23,10 +22,10 @@ class TelegramNotificationService:
             logger.info(f"Chat ID not found for user {user_id} in shop {shop_id}")
             return
         
-        # 3. Decrypt token
-        token = crypto.decrypt(shop.telegram_bot_token)
+        # Use token directly (not encrypted in DB)
+        token = shop.telegram_bot_token
         if not token:
-            logger.error(f"Failed to decrypt bot token for shop {shop_id}")
+            logger.error(f"Bot token not found for shop {shop_id}")
             return
         
         # 4. Format message

@@ -5,7 +5,6 @@ from app.core.celery_app import celery_app
 from app.db.session import SessionLocal
 from .models import Broadcast, BroadcastStatus
 from app.features.shops.models import Shop, UserStoreTelegram
-from app.core.crypto import crypto
 import logging
 import time
 
@@ -26,7 +25,8 @@ def send_broadcast_task(broadcast_id: int):
             db.commit()
             return
 
-        token = crypto.decrypt(shop.telegram_bot_token)
+        # Use token directly (not encrypted in DB)
+        token = shop.telegram_bot_token
         if not token:
             broadcast.status = BroadcastStatus.FAILED
             db.commit()
