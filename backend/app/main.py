@@ -33,6 +33,7 @@ from app.features.subscriptions.router import router as subscriptions_router
 from app.features.offers.router import router as offers_router
 from app.features.users.router import router as users_router
 from app.features.broadcasts.router import router as broadcasts_router
+from app.features.telegram.router import router as telegram_router
 
 app = FastAPI(title="Storely Platform API")
 
@@ -71,6 +72,7 @@ app.include_router(media_router, tags=["Media"])
 app.include_router(subscriptions_router, tags=["Subscriptions"])
 app.include_router(offers_router, tags=["Offers"])
 app.include_router(broadcasts_router, tags=["Broadcasts"])
+app.include_router(telegram_router, tags=["Telegram"])
 
 @app.on_event("startup")
 def on_startup():

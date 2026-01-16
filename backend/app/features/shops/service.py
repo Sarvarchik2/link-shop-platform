@@ -165,6 +165,28 @@ class ShopService:
         
         db.commit()
         return mapping
+    
+    async def set_telegram_webhook(self, token: str, shop_slug: str) -> dict:
+        """Set webhook URL for Telegram bot"""
+        import os
+        async with httpx.AsyncClient() as client:
+            try:
+                # Get base URL from environment or use Railway default
+                base_url = os.getenv("BASE_URL", "https://link-shop-platform-production.up.railway.app")
+                webhook_url = f"{base_url}/telegram/webhook/{shop_slug}"
+                
+                # Set webhook
+                url = f"https://api.telegram.org/bot{token}/setWebhook"
+                response = await client.post(url, json={"url": webhook_url})
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    return {"success": True, "webhook_url": webhook_url, "result": data}
+                else:
+                    return {"success": False, "error": response.text}
+            except Exception as e:
+                return {"success": False, "error": str(e)}
+
 
 
     def get_all_shops_for_admin(self, db: Session):

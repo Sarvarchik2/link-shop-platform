@@ -44,13 +44,28 @@ def get_shop(shop_slug: str, db: Session = Depends(get_db)):
     return shop_service.get_shop_by_slug(db, shop_slug, check_active=False)
 
 @router.put("/shop/{shop_slug}/admin/info", response_model=ShopRead)
-def update_shop_settings(
+async def update_shop_settings(
     shop_slug: str, 
     shop_in: ShopUpdate, 
     db: Session = Depends(get_db), 
     current_user = Depends(get_current_user)
 ):
     shop = shop_service.update_shop(db, shop_slug, shop_in, current_user)
+    
+    # If telegram_bot_token was updated and bot is active, set webhook
+    if shop_in.telegram_bot_token and shop_in.is_bot_active:
+        try:
+            webhook_result = await shop_service.set_telegram_webhook(
+                shop_in.telegram_bot_token, 
+                shop_slug
+            )
+            if webhook_result.get("success"):
+                print(f"✓ Webhook set for {shop_slug}: {webhook_result.get('webhook_url')}")
+            else:
+                print(f"⚠ Failed to set webhook: {webhook_result.get('error')}")
+        except Exception as e:
+            print(f"⚠ Error setting webhook: {e}")
+    
     return shop_service.prepare_for_read(shop)
 
 @router.post("/shop/{shop_slug}/admin/telegram/test", response_model=TelegramBotTestResponse)
