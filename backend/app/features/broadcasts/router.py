@@ -75,6 +75,7 @@ async def send_broadcast(
     try:
         from app.core.celery_app import celery_app
         import redis
+        import os  # Added import os
         from app.core.config import settings
         
         # Simple check if redis is reachable
