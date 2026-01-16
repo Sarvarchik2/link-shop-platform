@@ -26,7 +26,7 @@ def check_broadcast_permission(shop, db, current_user):
         if current_user.role != "platform_admin":
              raise HTTPException(status_code=403, detail="Your current plan does not support broadcasts")
 
-@router.get("/", response_model=List[schemas.BroadcastResponse])
+@router.get("", response_model=List[schemas.BroadcastResponse])
 async def list_broadcasts(
     shop_slug: str,
     db: Session = Depends(get_db),
@@ -35,7 +35,7 @@ async def list_broadcasts(
     shop = await get_shop_and_check_permission(shop_slug, db, current_user)
     return service.broadcast_service.get_shop_broadcasts(db, shop.id)
 
-@router.post("/", response_model=schemas.BroadcastResponse)
+@router.post("", response_model=schemas.BroadcastResponse)
 async def create_broadcast(
     shop_slug: str,
     broadcast_in: schemas.BroadcastCreate,
