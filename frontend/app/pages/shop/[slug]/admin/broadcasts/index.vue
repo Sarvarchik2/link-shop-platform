@@ -317,6 +317,13 @@ const sendBroadcast = async (id) => {
       method: 'POST',
       headers: { Authorization: `Bearer ${token.value}` }
     })
+    
+    // Update local status immediately to hide button
+    const broadcast = broadcasts.value?.find(b => b.id === id)
+    if (broadcast) {
+      broadcast.status = 'pending'  // Change status to hide Send button
+    }
+    
     toast.success('Broadcast started')
     refresh()
     
