@@ -28,18 +28,26 @@
     <!-- Main Content -->
     <main class="admin-main">
       <div class="page-header">
-        <div>
+        <div class="header-text">
           <h1 class="page-title">{{ $t('admin.broadcasts.pageTitle') }}</h1>
           <p class="page-subtitle">{{ $t('admin.broadcasts.pageSubtitle') }}</p>
         </div>
-        <button @click="openCreateModal" class="add-btn">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <button @click="openCreateModal" class="add-btn mobile-hidden">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <line x1="12" y1="5" x2="12" y2="19"></line>
             <line x1="5" y1="12" x2="19" y2="12"></line>
           </svg>
           {{ $t('admin.broadcasts.createNew') }}
         </button>
       </div>
+
+      <!-- Mobile Add FAB -->
+      <button @click="openCreateModal" class="mobile-fab">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+      </button>
 
       <!-- Stats Cards -->
       <div class="stats-grid mb-8">
@@ -150,12 +158,18 @@
                 <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">{{
                   $t('admin.broadcasts.telegramPreview') }}</label>
                 <div class="tg-preview">
-                  <div class="tg-bubble">
-                    <div v-if="form.media_url" class="tg-media">
-                      <video v-if="isMediaVideo(form.media_url)" :src="form.media_url" autoplay loop muted
-                        class="preview-video"></video>
-                      <img v-else :src="form.media_url" alt="Media" />
-                      <button @click="form.media_url = ''" class="remove-media-btn">&times;</button>
+                  <div class="tg-bubble" :class="{ 'is-loading': uploading }">
+                    <div v-if="form.media_url || uploading" class="tg-media">
+                      <div v-if="uploading" class="media-skeleton">
+                        <div class="skeleton-shimmer"></div>
+                        <span class="upload-progress-text">Zaxiralanyapti...</span>
+                      </div>
+                      <template v-else-if="form.media_url">
+                        <video v-if="isMediaVideo(form.media_url)" :src="form.media_url" autoplay loop muted
+                          class="preview-video"></video>
+                        <img v-else :src="form.media_url" alt="Media" />
+                        <button @click="form.media_url = ''" class="remove-media-btn" title="O'chirish">&times;</button>
+                      </template>
                     </div>
                     <div class="tg-text">
                       {{ form.message_text || $t('admin.broadcasts.messagePlaceholder') }}
@@ -482,50 +496,65 @@ const formatDate = (dateStr) => {
 }
 
 .page-title {
-  font-size: 2rem;
+  font-size: 2.25rem;
   font-weight: 900;
   color: #111;
   margin-bottom: 8px;
+  line-height: 1.1;
+}
+
+@media (max-width: 640px) {
+  .page-title {
+    font-size: 1.75rem;
+  }
 }
 
 .page-subtitle {
   color: #6B7280;
-  font-size: 1rem;
+  font-size: 1.05rem;
+  font-weight: 500;
 }
 
 .glass-card {
   background: white;
-  border: 1px solid #E5E7EB;
+  border: 1px solid #F3F4F6;
   border-radius: 20px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
 }
 
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 20px;
 }
 
+@media (max-width: 640px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .stat-card {
-  padding: 24px;
+  padding: 28px;
   display: flex;
   align-items: center;
-  gap: 16px;
-  transition: transform 0.2s, box-shadow 0.2s;
+  gap: 20px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .stat-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
 }
 
 .stat-icon {
-  width: 56px;
-  height: 56px;
-  border-radius: 16px;
+  width: 60px;
+  height: 60px;
+  border-radius: 18px;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .stat-icon.sent {
@@ -539,14 +568,15 @@ const formatDate = (dateStr) => {
 }
 
 .stat-label {
-  font-size: 0.875rem;
+  font-size: 0.95rem;
   color: #6B7280;
   display: block;
   font-weight: 600;
+  margin-bottom: 4px;
 }
 
 .stat-value {
-  font-size: 1.75rem;
+  font-size: 2rem;
   font-weight: 800;
   color: #111;
 }
@@ -554,49 +584,83 @@ const formatDate = (dateStr) => {
 .add-btn {
   background: #111;
   color: white;
-  padding: 12px 24px;
-  border-radius: 12px;
-  font-weight: 700;
+  padding: 14px 28px;
+  border-radius: 16px;
+  font-weight: 800;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   border: none;
   cursor: pointer;
   transition: all 0.3s;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.2);
 }
 
 .add-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
   background: #000;
+  transform: scale(1.02);
+}
+
+.mobile-fab {
+  display: none;
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 60px;
+  height: 60px;
+  border-radius: 30px;
+  background: #111;
+  color: white;
+  border: none;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  z-index: 900;
+  transition: all 0.2s;
+}
+
+@media (max-width: 1024px) {
+  .mobile-hidden {
+    display: none;
+  }
+
+  .mobile-fab {
+    display: flex;
+  }
 }
 
 .section-title {
-  font-size: 1.25rem;
-  font-weight: 800;
+  font-size: 1.5rem;
+  font-weight: 900;
   color: #111;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
 }
 
 /* Broadcast Cards */
 .broadcasts-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
   gap: 24px;
+}
+
+@media (max-width: 640px) {
+  .broadcasts-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .broadcast-card {
   background: white;
-  border: 1px solid #E5E7EB;
-  border-radius: 20px;
+  border: 1px solid #F3F4F6;
+  border-radius: 24px;
   padding: 24px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;
   position: relative;
   overflow: hidden;
-  transition: all 0.3s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
 }
 
 .broadcast-card:hover {
@@ -736,27 +800,55 @@ const formatDate = (dateStr) => {
 
 .glass-modal {
   background: white;
-  border: 1px solid #E5E7EB;
-  border-radius: 24px;
-  width: 90%;
+  border: 1px solid #F3F4F6;
+  border-radius: 32px;
+  width: 100%;
   max-width: 650px;
   max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  animation: modalScale 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalScale {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (max-width: 640px) {
+  .glass-modal {
+    max-height: 95vh;
+    border-radius: 24px;
+  }
 }
 
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 28px 32px;
-  border-bottom: 1px solid #E5E7EB;
+  padding: 24px 32px;
+  border-bottom: 1px solid #F3F4F6;
+  flex-shrink: 0;
 }
 
 .modal-header h2 {
   font-size: 1.5rem;
-  font-weight: 800;
+  font-weight: 900;
   color: #111;
+}
+
+@media (max-width: 640px) {
+  .modal-header {
+    padding: 20px 24px;
+  }
 }
 
 .close-modal-btn {
@@ -764,11 +856,19 @@ const formatDate = (dateStr) => {
   height: 40px;
   background: #F3F4F6;
   border: none;
-  border-radius: 12px;
+  border-radius: 14px;
   font-size: 1.5rem;
   cursor: pointer;
   color: #6B7280;
   transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.close-modal-btn:hover {
+  background: #111;
+  color: white;
 }
 
 .close-modal-btn:hover {
@@ -846,6 +946,46 @@ const formatDate = (dateStr) => {
 .remove-media-btn:hover {
   background: rgba(255, 0, 0, 0.7);
   transform: scale(1.1);
+}
+
+.media-skeleton {
+  width: 100%;
+  aspect-ratio: 16/9;
+  background: #f0f2f5;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.skeleton-shimmer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.upload-progress-text {
+  position: relative;
+  z-index: 1;
+  font-size: 0.8rem;
+  color: #8e949a;
+  font-weight: 600;
 }
 
 .tg-text {

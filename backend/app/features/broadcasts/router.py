@@ -95,7 +95,7 @@ async def send_broadcast(
                 logger.info(f"Broadcast {broadcast.id} queued via Celery")
                 return broadcast
             except Exception as redis_err:
-                logger.warning(f"Redis reachable check failed: {redis_err}, falling back to BackgroundTasks")
+                logger.debug("Redis unavailable, using BackgroundTasks")
                 # Fall through to BackgroundTasks
         
         from app.features.broadcasts import tasks

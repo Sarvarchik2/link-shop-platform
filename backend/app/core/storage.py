@@ -54,7 +54,9 @@ class MinioStorage:
                 logger.info(f"Created Minio bucket: {self.bucket_name}")
             self._bucket_ensured = True
         except Exception as e:
-            logger.error(f"Error ensuring Minio bucket: {e}")
+            # Only log as warning once per cooldown to avoid spamming logs
+            if time.time() - self._last_fail_time > self._fail_cooldown:
+                logger.warning(f"Minio not available, using local storage fallback. Error: {e}")
             self._last_fail_time = time.time()
             self._bucket_ensured = False
             raise e
@@ -73,9 +75,9 @@ class MinioStorage:
             protocol = "https" if settings.MINIO_SECURE else "http"
             return f"{protocol}://{settings.MINIO_ENDPOINT}/{self.bucket_name}/{filename}"
         except Exception as e:
-            if not isinstance(e, Exception) or "cooldown" not in str(e):
-                logger.error(f"Error uploading file to Minio: {e}")
-                self._last_fail_time = time.time()
+            # Suppress logging if it's just a cooldown message
+            if "cooldown" not in str(e).lower() and time.time() - self._last_fail_time > self._fail_cooldown:
+                logger.debug(f"Minio upload failed, using local storage")
             raise e
 
 storage = MinioStorage()

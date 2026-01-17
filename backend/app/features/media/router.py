@@ -29,9 +29,9 @@ async def upload_file(file: UploadFile = File(...)):
         except Exception as minio_error:
             # Check if it was a cooldown exception to reduce noise in logs
             if "cooldown" in str(minio_error):
-                logger.debug("Minio is in cooldown, skipping attempt")
+                logger.debug("Minio in cooldown, using local storage")
             else:
-                logger.warning(f"Minio not available: {minio_error}, falling back to local storage")
+                logger.debug("Minio unavailable, using local storage")
             
             # Fallback to local storage
             upload_dir = Path(settings.UPLOAD_DIR)
@@ -44,7 +44,7 @@ async def upload_file(file: UploadFile = File(...)):
             # Return URL from settings.BASE_URL
             url = f"{settings.BASE_URL}/uploads/{filename}"
             
-            logger.info(f"Successfully uploaded {filename} locally: {url}")
+            logger.debug(f"Uploaded {filename} locally: {url}")
             return {"url": url}
             
     except Exception as e:
