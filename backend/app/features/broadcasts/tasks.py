@@ -42,15 +42,15 @@ def send_broadcast_task(broadcast_id: int):
             from app.features.orders.models import Order
             from datetime import timedelta
             thirty_days_ago = datetime.utcnow() - timedelta(days=30)
-            user_ids_query = db.query(Order.user_id).filter(
+            
+            # Optimized join query: get recipients who made an order in last 30 days
+            query = db.query(UserStoreTelegram).join(
+                Order, Order.user_id == UserStoreTelegram.user_id
+            ).filter(
+                UserStoreTelegram.store_id == shop.id,
                 Order.shop_id == shop.id,
                 Order.created_at >= thirty_days_ago
-            ).distinct().all()
-            user_ids = [u[0] for u in user_ids_query]
-            query = db.query(UserStoreTelegram).filter(
-                UserStoreTelegram.store_id == shop.id,
-                UserStoreTelegram.user_id.in_(user_ids)
-            )
+            ).distinct()
         else:
             query = db.query(UserStoreTelegram).filter(UserStoreTelegram.store_id == shop.id)
         

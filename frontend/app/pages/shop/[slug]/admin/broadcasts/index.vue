@@ -74,47 +74,54 @@
       <div class="broadcasts-section" v-if="broadcasts?.length">
         <h2 class="section-title mb-4">{{ $t('admin.broadcasts.history') }}</h2>
         <div class="broadcasts-grid">
-          <div v-for="b in broadcasts" :key="b.id" class="broadcast-card">
-            <div class="card-status" :class="b.status">
-              {{ $t(`admin.broadcasts.status.${b.status}`) }}
-            </div>
-            <div class="card-content">
-              <p class="broadcast-msg">{{ b.message_text }}</p>
-              <div class="broadcast-meta">
-                <span class="meta-item">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                    <line x1="16" y1="2" x2="16" y2="6"></line>
-                    <line x1="8" y1="2" x2="8" y2="6"></line>
-                    <line x1="3" y1="10" x2="21" y2="10"></line>
+          <TransitionGroup name="list">
+            <div v-for="b in broadcasts" :key="b.id" class="broadcast-card animate-in">
+              <div class="card-status" :class="b.status">
+                {{ $t(`admin.broadcasts.status.${b.status}`) }}
+              </div>
+              <div class="card-content">
+                <div v-if="b.media_url" class="card-thumbnail mb-3">
+                  <video v-if="isMediaVideo(b.media_url)" :src="b.media_url" muted loop onmouseover="this.play()"
+                    onmouseout="this.pause()"></video>
+                  <img v-else :src="b.media_url" alt="" />
+                </div>
+                <p class="broadcast-msg">{{ b.message_text }}</p>
+                <div class="broadcast-meta">
+                  <span class="meta-item">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                      <line x1="16" y1="2" x2="16" y2="6"></line>
+                      <line x1="8" y1="2" x2="8" y2="6"></line>
+                      <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
+                    {{ formatDate(b.created_at) }}
+                  </span>
+                  <span class="meta-item">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                      <circle cx="9" cy="7" r="4"></circle>
+                      <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                      <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                    {{ b.sent_count }}/{{ b.total_count }}
+                  </span>
+                </div>
+              </div>
+              <div class="card-footer">
+                <button v-if="b.status === 'draft'" @click="sendBroadcast(b.id)" class="send-now-btn"
+                  :disabled="sendingIds.has(b.id)">
+                  <span v-if="sendingIds.has(b.id)" class="spinner mr-2"></span>
+                  {{ sendingIds.has(b.id) ? $t('common.sending') : $t('admin.broadcasts.sendNow') }}
+                </button>
+                <button @click="deleteBroadcast(b.id)" class="delete-btn">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
                   </svg>
-                  {{ formatDate(b.created_at) }}
-                </span>
-                <span class="meta-item">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="9" cy="7" r="4"></circle>
-                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                  </svg>
-                  {{ b.sent_count }}/{{ b.total_count }}
-                </span>
+                </button>
               </div>
             </div>
-            <div class="card-footer">
-              <button v-if="b.status === 'draft'" @click="sendBroadcast(b.id)" class="send-now-btn"
-                :disabled="sendingIds.has(b.id)">
-                <span v-if="sendingIds.has(b.id)" class="spinner mr-2"></span>
-                {{ sendingIds.has(b.id) ? $t('common.sending') : $t('admin.broadcasts.sendNow') }}
-              </button>
-              <button @click="deleteBroadcast(b.id)" class="delete-btn">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <polyline points="3 6 5 6 21 6"></polyline>
-                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                </svg>
-              </button>
-            </div>
-          </div>
+          </TransitionGroup>
         </div>
       </div>
       <div v-else class="empty-state glass-card">
@@ -145,7 +152,10 @@
                 <div class="tg-preview">
                   <div class="tg-bubble">
                     <div v-if="form.media_url" class="tg-media">
-                      <img :src="form.media_url" alt="Media" />
+                      <video v-if="isMediaVideo(form.media_url)" :src="form.media_url" autoplay loop muted
+                        class="preview-video"></video>
+                      <img v-else :src="form.media_url" alt="Media" />
+                      <button @click="form.media_url = ''" class="remove-media-btn">&times;</button>
                     </div>
                     <div class="tg-text">
                       {{ form.message_text || $t('admin.broadcasts.messagePlaceholder') }}
@@ -168,14 +178,15 @@
                   <label>{{ $t('admin.broadcasts.media') }} (URL)</label>
                   <div class="image-input-group">
                     <input v-model="form.media_url" type="text" placeholder="https://..." />
-                    <label class="upload-btn">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    <label class="upload-btn" :class="{ 'is-loading': uploading }">
+                      <span v-if="uploading" class="spinner dark"></span>
+                      <svg v-else width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2">
                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                         <polyline points="17 8 12 3 7 8"></polyline>
                         <line x1="12" y1="3" x2="12" y2="15"></line>
                       </svg>
-                      <input type="file" hidden @change="handleFileUpload" />
+                      <input type="file" hidden @change="handleFileUpload" :disabled="uploading" />
                     </label>
                   </div>
                 </div>
@@ -245,7 +256,14 @@ const localePath = useLocalePath()
 const sidebarOpen = ref(false)
 const showModal = ref(false)
 const saving = ref(false)
+const uploading = ref(false)
 const sendingIds = ref(new Set())
+
+const isMediaVideo = (url) => {
+  if (!url) return false
+  const ext = url.split('.').pop().toLowerCase()
+  return ['mp4', 'webm', 'ogg', 'mov', 'avi'].includes(ext)
+}
 
 const form = ref({
   message_text: '',
@@ -285,6 +303,7 @@ const handleFileUpload = async (e) => {
   const formData = new FormData()
   formData.append('file', file)
 
+  uploading.value = true
   try {
     const res = await $fetch(`${config.public.apiBase}/upload`, {
       method: 'POST',
@@ -292,8 +311,11 @@ const handleFileUpload = async (e) => {
       headers: { Authorization: `Bearer ${token.value}` }
     })
     form.value.media_url = res.url
+    toast.success('Media uploaded')
   } catch (err) {
     toast.error('Upload failed')
+  } finally {
+    uploading.value = false
   }
 }
 
@@ -784,10 +806,46 @@ const formatDate = (dateStr) => {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.tg-media img {
+.tg-media {
+  position: relative;
+  margin-bottom: 12px;
+}
+
+.tg-media img,
+.tg-media .preview-video {
   width: 100%;
-  border-radius: 10px;
-  margin-bottom: 8px;
+  border-radius: 12px;
+  display: block;
+}
+
+.preview-video {
+  background: #000;
+  max-height: 300px;
+  object-fit: contain;
+}
+
+.remove-media-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 24px;
+  height: 24px;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 16px;
+  backdrop-filter: blur(4px);
+  transition: all 0.2s;
+}
+
+.remove-media-btn:hover {
+  background: rgba(255, 0, 0, 0.7);
+  transform: scale(1.1);
 }
 
 .tg-text {
@@ -987,6 +1045,16 @@ const formatDate = (dateStr) => {
   animation: spin 0.8s linear infinite;
 }
 
+.spinner.dark {
+  border-color: rgba(0, 0, 0, 0.1);
+  border-top-color: #111;
+}
+
+.upload-btn.is-loading {
+  pointer-events: none;
+  background: #E5E7EB;
+}
+
 @keyframes spin {
   to {
     transform: rotate(360deg);
@@ -1002,6 +1070,54 @@ const formatDate = (dateStr) => {
 .modal-enter-from,
 .modal-leave-to {
   opacity: 0;
+}
+
+/* List Transitions */
+.list-enter-active,
+.list-leave-active {
+  transition: all 0.5s ease;
+}
+
+.list-enter-from,
+.list-leave-to {
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.list-move {
+  transition: transform 0.5s ease;
+}
+
+.animate-in {
+  animation: slideUp 0.5s ease-out forwards;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.card-thumbnail {
+  width: 100%;
+  height: 120px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #F3F4F6;
+  position: relative;
+}
+
+.card-thumbnail img,
+.card-thumbnail video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .mb-4 {

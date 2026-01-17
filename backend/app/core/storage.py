@@ -1,3 +1,4 @@
+import time
 from minio import Minio
 from io import BytesIO
 from app.core.config import settings
@@ -15,13 +16,19 @@ class MinioStorage:
         )
         self.bucket_name = settings.MINIO_BUCKET_NAME
         self._bucket_ensured = False
+        self._last_fail_time = 0
+        self._fail_cooldown = 60 # 1 minute cooldown before trying Minio again if it failed
 
     def _ensure_bucket(self):
         if self._bucket_ensured:
             return
+        
+        # Don't try if we recently failed
+        if time.time() - self._last_fail_time < self._fail_cooldown:
+            raise Exception("Minio is in cooldown period after failure")
+
         try:
-            # Set a very short timeout for bucket check if it's the first time
-            # But the minio client doesn't easily expose this per call without complex config
+            # Check if bucket exists
             if not self.client.bucket_exists(self.bucket_name):
                 self.client.make_bucket(self.bucket_name)
                 # Set public policy for the bucket so images can be accessed directly
@@ -48,11 +55,13 @@ class MinioStorage:
             self._bucket_ensured = True
         except Exception as e:
             logger.error(f"Error ensuring Minio bucket: {e}")
-            self._bucket_ensured = False # Try again next time if it failed due to network
+            self._last_fail_time = time.time()
+            self._bucket_ensured = False
+            raise e
 
     def upload_file(self, filename: str, content: bytes, content_type: str) -> str:
-        self._ensure_bucket()
         try:
+            self._ensure_bucket()
             self.client.put_object(
                 self.bucket_name,
                 filename,
@@ -64,7 +73,9 @@ class MinioStorage:
             protocol = "https" if settings.MINIO_SECURE else "http"
             return f"{protocol}://{settings.MINIO_ENDPOINT}/{self.bucket_name}/{filename}"
         except Exception as e:
-            logger.error(f"Error uploading file to Minio: {e}")
+            if not isinstance(e, Exception) or "cooldown" not in str(e):
+                logger.error(f"Error uploading file to Minio: {e}")
+                self._last_fail_time = time.time()
             raise e
 
 storage = MinioStorage()

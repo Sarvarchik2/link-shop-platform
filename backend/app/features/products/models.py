@@ -35,7 +35,7 @@ class Product(Base):
     sizes = Column(String, nullable=True)    # JSON string (legacy)
     colors = Column(String, nullable=True)   # JSON string (legacy)
     variants = Column(String, nullable=True) # JSON string
-    shop_id = Column(Integer, ForeignKey("shop.id"), nullable=True)
+    shop_id = Column(Integer, ForeignKey("shop.id"), nullable=True, index=True)
     is_preorder_enabled = Column(Boolean, default=False)
     sold_count = Column(Integer, default=0)
     created_at = Column(DateTime, default=datetime.utcnow)

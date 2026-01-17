@@ -35,8 +35,8 @@ class Shop(Base):
 
 class UserStoreTelegram(Base):
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
-    store_id = Column(Integer, ForeignKey("shop.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("user.id"), nullable=False, index=True)
+    store_id = Column(Integer, ForeignKey("shop.id"), nullable=False, index=True)
     telegram_chat_id = Column(String, nullable=False) # Storely uses BigInt, but String is safer for all IDs
     
     # Ensure a user can only have one chat_id per shop

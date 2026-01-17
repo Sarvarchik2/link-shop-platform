@@ -16,7 +16,7 @@ class BroadcastAudience(str, enum.Enum):
 
 class Broadcast(Base):
     id = Column(Integer, primary_key=True, index=True)
-    shop_id = Column(Integer, ForeignKey("shop.id"), nullable=False)
+    shop_id = Column(Integer, ForeignKey("shop.id"), nullable=False, index=True)
     message_text = Column(Text, nullable=False)
     media_url = Column(String, nullable=True)
     button_text = Column(String, nullable=True)

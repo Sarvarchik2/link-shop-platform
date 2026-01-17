@@ -71,23 +71,37 @@ async def send_broadcast(
     # Update status to PENDING
     broadcast = service.broadcast_service.update_broadcast(db, broadcast, {"status": models.BroadcastStatus.PENDING})
     
-    # Try Celery first, fallback to BackgroundTasks if Redis is missing
+    # Try Celery first, fallback to BackgroundTasks if Redis is missing or unresponsive
     try:
         from app.core.celery_app import celery_app
         import redis
-        import os  # Added import os
         from app.core.config import settings
         
-        # Simple check if redis is reachable
         broker_url = celery_app.conf.broker_url
-        if broker_url and (broker_url.startswith("redis://") or broker_url.startswith("rediss://")):
-             from app.features.broadcasts import tasks
-             tasks.send_broadcast_task.delay(broadcast.id)
-        else:
-             from app.features.broadcasts import tasks
-             background_tasks.add_task(tasks.send_broadcast_task, broadcast.id)
+        is_redis = broker_url and (broker_url.startswith("redis://") or broker_url.startswith("rediss://"))
+        
+        if is_redis:
+            # Check if redis is actually reachable to avoid long waits/retries
+            try:
+                # Use a short timeout for the check
+                r = redis.from_url(broker_url, socket_timeout=2, socket_connect_timeout=2)
+                r.ping()
+                
+                from app.features.broadcasts import tasks
+                tasks.send_broadcast_task.delay(broadcast.id)
+                logger.info(f"Broadcast {broadcast.id} queued via Celery")
+                return broadcast
+            except Exception as redis_err:
+                logger.warning(f"Redis reachable check failed: {redis_err}, falling back to BackgroundTasks")
+                # Fall through to BackgroundTasks
+        
+        from app.features.broadcasts import tasks
+        background_tasks.add_task(tasks.send_broadcast_task, broadcast.id)
+        logger.info(f"Broadcast {broadcast.id} queued via BackgroundTasks")
+        
     except Exception as e:
-        print(f"Celery delivery failed, using BackgroundTasks: {e}")
+        logger.error(f"Celery setup/delivery failed, using BackgroundTasks: {e}")
+        from app.features.broadcasts import tasks
         background_tasks.add_task(tasks.send_broadcast_task, broadcast.id)
     
     return broadcast

@@ -180,11 +180,11 @@ class ShopService:
     
     async def set_telegram_webhook(self, token: str, shop_slug: str) -> dict:
         """Set webhook URL for Telegram bot"""
-        import os
+        from app.core.config import settings
         async with httpx.AsyncClient() as client:
             try:
-                # Get base URL from environment or use Railway default
-                base_url = os.getenv("BASE_URL", "https://link-shop-platform-production.up.railway.app")
+                # Get base URL from settings
+                base_url = settings.BASE_URL
                 webhook_url = f"{base_url}/telegram/webhook/{shop_slug}"
                 
                 # Set webhook
