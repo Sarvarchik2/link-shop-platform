@@ -102,8 +102,10 @@
               </div>
             </div>
             <div class="card-footer">
-              <button v-if="b.status === 'draft'" @click="sendBroadcast(b.id)" class="send-now-btn">
-                {{ $t('admin.broadcasts.sendNow') }}
+              <button v-if="b.status === 'draft'" @click="sendBroadcast(b.id)" class="send-now-btn"
+                :disabled="sendingIds.has(b.id)">
+                <span v-if="sendingIds.has(b.id)" class="spinner mr-2"></span>
+                {{ sendingIds.has(b.id) ? $t('common.sending') : $t('admin.broadcasts.sendNow') }}
               </button>
               <button @click="deleteBroadcast(b.id)" class="delete-btn">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -243,6 +245,7 @@ const localePath = useLocalePath()
 const sidebarOpen = ref(false)
 const showModal = ref(false)
 const saving = ref(false)
+const sendingIds = ref(new Set())
 
 const form = ref({
   message_text: '',
@@ -318,31 +321,41 @@ const saveBroadcast = async () => {
 }
 
 const sendBroadcast = async (id) => {
+  if (sendingIds.value.has(id)) return
+
+  sendingIds.value.add(id)
   try {
+    // Update local status immediately to hide button
+    const broadcast = broadcasts.value?.find(b => b.id === id)
+    if (broadcast) {
+      broadcast.status = 'pending'
+    }
+
     await $fetch(`${config.public.apiBase}/shop/${slug}/admin/broadcasts/${id}/send`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${token.value}` }
     })
-
-    // Update local status immediately to hide button
-    const broadcast = broadcasts.value?.find(b => b.id === id)
-    if (broadcast) {
-      broadcast.status = 'pending'  // Change status to hide Send button
-    }
 
     toast.success('Broadcast started')
     refresh()
 
     // Poll for updates
     const poll = setInterval(async () => {
-      const b = await refresh()
+      await refresh()
       const current = broadcasts.value?.find(x => x.id === id)
       if (current && (current.status === 'completed' || current.status === 'failed')) {
         clearInterval(poll)
       }
     }, 5000)
   } catch (err) {
+    // Revert status if failed
+    const broadcast = broadcasts.value?.find(b => b.id === id)
+    if (broadcast) {
+      broadcast.status = 'draft'
+    }
     toast.error(err.data?.detail || 'Error sending broadcast')
+  } finally {
+    sendingIds.value.delete(id)
   }
 }
 

@@ -265,6 +265,31 @@ watch([token, user], async ([newToken, newUser]) => {
 
 // Обновляем при монтировании компонента
 onMounted(async () => {
+  // Sync Telegram Chat ID if opening in Telegram WebApp
+  if (process.client && typeof window !== 'undefined' && (window).Telegram?.WebApp) {
+    const tg = (window).Telegram.WebApp
+    tg.ready()
+    const tgUser = tg.initDataUnsafe?.user
+
+    // Only sync if we have a shop context and user is logged in
+    // Note: shopSlug comes from useShopContext() which is defined below
+    if (tgUser?.id && token.value) {
+      const currentSlug = route.params.shop || route.params.slug
+      if (currentSlug) {
+        try {
+          await $fetch(`${config.public.apiBase}/shop/${currentSlug}/telegram/sync`, {
+            method: 'POST',
+            body: { chat_id: String(tgUser.id) },
+            headers: { 'Authorization': `Bearer ${token.value}` }
+          })
+          console.log('✅ Telegram account synced automatically')
+        } catch (e) {
+          console.warn('Telegram sync failed:', e)
+        }
+      }
+    }
+  }
+
   // Если пользователь еще не загружен, загружаем его
   if (token.value && !user.value) {
     const { fetchUser } = useAuth()
