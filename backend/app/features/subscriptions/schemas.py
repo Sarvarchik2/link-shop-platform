@@ -27,6 +27,8 @@ class SubscriptionPlanBase(BaseModel):
     display_order: int = 0
     max_products: Optional[int] = None
     max_banners: Optional[int] = 1
+    can_broadcast: bool = False
+    has_telegram: bool = False
 
 class SubscriptionPlanCreate(SubscriptionPlanBase):
     pass
@@ -56,6 +58,8 @@ class SubscriptionPlanUpdate(BaseModel):
     display_order: Optional[int] = None
     max_products: Optional[int] = None
     max_banners: Optional[int] = None
+    can_broadcast: Optional[bool] = None
+    has_telegram: Optional[bool] = None
 
 class SubscriptionPlanRead(SubscriptionPlanBase):
     id: int

@@ -164,9 +164,17 @@ async def handle_callback_query(callback_query: dict, shop: Shop, db: Session):
 async def send_telegram_message(bot_token: str, chat_id: int, text: str):
     """Send a message via Telegram Bot API"""
     import httpx
+    from app.core.crypto import crypto
     
     try:
-        url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
+        # Decrypt token if it's encrypted (raw tokens have ':')
+        token = bot_token
+        if bot_token and ":" not in bot_token:
+            decrypted = crypto.decrypt(bot_token)
+            if decrypted:
+                token = decrypted
+        
+        url = f"https://api.telegram.org/bot{token}/sendMessage"
         payload = {
             "chat_id": chat_id,
             "text": text,

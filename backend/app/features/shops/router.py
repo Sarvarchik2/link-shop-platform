@@ -52,19 +52,23 @@ async def update_shop_settings(
 ):
     shop = shop_service.update_shop(db, shop_slug, shop_in, current_user)
     
-    # If telegram_bot_token was updated and bot is active, set webhook
-    if shop_in.telegram_bot_token and shop_in.is_bot_active:
-        try:
-            webhook_result = await shop_service.set_telegram_webhook(
-                shop_in.telegram_bot_token, 
-                shop_slug
-            )
-            if webhook_result.get("success"):
-                print(f"✓ Webhook set for {shop_slug}: {webhook_result.get('webhook_url')}")
-            else:
-                print(f"⚠ Failed to set webhook: {webhook_result.get('error')}")
-        except Exception as e:
-            print(f"⚠ Error setting webhook: {e}")
+    # If telegram_bot_token exists and bot is active, set webhook
+    # We use the token from the updated shop object (decrypted)
+    if shop.telegram_bot_token and shop.is_bot_active:
+        from app.core.crypto import crypto
+        decrypted_token = crypto.decrypt(shop.telegram_bot_token)
+        if decrypted_token:
+            try:
+                webhook_result = await shop_service.set_telegram_webhook(
+                    decrypted_token, 
+                    shop_slug
+                )
+                if webhook_result.get("success"):
+                    print(f"✓ Webhook set for {shop_slug}: {webhook_result.get('webhook_url')}")
+                else:
+                    print(f"⚠ Failed to set webhook: {webhook_result.get('error')}")
+            except Exception as e:
+                print(f"⚠ Error setting webhook: {e}")
     
     return shop_service.prepare_for_read(shop)
 
@@ -80,7 +84,15 @@ async def test_telegram_bot(
     if shop.owner_id != current_user.id and current_user.role != "platform_admin":
         raise HTTPException(status_code=403, detail="Not authorized")
     
-    return await shop_service.verify_bot_token(request.token)
+    token_to_verify = request.token
+    # If token appears to be the masked one from our DB
+    if token_to_verify and "..." in token_to_verify and shop.telegram_bot_token:
+        from app.core.crypto import crypto
+        decrypted = crypto.decrypt(shop.telegram_bot_token)
+        if decrypted:
+            token_to_verify = decrypted
+    
+    return await shop_service.verify_bot_token(token_to_verify)
 
 @router.post("/shop/{shop_slug}/telegram/sync")
 def sync_chat_id(

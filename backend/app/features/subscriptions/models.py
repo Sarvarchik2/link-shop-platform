@@ -28,6 +28,7 @@ class SubscriptionPlan(Base):
     max_products = Column(Integer, nullable=True)
     max_banners = Column(Integer, default=1)
     can_broadcast = Column(Boolean, default=False)
+    has_telegram = Column(Boolean, default=False)
     created_at = Column(DateTime, default=datetime.utcnow)
 
 class SubscriptionRequest(Base):

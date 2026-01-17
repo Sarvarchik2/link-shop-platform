@@ -15,6 +15,7 @@
         "register": "Ro'yxatdan o'tish",
         "shop": "Do'kon"
     },
+    "currency": "so'm",
     "home": {
         "hero": {
             "title_1": "O'z mahsulotlaringizni",
@@ -601,7 +602,7 @@
                 "revenueMonth": "Obuna daromadi (oy)",
                 "revenuePerMonth": "oy",
                 "revenuePerYear": "yil",
-                "sales": "Sotuvlar: ${amount}",
+                "sales": "Sotuvlar: {amount} so'm",
                 "productsCount": "{count} mahsulot",
                 "productsTotal": "Platformada {count} mahsulot",
                 "newToday": "+{count} bugun",
@@ -830,6 +831,8 @@
                 "unlimited": "Cheksiz",
                 "order": "Tartib:",
                 "active": "Faol",
+                "canBroadcast": "Broadcast",
+                "telegramEnabled": "Telegram",
                 "activate": "Faollashtirish",
                 "deactivate": "Faolsizlantirish"
             },
@@ -845,12 +848,15 @@
                 "addFeature": "Qo'shish",
                 "isTrial": "Sinov davri",
                 "isActive": "Faol",
+                "canBroadcast": "Xabarlar yuborish (Broadcast)",
+                "telegramEnabled": "Telegram funksiyalari",
                 "order": "Ko'rsatish tartibi",
                 "hints": {
                     "slug": "Noyob identifikator (lotincha, bo'shliqlarsiz)",
                     "maxProducts": "Cheksiz mahsulotlar uchun bo'sh qoldiring",
                     "order": "Kichikroq raqam = ro'yxatda yuqoriroq",
-                    "maxBanners": "Ruxsat etilgan reklama bannerlarining maksimal soni"
+                    "maxBanners": "Ruxsat etilgan reklama bannerlarining maksimal soni",
+                    "telegramEnabled": "Telegram bot va Web App funksiyalarini faollashtirish"
                 },
                 "periodUnit": {
                     "day": "kun",
@@ -1204,7 +1210,7 @@
             "titleLabel": "Sarlavha (\\n yangi qator uchun)",
             "titlePlaceholder": "Yozgi kolleksiya 2024",
             "subtitleLabel": "Quyi sarlavha",
-            "subtitlePlaceholder": "$299 dan boshlab",
+            "subtitlePlaceholder": "299 000 so'mdan boshlab",
             "linkPlaceholder": "https://storely.uz/collection/summer",
             "tooltips": {
                 "edit": "Tahrirlash",
@@ -1603,7 +1609,13 @@
             "history": "Xabarnomalar tarixi",
             "sent": "Yuborildi",
             "failed": "Xatolik",
-            "limitNote": "Eslatma: Bloklanishdan qochish uchun xabarnomalar 24 soatda bir marta bilan cheklangan."
+            "limitNote": "Eslatma: Bloklanishdan qochish uchun xabarnomalar 24 soatda bir marta bilan cheklangan.",
+            "telegramPreview": "Telegram ko'rinishi",
+            "messagePlaceholder": "Xabaringizni kiriting...",
+            "btnTextPlaceholder": "Do'konni ko'rish",
+            "noBroadcasts": "Hozircha xabarnomalar yo'q",
+            "startGrowing": "Marketing xabarlari orqali savdolaringizni oshiring",
+            "createFirst": "Birinchi xabarnomani yaratish"
         },
         "aboutShop": "Do'kon haqida",
         "intro": "Xush kelibsiz",

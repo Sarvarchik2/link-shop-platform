@@ -122,9 +122,9 @@
             <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
           </svg>
         </div>
-        <h3>No broadcasts yet</h3>
-        <p>Start growing your sales with marketing messages</p>
-        <button @click="openCreateModal" class="add-btn mt-4">Create First Broadcast</button>
+        <h3>{{ $t('admin.broadcasts.noBroadcasts') }}</h3>
+        <p>{{ $t('admin.broadcasts.startGrowing') }}</p>
+        <button @click="openCreateModal" class="add-btn mt-4">{{ $t('admin.broadcasts.createFirst') }}</button>
       </div>
 
       <!-- Create Modal -->
@@ -138,17 +138,18 @@
             <div class="modal-body">
               <!-- Telegram Preview -->
               <div class="telegram-preview-wrapper mb-6">
-                <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Telegram Preview</label>
+                <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">{{
+                  $t('admin.broadcasts.telegramPreview') }}</label>
                 <div class="tg-preview">
                   <div class="tg-bubble">
                     <div v-if="form.media_url" class="tg-media">
                       <img :src="form.media_url" alt="Media" />
                     </div>
                     <div class="tg-text">
-                        {{ form.message_text || 'Enter your message...' }}
+                      {{ form.message_text || $t('admin.broadcasts.messagePlaceholder') }}
                     </div>
                     <div v-if="form.button_text" class="tg-button">
-                        {{ form.button_text }}
+                      {{ form.button_text }}
                     </div>
                   </div>
                 </div>
@@ -157,7 +158,8 @@
               <div class="form-grid">
                 <div class="form-group full-width">
                   <label>{{ $t('admin.broadcasts.message') }}</label>
-                  <textarea v-model="form.message_text" rows="4" placeholder="Hello everyone! Check out our new products..."></textarea>
+                  <textarea v-model="form.message_text" rows="4"
+                    :placeholder="$t('admin.broadcasts.messagePlaceholder')"></textarea>
                 </div>
 
                 <div class="form-group full-width">
@@ -165,7 +167,8 @@
                   <div class="image-input-group">
                     <input v-model="form.media_url" type="text" placeholder="https://..." />
                     <label class="upload-btn">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                         <polyline points="17 8 12 3 7 8"></polyline>
                         <line x1="12" y1="3" x2="12" y2="15"></line>
@@ -177,7 +180,8 @@
 
                 <div class="form-group">
                   <label>{{ $t('admin.broadcasts.buttonText') }}</label>
-                  <input v-model="form.button_text" type="text" placeholder="Visit Shop" />
+                  <input v-model="form.button_text" type="text"
+                    :placeholder="$t('admin.broadcasts.btnTextPlaceholder')" />
                 </div>
                 <div class="form-group">
                   <label>{{ $t('admin.broadcasts.buttonUrl') }}</label>
@@ -187,16 +191,18 @@
                 <div class="form-group full-width">
                   <label>{{ $t('admin.broadcasts.audience') }}</label>
                   <div class="audience-selector">
-                    <div class="audience-option" :class="{ active: form.audience_type === 'all' }" @click="form.audience_type = 'all'">
+                    <div class="audience-option" :class="{ active: form.audience_type === 'all' }"
+                      @click="form.audience_type = 'all'">
                       <span class="option-title">{{ $t('admin.broadcasts.audienceAll') }}</span>
                     </div>
-                    <div class="audience-option" :class="{ active: form.audience_type === 'recent' }" @click="form.audience_type = 'recent'">
+                    <div class="audience-option" :class="{ active: form.audience_type === 'recent' }"
+                      @click="form.audience_type = 'recent'">
                       <span class="option-title">{{ $t('admin.broadcasts.audienceRecent') }}</span>
                     </div>
                   </div>
                 </div>
               </div>
-              
+
               <div class="limit-note mt-4">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2">
                   <circle cx="12" cy="12" r="10"></circle>
@@ -272,10 +278,10 @@ const openCreateModal = () => {
 const handleFileUpload = async (e) => {
   const file = e.target.files[0]
   if (!file) return
-  
+
   const formData = new FormData()
   formData.append('file', file)
-  
+
   try {
     const res = await $fetch(`${config.public.apiBase}/upload`, {
       method: 'POST',
@@ -293,7 +299,7 @@ const saveBroadcast = async () => {
     toast.error('Message text is required')
     return
   }
-  
+
   saving.value = true
   try {
     await $fetch(`${config.public.apiBase}/shop/${slug}/admin/broadcasts`, {
@@ -317,23 +323,23 @@ const sendBroadcast = async (id) => {
       method: 'POST',
       headers: { Authorization: `Bearer ${token.value}` }
     })
-    
+
     // Update local status immediately to hide button
     const broadcast = broadcasts.value?.find(b => b.id === id)
     if (broadcast) {
       broadcast.status = 'pending'  // Change status to hide Send button
     }
-    
+
     toast.success('Broadcast started')
     refresh()
-    
+
     // Poll for updates
     const poll = setInterval(async () => {
-       const b = await refresh()
-       const current = broadcasts.value?.find(x => x.id === id)
-       if (current && (current.status === 'completed' || current.status === 'failed')) {
-           clearInterval(poll)
-       }
+      const b = await refresh()
+      const current = broadcasts.value?.find(x => x.id === id)
+      if (current && (current.status === 'completed' || current.status === 'failed')) {
+        clearInterval(poll)
+      }
     }, 5000)
   } catch (err) {
     toast.error(err.data?.detail || 'Error sending broadcast')
@@ -487,11 +493,28 @@ const formatDate = (dateStr) => {
   justify-content: center;
 }
 
-.stat-icon.sent { background: #EEF2FF; color: #3b82f6; }
-.stat-icon.campaigns { background: #F5F3FF; color: #a855f7; }
+.stat-icon.sent {
+  background: #EEF2FF;
+  color: #3b82f6;
+}
 
-.stat-label { font-size: 0.875rem; color: #6B7280; display: block; font-weight: 600; }
-.stat-value { font-size: 1.75rem; font-weight: 800; color: #111; }
+.stat-icon.campaigns {
+  background: #F5F3FF;
+  color: #a855f7;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: #6B7280;
+  display: block;
+  font-weight: 600;
+}
+
+.stat-value {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #111;
+}
 
 .add-btn {
   background: #111;
@@ -555,11 +578,30 @@ const formatDate = (dateStr) => {
   align-self: flex-start;
 }
 
-.card-status.draft { background: #F3F4F6; color: #4B5563; }
-.card-status.pending { background: #FEF3C7; color: #92400E; }
-.card-status.sending { background: #DBEAFE; color: #1E40AF; }
-.card-status.completed { background: #D1FAE5; color: #065F46; }
-.card-status.failed { background: #FEE2E2; color: #991B1B; }
+.card-status.draft {
+  background: #F3F4F6;
+  color: #4B5563;
+}
+
+.card-status.pending {
+  background: #FEF3C7;
+  color: #92400E;
+}
+
+.card-status.sending {
+  background: #DBEAFE;
+  color: #1E40AF;
+}
+
+.card-status.completed {
+  background: #D1FAE5;
+  color: #065F46;
+}
+
+.card-status.failed {
+  background: #FEE2E2;
+  color: #991B1B;
+}
 
 .broadcast-msg {
   font-size: 1rem;
@@ -579,7 +621,11 @@ const formatDate = (dateStr) => {
   color: #6B7280;
 }
 
-.meta-item { display: flex; align-items: center; gap: 6px; }
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
 
 .card-footer {
   display: flex;
@@ -722,7 +768,7 @@ const formatDate = (dateStr) => {
   border-radius: 16px 16px 16px 4px;
   padding: 12px;
   max-width: 280px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .tg-media img {
@@ -770,7 +816,8 @@ const formatDate = (dateStr) => {
   margin-bottom: 8px;
 }
 
-.form-group input, .form-group textarea {
+.form-group input,
+.form-group textarea {
   width: 100%;
   background: #F9FAFB;
   border: 1px solid #E5E7EB;
@@ -783,7 +830,7 @@ const formatDate = (dateStr) => {
 }
 
 .form-group input:focus,
-.form-group textarea:focus { 
+.form-group textarea:focus {
   border-color: #3b82f6;
   outline: none;
   background: white;
@@ -928,17 +975,37 @@ const formatDate = (dateStr) => {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Animations */
-.modal-enter-active, .modal-leave-active { transition: opacity 0.3s; }
-.modal-enter-from, .modal-leave-to { opacity: 0; }
+.modal-enter-active,
+.modal-leave-active {
+  transition: opacity 0.3s;
+}
 
-.mb-4 { margin-bottom: 1rem; }
-.mb-6 { margin-bottom: 1.5rem; }
-.mb-8 { margin-bottom: 2rem; }
-.mt-4 { margin-top: 1rem; }
+.modal-enter-from,
+.modal-leave-to {
+  opacity: 0;
+}
+
+.mb-4 {
+  margin-bottom: 1rem;
+}
+
+.mb-6 {
+  margin-bottom: 1.5rem;
+}
+
+.mb-8 {
+  margin-bottom: 2rem;
+}
+
+.mt-4 {
+  margin-top: 1rem;
+}
 
 .empty-state h3 {
   font-size: 1.5rem;
@@ -951,5 +1018,4 @@ const formatDate = (dateStr) => {
   color: #6B7280;
   font-size: 1rem;
 }
-
 </style>

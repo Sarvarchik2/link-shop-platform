@@ -15,6 +15,7 @@
         "register": "Register",
         "shop": "Shop"
     },
+    "currency": "so'm",
     "home": {
         "hero": {
             "title_1": "Sell your products",
@@ -548,7 +549,7 @@
         "badgePlaceholder": "NEW",
         "titleLabel": "Title (\\n for new line)",
         "subtitleLabel": "Subtitle",
-        "subtitlePlaceholder": "from $299",
+        "subtitlePlaceholder": "from 299 000 so'm",
         "btnTextLabel": "Button Text",
         "btnTextPlaceholder": "Buy Now",
         "btnLinkLabel": "Button Link",
@@ -831,7 +832,13 @@
             "history": "Broadcast History",
             "sent": "Sent",
             "failed": "Failed",
-            "limitNote": "Note: To avoid bans, broadcasts are limited to once per 24 hours."
+            "limitNote": "Note: To avoid bans, broadcasts are limited to once per 24 hours.",
+            "telegramPreview": "Telegram Preview",
+            "messagePlaceholder": "Enter your message...",
+            "btnTextPlaceholder": "Visit Shop",
+            "noBroadcasts": "No broadcasts yet",
+            "startGrowing": "Start growing your sales with marketing messages",
+            "createFirst": "Create First Broadcast"
         },
         "dashboardStats": {
             "ordersCount": "{count} orders",
@@ -991,7 +998,7 @@
                 "revenueMonth": "Subscription revenue (month)",
                 "revenuePerMonth": "month",
                 "revenuePerYear": "year",
-                "sales": "Sales: ${amount}",
+                "sales": "Sales: {amount} so'm",
                 "productsCount": "{count} products",
                 "productsTotal": "{count} products on platform",
                 "newToday": "+{count} today",
@@ -1143,6 +1150,8 @@
                 "unlimited": "Unlimited",
                 "order": "Order:",
                 "active": "Active",
+                "canBroadcast": "Broadcast",
+                "telegramEnabled": "Telegram",
                 "activate": "Activate",
                 "deactivate": "Deactivate"
             },
@@ -1158,6 +1167,8 @@
                 "addFeature": "Add",
                 "isTrial": "Trial Period",
                 "isActive": "Active",
+                "canBroadcast": "Broadcast Messages",
+                "telegramEnabled": "Telegram Features",
                 "order": "Display Order",
                 "periodUnit": {
                     "day": "day",
@@ -1169,7 +1180,8 @@
                     "slug": "Unique code, e.g. 'basic'",
                     "maxProducts": "Leave empty for unlimited",
                     "order": "Sorting order",
-                    "maxBanners": "Maximum number of advertising banners allowed"
+                    "maxBanners": "Maximum number of advertising banners allowed",
+                    "telegramEnabled": "Enable Telegram Bot and Web App features"
                 }
             },
             "modal": {

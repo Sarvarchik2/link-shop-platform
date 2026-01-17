@@ -11,13 +11,13 @@ router = APIRouter()
 order_service = OrderService()
 
 @router.post("/orders", response_model=OrderRead)
-def create_order(
+async def create_order(
     order_in: OrderCreate,
     shop_slug: Optional[str] = Query(None),
     db: Session = Depends(get_db),
     current_user = Depends(get_current_user)
 ):
-    return order_service.create_order(db, order_in, current_user.id, shop_slug)
+    return await order_service.create_order(db, order_in, current_user.id, shop_slug)
 
 @router.get("/orders/me", response_model=List[OrderReadWithItems])
 def get_my_orders_alt(

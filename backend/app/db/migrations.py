@@ -110,6 +110,18 @@ def run_migrations(engine):
                     END $$;
                     """,
                     
+                    """
+                    DO $$ 
+                    BEGIN
+                        IF NOT EXISTS (
+                            SELECT 1 FROM information_schema.columns 
+                            WHERE table_name='subscriptionplan' AND column_name='has_telegram'
+                        ) THEN
+                            ALTER TABLE subscriptionplan ADD COLUMN has_telegram BOOLEAN DEFAULT FALSE;
+                        END IF;
+                    END $$;
+                    """,
+                    
                     # ============ SHOP TABLE MIGRATIONS ============
                     
                     # Add telegram_bot_token to shop
@@ -144,13 +156,14 @@ def run_migrations(engine):
                     """,
                     
                     """
-                    UPDATE subscriptionplan SET can_broadcast = TRUE 
-                    WHERE slug IN ('business', 'basic', 'premium') AND can_broadcast IS NULL;
+                    UPDATE subscriptionplan SET can_broadcast = TRUE, has_telegram = TRUE 
+                    WHERE slug IN ('business', 'basic', 'premium') AND (can_broadcast IS NULL OR has_telegram IS NULL);
                     """,
                     
-                    # Enable broadcasts for ALL plans (for demo/testing)
+                    # Enable features for ALL plans (for demo/testing)
                     """
-                    UPDATE subscriptionplan SET can_broadcast = TRUE WHERE can_broadcast = FALSE OR can_broadcast IS NULL;
+                    UPDATE subscriptionplan SET can_broadcast = TRUE, has_telegram = TRUE 
+                    WHERE can_broadcast = FALSE OR can_broadcast IS NULL OR has_telegram = FALSE OR has_telegram IS NULL;
                     """,
                 ]
                 

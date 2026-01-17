@@ -12,7 +12,7 @@ class OrderService:
         self.product_service = ProductService()
         self.shop_service = ShopService()
 
-    def create_order(self, db: Session, order_in: OrderCreate, user_id: int, shop_slug: str = None):
+    async def create_order(self, db: Session, order_in: OrderCreate, user_id: int, shop_slug: str = None):
         total_price = 0.0
         shop_id = None
         
@@ -68,6 +68,20 @@ class OrderService:
         for item_data in order_items_to_create:
             item_data["order_id"] = db_order.id
             self.repository.create_order_item(db, item_data)
+
+        # 5. Notify owner
+        if shop_id:
+            try:
+                customer_name = order_in.recipient_name or "Покупатель"
+                await telegram_notification_service.send_new_order_notification(
+                    db,
+                    shop_id=shop_id,
+                    order_id=db_order.id,
+                    total_price=db_order.total_price,
+                    customer_name=customer_name
+                )
+            except Exception as e:
+                print(f"Failed to notify owner: {e}")
             
         return db_order
 

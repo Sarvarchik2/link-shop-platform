@@ -25,9 +25,11 @@ def send_broadcast_task(broadcast_id: int):
             db.commit()
             return
 
-        # Use token directly (not encrypted in DB)
-        token = shop.telegram_bot_token
+        # Decrypt token
+        from app.core.crypto import crypto
+        token = crypto.decrypt(shop.telegram_bot_token)
         if not token:
+            logger.error(f"Failed to decrypt bot token for shop {shop.id}")
             broadcast.status = BroadcastStatus.FAILED
             db.commit()
             return

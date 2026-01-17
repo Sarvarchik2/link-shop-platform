@@ -15,6 +15,7 @@
         "register": "Регистрация",
         "shop": "Магазин"
     },
+    "currency": "сум",
     "home": {
         "hero": {
             "title_1": "Продавайте свои товары",
@@ -656,7 +657,7 @@
                 "revenueMonth": "Доход с подписок (месяц)",
                 "revenuePerMonth": "месяц",
                 "revenuePerYear": "год",
-                "sales": "Продажи: ${amount}",
+                "sales": "Продажи: {amount} сум",
                 "productsCount": "{count} товаров",
                 "productsTotal": "{count} товаров на платформе",
                 "newToday": "+{count} сегодня",
@@ -800,6 +801,8 @@
                 "unlimited": "Неограниченно",
                 "order": "Порядок:",
                 "active": "Активен",
+                "canBroadcast": "Рассылки",
+                "telegramEnabled": "Telegram",
                 "activate": "Активировать",
                 "deactivate": "Деактивировать"
             },
@@ -815,12 +818,15 @@
                 "addFeature": "Добавить",
                 "isTrial": "Пробный период",
                 "isActive": "Активен",
+                "canBroadcast": "Рассылки (Broadcast)",
+                "telegramEnabled": "Telegram функции",
                 "order": "Порядок отображения",
                 "hints": {
                     "slug": "Уникальный идентификатор (латиница, без пробелов)",
                     "maxProducts": "Оставьте пустым для неограниченного количества товаров",
                     "order": "Меньше число = выше в списке",
-                    "maxBanners": "Максимальное количество рекламных баннеров"
+                    "maxBanners": "Максимальное количество рекламных баннеров",
+                    "telegramEnabled": "Разрешить использование Telegram бота и Web App"
                 },
                 "periodUnit": {
                     "day": "день",
@@ -1229,7 +1235,7 @@
         "badgePlaceholder": "НОВИНКА",
         "titleLabel": "Заголовок (\\n для новой строки)",
         "subtitleLabel": "Подзаголовок",
-        "subtitlePlaceholder": "от $299",
+        "subtitlePlaceholder": "от 299 000 сум",
         "btnTextLabel": "Текст кнопки",
         "btnTextPlaceholder": "Купить",
         "btnLinkLabel": "Ссылка кнопки",
@@ -1305,7 +1311,13 @@
             "history": "История рассылок",
             "sent": "Отправлено",
             "failed": "Ошибка",
-            "limitNote": "Примечание: Во избежание банов, рассылки ограничены одной в 24 часа."
+            "limitNote": "Примечание: Во избежание банов, рассылки ограничены одной в 24 часа.",
+            "telegramPreview": "Предпросмотр в Telegram",
+            "messagePlaceholder": "Введите ваше сообщение...",
+            "btnTextPlaceholder": "Перейти в магазин",
+            "noBroadcasts": "Рассылок пока нет",
+            "startGrowing": "Увеличивайте продажи с помощью маркетинговых рассылок",
+            "createFirst": "Создать первую рассылку"
         },
         "delivery": {
             "title": "Доставка",

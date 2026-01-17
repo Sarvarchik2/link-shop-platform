@@ -128,12 +128,13 @@
               <div class="stat-card revenue-card">
                 <div class="stat-icon-wrapper revenue-icon">
                   <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="12" y1="1" x2="12" y2="23"></line>
-                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                    <path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4"></path>
+                    <path d="M4 6v12c0 1.1.9 2 2 2h14v-4"></path>
+                    <path d="M18 12a2 2 0 0 0-2 2c0 1.1.9 2 2 2h4v-4h-4z"></path>
                   </svg>
                 </div>
                 <div class="stat-info">
-                  <div class="stat-value">${{ subscriptionStats.monthlyRevenue.toFixed(0) }}</div>
+                  <div class="stat-value">{{ formatPrice(subscriptionStats.monthlyRevenue) }}</div>
                   <div class="stat-label">
                     <span v-if="selectedPeriod === 'today'">{{ $t('platformAdmin.dashboard.stats.revenueToday')
                       }}</span>
@@ -145,11 +146,11 @@
                       $t('platformAdmin.dashboard.stats.revenuePerMonth') }}</span>
                   </div>
                   <div class="stat-yearly" v-if="selectedPeriod === 'all'">
-                    ≈ ${{ (subscriptionStats.monthlyRevenue * 12).toFixed(0) }}/{{
+                    ≈ {{ formatPrice(subscriptionStats.monthlyRevenue * 12) }}/{{
                       $t('platformAdmin.dashboard.stats.revenuePerYear') }}
                   </div>
                   <div class="stat-yearly" v-else-if="periodStats?.sales">
-                    {{ $t('platformAdmin.dashboard.stats.sales', { amount: periodStats.sales.toFixed(0) }) }}
+                    {{ $t('platformAdmin.dashboard.stats.sales', { amount: formatPrice(periodStats.sales) }) }}
                   </div>
                 </div>
               </div>
@@ -299,8 +300,10 @@
                     <div class="status-icon-wrapper">
                       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2">
-                        <line x1="12" y1="1" x2="12" y2="23"></line>
-                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                        <circle cx="8" cy="8" r="6"></circle>
+                        <path d="M18.09 10.37A6 6 0 1 1 10.34 18"></path>
+                        <path d="M7 6h1v4"></path>
+                        <path d="M17.22 15.35h.01"></path>
                       </svg>
                     </div>
                     <div class="status-content">
@@ -455,6 +458,7 @@
 
 <script setup>
 const { t, locale } = useI18n()
+const { formatPrice } = useCurrency()
 definePageMeta({
   middleware: 'platform-admin'
 })

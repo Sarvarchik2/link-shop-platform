@@ -118,10 +118,22 @@ class ShopService:
             
         update_data = shop_in.model_dump(exclude_unset=True)
         
+        # Check plan permissions for Telegram
+        if current_user.role != "platform_admin":
+            is_enabling_telegram = update_data.get("is_bot_active") is True or (
+                "telegram_bot_token" in update_data and update_data["telegram_bot_token"]
+            )
+            if is_enabling_telegram:
+                plan = db.query(SubscriptionPlan).filter(SubscriptionPlan.id == shop.subscription_plan_id).first()
+                if not plan or not getattr(plan, "has_telegram", False):
+                    raise HTTPException(status_code=403, detail="Telegram features not available in your plan")
+
         # Handle Telegram Bot Token encryption
         if "telegram_bot_token" in update_data and update_data["telegram_bot_token"]:
-             # If it's a new token (not masked)
-             if not update_data["telegram_bot_token"].endswith("..."):
+             # If it's a masked token from reading, don't overwrite the real one
+             if "..." in update_data["telegram_bot_token"]:
+                 del update_data["telegram_bot_token"]
+             else:
                  update_data["telegram_bot_token"] = crypto.encrypt(update_data["telegram_bot_token"])
         
         return self.repository.update(db, shop, update_data)

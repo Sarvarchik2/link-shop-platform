@@ -58,42 +58,37 @@
             <div class="form-group">
               <label class="form-label">{{ $t('admin.telegram.tokenLabel') }}</label>
               <div class="input-with-action">
-                <input 
-                  v-model="botToken" 
-                  @input="isValid = false"
-                  type="password" 
-                  class="form-input" 
-                  placeholder="123456789:ABCDefGhIJKlmNoPQRsTUVwxyZ"
-                />
-                <button 
-                  @click="handleTestToken" 
-                  class="test-btn" 
-                  :disabled="!botToken || testing"
-                >
+                <input v-model="botToken" @input="isValid = false" type="password" class="form-input"
+                  placeholder="123456789:ABCDefGhIJKlmNoPQRsTUVwxyZ" />
+                <button @click="handleTestToken" class="test-btn" :disabled="!botToken || testing">
                   <span v-if="!testing">{{ $t('admin.telegram.testBtn') }}</span>
                   <div v-else class="loader-sm"></div>
                 </button>
               </div>
               <p class="input-hint">Enter the token received from @BotFather</p>
-              
+
               <div v-if="isValid" class="success-hint">
-                <p>✅ <strong>Important:</strong> Open your bot in Telegram and press <strong>/start</strong> to subscribe to notifications!</p>
+                <p>✅ <strong>Important:</strong> Open your bot in Telegram and press <strong>/start</strong> to
+                  subscribe to notifications!</p>
               </div>
             </div>
 
             <!-- Bot Result Info -->
             <div v-if="testResult" class="test-result" :class="{ success: testResult.valid, error: !testResult.valid }">
               <div class="result-icon">
-                <svg v-if="testResult.valid" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <svg v-if="testResult.valid" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2">
                   <polyline points="20 6 9 17 4 12"></polyline>
                 </svg>
-                <svg v-else width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <svg v-else width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  stroke-width="2">
                   <line x1="18" y1="6" x2="6" y2="18"></line>
                   <line x1="6" y1="6" x2="18" y2="18"></line>
                 </svg>
               </div>
               <div class="result-content">
-                <div class="result-title">{{ testResult.valid ? $t('admin.telegram.botValid') : $t('admin.telegram.botInvalid') }}</div>
+                <div class="result-title">{{ testResult.valid ? $t('admin.telegram.botValid') :
+                  $t('admin.telegram.botInvalid') }}</div>
                 <div v-if="testResult.valid && testResult.bot_name" class="result-details">
                   <strong>@{{ testResult.username }}</strong> ({{ testResult.bot_name }})
                 </div>
@@ -101,11 +96,7 @@
             </div>
 
             <div class="form-actions">
-              <button 
-                @click="handleSaveSettings" 
-                class="save-btn" 
-                :disabled="saving || !botToken"
-              >
+              <button @click="handleSaveSettings" class="save-btn" :disabled="saving || !botToken">
                 <span v-if="!saving">{{ $t('admin.telegram.saveBtn') }}</span>
                 <div v-else class="loader-sm"></div>
               </button>
@@ -177,6 +168,7 @@ const toast = useToast()
 
 const botToken = ref('')
 const testing = ref(false)
+const isValid = ref(false)
 const saving = ref(false)
 const testResult = ref(null)
 const sidebarOpen = ref(false)
@@ -203,9 +195,15 @@ watch(shop, (newShop) => {
   }
 }, { immediate: true })
 
+onMounted(() => {
+  if (botToken.value) {
+    handleTestToken()
+  }
+})
+
 const handleTestToken = async () => {
   if (!botToken.value) return
-  
+
   testing.value = true
   try {
     const res = await $fetch(`${config.public.apiBase}/shop/${shopSlug}/admin/telegram/test`, {
@@ -216,8 +214,10 @@ const handleTestToken = async () => {
       }
     })
     testResult.value = res
+    isValid.value = res.valid
   } catch (e) {
     testResult.value = { valid: false }
+    isValid.value = false
     toast.error(t('admin.telegram.botInvalid'))
   } finally {
     testing.value = false
@@ -229,9 +229,9 @@ const handleSaveSettings = async () => {
   try {
     await $fetch(`${config.public.apiBase}/shop/${shopSlug}/admin/info`, {
       method: 'PUT',
-      body: { 
+      body: {
         telegram_bot_token: botToken.value,
-        is_bot_active: testResult.value?.valid || false
+        is_bot_active: isValid.value
       },
       headers: {
         'Authorization': `Bearer ${token.value}`
@@ -500,8 +500,15 @@ const copyToClipboard = (text) => {
 }
 
 @keyframes slideIn {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .test-result.success {
@@ -519,8 +526,13 @@ const copyToClipboard = (text) => {
   margin-top: 2px;
 }
 
-.success .result-icon { color: #10B981; }
-.error .result-icon { color: #EF4444; }
+.success .result-icon {
+  color: #10B981;
+}
+
+.error .result-icon {
+  color: #EF4444;
+}
 
 .result-title {
   font-weight: 700;
@@ -672,6 +684,8 @@ const copyToClipboard = (text) => {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style>

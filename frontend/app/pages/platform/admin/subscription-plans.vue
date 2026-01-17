@@ -142,6 +142,23 @@
                   {{ plan.max_banners === null ? '1' : plan.max_banners }}
                 </span>
               </div>
+              <!-- Telegram and Broadcast -->
+              <div v-if="plan.has_telegram" class="limit-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 1 1-7.6-11.7 8.38 8.38 0 0 1 3.8.9L21 3.5v8z"></path>
+                </svg>
+                <span class="limit-label">{{ $t('platformAdmin.plans.card.telegramEnabled') }}</span>
+                <span class="limit-value" style="color: #10B981;">✓</span>
+              </div>
+              <div v-if="plan.can_broadcast" class="limit-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12s4.48 10 10 10 10-4.48 10-10z"></path>
+                  <path d="M12 16v-4"></path>
+                  <path d="M12 8h.01"></path>
+                </svg>
+                <span class="limit-label">{{ $t('platformAdmin.plans.card.canBroadcast') }}</span>
+                <span class="limit-value" style="color: #10B981;">✓</span>
+              </div>
             </div>
 
             <div class="plan-footer">
@@ -295,6 +312,21 @@
                 </div>
 
                 <div class="form-group">
+                  <label class="checkbox-label">
+                    <input v-model="planForm.can_broadcast" type="checkbox" class="checkbox-input" />
+                    <span>{{ $t('platformAdmin.plans.form.canBroadcast') }}</span>
+                  </label>
+                </div>
+
+                <div class="form-group">
+                  <label class="checkbox-label">
+                    <input v-model="planForm.has_telegram" type="checkbox" class="checkbox-input" />
+                    <span>{{ $t('platformAdmin.plans.form.telegramEnabled') }}</span>
+                  </label>
+                  <small class="form-hint" style="display: block; margin-top: 4px;">{{ $t('platformAdmin.plans.form.hints.telegramEnabled') }}</small>
+                </div>
+
+                <div class="form-group">
                   <label>{{ $t('platformAdmin.plans.form.order') }}</label>
                   <input v-model.number="planForm.display_order" type="number" min="0" class="form-input" />
                   <small class="form-hint">{{ $t('platformAdmin.plans.form.hints.order') }}</small>
@@ -375,6 +407,8 @@ const planForm = reactive({
   features_uz: [],
   is_active: true,
   is_trial: false,
+  can_broadcast: false,
+  has_telegram: false,
   display_order: 0,
   max_products: null,
   max_banners: 1
@@ -436,6 +470,8 @@ const editPlan = (plan) => {
   planForm.is_active = plan.is_active
   planForm.is_trial = plan.is_trial
   planForm.display_order = plan.display_order
+  planForm.can_broadcast = plan.can_broadcast || false
+  planForm.has_telegram = plan.has_telegram || false
   planForm.max_products = plan.max_products ?? null
   planForm.max_banners = plan.max_banners ?? 1
   showModal.value = true
@@ -462,6 +498,8 @@ const resetForm = () => {
   planForm.features_uz = []
   planForm.is_active = true
   planForm.is_trial = false
+  planForm.can_broadcast = false
+  planForm.has_telegram = false
   planForm.display_order = 0
   planForm.max_products = null
   planForm.max_banners = 1
