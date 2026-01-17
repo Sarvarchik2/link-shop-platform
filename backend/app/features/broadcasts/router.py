@@ -6,6 +6,9 @@ from app.core.dependencies import get_current_user
 from app.features.users.models import User
 from app.features.shops.repository import ShopRepository
 from . import schemas, service, models, tasks
+import logging
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/shop/{shop_slug}/admin/broadcasts")
 shop_repo = ShopRepository()
