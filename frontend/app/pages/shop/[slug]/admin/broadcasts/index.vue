@@ -212,7 +212,8 @@
                 </div>
                 <div class="form-group">
                   <label>{{ $t('admin.broadcasts.buttonUrl') }}</label>
-                  <input v-model="form.button_url" type="text" placeholder="https://..." />
+                  <input v-model="form.button_url" type="url" placeholder="https://storely.uz/s/sarvar" />
+                  <small class="field-hint">URL должен начинаться с http:// или https://</small>
                 </div>
 
                 <div class="form-group full-width">
@@ -336,6 +337,21 @@ const handleFileUpload = async (e) => {
 const saveBroadcast = async () => {
   if (!form.value.message_text) {
     toast.error('Message text is required')
+    return
+  }
+
+  // Validate button URL if provided
+  if (form.value.button_url && form.value.button_url.trim()) {
+    const url = form.value.button_url.trim().toLowerCase()
+    if (!url.startsWith('http://') && !url.startsWith('https://')) {
+      toast.error('Button URL must start with http:// or https://')
+      return
+    }
+  }
+
+  // If button URL is provided, button text is also required
+  if (form.value.button_url && form.value.button_url.trim() && !form.value.button_text) {
+    toast.error('Button text is required when URL is provided')
     return
   }
 
@@ -878,6 +894,7 @@ const formatDate = (dateStr) => {
 
 .modal-body {
   padding: 32px;
+  overflow: scroll;
 }
 
 /* Telegram Preview */
@@ -1051,6 +1068,14 @@ const formatDate = (dateStr) => {
 .form-group textarea {
   resize: vertical;
   min-height: 100px;
+}
+
+.field-hint {
+  display: block;
+  font-size: 0.75rem;
+  color: #6B7280;
+  margin-top: 6px;
+  font-weight: 500;
 }
 
 .image-input-group {

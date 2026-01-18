@@ -90,6 +90,16 @@ def send_broadcast_task(broadcast_id: int):
         with httpx.Client() as client:
             for idx, recipient in enumerate(recipients, 1):
                 logger.debug(f"📤 Sending message {idx}/{len(recipients)} to chat_id={recipient.telegram_chat_id}")
+                
+                # Validate button_url - must be a valid HTTP/HTTPS URL
+                button_url_to_send = None
+                if broadcast.button_url:
+                    url_lower = broadcast.button_url.lower().strip()
+                    if url_lower.startswith('http://') or url_lower.startswith('https://'):
+                        button_url_to_send = broadcast.button_url
+                    else:
+                        logger.warning(f"⚠️ Invalid button_url '{broadcast.button_url}' - skipping button for broadcast {broadcast.id}")
+                
                 success, error_msg = send_telegram_message_callback(
                     client,
                     token, 
@@ -97,7 +107,7 @@ def send_broadcast_task(broadcast_id: int):
                     broadcast.message_text,
                     broadcast.media_url,
                     broadcast.button_text,
-                    broadcast.button_url
+                    button_url_to_send
                 )
                 if success:
                     sent_count += 1
