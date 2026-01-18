@@ -18,6 +18,31 @@ class BroadcastService:
         # if last_broadcast:
         #     raise Exception("Only one broadcast allowed per 24 hours")
 
+        # Calculate total_count based on audience_type
+        audience_type = data.get('audience_type', BroadcastAudience.ALL)
+        
+        if audience_type == BroadcastAudience.RECENT or audience_type == 'recent':
+            # Count users with orders in last 30 days
+            from app.features.orders.models import Order
+            thirty_days_ago = datetime.utcnow() - timedelta(days=30)
+            
+            total_count = db.query(UserStoreTelegram).join(
+                Order, Order.user_id == UserStoreTelegram.user_id
+            ).filter(
+                UserStoreTelegram.store_id == shop_id,
+                Order.shop_id == shop_id,
+                Order.created_at >= thirty_days_ago
+            ).distinct().count()
+        else:
+            # Count all subscribers
+            total_count = db.query(UserStoreTelegram).filter(
+                UserStoreTelegram.store_id == shop_id
+            ).count()
+        
+        # Add total_count to data
+        data['total_count'] = total_count
+        logger.info(f"Creating broadcast for shop {shop_id} with {total_count} recipients (audience: {audience_type})")
+
         db_broadcast = Broadcast(shop_id=shop_id, **data)
         db.add(db_broadcast)
         db.commit()

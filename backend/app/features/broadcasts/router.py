@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
 from sqlalchemy.orm import Session
 from typing import List
+from datetime import datetime
 from app.db.session import get_db
 from app.core.dependencies import get_current_user
 from app.features.users.models import User
@@ -108,6 +109,48 @@ async def send_broadcast(
         background_tasks.add_task(tasks.send_broadcast_task, broadcast.id)
     
     return broadcast
+
+@router.get("/debug/subscribers")
+async def get_subscribers_count(
+    shop_slug: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Debug endpoint to check subscriber count"""
+    from app.features.shops.models import UserStoreTelegram
+    
+    shop = await get_shop_and_check_permission(shop_slug, db, current_user)
+    
+    # Get all subscribers
+    all_subscribers = db.query(UserStoreTelegram).filter(
+        UserStoreTelegram.store_id == shop.id
+    ).all()
+    
+    # Get recent subscribers (with orders in last 30 days)
+    from app.features.orders.models import Order
+    from datetime import timedelta
+    thirty_days_ago = datetime.utcnow()
+    
+    recent_subscribers = db.query(UserStoreTelegram).join(
+        Order, Order.user_id == UserStoreTelegram.user_id
+    ).filter(
+        UserStoreTelegram.store_id == shop.id,
+        Order.shop_id == shop.id,
+        Order.created_at >= thirty_days_ago
+    ).distinct().all()
+    
+    return {
+        "shop_id": shop.id,
+        "shop_slug": shop.slug,
+        "total_subscribers": len(all_subscribers),
+        "recent_subscribers": len(recent_subscribers),
+        "subscribers": [
+            {
+                "user_id": s.user_id,
+                "chat_id": s.telegram_chat_id
+            } for s in all_subscribers
+        ]
+    }
 
 @router.delete("/{broadcast_id}")
 async def delete_broadcast(

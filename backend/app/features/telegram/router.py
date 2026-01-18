@@ -72,35 +72,20 @@ async def handle_start_command(chat_id: int, telegram_user: dict, shop: Shop, db
         first_name = telegram_user.get("first_name", "")
         last_name = telegram_user.get("last_name", "")
         
-        logger.info(f"Start command from: {telegram_username} (ID: {telegram_id})")
+        logger.info(f"Start command from: {telegram_username} (ID: {telegram_id}) in shop {shop.id}")
         
-        # Try to find existing user by telegram username or phone
-        # For now, we'll create a guest user or link to existing
-        user = None
-        
-        # Option 1: Try to find by phone if telegram has phone
-        # Note: Telegram API doesn't share phone in messages, only in auth
-        
-        # Option 2: Create a guest user for this telegram account
-        # Check if already registered
+        # Check if already registered for THIS shop
         existing_mapping = db.query(UserStoreTelegram).filter(
             UserStoreTelegram.store_id == shop.id,
             UserStoreTelegram.telegram_chat_id == str(chat_id)
         ).first()
         
         if existing_mapping:
-            logger.info(f"User already registered for broadcasts: {chat_id}")
-            # Send confirmation message
-            await send_telegram_message(
-                shop.telegram_bot_token,
-                chat_id,
-                f"✅ Вы уже подписаны на уведомления от {shop.name}!"
-            )
+            logger.info(f"User {chat_id} already registered for shop {shop.id} - skipping welcome message")
+            # User already registered - don't send message again
             return
         
         # Find or create user
-        # For simplicity, we'll use a general "telegram_subscribers" user
-        # Or create specific user per telegram account
         telegram_display_name = f"{first_name} {last_name}".strip() or telegram_username or f"User{telegram_id}"
         
         # Check if user exists with this telegram_id in any shop
@@ -111,9 +96,9 @@ async def handle_start_command(chat_id: int, telegram_user: dict, shop: Shop, db
         if user_mapping:
             # User exists in another shop, link to same user
             user_id = user_mapping.user_id
+            logger.info(f"Linking existing user {user_id} to shop {shop.id}")
         else:
             # Create new user for this telegram account
-            # Use telegram_id as phone (temporary)
             user = User(
                 phone=f"+tg{telegram_id}",  # Temporary phone
                 password_hash="",  # No password for telegram users
@@ -123,6 +108,7 @@ async def handle_start_command(chat_id: int, telegram_user: dict, shop: Shop, db
             db.add(user)
             db.flush()
             user_id = user.id
+            logger.info(f"Created new user {user_id} for telegram account {telegram_id}")
         
         # Create mapping
         mapping = UserStoreTelegram(
@@ -133,11 +119,10 @@ async def handle_start_command(chat_id: int, telegram_user: dict, shop: Shop, db
         db.add(mapping)
         db.commit()
         
-        logger.info(f"Registered user {user_id} for broadcasts in shop {shop.id}")
+        logger.info(f"✅ Registered user {user_id} (chat_id: {chat_id}) for broadcasts in shop {shop.id}")
         
-        # Send welcome message
-        token_prefix = shop.telegram_bot_token[:5] + "..." if shop.telegram_bot_token else "None"
-        logger.info(f"Sending welcome with token prefix: {token_prefix} to chat {chat_id}")
+        # Send welcome message only for new registrations
+        logger.info(f"Sending welcome message to {chat_id} for shop {shop.name}")
         
         await send_telegram_message(
             shop.telegram_bot_token,
