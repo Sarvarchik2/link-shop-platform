@@ -82,6 +82,18 @@ class OrderService:
                 )
             except Exception as e:
                 print(f"Failed to notify owner: {e}")
+
+            try:
+                await telegram_notification_service.send_order_confirmation(
+                    db,
+                    order_id=db_order.id,
+                    shop_id=shop_id,
+                    user_id=user_id,
+                    shop_name=shop.name,
+                    total_price=db_order.total_price
+                )
+            except Exception as e:
+                print(f"Failed to notify customer: {e}")
             
         return db_order
 

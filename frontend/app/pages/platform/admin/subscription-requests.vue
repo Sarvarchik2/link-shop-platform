@@ -9,11 +9,11 @@
     </div>
 
     <div v-else class="requests-list">
-      <div v-if="requests.length === 0" class="empty-state">
+      <div v-if="!requests || requests.length === 0" class="empty-state">
         {{ $t('platformAdmin.requests.empty') }}
       </div>
 
-      <div v-for="req in requests" :key="req.id" class="request-card">
+      <div v-for="req in requests || []" :key="req.id" class="request-card">
         <div class="request-header">
           <div>
             <h3 class="shop-name">{{ req.shop_name }}</h3>

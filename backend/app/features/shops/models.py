@@ -38,6 +38,7 @@ class UserStoreTelegram(Base):
     user_id = Column(Integer, ForeignKey("user.id"), nullable=False, index=True)
     store_id = Column(Integer, ForeignKey("shop.id"), nullable=False, index=True)
     telegram_chat_id = Column(String, nullable=False) # Storely uses BigInt, but String is safer for all IDs
+    language = Column(String, default="ru") # Preferred language: 'ru', 'uz', 'en'
     
     # Ensure a user can only have one chat_id per shop
     __table_args__ = (

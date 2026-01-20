@@ -154,7 +154,6 @@ def reseed_database():
         db.add_all([brand_nike, brand_zara, brand_gucci])
         db.commit()
 
-        # Products (20 items)
         fashion_products = []
         for i in range(10):
             p = Product(

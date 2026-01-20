@@ -63,76 +63,68 @@ async def handle_message(message: dict, shop: Shop, db: Session):
 
 async def handle_start_command(chat_id: int, telegram_user: dict, shop: Shop, db: Session):
     """
-    Handle /start command - register user for broadcasts
+    Handle /start command - register user for broadcasts and ask for language
     """
     try:
         # Get Telegram user info
         telegram_id = telegram_user.get("id")
-        telegram_username = telegram_user.get("username")
         first_name = telegram_user.get("first_name", "")
         last_name = telegram_user.get("last_name", "")
         
-        logger.info(f"Start command from: {telegram_username} (ID: {telegram_id}) in shop {shop.id}")
-        
-        # Check if already registered for THIS shop
-        existing_mapping = db.query(UserStoreTelegram).filter(
+        # Find or create user
+        mapping = db.query(UserStoreTelegram).filter(
             UserStoreTelegram.store_id == shop.id,
             UserStoreTelegram.telegram_chat_id == str(chat_id)
         ).first()
         
-        if existing_mapping:
-            logger.info(f"User {chat_id} already registered for shop {shop.id} - skipping welcome message")
-            # User already registered - don't send message again
-            return
-        
-        # Find or create user
-        telegram_display_name = f"{first_name} {last_name}".strip() or telegram_username or f"User{telegram_id}"
-        
-        # Check if user exists with this telegram_id in any shop
-        user_mapping = db.query(UserStoreTelegram).filter(
-            UserStoreTelegram.telegram_chat_id == str(chat_id)
-        ).first()
-        
-        if user_mapping:
-            # User exists in another shop, link to same user
-            user_id = user_mapping.user_id
-            logger.info(f"Linking existing user {user_id} to shop {shop.id}")
-        else:
-            # Create new user for this telegram account
-            user = User(
-                phone=f"+tg{telegram_id}",  # Temporary phone
-                password_hash="",  # No password for telegram users
-                first_name=first_name or "Telegram",
-                last_name=last_name or "User"
+        if not mapping:
+            # Check if user exists with this telegram_id in any shop
+            user_mapping = db.query(UserStoreTelegram).filter(
+                UserStoreTelegram.telegram_chat_id == str(chat_id)
+            ).first()
+            
+            if user_mapping:
+                user_id = user_mapping.user_id
+            else:
+                user = User(
+                    phone=f"+tg{telegram_id}",
+                    password_hash="",
+                    first_name=first_name or "Telegram",
+                    last_name=last_name or "User"
+                )
+                db.add(user)
+                db.flush()
+                user_id = user.id
+            
+            mapping = UserStoreTelegram(
+                user_id=user_id,
+                store_id=shop.id,
+                telegram_chat_id=str(chat_id),
+                language="ru" # Default
             )
-            db.add(user)
-            db.flush()
-            user_id = user.id
-            logger.info(f"Created new user {user_id} for telegram account {telegram_id}")
-        
-        # Create mapping
-        mapping = UserStoreTelegram(
-            user_id=user_id,
-            store_id=shop.id,
-            telegram_chat_id=str(chat_id)
-        )
-        db.add(mapping)
-        db.commit()
-        
-        logger.info(f"✅ Registered user {user_id} (chat_id: {chat_id}) for broadcasts in shop {shop.id}")
-        
-        # Send welcome message only for new registrations
-        logger.info(f"Sending welcome message to {chat_id} for shop {shop.name}")
+            db.add(mapping)
+            db.commit()
+            logger.info(f"✅ Registered user {user_id} for shop {shop.id}")
+
+        # Send language selection menu
+        keyboard = {
+            "inline_keyboard": [
+                [
+                    {"text": "🇷🇺 Русский", "callback_data": "lang_ru"},
+                    {"text": "🇺🇿 O'zbekcha", "callback_data": "lang_uz"},
+                    {"text": "🇺🇸 English", "callback_data": "lang_en"}
+                ]
+            ]
+        }
         
         await send_telegram_message(
             shop.telegram_bot_token,
             chat_id,
-            f"🎉 Добро пожаловать в {shop.name}!\n\n"
-            f"✅ Вы подписаны на уведомления:\n"
-            f"• Обновления статуса заказов\n"
-            f"• Новости и акции\n"
-            f"• Специальные предложения\n\n"
-            f"Открыть магазин: https://storely.uz/s/{shop.slug}"
+            f"👋 <b>Welcome to {shop.name}!</b>\n\n"
+            f"Please choose your preferred language for notifications:\n"
+            f"Пожалуйста, выберите удобный язык для уведомлений:\n"
+            f"Iltimos, xabarnomalar uchun qulay tilni tanlang:",
+            reply_markup=keyboard
         )
         
     except Exception as e:
@@ -142,35 +134,219 @@ async def handle_start_command(chat_id: int, telegram_user: dict, shop: Shop, db
 
 async def handle_callback_query(callback_query: dict, shop: Shop, db: Session):
     """Handle callback queries from inline buttons"""
-    # Future: handle unsubscribe, etc.
-    pass
+    try:
+        chat_id = callback_query["message"]["chat"]["id"]
+        data = callback_query.get("data", "")
+        message_id = callback_query["message"]["message_id"]
+
+        if data.startswith("lang_"):
+            lang = data.split("_")[1]
+            # Update user language
+            mapping = db.query(UserStoreTelegram).filter(
+                UserStoreTelegram.store_id == shop.id,
+                UserStoreTelegram.telegram_chat_id == str(chat_id)
+            ).first()
+            
+            if mapping:
+                mapping.language = lang
+                db.commit()
+                
+                # Answer callback
+                await answer_callback_query(shop.telegram_bot_token, callback_query["id"], "Success!")
+                
+                # Delete choosing language message to keep chat clean
+                await delete_telegram_message(shop.telegram_bot_token, chat_id, message_id)
+                
+                # Prepare beautiful welcome message
+                shop_url = f"https://storely.uz/{shop.slug}"
+                
+                # Contacts block
+                contacts = []
+                if shop.phone: contacts.append(f"📞 {shop.phone}")
+                if shop.email: contacts.append(f"📧 {shop.email}")
+                if shop.address: contacts.append(f"📍 {shop.address}")
+                
+                socials = []
+                if shop.instagram: socials.append(f"<a href='https://instagram.com/{shop.instagram.strip('@')}'>Instagram</a>")
+                if shop.telegram: socials.append(f"<a href='https://t.me/{shop.telegram.strip('@')}'>Telegram</a>")
+                if shop.facebook: socials.append(f"<a href='{shop.facebook}'>Facebook</a>")
+                
+                contacts_str = "\n".join(contacts)
+                socials_str = " | ".join(socials)
+                
+                welcome_data = {
+                    "ru": {
+                        "text": f"🎉 <b>Добро пожаловать в {shop.name}!</b>\n\n"
+                                f"Мы рады видеть вас в нашем магазине. Теперь вы будете получать уведомления о статусе ваших заказов и специальных предложениях.\n\n"
+                                f"{'<b>Контакты:</b>' if contacts_str else ''}\n{contacts_str}\n\n"
+                                f"{'<b>Мы в соцсетях:</b>' if socials_str else ''}\n{socials_str}\n\n"
+                                f"🛍 <b>Приятных покупок!</b>",
+                        "btn": "🛍 Перейти в магазин"
+                    },
+                    "uz": {
+                        "text": f"🎉 <b>{shop.name}ga xush kelibsiz!</b>\n\n"
+                                f"Sizni do'konimizda ko'rib turganimizdan xursandmiz. Endi siz buyurtmalaringiz holati va maxsus takliflar haqida bildirishnomalar olasiz.\n\n"
+                                f"{'<b>Kontaktlar:</b>' if contacts_str else ''}\n{contacts_str}\n\n"
+                                f"{'<b>Biz ijtimoiy tarmoqlarda:</b>' if socials_str else ''}\n{socials_str}\n\n"
+                                f"🛍 <b>Xaridingiz barakali bo'lsin!</b>",
+                        "btn": "🛍 Do'konni ochish"
+                    },
+                    "en": {
+                        "text": f"🎉 <b>Welcome to {shop.name}!</b>\n\n"
+                                f"We're glad to see you in our store. Now you will receive notifications about your orders status and special offers.\n\n"
+                                f"{'<b>Contacts:</b>' if contacts_str else ''}\n{contacts_str}\n\n"
+                                f"{'<b>Social Media:</b>' if socials_str else ''}\n{socials_str}\n\n"
+                                f"🛍 <b>Happy shopping!</b>",
+                        "btn": "🛍 Open Store"
+                    }
+                }
+                
+                t = welcome_data.get(lang, welcome_data["ru"])
+                keyboard = {
+                    "inline_keyboard": [[{"text": t["btn"], "url": shop_url}]]
+                }
+                
+                # Send welcome with logo if available
+                if shop.logo_url:
+                    await send_telegram_photo(
+                        shop.telegram_bot_token,
+                        chat_id,
+                        shop.logo_url,
+                        caption=t["text"],
+                        reply_markup=keyboard
+                    )
+                else:
+                    await send_telegram_message(
+                        shop.telegram_bot_token,
+                        chat_id,
+                        t["text"],
+                        reply_markup=keyboard
+                    )
+                
+    except Exception as e:
+        logger.error(f"Error handling callback query: {e}", exc_info=True)
 
 
-async def send_telegram_message(bot_token: str, chat_id: int, text: str):
+async def send_telegram_message(bot_token: str, chat_id: int, text: str, reply_markup: dict = None):
     """Send a message via Telegram Bot API"""
     import httpx
     from app.core.crypto import crypto
     
     try:
-        # Decrypt token if it's encrypted (raw tokens have ':')
         token = bot_token
         if bot_token and ":" not in bot_token:
             decrypted = crypto.decrypt(bot_token)
-            if decrypted:
-                token = decrypted
+            if decrypted: token = decrypted
         
         url = f"https://api.telegram.org/bot{token}/sendMessage"
         payload = {
             "chat_id": chat_id,
             "text": text,
-            "parse_mode": "HTML"
+            "parse_mode": "HTML",
+            "disable_web_page_preview": False
         }
+        if reply_markup:
+            payload["reply_markup"] = reply_markup
         
         async with httpx.AsyncClient() as client:
             response = await client.post(url, json=payload)
             if response.status_code != 200:
                 logger.error(f"Failed to send message: {response.text}")
-            else:
-                logger.info(f"Message sent to {chat_id}")
     except Exception as e:
         logger.error(f"Error sending telegram message: {e}")
+
+async def send_telegram_photo(bot_token: str, chat_id: int, photo_url: str, caption: str = "", reply_markup: dict = None):
+    """Send a photo via Telegram Bot API"""
+    import httpx
+    from app.core.crypto import crypto
+    
+    try:
+        token = bot_token
+        if bot_token and ":" not in bot_token:
+            decrypted = crypto.decrypt(bot_token)
+            if decrypted: token = decrypted
+            
+        url = f"https://api.telegram.org/bot{token}/sendPhoto"
+        payload = {
+            "chat_id": chat_id,
+            "photo": photo_url,
+            "caption": caption,
+            "parse_mode": "HTML"
+        }
+        if reply_markup:
+            payload["reply_markup"] = reply_markup
+            
+        async with httpx.AsyncClient() as client:
+            response = await client.post(url, json=payload)
+            if response.status_code != 200:
+                logger.error(f"Failed to send photo: {response.text}")
+    except Exception as e:
+        logger.error(f"Error sending telegram photo: {e}")
+
+async def edit_telegram_message(bot_token: str, chat_id: int, message_id: int, text: str):
+    """Edit an existing message via Telegram Bot API"""
+    import httpx
+    from app.core.crypto import crypto
+    
+    try:
+        token = bot_token
+        if bot_token and ":" not in bot_token:
+            decrypted = crypto.decrypt(bot_token)
+            if decrypted: token = decrypted
+            
+        url = f"https://api.telegram.org/bot{token}/editMessageText"
+        payload = {
+            "chat_id": chat_id,
+            "message_id": message_id,
+            "text": text,
+            "parse_mode": "HTML"
+        }
+        
+        async with httpx.AsyncClient() as client:
+            await client.post(url, json=payload)
+    except Exception as e:
+        logger.error(f"Error editing telegram message: {e}")
+
+async def delete_telegram_message(bot_token: str, chat_id: int, message_id: int):
+    """Delete a message via Telegram Bot API"""
+    import httpx
+    from app.core.crypto import crypto
+    
+    try:
+        token = bot_token
+        if bot_token and ":" not in bot_token:
+            decrypted = crypto.decrypt(bot_token)
+            if decrypted: token = decrypted
+            
+        url = f"https://api.telegram.org/bot{token}/deleteMessage"
+        payload = {
+            "chat_id": chat_id,
+            "message_id": message_id
+        }
+        
+        async with httpx.AsyncClient() as client:
+            await client.post(url, json=payload)
+    except Exception as e:
+        logger.error(f"Error deleting telegram message: {e}")
+
+async def answer_callback_query(bot_token: str, callback_query_id: str, text: str = ""):
+    """Answer a callback query"""
+    import httpx
+    from app.core.crypto import crypto
+    
+    try:
+        token = bot_token
+        if bot_token and ":" not in bot_token:
+            decrypted = crypto.decrypt(bot_token)
+            if decrypted: token = decrypted
+            
+        url = f"https://api.telegram.org/bot{token}/answerCallbackQuery"
+        payload = {
+            "callback_query_id": callback_query_id,
+            "text": text
+        }
+        
+        async with httpx.AsyncClient() as client:
+            await client.post(url, json=payload)
+    except Exception as e:
+        logger.error(f"Error answering callback query: {e}")
