@@ -170,6 +170,10 @@ async def handle_callback_query(callback_query: dict, shop: Shop, db: Session):
                 if shop.instagram: socials.append(f"<a href='https://instagram.com/{shop.instagram.strip('@')}'>Instagram</a>")
                 if shop.telegram: socials.append(f"<a href='https://t.me/{shop.telegram.strip('@')}'>Telegram</a>")
                 if shop.facebook: socials.append(f"<a href='{shop.facebook}'>Facebook</a>")
+                if shop.twitter: socials.append(f"<a href='https://twitter.com/{shop.twitter.strip('@')}'>Twitter</a>")
+                if shop.whatsapp: 
+                    wa_phone = shop.whatsapp.strip('+').replace(' ', '')
+                    socials.append(f"<a href='https://wa.me/{wa_phone}'>WhatsApp</a>")
                 
                 contacts_str = "\n".join(contacts)
                 socials_str = " | ".join(socials)
@@ -208,10 +212,15 @@ async def handle_callback_query(callback_query: dict, shop: Shop, db: Session):
                 
                 # Send welcome with logo if available
                 if shop.logo_url:
+                    from app.core.config import settings
+                    logo_abs_url = shop.logo_url
+                    if not logo_abs_url.startswith('http'):
+                        logo_abs_url = f"{settings.BASE_URL.rstrip('/')}/{logo_abs_url.lstrip('/')}"
+                    
                     await send_telegram_photo(
                         shop.telegram_bot_token,
                         chat_id,
-                        shop.logo_url,
+                        logo_abs_url,
                         caption=t["text"],
                         reply_markup=keyboard
                     )

@@ -150,6 +150,21 @@ def run_migrations(engine):
                     END $$;
                     """,
                     
+                    # ============ USER_STORE_TELEGRAM TABLE MIGRATIONS ============
+                    
+                    # Add language to userstoretelegram
+                    """
+                    DO $$ 
+                    BEGIN
+                        IF NOT EXISTS (
+                            SELECT 1 FROM information_schema.columns 
+                            WHERE table_name='userstoretelegram' AND column_name='language'
+                        ) THEN
+                            ALTER TABLE userstoretelegram ADD COLUMN language VARCHAR(10) DEFAULT 'ru';
+                        END IF;
+                    END $$;
+                    """,
+                    
                     # Update existing plans
                     """
                     UPDATE subscriptionplan SET can_broadcast = FALSE WHERE slug = 'trial' AND can_broadcast IS NULL;

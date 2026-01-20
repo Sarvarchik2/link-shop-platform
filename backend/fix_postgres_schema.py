@@ -27,9 +27,15 @@ def fix_postgres():
                 db.execute(text(f"ALTER TABLE banner ADD COLUMN {col} VARCHAR;"))
                 print("Done.")
             except Exception as e:
-                 # Postgres raises error if column exists. We can ignore or catch specific code.
-                 # "duplicate column name"
                 print(f"Skipping {col}: {e}")
+
+        # 3. Add 'language' to userstoretelegram
+        try:
+            print("Adding 'language' to userstoretelegram...")
+            db.execute(text("ALTER TABLE userstoretelegram ADD COLUMN language VARCHAR(10) DEFAULT 'ru';"))
+            print("Done.")
+        except Exception as e:
+             print(f"Skipping userstoretelegram language: {e}")
 
         db.commit()
         print("Schema update committed.")
