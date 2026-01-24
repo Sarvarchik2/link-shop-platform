@@ -1,95 +1,129 @@
 <template>
-  <div class="platform-admin-page">
-    <!-- Mobile Header -->
-    <header class="mobile-header">
-      <button class="menu-btn" @click="sidebarOpen = !sidebarOpen">
-        <svg v-if="!sidebarOpen" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-          stroke-width="2">
-          <line x1="3" y1="12" x2="21" y2="12"></line>
-          <line x1="3" y1="6" x2="21" y2="6"></line>
-          <line x1="3" y1="18" x2="21" y2="18"></line>
-        </svg>
-        <svg v-else width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <line x1="18" y1="6" x2="6" y2="18"></line>
-          <line x1="6" y1="6" x2="18" y2="18"></line>
-        </svg>
-      </button>
-      <span class="mobile-title">Заказы</span>
-      <NuxtLink :to="localePath('/')" class="home-btn">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-          <polyline points="9 22 9 12 15 12 15 22"></polyline>
-        </svg>
-      </NuxtLink>
-    </header>
+  <div class="platform-admin-orders">
+    <PlatformAdminSidebar :current-route="'orders'" :model-value="sidebarOpen"
+      @update:model-value="sidebarOpen = $event" @logout="handleLogout" />
 
-    <PlatformAdminSidebar current-route="orders" :model-value="sidebarOpen"
-      @update:model-value="sidebarOpen = $event" />
-
-    <!-- Main Content -->
     <main class="admin-main">
-      <div class="admin-header">
-        <div>
-          <h1 class="admin-title">Управление заказами</h1>
-          <p class="admin-subtitle">Все заказы со всех магазинов платформы</p>
-        </div>
-      </div>
-
-      <div class="admin-content">
-        <div v-if="error" class="text-center py-12 text-red-500">
-          <p class="mt-4">Ошибка загрузки данных: {{ error.message || 'Неизвестная ошибка' }}</p>
-          <button @click="refresh" class="mt-4 px-4 py-2 bg-black text-white rounded-lg">Повторить</button>
-        </div>
-        <div v-else-if="pending" class="text-center py-12 text-gray-400">
-          <div class="loading-spinner"></div>
-          <p class="mt-4">Заказы загружаются...</p>
+      <!-- Header -->
+      <header class="top-nav">
+        <div class="nav-left">
+          <button class="mobile-menu-btn" @click="sidebarOpen = true">
+            <iconify-icon icon="lucide:menu" />
+          </button>
+          <div class="page-info">
+            <h1 class="page-title">Все заказы</h1>
+            <p class="page-subtitle">Мониторинг транзакций во всех магазинах системы</p>
+          </div>
         </div>
 
-        <div v-else class="orders-list">
-          <div v-for="order in orders" :key="order.id" class="order-card">
-            <div class="order-header">
-              <div class="order-info">
-                <div class="order-id">Заказ #{{ order.id }}</div>
-                <div class="order-date">{{ formatDate(order.created_at) }}</div>
-              </div>
-              <span :class="['status-badge', getStatusClass(order.status)]">
-                {{ getStatusText(order.status) }}
-              </span>
-            </div>
+        <div class="nav-right">
+          <button @click="refresh" class="refresh-btn" :class="{ loading: pending }">
+            <iconify-icon icon="lucide:rotate-cw" />
+          </button>
+        </div>
+      </header>
 
-            <div class="order-details">
-              <div class="detail-row">
-                <span class="detail-label">Клиент:</span>
-                <span class="detail-value">{{ getUserName(order.user) }}</span>
-              </div>
-              <div class="detail-row">
-                <span class="detail-label">Телефон:</span>
-                <span class="detail-value">{{ order.delivery_phone || order.user?.phone }}</span>
-              </div>
-              <div class="detail-row">
-                <span class="detail-label">Адрес:</span>
-                <span class="detail-value">{{ order.delivery_address }}, {{ order.delivery_city }}</span>
-              </div>
-              <div class="detail-row">
-                <span class="detail-label">Сумма:</span>
-                <span class="detail-value amount">{{ formatPrice(order.total_price) }}</span>
-              </div>
+      <div class="admin-scroll">
+        <!-- Stats summary -->
+        <div class="stats-row">
+          <div class="mini-stat-box">
+            <div class="ms-icon"><iconify-icon icon="lucide:shopping-bag" /></div>
+            <div class="ms-body">
+              <div class="ms-v">{{ orders?.length || 0 }}</div>
+              <div class="ms-l">Всего заказов</div>
             </div>
+          </div>
+          <div class="mini-stat-box">
+            <div class="ms-icon pending"><iconify-icon icon="lucide:clock" /></div>
+            <div class="ms-body">
+              <div class="ms-v">{{ pendingCount }}</div>
+              <div class="ms-l">Ожидают</div>
+            </div>
+          </div>
+          <div class="mini-stat-box">
+            <div class="ms-icon done"><iconify-icon icon="lucide:check-circle" /></div>
+            <div class="ms-body">
+              <div class="ms-v">{{ deliveredCount }}</div>
+              <div class="ms-l">Доставлено</div>
+            </div>
+          </div>
+          <div class="mini-stat-box">
+            <div class="ms-icon sum"><iconify-icon icon="lucide:banknote" /></div>
+            <div class="ms-body">
+              <div class="ms-v">{{ formatPrice(totalRevenue) }}</div>
+              <div class="ms-l">Общий оборот</div>
+            </div>
+          </div>
+        </div>
 
-            <div v-if="order.items && order.items.length > 0" class="order-items">
-              <div class="items-title">Товары:</div>
-              <NuxtLink v-for="item in order.items" :key="item.product_id"
-                :to="localePath(item.shop_slug ? `/${item.shop_slug}/products/${item.product_id}` : `/products/${item.product_id}`)"
-                class="order-item">
-                <img v-if="item.product_image" :src="item.product_image" :alt="item.product_name" class="item-image" />
-                <div class="item-info">
-                  <div class="item-name">{{ item.product_name }}</div>
-                  <div class="item-details">
-                    Количество: {{ item.quantity }} × {{ formatPrice(item.price) }}
-                  </div>
-                </div>
-              </NuxtLink>
-            </div>
+        <div v-if="pending" class="loading-state">
+          <div class="loader"></div>
+        </div>
+
+        <div v-else-if="!orders || orders.length === 0" class="empty-state">
+          <iconify-icon icon="lucide:package-x" />
+          <h2>Заказов пока нет</h2>
+          <p>Когда покупатели начнут совершать покупки в магазинах, они появятся в этом списке.</p>
+        </div>
+
+        <div v-else class="table-white-card">
+          <div class="table-responsive">
+            <table class="modern-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Магазин / Клиент</th>
+                  <th>Статус</th>
+                  <th>Товары</th>
+                  <th>Сумма</th>
+                  <th>Дата</th>
+                  <th>Действия</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="order in orders" :key="order.id">
+                  <td><span class="id-tag">#{{ order.id }}</span></td>
+                  <td>
+                    <div class="order-client-cell">
+                      <div class="oc-shop">Магазин ID: {{ order.shop_id || '—' }}</div>
+                      <div class="oc-name">{{ getUserName(order.user) }}</div>
+                      <div class="oc-phone">{{ order.delivery_phone || order.user?.phone }}</div>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="status-pill" :class="order.status">
+                      {{ getStatusText(order.status) }}
+                    </div>
+                  </td>
+                  <td>
+                    <div class="items-preview">
+                      <div v-for="item in order.items.slice(0, 3)" :key="item.product_id" class="item-mini-img">
+                        <img v-if="item.product_image" :src="item.product_image" />
+                        <div v-else class="item-placeholder">?</div>
+                      </div>
+                      <div v-if="order.items.length > 3" class="items-more">+{{ order.items.length - 3 }}</div>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="amount-cell">
+                      <div class="a-val">{{ formatPrice(order.total_price) }}</div>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="date-cell">
+                      <div class="d-val">{{ formatDate(order.created_at) }}</div>
+                      <div class="d-time">{{ formatTime(order.created_at) }}</div>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="action-btns">
+                      <button class="act-btn" @click="viewOrder(order)" v-tooltip="'Детали'"><iconify-icon
+                          icon="lucide:eye" /></button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
@@ -98,358 +132,394 @@
 </template>
 
 <script setup>
-definePageMeta({
-  middleware: 'platform-admin'
-})
-
 const { token, logout } = useAuth()
 const { formatPrice } = useCurrency()
-const router = useRouter()
-const localePath = useLocalePath()
-const sidebarOpen = ref(false)
-
-const handleLogout = () => {
-  logout()
-  useToast().success('Вы вышли из аккаунта')
-}
-
-const currentRoute = computed(() => 'orders')
-
+const toast = useToast()
 const config = useRuntimeConfig()
+const { t, locale } = useI18n()
+
+definePageMeta({ middleware: 'platform-admin' })
+
+const sidebarOpen = ref(false)
+const handleLogout = () => { logout(); toast.success('Вы вышли') }
+
 const { data: orders, pending, error, refresh } = useFetch(config.public.apiBase + '/platform/admin/orders', {
-  server: false,
-  lazy: true,
-  watch: [token],
-  headers: computed(() => ({
-    'Authorization': token.value ? `Bearer ${token.value}` : ''
-  }))
+  lazy: true, watch: [token],
+  headers: computed(() => ({ 'Authorization': `Bearer ${token.value}` }))
 })
 
-// Watch for errors and log them
-watch(error, (newError) => {
-  if (newError) {
-    console.error('[Admin Orders] Ошибка загрузки заказов:', newError)
-    console.error('[Admin Orders] Детали ошибки:', {
-      message: newError.message,
-      statusCode: newError.statusCode,
-      statusMessage: newError.statusMessage,
-      data: newError.data
-    })
-  }
-}, { immediate: true })
+const pendingCount = computed(() => orders.value?.filter(o => o.status === 'pending').length || 0)
+const deliveredCount = computed(() => orders.value?.filter(o => o.status === 'delivered').length || 0)
+const totalRevenue = computed(() => orders.value?.reduce((sum, o) => sum + (o.total_price || 0), 0) || 0)
 
-watch(token, () => {
-  if (token.value) {
-    console.log('[Admin Orders] Токен обновлен, обновляю данные...')
-    refresh()
-  }
-}, { immediate: true })
+const getStatusText = (s) => ({
+  'pending': 'Ожидает', 'processing': 'В обработке', 'shipping': 'Доставка',
+  'delivered': 'Доставлен', 'cancelled': 'Отменен'
+}[s] || s)
 
-watch(orders, (newOrders) => {
-  if (newOrders) {
-    console.log('[Admin Orders] Заказы загружены:', newOrders)
-  }
-})
+const getUserName = (u) => u ? `${u.first_name || ''} ${u.last_name || ''}`.trim() || u.phone : 'Гость'
+const formatDate = (d) => new Date(d).toLocaleDateString(locale.value, { day: 'numeric', month: 'short', year: 'numeric' })
+const formatTime = (d) => new Date(d).toLocaleTimeString(locale.value, { hour: '2-digit', minute: '2-digit' })
 
-const getStatusClass = (status) => {
-  const statusMap = {
-    'pending': 'status-pending',
-    'processing': 'status-processing',
-    'shipping': 'status-shipping',
-    'delivered': 'status-delivered',
-    'cancelled': 'status-cancelled'
-  }
-  return statusMap[status] || 'status-pending'
-}
-
-const getStatusText = (status) => {
-  const statusMap = {
-    'pending': 'Ожидает',
-    'processing': 'В обработке',
-    'shipping': 'Доставляется',
-    'delivered': 'Доставлен',
-    'cancelled': 'Отменен'
-  }
-  return statusMap[status] || status
-}
-
-const getUserName = (user) => {
-  if (!user) return 'Неизвестно'
-  return `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.phone
-}
-
-const formatDate = (dateString) => {
-  if (!dateString) return '-'
-  const date = new Date(dateString)
-  return date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })
-}
+const viewOrder = (o) => toast.info(`Просмотр заказа #${o.id}`)
 </script>
 
 <style scoped>
-/* Базовые стили из shops.vue */
-.platform-admin-page {
+.platform-admin-orders {
+  background: #f8fafc;
   min-height: 100vh;
   display: flex;
-  background: #FAFAFA;
-  width: 100%;
 }
 
-/* New mobile header styles */
-.mobile-header {
-  display: none;
-  /* Hidden by default, shown on smaller screens */
+.admin-main {
+  flex: 1;
+  margin-left: 280px;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.4s;
+}
+
+.top-nav {
+  padding: 32px;
+  background: #fff;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px;
-  background: white;
-  border-bottom: 1px solid #E5E7EB;
-  position: sticky;
-  top: 0;
-  z-index: 1000;
 }
 
-.mobile-header .menu-btn,
-.mobile-header .home-btn {
-  background: none;
+.mobile-menu-btn {
+  display: none;
+  width: 44px;
+  height: 44px;
+  background: #f1f5f9;
   border: none;
-  color: #111;
+  border-radius: 12px;
+  font-size: 1.5rem;
   cursor: pointer;
-  padding: 0;
+}
+
+.page-title {
+  font-size: 1.75rem;
+  font-weight: 950;
+  margin: 0;
+  letter-spacing: -1px;
+}
+
+.page-subtitle {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin-top: 4px;
+  font-weight: 600;
+}
+
+.refresh-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  border: 1.5px solid #e2e8f0;
+  background: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  transition: all 0.2s;
+}
+
+.refresh-btn:hover {
+  border-color: #111;
+}
+
+.refresh-btn.loading iconify-icon {
+  animation: spin 1s linear infinite;
+}
+
+.admin-scroll {
+  padding: 32px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.mini-stat-box {
+  background: white;
+  padding: 24px;
+  border-radius: 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+}
+
+.ms-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: #f1f5f9;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+}
+
+.ms-icon.pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.ms-icon.done {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.ms-icon.sum {
+  background: #e0e7ff;
+  color: #4338ca;
+}
+
+.ms-v {
+  font-size: 1.4rem;
+  font-weight: 950;
+  color: #111;
+}
+
+.ms-l {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+}
+
+.table-white-card {
+  background: white;
+  border-radius: 28px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+  overflow: hidden;
+}
+
+.modern-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.modern-table th {
+  padding: 20px 24px;
+  background: #f8fafc;
+  font-size: 0.75rem;
+  font-weight: 850;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.modern-table td {
+  padding: 16px 24px;
+  border-bottom: 1px solid #f8fafc;
+  vertical-align: middle;
+}
+
+.id-tag {
+  background: #f1f5f9;
+  color: #475569;
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.order-client-cell {
+  display: grid;
+  gap: 2px;
+}
+
+.oc-shop {
+  font-size: 0.7rem;
+  color: #94a3b8;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.oc-name {
+  font-weight: 850;
+  color: #111;
+  font-size: 0.95rem;
+}
+
+.oc-phone {
+  font-size: 0.8rem;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.status-pill {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 10px;
+  font-size: 0.7rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.status-pill.pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.status-pill.delivered {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.status-pill.cancelled {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.status-pill.processing {
+  background: #e0e7ff;
+  color: #4338ca;
+}
+
+.items-preview {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.item-mini-img {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #f1f5f9;
+  background: #f8fafc;
+}
+
+.item-mini-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.item-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  color: #94a3b8;
+  font-weight: 900;
+}
+
+.items-more {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: #f1f5f9;
+  color: #64748b;
+  font-size: 0.7rem;
+  font-weight: 900;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.mobile-header .mobile-title {
-  font-size: 1.125rem;
-  font-weight: 700;
-  color: #111;
-}
-
-/* Adjust main content margin for desktop */
-.admin-main {
-  flex: 1;
-  margin-left: 280px;
-  /* Default for desktop */
-  min-height: 100vh;
-}
-
-/* Responsive adjustments */
-@media (max-width: 1024px) {
-  .mobile-header {
-    display: flex;
-    /* Show mobile header */
-  }
-
-  .admin-main {
-    margin-left: 0;
-    /* No margin on smaller screens */
-    padding-top: 80px;
-    padding-left: 16px;
-    padding-right: 16px;
-  }
-}
-
-
-.admin-header {
-  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-  color: white;
-  padding: 48px 40px;
-}
-
-.admin-title {
-  font-size: 2.5rem;
+.amount-cell {
   font-weight: 900;
-  margin-bottom: 8px;
-}
-
-@media (max-width: 640px) {
-  .admin-title {
-    font-size: 1.25rem !important;
-    line-height: 1.2 !important;
-  }
-
-  .admin-header {
-    padding: 20px !important;
-  }
-}
-
-.admin-subtitle {
-  font-size: 1.125rem;
-  opacity: 0.9;
-}
-
-.admin-content {
-  padding: 40px;
-}
-
-@media (max-width: 640px) {
-  .admin-content {
-    padding: 16px !important;
-  }
-}
-
-.orders-list {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.order-card {
-  background: white;
-  border-radius: 16px;
-  padding: 24px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-  border: 1px solid #E5E7EB;
-}
-
-.order-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid #E5E7EB;
-}
-
-.order-info {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.order-id {
-  font-weight: 800;
-  font-size: 1.125rem;
   color: #111;
-}
-
-.order-date {
-  font-size: 0.875rem;
-  color: #6B7280;
-}
-
-.status-badge {
-  display: inline-block;
-  padding: 6px 12px;
-  border-radius: 12px;
-  font-size: 0.75rem;
-  font-weight: 600;
-}
-
-.status-pending {
-  background: #FEF3C7;
-  color: #92400E;
-}
-
-.status-processing {
-  background: #DBEAFE;
-  color: #1E40AF;
-}
-
-.status-shipping {
-  background: #D1FAE5;
-  color: #065F46;
-}
-
-.status-delivered {
-  background: #D1FAE5;
-  color: #065F46;
-}
-
-.status-cancelled {
-  background: #FEE2E2;
-  color: #991B1B;
-}
-
-.order-details {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-  margin-bottom: 16px;
-}
-
-.detail-row {
-  display: flex;
-  gap: 8px;
-}
-
-.detail-label {
-  font-weight: 600;
-  color: #6B7280;
-  font-size: 0.875rem;
-}
-
-.detail-value {
-  color: #111;
-  font-size: 0.875rem;
-}
-
-.detail-value.amount {
-  font-weight: 800;
   font-size: 1rem;
 }
 
-.order-items {
-  margin-top: 16px;
-  padding-top: 16px;
-  border-top: 1px solid #E5E7EB;
+.date-cell {
+  font-size: 0.85rem;
+  font-weight: 750;
 }
 
-.items-title {
-  font-weight: 700;
-  margin-bottom: 12px;
-  color: #111;
+.d-time {
+  font-size: 0.7rem;
+  color: #94a3b8;
+  margin-top: 2px;
 }
 
-.order-item {
+.act-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1.5px solid #e2e8f0;
+  background: white;
+  color: #64748b;
   display: flex;
-  gap: 12px;
-  padding: 12px;
-  background: #F9FAFB;
-  border-radius: 8px;
-  margin-bottom: 8px;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
 }
 
-.item-image {
-  width: 60px;
-  height: 60px;
-  border-radius: 8px;
-  object-fit: cover;
-}
-
-.item-info {
-  flex: 1;
-}
-
-.item-name {
-  font-weight: 600;
-  margin-bottom: 4px;
+.act-btn:hover {
+  border-color: #111;
   color: #111;
 }
 
-.item-details {
-  font-size: 0.875rem;
-  color: #6B7280;
+.empty-state {
+  text-align: center;
+  padding: 100px 0;
 }
 
-.loading-spinner {
+.empty-state iconify-icon {
+  font-size: 4rem;
+  color: #cbd5e1;
+  margin-bottom: 24px;
+}
+
+.empty-state h2 {
+  font-weight: 950;
+  font-size: 1.75rem;
+  margin-bottom: 12px;
+}
+
+.empty-state p {
+  font-weight: 600;
+  color: #64748b;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.loader {
   width: 40px;
   height: 40px;
-  border: 4px solid #f3f3f3;
-  border-top: 4px solid #111;
+  border: 4px solid #f1f5f9;
+  border-top-color: #111;
   border-radius: 50%;
-  animation: spin 1s linear infinite;
+  animation: spin 0.8s linear infinite;
   margin: 0 auto;
 }
 
 @keyframes spin {
-  0% {
-    transform: rotate(0deg);
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 1024px) {
+  .admin-main {
+    margin-left: 0;
   }
 
-  100% {
-    transform: rotate(360deg);
+  .mobile-menu-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 }
 </style>

@@ -84,3 +84,14 @@ class TransactionRepository:
     def get_by_id(self, transaction_id: int) -> Optional[Transaction]:
         """Получить транзакцию по ID"""
         return self.db.query(Transaction).filter(Transaction.id == transaction_id).first()
+
+    def get_all(
+        self,
+        limit: int = 20,
+        offset: int = 0
+    ) -> tuple[List[Transaction], int]:
+        """Получить все транзакции системы с пагинацией"""
+        query = self.db.query(Transaction)
+        total = query.count()
+        transactions = query.order_by(desc(Transaction.created_at)).limit(limit).offset(offset).all()
+        return transactions, total

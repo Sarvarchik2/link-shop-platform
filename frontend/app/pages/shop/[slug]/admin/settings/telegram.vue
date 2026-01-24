@@ -1,153 +1,125 @@
 <template>
-  <div class="shop-admin-page">
-    <!-- Mobile Header -->
-    <header class="mobile-header">
-      <button class="menu-btn" @click="sidebarOpen = !sidebarOpen">
-        <svg v-if="!sidebarOpen" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-          stroke-width="2">
-          <line x1="3" y1="12" x2="21" y2="12"></line>
-          <line x1="3" y1="6" x2="21" y2="6"></line>
-          <line x1="3" y1="18" x2="21" y2="18"></line>
-        </svg>
-        <svg v-else width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <line x1="18" y1="6" x2="6" y2="18"></line>
-          <line x1="6" y1="6" x2="18" y2="18"></line>
-        </svg>
-      </button>
-      <span class="mobile-title">{{ $t('admin.telegram.title') }}</span>
-      <NuxtLink :to="localePath(`/${shopSlug}`)" class="home-btn">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-          <polyline points="9 22 9 12 15 12 15 22"></polyline>
-        </svg>
-      </NuxtLink>
-    </header>
+  <div class="shop-telegram-settings">
+    <ShopAdminSidebar :shop-slug="shopSlug" :current-route="'telegram'" v-model="sidebarOpen" />
 
-    <ShopAdminSidebar :shop-slug="shopSlug" :current-route="currentRoute" v-model="sidebarOpen" />
-
-    <!-- Main Content -->
     <main class="admin-main">
-      <div class="telegram-settings-page">
-        <div class="page-header">
-          <div class="header-content">
-            <h1 class="page-title">{{ $t('admin.telegram.pageTitle') }}</h1>
-            <p class="page-subtitle">{{ $t('admin.telegram.pageSubtitle') }}</p>
-          </div>
-          <div class="header-actions">
-            <!-- Status Badge -->
-            <div v-if="shop?.telegram_bot_token" class="status-badge" :class="{ active: shop?.is_bot_active }">
-              <div class="status-dot"></div>
-              <span>{{ shop?.is_bot_active ? $t('admin.telegram.botActive') : $t('admin.telegram.botStatus') }}</span>
-            </div>
+      <!-- Header -->
+      <header class="top-nav">
+        <div class="nav-left">
+          <button class="mobile-menu-btn" @click="sidebarOpen = true">
+            <iconify-icon icon="lucide:menu" />
+          </button>
+          <div class="page-info">
+            <h1 class="page-title">{{ $t('admin.telegram.title') }}</h1>
+            <p class="page-subtitle">{{ $t('admin.telegram.subtitle') }}</p>
           </div>
         </div>
 
-        <div class="settings-grid">
-          <!-- Left Column: Bot Settings -->
-          <div class="settings-card main-card">
+        <div class="nav-right">
+          <div v-if="shop?.telegram_bot_token" class="status-pill" :class="{ active: shop?.is_bot_active }">
+            <div class="dot"></div>
+            <span>{{ shop?.is_bot_active ? $t('admin.telegram.statusConnected') : $t('admin.telegram.statusNotActive')
+              }}</span>
+          </div>
+        </div>
+      </header>
+
+      <div class="admin-scroll">
+        <div class="settings-layout">
+          <!-- Main Form Card -->
+          <div class="card-glass main-card">
             <div class="card-header">
-              <div class="card-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M22 2L11 13"></path>
-                  <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-                </svg>
-              </div>
-              <h2 class="card-title">{{ $t('admin.telegram.title') }}</h2>
-            </div>
-
-            <div class="form-group">
-              <label class="form-label">{{ $t('admin.telegram.tokenLabel') }}</label>
-              <div class="input-with-action">
-                <input v-model="botToken" @input="isValid = false" type="password" class="form-input"
-                  placeholder="123456789:ABCDefGhIJKlmNoPQRsTUVwxyZ" />
-                <button @click="handleTestToken" class="test-btn" :disabled="!botToken || testing">
-                  <span v-if="!testing">{{ $t('admin.telegram.testBtn') }}</span>
-                  <div v-else class="loader-sm"></div>
-                </button>
-              </div>
-              <p class="input-hint">Enter the token received from @BotFather</p>
-
-              <div v-if="isValid" class="success-hint">
-                <p>✅ <strong>Important:</strong> Open your bot in Telegram and press <strong>/start</strong> to
-                  subscribe to notifications!</p>
+              <div class="icon-box"><iconify-icon icon="lucide:bot" /></div>
+              <div class="title-wrap">
+                <h2>{{ $t('admin.telegram.botSettings') }}</h2>
+                <p>{{ $t('admin.telegram.tokenInstruction') }}</p>
               </div>
             </div>
 
-            <!-- Bot Result Info -->
-            <div v-if="testResult" class="test-result" :class="{ success: testResult.valid, error: !testResult.valid }">
-              <div class="result-icon">
-                <svg v-if="testResult.valid" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                  stroke="currentColor" stroke-width="2">
-                  <polyline points="20 6 9 17 4 12"></polyline>
-                </svg>
-                <svg v-else width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                  stroke-width="2">
-                  <line x1="18" y1="6" x2="6" y2="18"></line>
-                  <line x1="6" y1="6" x2="18" y2="18"></line>
-                </svg>
-              </div>
-              <div class="result-content">
-                <div class="result-title">{{ testResult.valid ? $t('admin.telegram.botValid') :
-                  $t('admin.telegram.botInvalid') }}</div>
-                <div v-if="testResult.valid && testResult.bot_name" class="result-details">
-                  <strong>@{{ testResult.username }}</strong> ({{ testResult.bot_name }})
+            <div class="form-body">
+              <div class="input-group">
+                <label>{{ $t('admin.telegram.tokenLabel') }}</label>
+                <div class="input-act-wrap">
+                  <input v-model="botToken" @input="isValid = false" type="password"
+                    placeholder="123456789:ABCDefGhIJKlmNoPQRsTUVwxyZ" class="modern-input password" />
+                  <button @click="handleTestToken" class="test-btn" :disabled="!botToken || testing">
+                    <span v-if="!testing">{{ $t('admin.telegram.checkBtn') }}</span>
+                    <div v-else class="loader-xs"></div>
+                  </button>
                 </div>
+                <p class="hint">{{ $t('admin.telegram.securityWarning') }}</p>
+              </div>
+
+              <!-- Test Result Overlay -->
+              <Transition name="fade-slide">
+                <div v-if="testResult" class="result-banner"
+                  :class="{ success: testResult.valid, error: !testResult.valid }">
+                  <div class="rb-icon">
+                    <iconify-icon :icon="testResult.valid ? 'lucide:check-circle' : 'lucide:alert-circle'" />
+                  </div>
+                  <div class="rb-content">
+                    <div class="rb-title">{{ testResult.valid ? $t('admin.telegram.botFound') :
+                      $t('admin.telegram.invalidToken') }}</div>
+                    <div v-if="testResult.valid" class="rb-name">@{{ testResult.username }} ({{ testResult.bot_name }})
+                    </div>
+                    <div v-else class="rb-desc">{{ $t('admin.telegram.checkAndTryAgain') }}</div>
+                  </div>
+                </div>
+              </Transition>
+
+              <div v-if="isValid" class="action-hint">
+                <iconify-icon icon="lucide:info" />
+                <p>{{ $t('admin.telegram.saveHint') }}</p>
               </div>
             </div>
 
-            <div class="form-actions">
+            <div class="card-footer">
               <button @click="handleSaveSettings" class="save-btn" :disabled="saving || !botToken">
                 <span v-if="!saving">{{ $t('admin.telegram.saveBtn') }}</span>
-                <div v-else class="loader-sm"></div>
+                <span v-else class="loader-xs"></span>
               </button>
             </div>
           </div>
 
-          <!-- Right Column: Instructions -->
-          <div class="settings-card info-card">
+          <!-- Instructions Card -->
+          <div class="card-glass side-card">
             <div class="card-header">
-              <div class="card-icon info-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <circle cx="12" cy="12" r="10"></circle>
-                  <line x1="12" y1="16" x2="12" y2="12"></line>
-                  <line x1="12" y1="8" x2="12.01" y2="8"></line>
-                </svg>
-              </div>
-              <h2 class="card-title">{{ $t('admin.telegram.instructionsTitle') }}</h2>
+              <div class="icon-box info"><iconify-icon icon="lucide:help-circle" /></div>
+              <h2>{{ $t('admin.telegram.howToCreate') }}</h2>
             </div>
 
-            <div class="steps-list">
-              <div class="step-item">
-                <div class="step-num">1</div>
-                <div class="step-text">{{ $t('admin.telegram.step1') }}</div>
+            <div class="guide-steps">
+              <div class="step">
+                <div class="num">1</div>
+                <div class="txt"
+                  v-html="$t('admin.telegram.step1', { link: `<a href='https://t.me/BotFather' target='_blank'>@BotFather</a>` })">
+                </div>
               </div>
-              <div class="step-item">
-                <div class="step-num">2</div>
-                <div class="step-text">{{ $t('admin.telegram.step2') }}</div>
+              <div class="step">
+                <div class="num">2</div>
+                <div class="txt" v-html="$t('admin.telegram.step2')"></div>
               </div>
-              <div class="step-item">
-                <div class="step-num">3</div>
-                <div class="step-text">{{ $t('admin.telegram.step3') }}</div>
+              <div class="step">
+                <div class="num">3</div>
+                <div class="txt">{{ $t('admin.telegram.step3') }}</div>
               </div>
-              <div class="step-item highlight">
-                <div class="step-num">4</div>
-                <div class="step-text">
-                  {{ $t('admin.telegram.step4', { slug: shopSlug }) }}
-                  <div class="copy-box" @click="copyToClipboard(`https://storely.uz/s/${shopSlug}`)">
+              <div class="step highlight">
+                <div class="num">4</div>
+                <div class="txt">
+                  {{ $t('admin.telegram.step4') }}
+                  <div class="copy-url" @click="copyToClipboard(`https://storely.uz/s/${shopSlug}`)">
                     <code>https://storely.uz/s/{{ shopSlug }}</code>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
+                    <iconify-icon icon="lucide:copy" />
                   </div>
                 </div>
               </div>
             </div>
 
-            <div v-if="shop?.telegram_bot_token" class="webapp-info">
-              <div class="webapp-label">{{ $t('admin.telegram.webAppLink') }}</div>
-              <a :href="`https://t.me/${testResult?.username || 'bot'}`" target="_blank" class="webapp-link">
-                t.me/{{ testResult?.username || 'your_bot' }}
+            <div v-if="shop?.telegram_bot_token && testResult?.username" class="bot-link-box">
+              <label>{{ $t('admin.telegram.botReady') }}</label>
+              <a :href="`https://t.me/${testResult.username}`" target="_blank" class="t-me-link">
+                t.me/{{ testResult.username }}
+                <iconify-icon icon="lucide:external-link" />
               </a>
             </div>
           </div>
@@ -166,59 +138,49 @@ const config = useRuntimeConfig()
 const { token } = useAuth()
 const toast = useToast()
 
+const sidebarOpen = ref(false)
 const botToken = ref('')
 const testing = ref(false)
 const isValid = ref(false)
 const saving = ref(false)
 const testResult = ref(null)
-const sidebarOpen = ref(false)
 
-const currentRoute = computed(() => {
-  if (route.path.includes('/telegram')) return 'telegram'
-  return ''
-})
+// Current Route for sidebar
+const currentRoute = computed(() => 'telegram')
 
 // Fetch current shop data
 const { data: shop, refresh } = await useFetch(`${config.public.apiBase}/platform/shops/${shopSlug}`, {
-  headers: computed(() => ({
-    'Authorization': `Bearer ${token.value}`
-  }))
+  headers: computed(() => ({ 'Authorization': `Bearer ${token.value}` }))
 })
 
+// Sync form with data
 watch(shop, (newShop) => {
   if (newShop?.telegram_bot_token) {
     botToken.value = newShop.telegram_bot_token
-    // Restore active state if previously saved as active
-    if (newShop.is_bot_active) {
-      isValid.value = true
-    }
+    if (newShop.is_bot_active) isValid.value = true
   }
 }, { immediate: true })
 
 onMounted(() => {
-  if (botToken.value) {
-    handleTestToken()
-  }
+  if (botToken.value) handleTestToken()
 })
 
 const handleTestToken = async () => {
   if (!botToken.value) return
-
   testing.value = true
   try {
     const res = await $fetch(`${config.public.apiBase}/shop/${shopSlug}/admin/telegram/test`, {
       method: 'POST',
       body: { token: botToken.value },
-      headers: {
-        'Authorization': `Bearer ${token.value}`
-      }
+      headers: { 'Authorization': `Bearer ${token.value}` }
     })
     testResult.value = res
     isValid.value = res.valid
+    if (res.valid) toast.success(t('admin.telegram.checkSuccess'))
   } catch (e) {
     testResult.value = { valid: false }
     isValid.value = false
-    toast.error(t('admin.telegram.botInvalid'))
+    toast.error(t('admin.telegram.checkError'))
   } finally {
     testing.value = false
   }
@@ -233,241 +195,196 @@ const handleSaveSettings = async () => {
         telegram_bot_token: botToken.value,
         is_bot_active: isValid.value
       },
-      headers: {
-        'Authorization': `Bearer ${token.value}`
-      }
+      headers: { 'Authorization': `Bearer ${token.value}` }
     })
-    toast.success(t('common.saved'))
+    toast.success(t('admin.telegram.saveSuccess'))
     await refresh()
   } catch (e) {
-    toast.error(e.data?.detail || 'Error saving settings')
+    toast.error(e.data?.detail || t('admin.telegram.saveError'))
   } finally {
     saving.value = false
   }
 }
 
-const copyToClipboard = (text) => {
-  navigator.clipboard.writeText(text)
-  toast.success(t('common.copied'))
+const copyToClipboard = (txt) => {
+  navigator.clipboard.writeText(txt)
+  toast.success(t('admin.telegram.copied'))
 }
 </script>
 
 <style scoped>
-.shop-admin-page {
+.shop-telegram-settings {
+  background: #f8fafc;
   min-height: 100vh;
   display: flex;
-  background: #FAFAFA;
 }
 
-/* Mobile Header */
-.mobile-header {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 60px;
-  background: white;
-  border-bottom: 1px solid #E5E7EB;
-  padding: 0 16px;
-  align-items: center;
-  justify-content: space-between;
-  z-index: 1000;
-}
-
-.menu-btn,
-.home-btn {
-  width: 44px;
-  height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #F3F4F6;
-  border: none;
-  border-radius: 12px;
-  cursor: pointer;
-  color: #111;
-  transition: all 0.2s;
-}
-
-.menu-btn:hover,
-.home-btn:hover {
-  background: #111;
-  color: white;
-}
-
-.mobile-title {
-  font-size: 1.125rem;
-  font-weight: 700;
-  color: #111;
-}
-
-/* Main Content */
 .admin-main {
   flex: 1;
   margin-left: 280px;
-  min-height: 100vh;
-  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.4s;
 }
 
-@media (max-width: 1024px) {
-  .mobile-header {
-    display: flex;
-  }
-
-  .admin-main {
-    margin-left: 0;
-    padding: 24px 16px;
-    padding-top: 80px;
-  }
-}
-
-.telegram-settings-page {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.page-header {
+.top-nav {
+  padding: 32px;
+  background: #fff;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 32px;
+  align-items: center;
+}
+
+.mobile-menu-btn {
+  display: none;
+  width: 44px;
+  height: 44px;
+  background: #f1f5f9;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.5rem;
+  cursor: pointer;
 }
 
 .page-title {
-  font-size: 2rem;
-  font-weight: 900;
-  color: #111;
-  margin-bottom: 8px;
+  font-size: 1.75rem;
+  font-weight: 950;
+  margin: 0;
+  letter-spacing: -1px;
 }
 
 .page-subtitle {
-  color: #6B7280;
-  font-size: 1rem;
+  font-size: 0.85rem;
+  color: #64748b;
+  margin-top: 4px;
+  font-weight: 600;
 }
 
-/* Status Badge */
-.status-badge {
+.status-pill {
   display: flex;
   align-items: center;
   gap: 8px;
   padding: 8px 16px;
-  background: rgba(255, 68, 68, 0.1);
-  border: 1px solid rgba(255, 68, 68, 0.2);
   border-radius: 100px;
-  color: #FF4444;
-  font-weight: 600;
-  font-size: 0.9rem;
+  background: #fee2e2;
+  color: #991b1b;
+  font-size: 0.8rem;
+  font-weight: 800;
 }
 
-.status-badge.active {
-  background: rgba(16, 185, 129, 0.1);
-  border-color: rgba(16, 185, 129, 0.2);
-  color: #10B981;
+.status-pill.active {
+  background: #dcfce7;
+  color: #166534;
 }
 
-.status-dot {
+.status-pill .dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
   background: currentColor;
-  box-shadow: 0 0 10px currentColor;
 }
 
-/* Grid & Cards */
-.settings-grid {
+.admin-scroll {
+  padding: 32px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.settings-layout {
   display: grid;
-  grid-template-columns: 1.5fr 1fr;
-  gap: 24px;
+  grid-template-columns: 1fr 380px;
+  gap: 32px;
+  max-width: 1300px;
 }
 
-@media (max-width: 1024px) {
-  .settings-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-.settings-card {
+.card-glass {
   background: white;
-  border: 1px solid #E5E7EB;
-  border-radius: 20px;
-  padding: 28px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  border-radius: 32px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.02);
+  overflow: hidden;
 }
 
 .card-header {
+  padding: 32px;
+  border-bottom: 1px solid #f1f5f9;
   display: flex;
+  gap: 20px;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 24px;
 }
 
-.card-icon {
-  width: 48px;
-  height: 48px;
-  background: #EEF2FF;
-  border-radius: 14px;
+.icon-box {
+  width: 60px;
+  height: 60px;
+  border-radius: 20px;
+  background: #e0e7ff;
+  color: #4338ca;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #3B82F6;
+  font-size: 1.8rem;
 }
 
-.info-icon {
-  background: #F5F3FF;
-  color: #8B5CF6;
+.icon-box.info {
+  background: #fef3c7;
+  color: #92400e;
 }
 
-.card-title {
-  font-size: 1.35rem;
-  font-weight: 800;
-  color: #111;
+.title-wrap h2 {
+  font-weight: 900;
+  font-size: 1.4rem;
+  margin: 0;
 }
 
-/* Forms */
-.form-group {
-  margin-bottom: 24px;
-}
-
-.form-label {
-  display: block;
-  font-size: 0.9rem;
+.title-wrap p {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin-top: 4px;
   font-weight: 600;
-  color: #374151;
-  margin-bottom: 8px;
 }
 
-.input-with-action {
+.form-body {
+  padding: 32px;
+  display: grid;
+  gap: 24px;
+}
+
+.input-group label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 850;
+  color: #1e293b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+}
+
+.input-act-wrap {
   display: flex;
   gap: 12px;
 }
 
-.form-input {
+.modern-input {
   flex: 1;
-  background: #F9FAFB;
-  border: 1px solid #E5E7EB;
-  border-radius: 12px;
-  padding: 12px 16px;
-  color: #111;
-  font-family: inherit;
-  transition: all 0.3s;
+  padding: 14px 20px;
+  border-radius: 16px;
+  border: 1.5px solid #e2e8f0;
+  font-weight: 700;
+  font-family: monospace;
 }
 
-.form-input:focus {
+.modern-input:focus {
+  border-color: #111;
   outline: none;
-  border-color: #3B82F6;
-  background: white;
-  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
 }
 
 .test-btn {
-  padding: 0 20px;
-  background: #F3F4F6;
-  border: 1px solid #E5E7EB;
-  border-radius: 12px;
-  color: #111;
-  font-weight: 600;
+  padding: 0 24px;
+  border-radius: 16px;
+  background: #f1f5f9;
+  border: none;
+  font-weight: 800;
   cursor: pointer;
   transition: all 0.2s;
   white-space: nowrap;
@@ -478,94 +395,105 @@ const copyToClipboard = (text) => {
   color: white;
 }
 
-.test-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.input-hint {
-  font-size: 0.8rem;
-  color: #9CA3AF;
+.hint {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  font-weight: 600;
   margin-top: 8px;
 }
 
-/* Test Result */
-.test-result {
+.result-banner {
   display: flex;
-  gap: 12px;
-  padding: 16px;
-  border-radius: 12px;
-  margin-bottom: 24px;
-  animation: slideIn 0.3s ease-out;
+  gap: 16px;
+  padding: 20px;
+  border-radius: 20px;
+  margin-top: 8px;
 }
 
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.result-banner.success {
+  background: #ecfdf5;
+  border: 1.5px solid #10b981;
 }
 
-.test-result.success {
-  background: #ECFDF5;
-  border: 1px solid #10B981;
+.result-banner.error {
+  background: #fef2f2;
+  border: 1.5px solid #ef4444;
 }
 
-.test-result.error {
-  background: #FEF2F2;
-  border: 1px solid #EF4444;
+.rb-icon {
+  font-size: 1.5rem;
 }
 
-.result-icon {
-  flex-shrink: 0;
-  margin-top: 2px;
+.success .rb-icon {
+  color: #10b981;
 }
 
-.success .result-icon {
-  color: #10B981;
+.error .rb-icon {
+  color: #ef4444;
 }
 
-.error .result-icon {
-  color: #EF4444;
-}
-
-.result-title {
-  font-weight: 700;
-  margin-bottom: 4px;
+.rb-title {
+  font-weight: 900;
   color: #111;
 }
 
-.result-details {
+.rb-name {
+  font-family: monospace;
   font-size: 0.9rem;
-  color: #6B7280;
+  color: #166534;
+  margin-top: 4px;
+  font-weight: 800;
+}
+
+.rb-desc {
+  font-size: 0.85rem;
+  color: #991b1b;
+  margin-top: 4px;
+  font-weight: 600;
+}
+
+.action-hint {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  background: #eff6ff;
+  border-radius: 16px;
+  color: #1e40af;
+  align-items: flex-start;
+}
+
+.action-hint iconify-icon {
+  font-size: 1.2rem;
+}
+
+.action-hint p {
+  font-size: 0.85rem;
+  line-height: 1.5;
+  font-weight: 600;
+}
+
+.card-footer {
+  padding: 24px 32px;
+  background: #f8fafc;
+  border-top: 1px solid #f1f5f9;
 }
 
 .save-btn {
   width: 100%;
-  height: 48px;
+  height: 56px;
+  border-radius: 18px;
   background: #111;
-  border: none;
-  border-radius: 12px;
   color: white;
-  font-weight: 700;
+  border: none;
+  font-weight: 900;
   font-size: 1rem;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s;
 }
 
 .save-btn:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-  background: #000;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
 }
 
 .save-btn:disabled {
@@ -573,111 +501,102 @@ const copyToClipboard = (text) => {
   cursor: not-allowed;
 }
 
-/* Steps */
-.steps-list {
-  display: flex;
-  flex-direction: column;
+.guide-steps {
+  padding: 32px;
+  display: grid;
   gap: 20px;
 }
 
-.step-item {
+.step {
   display: flex;
   gap: 16px;
+  align-items: flex-start;
 }
 
-.step-num {
-  width: 32px;
-  height: 32px;
-  background: #F3F4F6;
+.step .num {
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
+  background: #f1f5f9;
+  color: #64748b;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 700;
-  color: #111;
+  font-size: 0.8rem;
+  font-weight: 900;
   flex-shrink: 0;
-  font-size: 0.9rem;
 }
 
-.step-text {
-  color: #4B5563;
-  line-height: 1.6;
+.step .txt {
+  font-size: 0.9rem;
+  font-weight: 650;
+  color: #475569;
+  line-height: 1.5;
   padding-top: 4px;
 }
 
+.step .txt a {
+  color: #6366f1;
+  text-decoration: underline;
+}
 
-.step-item.highlight .step-num {
-  background: #8B5CF6;
+.step.highlight .num {
+  background: #6366f1;
   color: white;
 }
 
-.success-hint {
-  margin-top: 16px;
-  padding: 12px;
-  background: #ECFDF5;
-  border: 1px solid #10B981;
-  border-radius: 12px;
-  color: #065F46;
-  font-size: 0.9rem;
-}
-
-
-.copy-box {
-  margin-top: 8px;
-  padding: 10px 14px;
-  background: #F9FAFB;
-  border: 1px solid #E5E7EB;
-  border-radius: 8px;
+.copy-url {
+  margin-top: 12px;
+  padding: 12px 16px;
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 14px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   cursor: pointer;
-  transition: all 0.2s;
 }
 
-.copy-box:hover {
-  background: #F3F4F6;
-  border-color: #D1D5DB;
+.copy-url code {
+  font-family: monospace;
+  color: #6366f1;
+  font-size: 0.8rem;
 }
 
-.copy-box code {
-  font-family: 'Fira Code', 'Courier New', monospace;
-  color: #8B5CF6;
-  font-size: 0.85rem;
+.copy-url:hover {
+  border-color: #111;
 }
 
-.copy-box svg {
-  color: #9CA3AF;
+.bot-link-box {
+  padding: 0 32px 32px;
 }
 
-.webapp-info {
-  margin-top: 32px;
-  padding-top: 24px;
-  border-top: 1px solid #E5E7EB;
-}
-
-.webapp-label {
-  font-size: 0.85rem;
-  color: #6B7280;
-  margin-bottom: 8px;
-  font-weight: 500;
-}
-
-.webapp-link {
-  color: #3B82F6;
-  text-decoration: none;
-  font-weight: 600;
+.bot-link-box label {
   display: block;
+  font-size: 0.75rem;
+  font-weight: 900;
+  color: #94a3b8;
+  text-transform: uppercase;
+  margin-bottom: 8px;
 }
 
-.webapp-link:hover {
-  text-decoration: underline;
+.t-me-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  background: #111;
+  color: #fff;
+  border-radius: 16px;
+  font-weight: 800;
+  text-decoration: none;
+  font-size: 0.95rem;
 }
 
-.loader-sm {
-  width: 20px;
-  height: 20px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
+.loader-xs {
+  width: 18px;
+  height: 18px;
+  border: 2.5px solid rgba(255, 255, 255, 0.2);
   border-top-color: white;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
@@ -687,5 +606,32 @@ const copyToClipboard = (text) => {
   to {
     transform: rotate(360deg);
   }
+}
+
+@media (max-width: 1024px) {
+  .admin-main {
+    margin-left: 0;
+  }
+
+  .mobile-menu-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .settings-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.fade-slide-enter-active,
+.fade-slide-leave-active {
+  transition: all 0.3s ease;
+}
+
+.fade-slide-enter-from,
+.fade-slide-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
 }
 </style>

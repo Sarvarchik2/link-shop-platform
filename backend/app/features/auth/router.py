@@ -66,6 +66,7 @@ def confirm_password_reset(request: PasswordResetConfirm, db: Session = Depends(
 async def login_for_access_token(
     db: Session = Depends(get_db), form_data: OAuth2PasswordRequestForm = Depends()
 ):
+    print(f"DEBUG LOGIN: received username='{form_data.username}' password='{form_data.password}'")
     user = user_service.authenticate(db, form_data.username, form_data.password)
     if not user:
         raise HTTPException(

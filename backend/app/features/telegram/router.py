@@ -21,11 +21,23 @@ async def telegram_webhook(
     URL format: https://your-app.railway.app/telegram/webhook/{shop_slug}
     """
     try:
-        # Get shop and verify bot is active
+        # Get shop and verify bot is active and subscription is valid
         shop = db.query(Shop).filter(Shop.slug == shop_slug).first()
-        if not shop or not shop.telegram_bot_token or not shop.is_bot_active:
-            logger.warning(f"Webhook called for invalid/inactive shop: {shop_slug}")
-            return {"ok": True}  # Return ok to Telegram to avoid retries
+        from datetime import datetime
+        
+        if not shop:
+            logger.warning(f"Webhook called for non-existent shop: {shop_slug}")
+            return {"ok": True}
+            
+        is_expired = shop.subscription_expires_at and shop.subscription_expires_at < datetime.utcnow()
+        if not shop.is_active or shop.subscription_status == "expired" or is_expired:
+            logger.warning(f"Webhook called for inactive/expired shop: {shop_slug}")
+            # Optionally send a message to user (though we don't have chat_id yet)
+            return {"ok": True}
+            
+        if not shop.telegram_bot_token or not shop.is_bot_active:
+            logger.warning(f"Webhook called for bot-disabled shop: {shop_slug}")
+            return {"ok": True}
         
         # Parse Telegram update
         update = await request.json()

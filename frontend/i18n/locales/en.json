@@ -13,7 +13,57 @@
         "orders": "Orders",
         "favorites": "Favorites",
         "register": "Register",
-        "shop": "Shop"
+        "shop": "Shop",
+        "features_new": "Features"
+    },
+    "profile": {
+        "title": "My Profile",
+        "actions": {
+            "orders": "My Orders",
+            "favorites": "Favorites",
+            "logout": "Logout"
+        },
+        "links": {
+            "platformAdmin": "Platform Admin",
+            "createShop": "Create Shop"
+        },
+        "shops": {
+            "status": {
+                "trial": "Trial",
+                "active": "Active",
+                "expired": "Expired",
+                "cancelled": "Cancelled"
+            },
+            "expires": {
+                "date": "until {date}",
+                "expired": "Expired",
+                "today": "Expires today",
+                "tomorrow": "Expires tomorrow",
+                "days": "{days} days left"
+            },
+            "actions": {
+                "admin": "Manage"
+            }
+        },
+        "info": {
+            "title": "Personal Info",
+            "firstName": "First Name",
+            "lastName": "Last Name",
+            "phone": "Phone Number",
+            "phoneChangeHint": "Contact support to change phone number",
+            "email_label": "Email",
+            "email_verified": "Verified",
+            "verify_email": "Verify Email"
+        },
+        "roles": {
+            "admin": "Admin",
+            "shopOwner": "Shop Owner",
+            "user": "User"
+        },
+        "shopPromo": {
+            "title": "Start your business",
+            "desc": "Create an online store and start selling today"
+        }
     },
     "currency": "so'm",
     "home": {
@@ -151,6 +201,23 @@
             "topup": "Top-up",
             "payment": "Payment",
             "refund": "Refund"
+        },
+        "table": {
+            "date": "Date",
+            "type": "Type",
+            "description": "Description",
+            "amount": "Amount",
+            "status": "Status"
+        },
+        "enterAmount": "Enter amount",
+        "testModeWarning": "Test mode: Funds will be credited instantly",
+        "topUpAction": "Top up",
+        "topUpSuccess": "Balance successfully topped up!",
+        "topUpError": "Error topping up",
+        "status": {
+            "pending": "Pending",
+            "completed": "Completed",
+            "failed": "Failed"
         }
     },
     "footer": {
@@ -698,7 +765,70 @@
         },
         "soldOut": "SOLD OUT"
     },
+    "shopSettings": {
+        "title": "Shop Settings",
+        "infoTitle": "Shop Information",
+        "infoSubtitle": "Manage your shop's basic information",
+        "basicInfo": "Basic Information",
+        "shopName": "Shop Name",
+        "description": "Description",
+        "logo": "Logo",
+        "uploadLogo": "Upload Logo",
+        "contacts": "Contact Info",
+        "email": "Email",
+        "phone": "Phone",
+        "address": "Address",
+        "socials": "Social Media",
+        "save": "Save Changes",
+        "saved": "Settings saved",
+        "openShop": "Open Shop",
+        "placeholders": {
+            "name": "Your shop name",
+            "description": "Short description...",
+            "logoUrl": "https://example.com/logo.png",
+            "address": "Tashkent, st. ..."
+        },
+        "hints": {
+            "name": "This name will be displayed in your shop header",
+            "logoSize": "Recommended size: 500x500px, max 2MB"
+        },
+        "tooltips": {
+            "remove": "Remove"
+        },
+        "buttons": {
+            "file": "Choose File"
+        },
+        "errors": {
+            "logoUpload": "Error uploading logo"
+        }
+    },
     "admin": {
+        "intro": "Dashboard",
+        "welcome": "Welcome to shop management",
+        "selectPlan": "Select Plan",
+        "upgrade": "Upgrade",
+        "yourPlan": "Your Plan",
+        "usage": "Limit Usage",
+        "limitWarning": "You are approaching your plan limits",
+        "dashboardStats": {
+            "revenue": "Revenue",
+            "orders": "Orders",
+            "ordersCount": "{count} orders",
+            "totalOrders": "Total Orders",
+            "clients": "Clients",
+            "products": "Products",
+            "excludedCancelled": "* excluding {count} cancelled",
+            "comparison": {
+                "today": "Today",
+                "week": "Week",
+                "month": "Month",
+                "all": "All Time"
+            },
+            "pills": {
+                "live": "Live",
+                "total": "Total"
+            }
+        },
         "finance": "Finance",
         "wallet": "Wallet",
         "status": {
@@ -841,12 +971,30 @@
         },
         "telegram": {
             "title": "Telegram Bot",
-            "pageTitle": "Telegram Bot Integration",
-            "pageSubtitle": "Connect your own bot for Web App and notifications",
+            "subtitle": "Connect Telegram Web App and accept orders directly in the messenger",
+            "statusConnected": "Connected",
+            "statusNotActive": "Not Active",
+            "botSettings": "Bot Settings",
+            "tokenInstruction": "Enter the token you received from {'@'}BotFather",
             "tokenLabel": "Telegram Bot Token",
-            "botActive": "Bot is Active",
-            "testBtn": "Test Token",
-            "saveBtn": "Save Settings"
+            "checkBtn": "Check",
+            "securityWarning": "Never share this token with third parties.",
+            "botFound": "Bot Found",
+            "invalidToken": "Invalid Token",
+            "checkAndTryAgain": "Check the entered token and try again.",
+            "saveHint": "Click \"Save Changes\" below to activate the bot for your shop.",
+            "saveBtn": "Save Changes",
+            "howToCreate": "How to create a bot?",
+            "step1": "Contact {link} in Telegram",
+            "step2": "Create a new bot with /newbot command",
+            "step3": "Copy the API Token provided by the father",
+            "step4": "Set Web App URL using /setwebapp command:",
+            "botReady": "Your bot is ready:",
+            "checkSuccess": "Bot successfully verified!",
+            "checkError": "Bot not found or invalid token",
+            "saveSuccess": "Settings saved!",
+            "saveError": "Error saving settings",
+            "copied": "Copied to clipboard"
         },
         "panel": "Business Panel",
         "analytics": "Analytics",
@@ -938,6 +1086,145 @@
         "validation": {
             "imageRequired": "Please upload an image",
             "sizeLimit": "File size must be under 2MB"
+        }
+    },
+    "platformAdmin": {
+        "nav": {
+            "main": "Main Menu",
+            "dashboard": "Dashboard",
+            "shops": "Shops",
+            "users": "Users",
+            "billing": "Billing",
+            "finance": "Finance",
+            "requests": "Requests",
+            "plans": "Plans",
+            "content": "Content",
+            "offers": "Offers"
+        },
+        "offers": {
+            "title": "Offers",
+            "subtitle": "Manage special offers and services for partners",
+            "add": "Add Offer",
+            "noOffers": "No active offers",
+            "createFirst": "Create the first offer so shop owners can see your services.",
+            "edit": "Edit Offer",
+            "new": "New Offer",
+            "titleLabel": "Title ({lang})",
+            "descriptionLabel": "Description ({lang})",
+            "priceLabel": "Price (number)",
+            "pricePlaceholder": "Leave empty for text",
+            "priceTextLabel": "Price Text ({lang})",
+            "priceTextPlaceholder": "e.g. From $100",
+            "emailLabel": "Contact Email",
+            "phoneLabel": "Contact Phone",
+            "orderLabel": "Display Order",
+            "activeLabel": "Offer Active",
+            "cancel": "Cancel",
+            "save": "Save Changes",
+            "create": "Create",
+            "active": "Active",
+            "hidden": "Hidden",
+            "order": "Order: {n}",
+            "contactDefault": "Contact us to purchase",
+            "saved": "Offer saved",
+            "saveError": "Error saving",
+            "error": "Error",
+            "deleteConfirm": "Delete offer \"{title}\"?",
+            "deleted": "Deleted",
+            "deleteError": "Error deleting",
+            "priceOnRequest": "On Request"
+        },
+        "dashboard": {
+            "title": "Dashboard",
+            "welcome": "Platform overview and statistics",
+            "refresh": "Refresh",
+            "errorUnknown": "Unknown error",
+            "periods": {
+                "today": "Today",
+                "week": "Week",
+                "month": "Month",
+                "all": "All Time"
+            },
+            "stats": {
+                "totalShops": "Total Shops",
+                "activeShops": "Active",
+                "users": "Users",
+                "revenue": "Revenue (MRR)",
+                "forecast": "Forecast"
+            },
+            "subscriptionStats": "Subscription Stats",
+            "recentShops": "Recent Shops",
+            "retry": "Retry",
+            "perPeriod": "this period",
+            "perYear": "/year",
+            "ofTotal": "of total",
+            "productsCreated": "products created",
+            "shopsShort": "shops",
+            "uniqueOwners": "Unique Owners",
+            "activeSubs": "Active Subs",
+            "attention": "Attention Needed",
+            "expires": "Expires",
+            "allShops": "All Shops",
+            "viewAll": "View All",
+            "subRequests": "Subscription Requests",
+            "newRequestsDesc": "There are new requests for plan activation or renewal.",
+            "goToRequests": "Go to Requests",
+            "status": {
+                "active": "Active",
+                "trial": "Trial",
+                "expired": "Expired",
+                "cancelled": "Cancelled"
+            }
+        },
+        "plans": {
+            "title": "Subscription Plans",
+            "subtitle": "Manage subscription tariffs",
+            "add": "Add Plan",
+            "edit": "Edit Plan",
+            "new": "New Plan",
+            "save": "Save Changes",
+            "create": "Create Plan",
+            "cancel": "Cancel",
+            "deleteConfirm": "Delete plan \"{name}\"?",
+            "deleted": "Deleted",
+            "saved": "Plan saved",
+            "error": "Error",
+            "free": "Free",
+            "days": "days",
+            "noDesc": "No description",
+            "products": "Products",
+            "banners": "Banners",
+            "telegram": "Telegram Notifications",
+            "broadcasts": "Broadcasts",
+            "order": "Order",
+            "active": "Active",
+            "draft": "Draft",
+            "createFirst": "Create New Plan",
+            "form": {
+                "name": "Name",
+                "slug": "Slug (Unique ID)",
+                "price": "Price",
+                "period": "Period (days)",
+                "maxProducts": "Max Products (0 = ∞)",
+                "maxBanners": "Max Banners",
+                "description": "Description",
+                "features": "Features (comma separated)",
+                "sort": "Sort Order",
+                "isActive": "Active",
+                "isTrial": "Trial",
+                "hasTelegram": "Telegram",
+                "canBroadcast": "Broadcasts"
+            }
+        },
+        "finance": {
+            "title": "Finance",
+            "subtitle": "Transactions and withdrawals management",
+            "transactions": "Transactions",
+            "withdrawals": "Withdrawals",
+            "balance": "Platform Balance",
+            "revenue": "Total Revenue",
+            "pending": "Pending",
+            "paid": "Paid"
         }
     }
 }

@@ -49,7 +49,7 @@
                             <span class="current-label">{{ $t('admin.subscriptionPage.premium.currentPlan') }}</span>
                             <h2 class="current-name">{{ shop?.subscription_plan_id ?
                                 getPlanNameById(shop.subscription_plan_id) : $t('admin.subscriptionPage.premium.noPlan')
-                                }}</h2>
+                            }}</h2>
                         </div>
                         <div class="status-badge-wrap">
                             <span class="status-pill" :class="shop?.subscription_status">
@@ -70,7 +70,7 @@
                             <div class="toggle-text">
                                 <span class="toggle-title">{{ $t('admin.subscriptionPage.premium.autoRenew') }}</span>
                                 <span class="toggle-desc">{{ $t('admin.subscriptionPage.premium.autoRenewDesc')
-                                    }}</span>
+                                }}</span>
                             </div>
                             <div class="toggle-switch" :class="{ active: autoRenewalEnabled }">
                                 <div class="toggle-dot"></div>
@@ -139,7 +139,8 @@
                         <div class="plan-item-header">
                             <div class="name-status">
                                 <h3 class="name">{{ getLocalizedValue(plan, 'name') }}</h3>
-                                <span v-if="shop?.subscription_plan_id === plan.id" class="badge-current">Active</span>
+                                <span v-if="shop?.subscription_plan_id === plan.id" class="badge-current">{{
+                                    $t('admin.status.active') }}</span>
                             </div>
                             <div class="price">
                                 <span class="val">{{ formatPrice(plan.price) }}</span>
@@ -188,7 +189,7 @@
                         <div class="total-calc" v-if="plan.price > 0">
                             <span class="label">{{ $t('admin.subscriptionPage.premium.toPay') }}</span>
                             <span class="total-val">{{ formatPrice(calculatePrice(plan, getPlanDuration(plan.id)).final)
-                                }}</span>
+                            }}</span>
                         </div>
 
                         <button class="btn-select-plan" @click="initiatePurchase(plan)" :disabled="loading">

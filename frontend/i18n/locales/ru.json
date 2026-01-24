@@ -13,7 +13,57 @@
         "orders": "Заказы",
         "favorites": "Избранное",
         "register": "Регистрация",
-        "shop": "Магазин"
+        "shop": "Магазин",
+        "features_new": "Возможности"
+    },
+    "profile": {
+        "title": "Мой профиль",
+        "actions": {
+            "orders": "Мои заказы",
+            "favorites": "Избранное",
+            "logout": "Выйти"
+        },
+        "links": {
+            "platformAdmin": "Администратор платформы",
+            "createShop": "Создать магазин"
+        },
+        "shops": {
+            "status": {
+                "trial": "Пробный период",
+                "active": "Активен",
+                "expired": "Истек",
+                "cancelled": "Отменен"
+            },
+            "expires": {
+                "date": "до {date}",
+                "expired": "Истек",
+                "today": "Истекает сегодня",
+                "tomorrow": "Истекает завтра",
+                "days": "Осталось {days} дн."
+            },
+            "actions": {
+                "admin": "Управление"
+            }
+        },
+        "info": {
+            "title": "Личные данные",
+            "firstName": "Имя",
+            "lastName": "Фамилия",
+            "phone": "Номер телефона",
+            "phoneChangeHint": "Для смены номера обратитесь в поддержку",
+            "email_label": "Email",
+            "email_verified": "Подтвержден",
+            "verify_email": "Подтвердить email"
+        },
+        "roles": {
+            "admin": "Админ",
+            "shopOwner": "Владелец магазина",
+            "user": "Пользователь"
+        },
+        "shopPromo": {
+            "title": "Начните свой бизнес",
+            "desc": "Создайте интернет-магазин и начните продавать уже сегодня"
+        }
     },
     "currency": "сум",
     "home": {
@@ -151,7 +201,26 @@
             "topup": "Пополнение",
             "payment": "Оплата",
             "refund": "Возврат"
-        }
+        },
+        "table": {
+            "date": "Дата",
+            "type": "Тип",
+            "description": "Описание",
+            "amount": "Сумма",
+            "status": "Статус"
+        },
+        "enterAmount": "Введите сумму",
+        "testModeWarning": "Тестовый режим: Деньги зачислятся мгновенно",
+        "topUpAction": "Пополнить",
+        "topUpSuccess": "Баланс успешно пополнен!",
+        "topUpError": "Ошибка при пополнении",
+        "status": {
+            "pending": "В обработке",
+            "completed": "Выполнено",
+            "failed": "Ошибка",
+            "live": "Live"
+        },
+        "shopId": "ID магазина"
     },
     "footer": {
         "contacts": "Контакты",
@@ -666,8 +735,8 @@
         "allCategories": "Все категории",
         "allBrands": "Все бренды",
         "noProducts": "Товаров не найдено",
-        "unavailableTitle": "Магазин не найден",
-        "unavailableDesc": "Этот магазин временно недоступен или был удален."
+        "unavailableTitle": "Магазин временно недоступен",
+        "unavailableDesc": "Срок действия подписки этого магазина истек или он был временно отключен администратором. Пожалуйста, зайдите позже. "
     },
     "product": {
         "loading": "Загрузка данных товара...",
@@ -698,7 +767,70 @@
         },
         "soldOut": "ПРОДАНО"
     },
+    "shopSettings": {
+        "title": "Настройки магазина",
+        "infoTitle": "Информация о магазине",
+        "infoSubtitle": "Управляйте основной информацией вашего магазина",
+        "basicInfo": "Основная информация",
+        "shopName": "Название магазина",
+        "description": "Описание",
+        "logo": "Логотип",
+        "uploadLogo": "Загрузить логотип",
+        "contacts": "Контакты",
+        "email": "Email",
+        "phone": "Телефон",
+        "address": "Адрес",
+        "socials": "Социальные сети",
+        "save": "Сохранить изменения",
+        "saved": "Настройки сохранены",
+        "openShop": "Открыть магазин",
+        "placeholders": {
+            "name": "Название вашего магазина",
+            "description": "Краткое описание...",
+            "logoUrl": "https://example.com/logo.png",
+            "address": "г. Ташкент, ул. ..."
+        },
+        "hints": {
+            "name": "Это название будет отображаться в заголовке вашего магазина",
+            "logoSize": "Рекомендуемый размер: 500x500px, макс 2MB"
+        },
+        "tooltips": {
+            "remove": "Удалить"
+        },
+        "buttons": {
+            "file": "Выбрать файл"
+        },
+        "errors": {
+            "logoUpload": "Ошибка загрузки логотипа"
+        }
+    },
     "admin": {
+        "intro": "Панель управления",
+        "welcome": "Добро пожаловать в управление магазином",
+        "selectPlan": "Выбрать тариф",
+        "upgrade": "Улучшить тариф",
+        "yourPlan": "Ваш тариф",
+        "usage": "Использование лимитов",
+        "limitWarning": "Вы приближаетесь к лимиту вашего тарифа",
+        "dashboardStats": {
+            "revenue": "Выручка",
+            "orders": "Заказы",
+            "ordersCount": "{count} заказов",
+            "totalOrders": "Всего заказов",
+            "clients": "Клиенты",
+            "products": "Товары",
+            "excludedCancelled": "* без учета {count} отмененных",
+            "comparison": {
+                "today": "Сегодня",
+                "week": "За неделю",
+                "month": "За месяц",
+                "all": "За все время"
+            },
+            "pills": {
+                "live": "Live",
+                "total": "Всего"
+            }
+        },
         "finance": "Финансы",
         "wallet": "Кошелек",
         "status": {
@@ -834,12 +966,30 @@
         },
         "telegram": {
             "title": "Telegram Бот",
-            "pageTitle": "Интеграция с Telegram",
-            "pageSubtitle": "Подключите свой бот для доступа через Web App и уведомлений",
-            "tokenLabel": "Токен Telegram бота",
-            "botActive": "Бот активен",
-            "testBtn": "Проверить токен",
-            "saveBtn": "Сохранить настройки"
+            "subtitle": "Подключите Telegram Web App и принимайте заказы прямо в мессенджере",
+            "statusConnected": "Подключено",
+            "statusNotActive": "Не активно",
+            "botSettings": "Настройка бота",
+            "tokenInstruction": "Введите токен, который вы получили от {'@'}BotFather",
+            "tokenLabel": "Токен Telegram-бота",
+            "checkBtn": "Проверить",
+            "securityWarning": "Никогда не передавайте этот токен третьим лицам.",
+            "botFound": "Бот найден",
+            "invalidToken": "Неверный токен",
+            "checkAndTryAgain": "Проверьте правильность введенного токена и попробуйте снова.",
+            "saveHint": "Нажмите \"Сохранить изменения\" ниже, чтобы активировать бота для вашей витрины.",
+            "saveBtn": "Сохранить изменения",
+            "howToCreate": "Как создать бота?",
+            "step1": "Напишите {link} в Telegram",
+            "step2": "Создайте нового бота командой /newbot",
+            "step3": "Скопируйте API Token, который он вам выдаст",
+            "step4": "Установите Web App URL с помощью команды /setwebapp:",
+            "botReady": "Ваш бот готов:",
+            "checkSuccess": "Бот успешно проверен!",
+            "checkError": "Бот не найден или токен неверный",
+            "saveSuccess": "Настройки сохранены!",
+            "saveError": "Ошибка при сохранении",
+            "copied": "Скопировано в буфер обмена"
         },
         "panel": "Бизнес Панель",
         "analytics": "Аналитика",
@@ -931,6 +1081,145 @@
         "validation": {
             "imageRequired": "Пожалуйста, загрузите изображение",
             "sizeLimit": "Размер файла не должен превышать 2МБ"
+        }
+    },
+    "platformAdmin": {
+        "nav": {
+            "main": "Главное меню",
+            "dashboard": "Дашборд",
+            "shops": "Магазины",
+            "users": "Пользователи",
+            "billing": "Биллинг",
+            "finance": "Финансы",
+            "requests": "Заявки",
+            "plans": "Тарифы",
+            "content": "Контент",
+            "offers": "Предложения"
+        },
+        "offers": {
+            "title": "Предложения",
+            "subtitle": "Управление специальными предложениями и услугами для партнеров",
+            "add": "Добавить предложение",
+            "noOffers": "Нет активных предложений",
+            "createFirst": "Создайте первое предложение, чтобы владельцы магазинов могли увидеть ваши услуги.",
+            "edit": "Редактировать предложение",
+            "new": "Новое предложение",
+            "titleLabel": "Заголовок ({lang})",
+            "descriptionLabel": "Описание ({lang})",
+            "priceLabel": "Цена (число)",
+            "pricePlaceholder": "Оставьте пустым для текста",
+            "priceTextLabel": "Текст цены ({lang})",
+            "priceTextPlaceholder": "Напр: От 100$",
+            "emailLabel": "Email для связи",
+            "phoneLabel": "Телефон для связи",
+            "orderLabel": "Порядок отображения",
+            "activeLabel": "Предложение активно",
+            "cancel": "Отмена",
+            "save": "Сохранить изменения",
+            "create": "Создать",
+            "active": "Активно",
+            "hidden": "Скрыто",
+            "order": "Порядок: {n}",
+            "contactDefault": "Свяжитесь с нами для покупки",
+            "saved": "Предложение сохранено",
+            "saveError": "Ошибка сохранения",
+            "error": "Ошибка",
+            "deleteConfirm": "Удалить предложение \"{title}\"?",
+            "deleted": "Удалено",
+            "deleteError": "Ошибка удаления",
+            "priceOnRequest": "По запросу"
+        },
+        "dashboard": {
+            "title": "Панель управления",
+            "welcome": "Обзор платформы и статистики",
+            "refresh": "Обновить",
+            "errorUnknown": "Неизвестная ошибка",
+            "periods": {
+                "today": "Сегодня",
+                "week": "Неделя",
+                "month": "Месяц",
+                "all": "Все время"
+            },
+            "stats": {
+                "totalShops": "Всего магазинов",
+                "activeShops": "Активные",
+                "users": "Пользователи",
+                "revenue": "Выручка (MRR)",
+                "forecast": "Прогноз"
+            },
+            "subscriptionStats": "Статистика подписок",
+            "recentShops": "Недавние магазины",
+            "retry": "Повторить",
+            "perPeriod": "за период",
+            "perYear": "/год",
+            "ofTotal": "от всех",
+            "productsCreated": "товаров создано",
+            "shopsShort": "маг.",
+            "uniqueOwners": "Уникальных владельцев",
+            "activeSubs": "Активных подписок",
+            "attention": "Внимание требуется",
+            "expires": "Истекает",
+            "allShops": "Все магазины",
+            "viewAll": "Смотреть всех",
+            "subRequests": "Запросы на подписку",
+            "newRequestsDesc": "Есть новые запросы на активацию или продление тарифных планов.",
+            "goToRequests": "Перейти к запросам",
+            "status": {
+                "active": "Активен",
+                "trial": "Пробный",
+                "expired": "Истек",
+                "cancelled": "Отменен"
+            }
+        },
+        "plans": {
+            "title": "Тарифные планы",
+            "subtitle": "Управление тарифами подписки",
+            "add": "Добавить тариф",
+            "edit": "Редактировать тариф",
+            "new": "Новый тарифный план",
+            "save": "Сохранить изменения",
+            "create": "Создать тариф",
+            "cancel": "Отмена",
+            "deleteConfirm": "Удалить тариф \"{name}\"?",
+            "deleted": "Удалено",
+            "saved": "Тариф сохранен",
+            "error": "Ошибка",
+            "free": "Бесплатно",
+            "days": "дн.",
+            "noDesc": "Описание не заполнено",
+            "products": "Товаров",
+            "banners": "Баннеров",
+            "telegram": "Telegram уведомления",
+            "broadcasts": "Рассылки",
+            "order": "Порядок",
+            "active": "Активен",
+            "draft": "Черновик",
+            "createFirst": "Создать новый тариф",
+            "form": {
+                "name": "Название",
+                "slug": "Slug (уникальный ID)",
+                "price": "Цена",
+                "period": "Период (дней)",
+                "maxProducts": "Макс. товаров (0 = ∞)",
+                "maxBanners": "Макс. баннеров",
+                "description": "Описание",
+                "features": "Особенности (список через запятую)",
+                "sort": "Сортировка",
+                "isActive": "Активен",
+                "isTrial": "Триал",
+                "hasTelegram": "Telegram",
+                "canBroadcast": "Рассылки"
+            }
+        },
+        "finance": {
+            "title": "Финансы",
+            "subtitle": "Управление транзакциями и выводами",
+            "transactions": "Транзакции",
+            "withdrawals": "Выводы средств",
+            "balance": "Баланс платформы",
+            "revenue": "Общая выручка",
+            "pending": "Ожидает",
+            "paid": "Оплачено"
         }
     }
 }

@@ -6,7 +6,7 @@ sys.path.append(os.getcwd())
 
 from app.db.session import SessionLocal
 from app.features.users.models import User
-from app.features.users.security import get_password_hash
+from app.core.security import get_password_hash
 
 def create_admin(phone, password, first_name="Admin", last_name="User"):
     db = SessionLocal()

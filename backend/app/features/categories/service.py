@@ -11,7 +11,7 @@ class CategoryService:
     def get_categories(self, db: Session, shop_slug: str = None):
         shop_id = None
         if shop_slug:
-            shop = self.shop_service.get_shop_by_slug(db, shop_slug)
+            shop = self.shop_service.get_shop_by_slug(db, shop_slug, check_active=True)
             shop_id = shop.id
         return self.repository.get_all(db, shop_id=shop_id)
 

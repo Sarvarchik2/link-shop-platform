@@ -98,3 +98,15 @@ class WalletService:
         """Проверить достаточность средств"""
         wallet = self.wallet_repo.get_or_create(shop_id)
         return wallet.balance >= amount
+
+    def get_all_transactions(
+        self,
+        limit: int = 20,
+        offset: int = 0
+    ) -> TransactionListResponse:
+        """Получить историю всех транзакций (для админа)"""
+        transactions, total = self.transaction_repo.get_all(limit=limit, offset=offset)
+        return TransactionListResponse(
+            transactions=[TransactionResponse.from_orm(t) for t in transactions],
+            total=total
+        )

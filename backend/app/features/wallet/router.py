@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from app.db.session import get_db
-from app.core.dependencies import get_current_user
+from app.core.dependencies import get_current_user, get_current_platform_admin
 from app.features.users.models import User
 from app.features.shops.service import ShopService
 from .service import WalletService
@@ -82,3 +82,17 @@ def get_wallet_transactions(
     
     wallet_service = WalletService(db)
     return wallet_service.get_transactions(shop.id, limit, offset)
+
+
+@router.get("/platform/admin/wallet/transactions", response_model=TransactionListResponse)
+def get_all_wallet_transactions(
+    limit: int = Query(20, ge=1, le=100),
+    offset: int = Query(0, ge=0),
+    db: Session = Depends(get_db),
+    admin = Depends(get_current_platform_admin)
+):
+    """
+    Получить историю всех транзакций (для админа платформы)
+    """
+    wallet_service = WalletService(db)
+    return wallet_service.get_all_transactions(limit, offset)

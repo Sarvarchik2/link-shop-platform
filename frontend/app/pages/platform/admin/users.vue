@@ -1,418 +1,169 @@
 <template>
-  <div class="platform-admin-page">
-    <!-- Mobile Header -->
-    <header class="mobile-header">
-      <button class="menu-btn" @click="sidebarOpen = !sidebarOpen">
-        <svg v-if="!sidebarOpen" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-          stroke-width="2">
-          <line x1="3" y1="12" x2="21" y2="12"></line>
-          <line x1="3" y1="6" x2="21" y2="6"></line>
-          <line x1="3" y1="18" x2="21" y2="18"></line>
-        </svg>
-        <svg v-else width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <line x1="18" y1="6" x2="6" y2="18"></line>
-          <line x1="6" y1="6" x2="18" y2="18"></line>
-        </svg>
-      </button>
-      <span class="mobile-title">{{ $t('platformAdmin.users.title') }}</span>
-      <NuxtLink :to="localePath('/')" class="home-btn">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-          <polyline points="9 22 9 12 15 12 15 22"></polyline>
-        </svg>
-      </NuxtLink>
-    </header>
+  <div class="platform-admin-users">
+    <PlatformAdminSidebar :current-route="'users'" :model-value="sidebarOpen" @update:model-value="sidebarOpen = $event"
+      @logout="handleLogout" />
 
-    <PlatformAdminSidebar :current-route="currentRoute" :model-value="sidebarOpen"
-      @update:model-value="sidebarOpen = $event" @logout="handleLogout" />
-
-    <!-- Main Content -->
     <main class="admin-main">
-      <div class="admin-header">
-        <div class="header-content">
-          <div>
-            <h1 class="admin-title">{{ $t('platformAdmin.users.title') }}</h1>
-            <p class="admin-subtitle">{{ $t('platformAdmin.users.subtitle') }}</p>
+      <!-- Header -->
+      <header class="top-nav">
+        <div class="nav-left">
+          <button class="mobile-menu-btn" @click="sidebarOpen = true">
+            <iconify-icon icon="lucide:menu" />
+          </button>
+          <div class="page-info">
+            <h1 class="page-title">{{ $t('platformAdmin.users.title') }}</h1>
+            <p class="page-subtitle">Управление учетными записями всех пользователей системы</p>
           </div>
-          <button @click="refresh" class="refresh-btn" :disabled="pending">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-              :class="{ spinning: pending }">
-              <polyline points="23 4 23 10 17 10"></polyline>
-              <polyline points="1 20 1 14 7 14"></polyline>
-              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
-            </svg>
+        </div>
+
+        <div class="nav-right">
+          <button @click="refresh" class="refresh-btn" :class="{ loading: pending }">
+            <iconify-icon icon="lucide:rotate-cw" />
             <span>{{ $t('platformAdmin.dashboard.refresh') }}</span>
           </button>
+          <button @click="exportData" class="export-btn">
+            <iconify-icon icon="lucide:download" />
+            <span>{{ $t('platformAdmin.shops.export') }}</span>
+          </button>
         </div>
-      </div>
+      </header>
 
-      <div class="admin-content">
-        <!-- Statistics Cards -->
-        <div class="stats-overview">
-          <div class="stat-card">
-            <div class="stat-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                <circle cx="9" cy="7" r="4"></circle>
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-              </svg>
-            </div>
-            <div class="stat-content">
-              <div class="stat-value">{{ users?.length || 0 }}</div>
-              <div class="stat-label">{{ $t('platformAdmin.users.total') }}</div>
+      <div class="admin-scroll">
+        <!-- Stats Row -->
+        <div class="stats-row">
+          <div class="stat-mini-card">
+            <div class="stat-icon-s"><iconify-icon icon="lucide:users" /></div>
+            <div class="stat-body">
+              <div class="stat-val">{{ users?.length || 0 }}</div>
+              <div class="stat-lab">Всего</div>
             </div>
           </div>
-
-          <div class="stat-card">
-            <div class="stat-icon admin">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
-                <path d="M2 17l10 5 10-5"></path>
-                <path d="M2 12l10 5 10-5"></path>
-              </svg>
-            </div>
-            <div class="stat-content">
-              <div class="stat-value">{{ adminUsersCount }}</div>
-              <div class="stat-label">{{ $t('platformAdmin.users.admins') }}</div>
+          <div class="stat-mini-card">
+            <div class="stat-icon-s admin"><iconify-icon icon="lucide:shield-check" /></div>
+            <div class="stat-body">
+              <div class="stat-val">{{ adminUsersCount }}</div>
+              <div class="stat-lab">Админы</div>
             </div>
           </div>
-
-          <div class="stat-card">
-            <div class="stat-icon owner">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path
-                  d="M20 7h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v3H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2z">
-                </path>
-              </svg>
-            </div>
-            <div class="stat-content">
-              <div class="stat-value">{{ shopOwnersCount }}</div>
-              <div class="stat-label">{{ $t('platformAdmin.users.shopOwners') }}</div>
+          <div class="stat-mini-card">
+            <div class="stat-icon-s owner"><iconify-icon icon="lucide:store" /></div>
+            <div class="stat-body">
+              <div class="stat-val">{{ shopOwnersCount }}</div>
+              <div class="stat-lab">Владельцы</div>
             </div>
           </div>
-
-          <div class="stat-card">
-            <div class="stat-icon user">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                <circle cx="12" cy="7" r="4"></circle>
-              </svg>
-            </div>
-            <div class="stat-content">
-              <div class="stat-value">{{ regularUsersCount }}</div>
-              <div class="stat-label">{{ $t('platformAdmin.users.regular') }}</div>
+          <div class="stat-mini-card">
+            <div class="stat-icon-s user"><iconify-icon icon="lucide:user" /></div>
+            <div class="stat-body">
+              <div class="stat-val">{{ regularUsersCount }}</div>
+              <div class="stat-lab">Клиенты</div>
             </div>
           </div>
         </div>
 
-        <!-- Filters and Search -->
-        <div class="filters-section">
-          <div class="search-box">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="11" cy="11" r="8"></circle>
-              <path d="m21 21-4.35-4.35"></path>
-            </svg>
-            <input v-model="searchQuery" type="text" :placeholder="$t('platformAdmin.users.search')"
-              class="search-input" />
+        <!-- Filters -->
+        <div class="filters-bar">
+          <div class="search-input-wrap">
+            <iconify-icon icon="lucide:search" />
+            <input v-model="searchQuery" type="text" :placeholder="$t('platformAdmin.users.search')" />
           </div>
 
-          <div class="filters-group">
-            <select v-model="filterRole" class="filter-select">
-              <option value="">{{ $t('platformAdmin.users.filterRole') }}</option>
-              <option value="platform_admin">{{ $t('platformAdmin.users.roles.admin') }}</option>
-              <option value="shop_owner">{{ $t('platformAdmin.users.roles.owner') }}</option>
-              <option value="user">{{ $t('platformAdmin.users.roles.user') }}</option>
+          <div class="filter-actions">
+            <select v-model="filterRole" class="modern-select">
+              <option value="">Все роли</option>
+              <option value="platform_admin">Администраторы</option>
+              <option value="shop_owner">Владельцы магазинов</option>
+              <option value="user">Покупатели</option>
             </select>
 
-            <button @click="clearFilters" class="clear-filters-btn">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
-              </svg>
-              {{ $t('platformAdmin.shops.clear') }}
+            <button v-if="searchQuery || filterRole" @click="clearFilters" class="clear-btn">
+              Сбросить
             </button>
           </div>
         </div>
 
-        <!-- Error State -->
-        <div v-if="error" class="error-state">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10"></circle>
-            <line x1="12" y1="8" x2="12" y2="12"></line>
-            <line x1="12" y1="16" x2="12.01" y2="16"></line>
-          </svg>
-          <p class="error-message">{{ $t('platformAdmin.dashboard.error') }}: {{ error.message || 'Unknown' }}</p>
-          <button @click="refresh" class="retry-btn">{{ $t('platformAdmin.dashboard.refresh') }}</button>
-        </div>
-
-        <!-- Loading State -->
-        <div v-else-if="pending" class="loading-state">
-          <div class="loading-spinner"></div>
-          <p>{{ $t('platformAdmin.dashboard.loading') }}</p>
-        </div>
-
-        <!-- Table -->
-        <div v-else class="table-container">
-          <div class="table-header">
-            <div class="table-info">
-              <span>{{ $t('common.showing') }} {{ displayedUsers.length }} {{ $t('common.of') }} {{ users?.length || 0
-              }}</span>
-            </div>
-            <div class="table-actions">
-              <button @click="exportData" class="export-btn">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                  <polyline points="7 10 12 15 17 10"></polyline>
-                  <line x1="12" y1="15" x2="12" y2="3"></line>
-                </svg>
-                {{ $t('platformAdmin.shops.export') }}
-              </button>
-            </div>
+        <!-- Table Card -->
+        <div class="table-white-card">
+          <div v-if="pending" class="loading-wrap">
+            <div class="loader"></div>
           </div>
-
-          <div class="users-table-wrapper">
-            <table class="users-table">
+          <div v-else-if="displayedUsers.length === 0" class="empty-wrap">
+            <iconify-icon icon="lucide:user-off" />
+            <p>Пользователи не найдены</p>
+          </div>
+          <div v-else class="table-responsive">
+            <table class="modern-table">
               <thead>
                 <tr>
-                  <th @click="sortBy('id')" class="sortable">
-                    <div class="th-content">
-                      ID
-                      <svg v-if="sortField === 'id'" width="12" height="12" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" :class="{ reverse: sortOrder === 'desc' }">
-                        <polyline points="18 15 12 9 6 15"></polyline>
-                      </svg>
-                    </div>
-                  </th>
-                  <th @click="sortBy('name')" class="sortable">
-                    <div class="th-content">
-                      {{ $t('platformAdmin.users.table.name') }}
-                      <svg v-if="sortField === 'name'" width="12" height="12" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" :class="{ reverse: sortOrder === 'desc' }">
-                        <polyline points="18 15 12 9 6 15"></polyline>
-                      </svg>
-                    </div>
-                  </th>
-                  <th @click="sortBy('phone')" class="sortable">
-                    <div class="th-content">
-                      {{ $t('platformAdmin.users.table.phone') }}
-                      <svg v-if="sortField === 'phone'" width="12" height="12" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" :class="{ reverse: sortOrder === 'desc' }">
-                        <polyline points="18 15 12 9 6 15"></polyline>
-                      </svg>
-                    </div>
-                  </th>
-                  <th @click="sortBy('role')" class="sortable">
-                    <div class="th-content">
-                      {{ $t('platformAdmin.users.table.role') }}
-                      <svg v-if="sortField === 'role'" width="12" height="12" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" :class="{ reverse: sortOrder === 'desc' }">
-                        <polyline points="18 15 12 9 6 15"></polyline>
-                      </svg>
-                    </div>
-                  </th>
-                  <th @click="sortBy('shops')" class="sortable">
-                    <div class="th-content">
-                      {{ $t('platformAdmin.users.table.shops') }}
-                      <svg v-if="sortField === 'shops'" width="12" height="12" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" :class="{ reverse: sortOrder === 'desc' }">
-                        <polyline points="18 15 12 9 6 15"></polyline>
-                      </svg>
-                    </div>
-                  </th>
-                  <th @click="sortBy('orders')" class="sortable">
-                    <div class="th-content">
-                      {{ $t('platformAdmin.users.table.orders') }}
-                      <svg v-if="sortField === 'orders'" width="12" height="12" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" :class="{ reverse: sortOrder === 'desc' }">
-                        <polyline points="18 15 12 9 6 15"></polyline>
-                      </svg>
-                    </div>
-                  </th>
-                  <th @click="sortBy('created_at')" class="sortable">
-                    <div class="th-content">
-                      {{ $t('platformAdmin.users.table.created') }}
-                      <svg v-if="sortField === 'created_at'" width="12" height="12" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" :class="{ reverse: sortOrder === 'desc' }">
-                        <polyline points="18 15 12 9 6 15"></polyline>
-                      </svg>
-                    </div>
-                  </th>
-                  <th>{{ $t('platformAdmin.users.table.actions') }}</th>
+                  <th @click="sortBy('id')">ID <iconify-icon v-if="sortField === 'id'"
+                      :icon="sortOrder === 'asc' ? 'lucide:arrow-up' : 'lucide:arrow-down'" /></th>
+                  <th @click="sortBy('name')">Пользователь <iconify-icon v-if="sortField === 'name'"
+                      :icon="sortOrder === 'asc' ? 'lucide:arrow-up' : 'lucide:arrow-down'" /></th>
+                  <th @click="sortBy('phone')">Телефон <iconify-icon v-if="sortField === 'phone'"
+                      :icon="sortOrder === 'asc' ? 'lucide:arrow-up' : 'lucide:arrow-down'" /></th>
+                  <th>Роль</th>
+                  <th @click="sortBy('shops')">Магазины <iconify-icon v-if="sortField === 'shops'"
+                      :icon="sortOrder === 'asc' ? 'lucide:arrow-up' : 'lucide:arrow-down'" /></th>
+                  <th @click="sortBy('orders')">Заказы <iconify-icon v-if="sortField === 'orders'"
+                      :icon="sortOrder === 'asc' ? 'lucide:arrow-up' : 'lucide:arrow-down'" /></th>
+                  <th @click="sortBy('created_at')">Регистрация <iconify-icon v-if="sortField === 'created_at'"
+                      :icon="sortOrder === 'asc' ? 'lucide:arrow-up' : 'lucide:arrow-down'" /></th>
+                  <th>Действия</th>
                 </tr>
               </thead>
               <tbody>
                 <tr v-for="user in paginatedUsers" :key="user.id">
-                  <td>{{ user.id }}</td>
+                  <td><span class="id-tag">#{{ user.id }}</span></td>
                   <td>
-                    <div class="user-info">
+                    <div class="user-cell">
                       <div class="user-avatar" :class="getRoleClass(user.role)">
                         {{ getUserInitials(user) }}
                       </div>
-                      <div class="user-details">
-                        <div class="user-name">{{ getUserName(user) }}</div>
-                        <div v-if="user.first_name || user.last_name" class="user-phone-text">{{ user.phone }}</div>
+                      <div class="user-info-text">
+                        <div class="u-name">{{ getUserName(user) }}</div>
+                        <div class="u-meta">ID: {{ user.id }}</div>
                       </div>
                     </div>
                   </td>
                   <td>
                     <div class="phone-cell">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="2">
-                        <path
-                          d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
-                        </path>
-                      </svg>
-                      {{ user.phone }}
+                      <iconify-icon icon="lucide:phone" />
+                      {{ user.phone || '—' }}
                     </div>
                   </td>
                   <td>
-                    <span :class="['role-badge', getRoleClass(user.role)]">
+                    <div class="role-pill" :class="getRoleClass(user.role)">
                       {{ getRoleText(user.role) }}
-                    </span>
-                  </td>
-                  <td>
-                    <div class="stats-cell">
-                      <span class="stat-value-small">{{ getUserShopsCount(user.id) }}</span>
                     </div>
                   </td>
-                  <td>
-                    <div class="stats-cell">
-                      <span class="stat-value-small">{{ getUserOrdersCount(user.id) }}</span>
-                    </div>
-                  </td>
+                  <td><span class="stat-count">{{ getUserShopsCount(user.id) }}</span></td>
+                  <td><span class="stat-count">{{ getUserOrdersCount(user.id) }}</span></td>
                   <td>
                     <div class="date-cell">
-                      <div class="date-main">{{ formatDate(user.created_at) }}</div>
-                      <div class="date-time">{{ formatTime(user.created_at) }}</div>
+                      <div class="d-val">{{ formatDate(user.created_at) }}</div>
+                      <div class="d-time">{{ formatTime(user.created_at) }}</div>
                     </div>
                   </td>
                   <td>
-                    <div class="actions">
-                      <button @click="viewUserDetails(user)" class="action-btn btn-icon"
-                        :title="$t('platformAdmin.users.details')">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                          stroke-width="2">
-                          <circle cx="12" cy="12" r="10"></circle>
-                          <line x1="12" y1="16" x2="12" y2="12"></line>
-                          <line x1="12" y1="8" x2="12.01" y2="8"></line>
-                        </svg>
+                    <div class="action-btns">
+                      <button @click="viewUserDetails(user)" class="act-btn" v-tooltip="'Детали'">
+                        <iconify-icon icon="lucide:eye" />
                       </button>
                     </div>
                   </td>
                 </tr>
               </tbody>
             </table>
-
-            <!-- Empty State -->
-            <div v-if="displayedUsers.length === 0" class="empty-state">
-              <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                <circle cx="12" cy="7" r="4"></circle>
-              </svg>
-              <p>{{ $t('platformAdmin.users.notFound') }}</p>
-              <p class="empty-subtitle"></p>
-            </div>
-          </div>
-
-          <!-- Mobile Cards View -->
-          <div class="mobile-users-list">
-            <div v-for="user in paginatedUsers" :key="user.id" class="user-mobile-card">
-              <!-- User Header -->
-              <div class="mobile-card-header">
-                <div class="user-info-mobile">
-                  <div class="user-avatar-mobile" :class="getRoleClass(user.role)">
-                    {{ getUserInitials(user) }}
-                  </div>
-                  <div class="user-details-mobile">
-                    <h3 class="user-name-mobile">{{ getUserName(user) }}</h3>
-                    <div class="user-phone-mobile">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="2">
-                        <path
-                          d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
-                        </path>
-                      </svg>
-                      {{ user.phone }}
-                    </div>
-                  </div>
-                </div>
-                <span :class="['role-badge-mobile', getRoleClass(user.role)]">
-                  {{ getRoleText(user.role) }}
-                </span>
-              </div>
-
-              <!-- User Info Grid -->
-              <div class="mobile-card-info">
-                <div class="info-row">
-                  <span class="info-label">ID:</span>
-                  <span class="info-value">{{ user.id }}</span>
-                </div>
-                <div class="info-row">
-                  <span class="info-label">Магазинов:</span>
-                  <span class="info-value">{{ getUserShopsCount(user.id) }}</span>
-                </div>
-                <div class="info-row">
-                  <span class="info-label">Заказов:</span>
-                  <span class="info-value">{{ getUserOrdersCount(user.id) }}</span>
-                </div>
-                <div class="info-row">
-                  <span class="info-label">Регистрация:</span>
-                  <span class="info-value">{{ formatDate(user.created_at) }}</span>
-                </div>
-              </div>
-
-              <!-- Actions -->
-              <div class="mobile-card-actions">
-                <button @click="viewUserDetails(user)" class="mobile-action-btn btn-details">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <line x1="12" y1="16" x2="12" y2="12"></line>
-                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
-                  </svg>
-                  {{ $t('platformAdmin.users.details') }}
-                </button>
-              </div>
-            </div>
-
-            <!-- Empty State for Mobile -->
-            <div v-if="displayedUsers.length === 0" class="empty-state-mobile">
-              <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                <circle cx="12" cy="7" r="4"></circle>
-              </svg>
-              <p>{{ $t('platformAdmin.users.notFound') }}</p>
-            </div>
           </div>
 
           <!-- Pagination -->
-          <div v-if="totalPages > 1" class="pagination">
-            <button @click="currentPage = 1" :disabled="currentPage === 1" class="pagination-btn">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="11 17 6 12 11 7"></polyline>
-                <polyline points="18 17 13 12 18 7"></polyline>
-              </svg>
+          <div class="pagination-bar" v-if="totalPages > 1">
+            <button @click="currentPage--" :disabled="currentPage === 1" class="page-btn">
+              <iconify-icon icon="lucide:chevron-left" />
             </button>
-            <button @click="currentPage--" :disabled="currentPage === 1" class="pagination-btn">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="15 18 9 12 15 6"></polyline>
-              </svg>
-            </button>
-
-            <div class="pagination-info">
-              {{ $t('common.page') }} {{ currentPage }} {{ $t('common.of') }} {{ totalPages }}
-            </div>
-
-            <button @click="currentPage++" :disabled="currentPage === totalPages" class="pagination-btn">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="9 18 15 12 9 6"></polyline>
-              </svg>
-            </button>
-            <button @click="currentPage = totalPages" :disabled="currentPage === totalPages" class="pagination-btn">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="13 17 18 12 13 7"></polyline>
-                <polyline points="6 17 11 12 6 7"></polyline>
-              </svg>
+            <div class="page-info">Страница {{ currentPage }} из {{ totalPages }}</div>
+            <button @click="currentPage++" :disabled="currentPage === totalPages" class="page-btn">
+              <iconify-icon icon="lucide:chevron-right" />
             </button>
           </div>
         </div>
@@ -422,1201 +173,536 @@
 </template>
 
 <script setup>
-definePageMeta({
-  middleware: 'platform-admin'
-})
-
-const route = useRoute()
+const { t, locale } = useI18n()
 const { token, logout } = useAuth()
 const toast = useToast()
-const localePath = useLocalePath()
+const config = useRuntimeConfig()
+const router = useRouter()
+const route = useRoute()
+
+definePageMeta({ middleware: 'platform-admin' })
 
 const sidebarOpen = ref(false)
+const searchQuery = ref('')
+const filterRole = ref('')
+const sortField = ref('created_at')
+const sortOrder = ref('desc')
+const currentPage = ref(1)
+const itemsPerPage = 12
 
-const handleLogout = () => {
-  logout()
-  useToast().success(t('auth.loggedOut'))
-}
+const handleLogout = () => { logout(); toast.success(t('auth.loggedOut')) }
 
-const currentRoute = computed(() => {
-  if (route.path.includes('/subscription-plans')) return 'subscription-plans'
-  if (route.path.includes('/shops')) return 'shops'
-  if (route.path.includes('/users')) return 'users'
-  return 'dashboard'
-})
-
-const config = useRuntimeConfig()
 const { data: users, pending, error, refresh } = useFetch(config.public.apiBase + '/platform/admin/users', {
-  server: false,
-  lazy: true,
-  watch: [token],
-  headers: computed(() => ({
-    'Authorization': token.value ? `Bearer ${token.value}` : ''
-  }))
+  lazy: true, watch: [token],
+  headers: computed(() => ({ 'Authorization': `Bearer ${token.value}` }))
 })
 
-// Fetch shops and orders for stats
 const { data: shops } = useFetch(config.public.apiBase + '/platform/shops', {
-  server: false,
-  lazy: true,
-  headers: computed(() => ({
-    'Authorization': token.value ? `Bearer ${token.value}` : ''
-  }))
+  lazy: true, headers: computed(() => ({ 'Authorization': `Bearer ${token.value}` }))
 })
 
 const { data: orders } = useFetch(config.public.apiBase + '/platform/admin/orders', {
-  server: false,
-  lazy: true,
-  headers: computed(() => ({
-    'Authorization': token.value ? `Bearer ${token.value}` : ''
-  }))
+  lazy: true, headers: computed(() => ({ 'Authorization': `Bearer ${token.value}` }))
 })
 
-// Filters and Search
-const searchQuery = ref('')
-const filterRole = ref('')
+const adminUsersCount = computed(() => users.value?.filter(u => u.role === 'platform_admin').length || 0)
+const shopOwnersCount = computed(() => users.value?.filter(u => u.role === 'shop_owner').length || 0)
+const regularUsersCount = computed(() => users.value?.filter(u => u.role === 'user').length || 0)
 
-// Sorting
-const sortField = ref('id')
-const sortOrder = ref('asc')
+const getUserShopsCount = (uid) => shops.value?.filter(s => s.owner_id === uid).length || 0
+const getUserOrdersCount = (uid) => orders.value?.filter(o => o.user_id === uid).length || 0
 
-// Pagination
-const currentPage = ref(1)
-const itemsPerPage = 20
-
-// Computed stats
-const adminUsersCount = computed(() => {
-  if (!users.value) return 0
-  return users.value.filter(u => u.role === 'platform_admin').length
-})
-
-const shopOwnersCount = computed(() => {
-  if (!users.value) return 0
-  return users.value.filter(u => u.role === 'shop_owner').length
-})
-
-const regularUsersCount = computed(() => {
-  if (!users.value) return 0
-  return users.value.filter(u => u.role === 'user').length
-})
-
-// Get user shops count
-const getUserShopsCount = (userId) => {
-  if (!shops.value) return 0
-  return shops.value.filter(s => s.owner_id === userId).length
-}
-
-// Get user orders count
-const getUserOrdersCount = (userId) => {
-  if (!orders.value) return 0
-  return orders.value.filter(o => o.user_id === userId).length
-}
-
-// Filtered and sorted users
 const displayedUsers = computed(() => {
-  if (!users.value) return []
-
-  let filtered = [...users.value]
-
-  // Search filter
+  let list = [...(users.value || [])]
   if (searchQuery.value) {
-    const query = searchQuery.value.toLowerCase()
-    filtered = filtered.filter(user => {
-      const fullName = getUserName(user).toLowerCase()
-      const phone = user.phone?.toLowerCase() || ''
-      return fullName.includes(query) || phone.includes(query)
-    })
+    const q = searchQuery.value.toLowerCase()
+    list = list.filter(u => `${u.first_name} ${u.last_name} ${u.phone}`.toLowerCase().includes(q))
   }
+  if (filterRole.value) list = list.filter(u => u.role === filterRole.value)
 
-  // Role filter
-  if (filterRole.value) {
-    filtered = filtered.filter(user => user.role === filterRole.value)
-  }
-
-  // Sorting
-  filtered.sort((a, b) => {
-    let aVal, bVal
-
-    switch (sortField.value) {
-      case 'id':
-        aVal = a.id
-        bVal = b.id
-        break
-      case 'name':
-        aVal = getUserName(a).toLowerCase()
-        bVal = getUserName(b).toLowerCase()
-        break
-      case 'phone':
-        aVal = a.phone || ''
-        bVal = b.phone || ''
-        break
-      case 'role':
-        aVal = a.role
-        bVal = b.role
-        break
-      case 'shops':
-        aVal = getUserShopsCount(a.id)
-        bVal = getUserShopsCount(b.id)
-        break
-      case 'orders':
-        aVal = getUserOrdersCount(a.id)
-        bVal = getUserOrdersCount(b.id)
-        break
-      case 'created_at':
-        aVal = a.created_at ? new Date(a.created_at).getTime() : 0
-        bVal = b.created_at ? new Date(b.created_at).getTime() : 0
-        break
-      default:
-        return 0
-    }
-
-    if (aVal < bVal) return sortOrder.value === 'asc' ? -1 : 1
-    if (aVal > bVal) return sortOrder.value === 'asc' ? 1 : -1
-    return 0
+  list.sort((a, b) => {
+    let av = a[sortField.value], bv = b[sortField.value]
+    if (sortField.value === 'shops') { av = getUserShopsCount(a.id); bv = getUserShopsCount(b.id) }
+    else if (sortField.value === 'orders') { av = getUserOrdersCount(a.id); bv = getUserOrdersCount(b.id) }
+    else if (sortField.value.includes('at')) { av = new Date(av).getTime(); bv = new Date(bv).getTime() }
+    return sortOrder.value === 'asc' ? (av > bv ? 1 : -1) : (av < bv ? 1 : -1)
   })
-
-  return filtered
+  return list
 })
 
-// Paginated users
 const totalPages = computed(() => Math.ceil(displayedUsers.value.length / itemsPerPage))
+const paginatedUsers = computed(() => displayedUsers.value.slice((currentPage.value - 1) * itemsPerPage, currentPage.value * itemsPerPage))
 
-const paginatedUsers = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage
-  const end = start + itemsPerPage
-  return displayedUsers.value.slice(start, end)
-})
-
-// Watch for filter changes and reset page
-watch([searchQuery, filterRole], () => {
-  currentPage.value = 1
-})
-
-// Functions
-const { t, locale } = useI18n()
-const clearFilters = () => {
-  searchQuery.value = ''
-  filterRole.value = ''
+const sortBy = (f) => {
+  if (sortField.value === f) sortOrder.value = sortOrder.value === 'asc' ? 'desc' : 'asc'
+  else { sortField.value = f; sortOrder.value = 'asc' }
 }
 
-const sortBy = (field) => {
-  if (sortField.value === field) {
-    sortOrder.value = sortOrder.value === 'asc' ? 'desc' : 'asc'
-  } else {
-    sortField.value = field
-    sortOrder.value = 'asc'
-  }
+const clearFilters = () => { searchQuery.value = ''; filterRole.value = '' }
+
+const formatDate = (d) => new Date(d).toLocaleDateString(locale.value, { day: 'numeric', month: 'short', year: 'numeric' })
+const formatTime = (d) => new Date(d).toLocaleTimeString(locale.value, { hour: '2-digit', minute: '2-digit' })
+
+const getUserInitials = (u) => {
+  const f = u.first_name?.[0] || u.phone?.[0] || '?'
+  const l = u.last_name?.[0] || ''
+  return (f + l).toUpperCase()
 }
 
-const getUserInitials = (user) => {
-  const first = user.first_name?.[0] || user.phone?.[0] || '?'
-  const last = user.last_name?.[0] || ''
-  return (first + last).toUpperCase().slice(0, 2)
-}
+const getUserName = (u) => `${u.first_name || ''} ${u.last_name || ''}`.trim() || u.phone || 'Без имени'
 
-const getUserName = (user) => {
-  return `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.phone || t('common.noName')
-}
+const getRoleClass = (r) => ({ 'platform_admin': 'admin', 'shop_owner': 'owner', 'user': 'client' }[r] || 'client')
+const getRoleText = (r) => ({ 'platform_admin': 'Админ', 'shop_owner': 'Владелец', 'user': 'Клиент' }[r] || r)
 
-const getRoleClass = (role) => {
-  const roleMap = {
-    'platform_admin': 'role-admin',
-    'shop_owner': 'role-owner',
-    'user': 'role-user'
-  }
-  return roleMap[role] || 'role-user'
-}
-
-const getRoleText = (role) => {
-  const roleMap = {
-    'platform_admin': t('platformAdmin.users.roles.admin'),
-    'shop_owner': t('platformAdmin.users.roles.owner'),
-    'user': t('platformAdmin.users.roles.user')
-  }
-  return roleMap[role] || role
-}
-
-const formatDate = (dateString) => {
-  if (!dateString) return '-'
-  const date = new Date(dateString)
-  return date.toLocaleDateString(locale.value, { day: 'numeric', month: 'long', year: 'numeric' })
-}
-
-const formatTime = (dateString) => {
-  if (!dateString) return ''
-  const date = new Date(dateString)
-  return date.toLocaleTimeString(locale.value, { hour: '2-digit', minute: '2-digit' })
-}
-
-const viewUserDetails = (user) => {
-  // Можно добавить модальное окно с деталями
-  toast.info(t('platformAdmin.users.userInfo', { name: getUserName(user) }))
-}
-
+const viewUserDetails = (u) => toast.info(`Информация о пользователе ${getUserName(u)}`)
 const exportData = () => {
-  const csv = [
-    [
-      t('platformAdmin.users.table.id'),
-      t('platformAdmin.users.table.name'),
-      t('platformAdmin.users.table.phone'),
-      t('platformAdmin.users.table.role'),
-      t('platformAdmin.users.table.shops'),
-      t('platformAdmin.users.table.orders'),
-      t('platformAdmin.users.table.created')
-    ],
-    ...displayedUsers.value.map(user => [
-      user.id,
-      getUserName(user),
-      user.phone || '',
-      getRoleText(user.role),
-      getUserShopsCount(user.id),
-      getUserOrdersCount(user.id),
-      formatDate(user.created_at)
-    ])
-  ].map(row => row.join(',')).join('\n')
-
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
-  const link = document.createElement('a')
-  link.href = URL.createObjectURL(blob)
-  link.download = `users-${new Date().toISOString().split('T')[0]}.csv`
-  link.click()
-  toast.success(t('common.saved'))
+  const csv = [['ID', 'Имя', 'Телефон', 'Роль', 'Создан'], ...(users.value || []).map(u => [u.id, getUserName(u), u.phone, u.role, u.created_at])].map(r => r.join(',')).join('\n')
+  const b = new Blob([csv], { type: 'text/csv' }); const l = document.createElement('a')
+  l.href = URL.createObjectURL(b); l.download = `users-${new Date().toISOString().split('T')[0]}.csv`; l.click()
 }
 </script>
 
 <style scoped>
-.platform-admin-page {
+.platform-admin-users {
+  background: #f8fafc;
   min-height: 100vh;
   display: flex;
-  background: #F5F7FA;
-  width: 100%;
-}
-
-/* Mobile Header */
-.mobile-header {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 60px;
-  background: white;
-  border-bottom: 1px solid #E5E7EB;
-  padding: 0 16px;
-  align-items: center;
-  justify-content: space-between;
-  z-index: 1000;
-}
-
-.menu-btn,
-.home-btn {
-  width: 44px;
-  height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #F3F4F6;
-  border: none;
-  border-radius: 12px;
-  cursor: pointer;
-  color: #111;
-  transition: all 0.2s;
-}
-
-.menu-btn:hover,
-.home-btn:hover {
-  background: #111;
-  color: white;
-}
-
-.mobile-title {
-  font-size: 1.125rem;
-  font-weight: 700;
-  color: #111;
 }
 
 .admin-main {
-  width: 100%;
+  flex: 1;
   margin-left: 280px;
-  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.4s;
 }
 
-@media (max-width: 1024px) {
-  .admin-main {
-    margin-left: 0;
-    padding-top: 60px;
-  }
-}
-
-.admin-header {
-  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-  color: white;
-  padding: 40px;
-}
-
-.header-content {
+.top-nav {
+  padding: 32px;
+  background: #fff;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
 }
 
-.admin-title {
-  font-size: 2.5rem;
-  font-weight: 900;
-  margin-bottom: 8px;
-  letter-spacing: -0.02em;
+.mobile-menu-btn {
+  display: none;
+  width: 44px;
+  height: 44px;
+  background: #f1f5f9;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.5rem;
+  cursor: pointer;
 }
 
-
-.admin-subtitle {
-  font-size: 1rem;
-  opacity: 0.85;
-  font-weight: 400;
+.page-title {
+  font-size: 1.75rem;
+  font-weight: 950;
+  margin: 0;
+  letter-spacing: -1px;
 }
 
-.refresh-btn {
+.page-subtitle {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin-top: 4px;
+  font-weight: 600;
+}
+
+.nav-right {
+  display: flex;
+  gap: 12px;
+}
+
+.refresh-btn,
+.export-btn {
+  padding: 10px 18px;
+  border-radius: 12px;
+  font-weight: 800;
+  font-size: 0.85rem;
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 20px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 12px;
-  color: white;
-  font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
-}
-
-.refresh-btn:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.15);
-}
-
-.refresh-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.refresh-btn svg.spinning {
-  animation: spin 1s linear infinite;
-}
-
-.admin-content {
-  padding: 32px;
-}
-
-@media (max-width: 768px) {
-  .admin-main {
-    padding-left: 0;
-    padding-right: 0;
-  }
-
-  .admin-header {
-    padding: 20px 16px;
-  }
-
-  .admin-content {
-    padding: 0;
-  }
-}
-
-
-/* Statistics Overview */
-.stats-overview {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
-  margin-bottom: 24px;
-}
-
-@media (max-width: 1280px) {
-  .stats-overview {
-    grid-template-columns: repeat(2, 1fr) !important;
-  }
-}
-
-@media (max-width: 640px) {
-  .stats-overview {
-    grid-template-columns: 1fr !important;
-    gap: 12px !important;
-  }
-}
-
-.stat-card {
+  border: 1.5px solid #e2e8f0;
   background: white;
-  border-radius: 16px;
-  padding: 20px;
+}
+
+.refresh-btn:hover,
+.export-btn:hover {
+  border-color: #111;
+}
+
+.admin-scroll {
+  padding: 32px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.stat-mini-card {
+  background: white;
+  padding: 24px;
+  border-radius: 24px;
   display: flex;
   align-items: center;
   gap: 16px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  border: 1px solid #E5E7EB;
-  transition: all 0.2s;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
 }
 
-.stat-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  transform: translateY(-2px);
-}
-
-.stat-icon {
+.stat-icon-s {
   width: 48px;
   height: 48px;
-  border-radius: 12px;
-  background: #F3F4F6;
+  border-radius: 14px;
+  background: #f1f5f9;
+  color: #64748b;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 1.5rem;
+}
+
+.stat-icon-s.admin {
+  background: #e0e7ff;
+  color: #4338ca;
+}
+
+.stat-icon-s.owner {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.stat-icon-s.user {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.stat-val {
+  font-size: 1.5rem;
+  font-weight: 950;
   color: #111;
-  flex-shrink: 0;
 }
 
-.stat-icon.admin {
-  background: #1a1a1a;
-  color: white;
+.stat-lab {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
 }
 
-.stat-icon.owner {
-  background: #DBEAFE;
-  color: #1E40AF;
-}
-
-.stat-icon.user {
-  background: #D1FAE5;
-  color: #065F46;
-}
-
-.stat-content {
-  flex: 1;
-}
-
-.stat-value {
-  font-size: 1.75rem;
-  font-weight: 900;
-  color: #111;
-  line-height: 1.2;
-  margin-bottom: 4px;
-}
-
-.stat-label {
-  font-size: 0.875rem;
-  color: #6B7280;
-  font-weight: 500;
-}
-
-/* Filters Section */
-.filters-section {
-  background: white;
-  border-radius: 16px;
-  padding: 20px;
-  margin-bottom: 24px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  border: 1px solid #E5E7EB;
+.filters-bar {
   display: flex;
-  gap: 16px;
+  justify-content: space-between;
   align-items: center;
-  flex-wrap: wrap;
+  margin-bottom: 24px;
+  gap: 20px;
 }
 
-@media (max-width: 768px) {
-  .filters-section {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .filters-group {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .search-box {
-    min-width: 0;
-  }
-
-  .filter-select,
-  .clear-filters-btn {
-    width: 100%;
-  }
-}
-
-.search-box {
+.search-input-wrap {
   flex: 1;
-  min-width: 300px;
   position: relative;
   display: flex;
   align-items: center;
   gap: 12px;
-  background: #F9FAFB;
-  border: 2px solid #E5E7EB;
-  border-radius: 12px;
-  padding: 12px 16px;
-}
-
-.search-box svg {
-  color: #6B7280;
-  flex-shrink: 0;
-}
-
-.search-input {
-  flex: 1;
-  border: none;
-  background: transparent;
-  font-size: 0.875rem;
-  color: #111;
-  outline: none;
-}
-
-.search-input::placeholder {
-  color: #9CA3AF;
-}
-
-.filters-group {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-}
-
-.filter-select {
-  padding: 10px 16px;
-  border: 2px solid #E5E7EB;
-  border-radius: 10px;
   background: white;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #111;
-  cursor: pointer;
-  outline: none;
-  transition: all 0.2s;
-}
-
-.filter-select:hover {
-  border-color: #D1D5DB;
-}
-
-.clear-filters-btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 10px 16px;
-  background: #F3F4F6;
-  border: 1px solid #E5E7EB;
-  border-radius: 10px;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: #6B7280;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.clear-filters-btn:hover {
-  background: #E5E7EB;
-  color: #111;
-}
-
-/* Table Container */
-.table-container {
-  background: white;
+  border: 1.5px solid #e2e8f0;
   border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  border: 1px solid #E5E7EB;
+  padding: 12px 20px;
 }
 
-.table-header {
-  padding: 20px 24px;
-  border-bottom: 1px solid #E5E7EB;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #F9FAFB;
+.search-input-wrap input {
+  border: none;
+  outline: none;
+  width: 100%;
+  font-weight: 600;
+  font-size: 0.95rem;
 }
 
-.table-info {
-  font-size: 0.875rem;
-  color: #6B7280;
-  font-weight: 500;
-}
-
-.table-actions {
+.filter-actions {
   display: flex;
   gap: 12px;
 }
 
-.export-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
+.modern-select {
+  padding: 12px 20px;
+  border-radius: 16px;
   background: white;
-  border: 1px solid #E5E7EB;
-  border-radius: 8px;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: #111;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.export-btn:hover {
-  background: #F9FAFB;
-  border-color: #D1D5DB;
-}
-
-.users-table-wrapper {
-  width: 100%;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
-.users-table {
-  width: 100%;
-  min-width: 800px;
-  border-collapse: collapse;
-}
-
-.users-table thead {
-  background: #F9FAFB;
-}
-
-.users-table th {
-  padding: 16px;
-  text-align: left;
+  border: 1.5px solid #e2e8f0;
   font-weight: 700;
-  font-size: 0.8125rem;
-  color: #111;
+  font-size: 0.9rem;
+  color: #1e293b;
+  cursor: pointer;
+}
+
+.clear-btn {
+  padding: 12px 20px;
+  font-weight: 800;
+  color: #ef4444;
+  background: #fee2e2;
+  border-radius: 16px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.table-white-card {
+  background: white;
+  border-radius: 28px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+  overflow: hidden;
+}
+
+.modern-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.modern-table th {
+  padding: 20px 24px;
+  background: #f8fafc;
+  font-size: 0.75rem;
+  font-weight: 850;
+  color: #94a3b8;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  white-space: nowrap;
-}
-
-.th-content {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.th-content svg {
-  transition: transform 0.2s;
-}
-
-.th-content svg.reverse {
-  transform: rotate(180deg);
-}
-
-.users-table th.sortable {
+  border-bottom: 1px solid #f1f5f9;
   cursor: pointer;
-  user-select: none;
-  transition: background 0.2s;
 }
 
-.users-table th.sortable:hover {
-  background: #F3F4F6;
+.modern-table td {
+  padding: 16px 24px;
+  border-bottom: 1px solid #f8fafc;
+  vertical-align: middle;
 }
 
-.users-table td {
-  padding: 16px;
-  border-top: 1px solid #E5E7EB;
-  font-size: 0.875rem;
+.id-tag {
+  background: #f1f5f9;
+  color: #475569;
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 800;
 }
 
-.users-table tbody tr {
-  transition: background 0.2s;
-}
-
-.users-table tbody tr:hover {
-  background: #F9FAFB;
-}
-
-.user-info {
+.user-cell {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
 }
 
 .user-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-  color: white;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: #f1f5f9;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 800;
-  font-size: 0.875rem;
-  flex-shrink: 0;
-}
-
-.user-avatar.role-admin {
-  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-}
-
-.user-avatar.role-owner {
-  background: linear-gradient(135deg, #1E40AF 0%, #3B82F6 100%);
-}
-
-.user-avatar.role-user {
-  background: linear-gradient(135deg, #065F46 0%, #10B981 100%);
-}
-
-.user-details {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.user-name {
-  font-weight: 600;
+  font-weight: 900;
   color: #111;
+  font-size: 0.9rem;
+  border: 1.5px solid #fff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
 }
 
-.user-phone-text {
-  font-size: 0.75rem;
-  color: #6B7280;
+.user-avatar.admin {
+  background: #e0e7ff;
+  color: #4338ca;
+}
+
+.user-avatar.owner {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.u-name {
+  font-weight: 850;
+  color: #111;
+  font-size: 0.95rem;
+}
+
+.u-meta {
+  font-size: 0.7rem;
+  color: #94a3b8;
+  font-weight: 700;
+  margin-top: 2px;
 }
 
 .phone-cell {
+  font-weight: 750;
+  font-size: 0.9rem;
   display: flex;
   align-items: center;
-  gap: 6px;
-  color: #111;
-  font-weight: 500;
+  gap: 8px;
+  color: #475569;
 }
 
-.phone-cell svg {
-  color: #6B7280;
-  flex-shrink: 0;
+.phone-cell iconify-icon {
+  color: #94a3b8;
 }
 
-.role-badge {
+.role-pill {
   display: inline-block;
-  padding: 4px 12px;
-  border-radius: 12px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  white-space: nowrap;
+  padding: 6px 12px;
+  border-radius: 10px;
+  font-size: 0.7rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-.role-admin {
-  background: #1a1a1a;
-  color: white;
+.role-pill.admin {
+  background: #e0e7ff;
+  color: #4338ca;
 }
 
-.role-owner {
-  background: #DBEAFE;
-  color: #1E40AF;
+.role-pill.owner {
+  background: #dcfce7;
+  color: #166534;
 }
 
-.role-user {
-  background: #F3F4F6;
-  color: #4B5563;
+.role-pill.client {
+  background: #fef3c7;
+  color: #92400e;
 }
 
-.stats-cell {
-  display: flex;
-  align-items: center;
-}
-
-.stat-value-small {
-  font-weight: 700;
+.stat-count {
+  font-weight: 900;
   color: #111;
-  font-size: 0.9375rem;
+  background: #f8fafc;
+  padding: 4px 12px;
+  border-radius: 8px;
+  display: inline-block;
 }
 
 .date-cell {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+  font-size: 0.85rem;
+  font-weight: 750;
 }
 
-.date-main {
-  font-weight: 500;
-  color: #111;
+.d-time {
+  font-size: 0.7rem;
+  color: #94a3b8;
+  margin-top: 2px;
 }
 
-.date-time {
-  font-size: 0.75rem;
-  color: #6B7280;
-}
-
-.actions {
+.action-btns {
   display: flex;
   gap: 6px;
-  align-items: center;
 }
 
-.action-btn {
-  padding: 6px 12px;
-  border-radius: 8px;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s;
-  white-space: nowrap;
-}
-
-.btn-icon {
-  background: #F3F4F6;
-  color: #111;
-  padding: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.btn-icon:hover {
-  background: #E5E7EB;
-}
-
-/* Empty State */
-.empty-state {
-  padding: 80px 20px;
-  text-align: center;
-  color: #6B7280;
-}
-
-.empty-state svg {
-  margin-bottom: 16px;
-  color: #9CA3AF;
-}
-
-.empty-state p {
-  font-size: 1rem;
-  font-weight: 600;
-  margin: 8px 0;
-}
-
-.empty-subtitle {
-  font-size: 0.875rem;
-  font-weight: 400;
-  color: #9CA3AF;
-}
-
-/* Pagination */
-.pagination {
-  padding: 20px 24px;
-  border-top: 1px solid #E5E7EB;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 12px;
-  background: #F9FAFB;
-}
-
-.pagination-btn {
-  padding: 8px 12px;
+.act-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1.5px solid #e2e8f0;
   background: white;
-  border: 1px solid #E5E7EB;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s;
+  color: #64748b;
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 1.1rem;
+}
+
+.act-btn:hover {
+  border-color: #111;
   color: #111;
+  background: #f8fafc;
 }
 
-.pagination-btn:hover:not(:disabled) {
-  background: #F3F4F6;
-  border-color: #D1D5DB;
+.pagination-bar {
+  padding: 24px;
+  background: #f8fafc;
+  border-top: 1px solid #f1f5f9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
 }
 
-.pagination-btn:disabled {
-  opacity: 0.5;
+.page-btn {
+  width: 40px;
+  height: 40px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  background: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+}
+
+.page-btn:disabled {
+  opacity: 0.3;
   cursor: not-allowed;
 }
 
-.pagination-info {
-  font-size: 0.875rem;
-  color: #6B7280;
-  font-weight: 500;
-  padding: 0 16px;
+.page-info {
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: #1e293b;
 }
 
-/* Loading & Error States */
-.loading-state,
-.error-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 80px 20px;
+.loading-wrap,
+.empty-wrap {
+  padding: 100px 0;
   text-align: center;
-  background: white;
-  border-radius: 16px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  border: 1px solid #E5E7EB;
 }
 
-.error-state {
-  color: #EF4444;
-}
-
-.error-state svg {
-  margin-bottom: 16px;
-  color: #EF4444;
-}
-
-.error-message {
-  margin: 16px 0;
-  font-size: 1rem;
-}
-
-.retry-btn {
-  margin-top: 16px;
-  padding: 10px 24px;
-  background: #111;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.retry-btn:hover {
-  background: #2d2d2d;
-}
-
-.loading-spinner {
-  width: 48px;
-  height: 48px;
-  border: 4px solid #f3f3f3;
-  border-top: 4px solid #111;
+.loader {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f1f5f9;
+  border-top-color: #111;
   border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin-bottom: 16px;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto;
 }
 
 @keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-
-  100% {
+  to {
     transform: rotate(360deg);
   }
 }
 
-/* Mobile Users Cards Styles */
-.mobile-users-list {
-  display: none;
+.empty-wrap iconify-icon {
+  font-size: 3rem;
+  color: #cbd5e1;
+  margin-bottom: 16px;
 }
 
-.user-mobile-card {
-  background: white;
-  border-radius: 12px;
-  padding: 16px;
-  border: 1px solid #E5E7EB;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-}
-
-.mobile-card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 12px;
-  gap: 12px;
-}
-
-.user-info-mobile {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex: 1;
-  min-width: 0;
-}
-
-.user-avatar-mobile {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 16px;
-  color: white;
-  flex-shrink: 0;
-}
-
-.user-avatar-mobile.role-admin {
-  background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%);
-}
-
-.user-avatar-mobile.role-owner {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-}
-
-.user-avatar-mobile.role-user {
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-}
-
-.user-details-mobile {
-  min-width: 0;
-  flex: 1;
-}
-
-.user-name-mobile {
-  font-size: 16px;
-  font-weight: 700;
-  color: #111;
-  margin: 0 0 4px 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.user-phone-mobile {
-  font-size: 12px;
-  color: #6B7280;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.role-badge-mobile {
-  flex-shrink: 0;
-  padding: 6px 12px;
-  border-radius: 8px;
-  font-size: 12px;
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-.role-badge-mobile.role-admin {
-  background: #FEE2E2;
-  color: #991B1B;
-}
-
-.role-badge-mobile.role-owner {
-  background: #E0E7FF;
-  color: #3730A3;
-}
-
-.role-badge-mobile.role-user {
-  background: #DBEAFE;
-  color: #1E40AF;
-}
-
-.mobile-card-info {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-bottom: 12px;
-  padding: 12px 0;
-  border-top: 1px solid #F3F4F6;
-  border-bottom: 1px solid #F3F4F6;
-}
-
-.info-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 14px;
-}
-
-.info-label {
-  color: #6B7280;
-  font-weight: 500;
-}
-
-.info-value {
-  color: #111;
-  font-weight: 600;
-  text-align: right;
-}
-
-.mobile-card-actions {
-  display: flex;
-  gap: 8px;
-}
-
-.mobile-action-btn {
-  flex: 1;
-  min-width: fit-content;
-  padding: 10px 16px;
-  border: none;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-}
-
-.mobile-action-btn.btn-details {
-  background: #F3F4F6;
-  color: #111;
-}
-
-.mobile-action-btn.btn-details:active {
-  background: #E5E7EB;
-}
-
-.empty-state-mobile {
-  text-align: center;
-  padding: 60px 20px;
-  color: #6B7280;
-}
-
-.empty-state-mobile svg {
-  margin: 0 auto 16px;
-  opacity: 0.3;
-}
-
-.empty-state-mobile p {
-  font-size: 16px;
-  font-weight: 600;
-  margin: 0;
+.empty-wrap p {
+  font-weight: 800;
+  color: #64748b;
 }
 
 @media (max-width: 1024px) {
-  .mobile-header {
-    display: flex;
-  }
-}
-
-@media (max-width: 768px) {
   .admin-main {
     margin-left: 0;
-    padding-top: 60px;
   }
 
-  .stats-overview {
-    grid-template-columns: 1fr;
-  }
-
-  .users-table-wrapper {
-    display: none;
-  }
-
-  .mobile-users-list {
+  .mobile-menu-btn {
     display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .filters-bar {
     flex-direction: column;
-    gap: 12px;
-    padding: 12px;
-  }
-
-  .admin-header {
-    padding: 24px;
-  }
-
-  .header-content {
-    flex-direction: column;
-    gap: 16px;
-  }
-
-  .admin-title {
-    font-size: 2rem;
-  }
-
-  .admin-content {
-    padding: 20px;
+    align-items: stretch;
   }
 }
 </style>

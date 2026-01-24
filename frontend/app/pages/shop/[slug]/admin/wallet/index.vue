@@ -21,7 +21,7 @@
                     <div class="balance-main">
                         <div class="balance-label-group">
                             <span class="balance-label">{{ $t('wallet.balance') }}</span>
-                            <div class="balance-status-tag">Live</div>
+                            <div class="balance-status-tag">{{ $t('wallet.status.live') }}</div>
                         </div>
                         <div class="balance-amount">{{ formatPrice(balance) }}</div>
                     </div>
@@ -30,7 +30,7 @@
                     </div>
                 </div>
                 <div class="balance-footer">
-                    <div class="store-id">Shop ID: {{ shopSlug }}</div>
+                    <div class="store-id">{{ $t('wallet.shopId') }}: {{ shopSlug }}</div>
                     <div class="currency-badge">UZS</div>
                 </div>
             </div>
@@ -59,11 +59,11 @@
                         <table class="premium-table">
                             <thead>
                                 <tr>
-                                    <th>Дата</th>
-                                    <th>Тип</th>
-                                    <th>Описание</th>
-                                    <th>Сумма</th>
-                                    <th>Статус</th>
+                                    <th>{{ $t('wallet.table.date') }}</th>
+                                    <th>{{ $t('wallet.table.type') }}</th>
+                                    <th>{{ $t('wallet.table.description') }}</th>
+                                    <th>{{ $t('wallet.table.amount') }}</th>
+                                    <th>{{ $t('wallet.table.status') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -81,7 +81,7 @@
                                             formatPrice(Math.abs(transaction.amount)) }} </td>
                                     <td>
                                         <span :class="`status-pill status-${transaction.status.toLowerCase()}`">
-                                            {{ transaction.status }}
+                                            {{ $t(`wallet.status.${transaction.status.toLowerCase()}`) }}
                                         </span>
                                     </td>
                                 </tr>
@@ -107,7 +107,7 @@
                                 <div class="m-row-bottom">
                                     <span class="m-date">{{ formatDate(transaction.created_at) }}</span>
                                     <span :class="`status-pill status-${transaction.status.toLowerCase()}`">
-                                        {{ transaction.status }}
+                                        {{ $t(`wallet.status.${transaction.status.toLowerCase()}`) }}
                                     </span>
                                 </div>
                             </div>
@@ -130,15 +130,15 @@
                         <div class="modal-body">
                             <div class="warning-box">
                                 <iconify-icon icon="lucide:info" width="20"></iconify-icon>
-                                <span>Тестовый режим: Деньги зачислятся мгновенно</span>
+                                <span>{{ $t('wallet.testModeWarning') }}</span>
                             </div>
 
                             <div class="field-group">
-                                <label>Введите сумму</label>
+                                <label>{{ $t('wallet.enterAmount') }}</label>
                                 <div class="amount-field">
                                     <input v-model.number="topUpAmount" type="number" placeholder="0" class="big-input"
                                         min="1000" step="5000" />
-                                    <span class="field-currency">сум</span>
+                                    <span class="field-currency">{{ $t('currency') }}</span>
                                 </div>
                             </div>
 
@@ -152,11 +152,12 @@
                         </div>
 
                         <div class="modal-footer">
-                            <button @click="showTopUpModal = false" class="btn btn-secondary">Отмена</button>
+                            <button @click="showTopUpModal = false" class="btn btn-secondary">{{ $t('common.cancel')
+                            }}</button>
                             <button @click="handleTopUp" class="btn btn-primary"
                                 :disabled="loadingTopUp || !topUpAmount || topUpAmount < 1000">
                                 <span v-if="loadingTopUp" class="spinner-small"></span>
-                                <span v-else>Пополнить</span>
+                                <span v-else>{{ $t('wallet.topUpAction') }}</span>
                             </button>
                         </div>
                     </div>
@@ -232,9 +233,9 @@ const handleTopUp = async () => {
         balance.value = data.new_balance
         showTopUpModal.value = false
         await fetchTransactions()
-        useToast().success('Баланс успешно пополнен!')
+        useToast().success(useI18n().t('wallet.topUpSuccess'))
     } catch (error) {
-        useToast().error('Ошибка при пополнении')
+        useToast().error(useI18n().t('wallet.topUpError'))
     } finally {
         loadingTopUp.value = false
     }
