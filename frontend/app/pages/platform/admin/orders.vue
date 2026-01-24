@@ -138,12 +138,16 @@ const toast = useToast()
 const config = useRuntimeConfig()
 const { t, locale } = useI18n()
 
+// Use internal URL for SSR, public URL for client
+const apiBase = process.server ? config.apiBaseInternal : config.public.apiBase
+
+
 definePageMeta({ middleware: 'platform-admin' })
 
 const sidebarOpen = ref(false)
 const handleLogout = () => { logout(); toast.success('Вы вышли') }
 
-const { data: orders, pending, error, refresh } = useFetch(config.public.apiBase + '/platform/admin/orders', {
+const { data: orders, pending, error, refresh } = useFetch(apiBase + '/platform/admin/orders', {
   lazy: true, watch: [token],
   headers: computed(() => ({ 'Authorization': `Bearer ${token.value}` }))
 })

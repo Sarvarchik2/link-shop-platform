@@ -162,11 +162,11 @@
 
             <div class="modal-footer">
               <button type="button" @click="closeModal" class="btn-cancel">{{ $t('platformAdmin.offers.cancel')
-                }}</button>
+              }}</button>
               <button type="submit" class="btn-save" :disabled="saving">
                 <span v-if="saving" class="loader-xs"></span>
                 <span v-else>{{ editingOffer ? $t('platformAdmin.offers.save') : $t('platformAdmin.offers.create')
-                  }}</span>
+                }}</span>
               </button>
             </div>
           </form>
@@ -182,6 +182,10 @@ const { token, logout } = useAuth()
 const { formatPrice } = useCurrency()
 const toast = useToast()
 const config = useRuntimeConfig()
+
+// Use internal URL for SSR, public URL for client
+const apiBase = process.server ? config.apiBaseInternal : config.public.apiBase
+
 
 definePageMeta({ middleware: 'platform-admin' })
 
@@ -201,7 +205,7 @@ const offerForm = reactive({
   is_active: true, display_order: 0
 })
 
-const { data: offers, pending, refresh } = useFetch(config.public.apiBase + '/platform/admin/offers', {
+const { data: offers, pending, refresh } = useFetch(apiBase + '/platform/admin/offers', {
   lazy: true, watch: [token],
   headers: computed(() => ({ 'Authorization': `Bearer ${token.value}` }))
 })

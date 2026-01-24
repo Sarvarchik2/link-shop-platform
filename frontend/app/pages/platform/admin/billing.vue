@@ -30,10 +30,10 @@
                     <div class="kpi-card revenue-card">
                         <div class="kpi-content">
                             <div class="kpi-label">{{ $t('platformAdmin.finance.revenue') }}</div>
-                            <div class="kpi-value">{{ formatPrice(totalRevenue) }}</div>
+                            <div class="kpi-value">{{ formatPrice(stats?.total_revenue || 0) }}</div>
                             <div class="kpi-meta">
                                 <iconify-icon icon="lucide:trending-up" />
-                                <span>{{ $t('platformAdmin.dashboard.perYear') }}</span>
+                                <span>{{ $t('platformAdmin.dashboard.total') }}</span>
                             </div>
                         </div>
                         <div class="kpi-icon-wrap">
@@ -44,7 +44,7 @@
                     <div class="kpi-card balance-card">
                         <div class="kpi-content">
                             <div class="kpi-label">{{ $t('platformAdmin.finance.balance') }}</div>
-                            <div class="kpi-value">--</div>
+                            <div class="kpi-value">{{ formatPrice(stats?.total_balance || 0) }}</div>
                             <div class="kpi-meta">
                                 <span class="badge-beta">Beta</span>
                             </div>
@@ -69,11 +69,11 @@
                             <thead>
                                 <tr>
                                     <th>ID</th>
-                                    <th>Date</th>
-                                    <th>Type</th>
-                                    <th>Amount</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
+                                    <th>{{ $t('common.date') || 'Date' }}</th>
+                                    <th>{{ $t('common.type') || 'Type' }}</th>
+                                    <th>{{ $t('platformAdmin.finance.amount') || 'Amount' }}</th>
+                                    <th>{{ $t('common.status') || 'Status' }}</th>
+                                    <th>{{ $t('common.actions') || 'Action' }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -130,28 +130,33 @@ const sidebarOpen = ref(false)
 const limit = ref(20)
 const offset = ref(0)
 
+// Use internal URL for SSR, public URL for client
+const apiBase = process.server ? config.apiBaseInternal : config.public.apiBase
+
 const handleLogout = () => {
     logout()
     toast.success(t('auth.loggedOut'))
 }
 
+// Fetch Stats
+const { data: stats, refresh: refreshStats } = useFetch(apiBase + '/platform/admin/wallet/stats', {
+    headers: computed(() => ({ 'Authorization': `Bearer ${token.value}` }))
+})
+
 // Fetch Transactions
-const { data: txData, pending, refresh } = useFetch(config.public.apiBase + '/platform/admin/wallet/transactions', {
+const { data: txData, pending, refresh: refreshTransactions } = useFetch(apiBase + '/platform/admin/wallet/transactions', {
     query: computed(() => ({ limit: limit.value, offset: offset.value })),
     headers: computed(() => ({ 'Authorization': `Bearer ${token.value}` })),
     watch: [offset]
 })
 
+const refresh = () => {
+    refreshStats()
+    refreshTransactions()
+}
+
 const transactions = computed(() => txData.value?.transactions || [])
 const totalTransactions = computed(() => txData.value?.total || 0)
-
-// Calculate "Total Revenue" from transactions just as an example estimate (sum of all POSITIVE transactions or specific types)
-const totalRevenue = computed(() => {
-    if (!transactions.value) return 0
-    return transactions.value
-        .filter(t => t.amount > 0 && t.type !== 'TOPUP') // Assuming non-topup positive are earnings, or adjust logic
-        .reduce((acc, curr) => acc + curr.amount, 0)
-})
 
 const formatDate = (d) => new Date(d).toLocaleString(locale.value)
 const prevPage = () => { if (offset.value >= limit.value) offset.value -= limit.value }

@@ -12,6 +12,7 @@ class SubscriptionPlan(Base):
     slug = Column(String, unique=True, index=True, nullable=False)
     price = Column(Float, nullable=False)
     period_days = Column(Integer, default=30)
+    trial_period_days = Column(Integer, default=0)
     
     description = Column(String, nullable=True)
     description_ru = Column(String, nullable=True)

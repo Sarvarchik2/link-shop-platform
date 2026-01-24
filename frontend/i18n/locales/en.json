@@ -539,7 +539,11 @@
         "deleted": "Deleted",
         "confirm": "Confirm",
         "filters": "Filters",
-        "clearFilters": "Clear all filters"
+        "clearFilters": "Clear all filters",
+        "phone": "Phone",
+        "role": "Role",
+        "noName": "No Name",
+        "noData": "No data available"
     },
     "periods": {
         "today": "Today",
@@ -1024,12 +1028,14 @@
             "shopName": "Shop Name",
             "shopUrl": "Shop URL address",
             "urlHint": "Only Latin letters, numbers, and hyphens",
+            "description": "Description",
             "continue": "Continue",
             "selectPlan": "Choose the right plan",
             "selectPlanSubtitle": "You can change it anytime in the control panel",
             "popular": "Popular",
             "launch": "Launch Shop"
         },
+        "back": "Back",
         "title": "Create Shop",
         "subtitle": "Register your shop on the platform",
         "steps": {
@@ -1100,6 +1106,55 @@
             "plans": "Plans",
             "content": "Content",
             "offers": "Offers"
+        },
+        "shops": {
+            "title": "Shops",
+            "subtitle": "Manage all stores on the platform",
+            "search": "Search (by name, slug, or owner)...",
+            "export": "Export",
+            "allShops": "All shops",
+            "active": "Active",
+            "trial": "Trial",
+            "expired": "Expired",
+            "deactivated": "Deactivated",
+            "stats": {
+                "all": "Total Shops",
+                "working": "Working",
+                "onTrial": "On Trial",
+                "expired": "Expired"
+            },
+            "filters": {
+                "allStatuses": "All Statuses",
+                "allTypes": "All Types",
+                "activeOnly": "Active Shops",
+                "deactivatedOnly": "Deactivated"
+            },
+            "table": {
+                "notFound": "No shops found"
+            }
+        },
+        "users": {
+            "title": "User Management",
+            "subtitle": "Manage all system user accounts",
+            "search": "Search users...",
+            "all": "All",
+            "admins": "Admins",
+            "owners": "Shop Owners",
+            "clients": "Clients",
+            "roles": {
+                "all": "All Roles",
+                "platform_admin": "Administrators",
+                "shop_owner": "Shop Owners",
+                "user": "Customers"
+            },
+            "table": {
+                "user": "User",
+                "shops": "Shops",
+                "orders": "Orders",
+                "registered": "Registration Date",
+                "notFound": "Users not found"
+            },
+            "clear": "Clear"
         },
         "offers": {
             "title": "Offers",
@@ -1174,7 +1229,14 @@
                 "trial": "Trial",
                 "expired": "Expired",
                 "cancelled": "Cancelled"
-            }
+            },
+            "salesTrends": "Sales Trends",
+            "last30Days": "Last 30 Days",
+            "total": "Total",
+            "planDistribution": "Plan Distribution",
+            "topShops": "Top Performing Shops",
+            "orders": "Orders",
+            "ordersShort": "orders"
         },
         "plans": {
             "title": "Subscription Plans",
@@ -1212,6 +1274,7 @@
                 "sort": "Sort Order",
                 "isActive": "Active",
                 "isTrial": "Trial",
+                "trialPeriod": "Trial Period (days)",
                 "hasTelegram": "Telegram",
                 "canBroadcast": "Broadcasts"
             }
@@ -1224,7 +1287,8 @@
             "balance": "Platform Balance",
             "revenue": "Total Revenue",
             "pending": "Pending",
-            "paid": "Paid"
+            "paid": "Paid",
+            "amount": "Amount"
         }
     }
 }

@@ -3,9 +3,7 @@
     <div class="login-container">
       <div class="login-card">
         <div class="login-header">
-          <div class="logo-wrapper">
-            <img src="/img/logo.jpg" alt="Storely" class="h-8 w-auto" />
-          </div>
+          <div class="logo-text">Storely</div>
           <h1 class="login-title">{{ $t('auth.login_title') }}</h1>
           <p class="login-subtitle">{{ $t('auth.login_subtitle') }}</p>
         </div>
@@ -34,7 +32,8 @@
           </button>
 
           <div class="form-footer">
-            <NuxtLink :to="localePath('/forgot-password')" class="forgot-link">{{ $t('auth.forgot_password') }}</NuxtLink>
+            <NuxtLink :to="localePath('/forgot-password')" class="forgot-link">{{ $t('auth.forgot_password') }}
+            </NuxtLink>
           </div>
 
           <div class="form-footer">
@@ -184,31 +183,28 @@ const handleLogin = async () => {
   margin-bottom: 32px;
 }
 
-.logo-wrapper {
-  width: 64px;
-  height: 64px;
-  background: white;
-  border: 1px solid #E5E7EB;
-  border-radius: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 20px;
-  color: white;
+.logo-text {
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: #111;
+  letter-spacing: -0.05em;
+  margin-bottom: 24px;
 }
 
 .login-title {
-  font-size: 2.5rem;
-  font-weight: 900;
+  font-size: 2.25rem;
+  font-weight: 950;
   color: #111;
   margin: 0;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.05em;
+  line-height: 1;
 }
 
 .login-subtitle {
-  font-size: 0.875rem;
+  font-size: 1rem;
   color: #6B7280;
-  margin-top: 8px;
+  margin-top: 12px;
+  font-weight: 500;
 }
 
 .login-form {

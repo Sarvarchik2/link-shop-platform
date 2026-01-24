@@ -124,26 +124,6 @@ def get_my_subscription_request(
     """Get active subscription request for a shop - Shop Owner"""
     return subscription_service.get_shop_subscription_request(db, shop_slug, current_user)
 
-@router.get("/platform/admin/subscription-requests", response_model=List[SubscriptionRequestRead])
-def get_all_requests(
-    status: Optional[str] = None,
-    shop_id: Optional[int] = None,
-    db: Session = Depends(get_db),
-    admin = Depends(get_current_platform_admin)
-):
-    """Get all subscription requests - Platform Admin"""
-    return subscription_service.get_all_requests(db, status, shop_id)
-
-@router.put("/platform/admin/subscription-requests/{request_id}/status", response_model=SubscriptionRequestRead)
-def update_request_status(
-    request_id: int,
-    update_in: SubscriptionRequestUpdate,
-    db: Session = Depends(get_db),
-    admin = Depends(get_current_platform_admin)
-):
-    """Approve or reject subscription request"""
-    return subscription_service.update_request_status(db, request_id, update_in)
-
 @router.post("/subscription/cancel")
 def cancel_subscription(
     shop_slug: str = Query(..., description="Shop Slug"),
@@ -181,4 +161,13 @@ def toggle_auto_renewal(
     Enable or disable auto-renewal for shop subscription
     """
     return subscription_service.toggle_auto_renewal(db, shop_slug, request, current_user)
+@router.post("/subscription/start-trial")
+def start_trial(
+    plan_slug: str = Query(..., description="Plan Slug"),
+    shop_slug: str = Query(..., description="Shop Slug"),
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+    """Start a trial period for a specific plan - Shop Owner"""
+    return subscription_service.start_trial(db, shop_slug, plan_slug, current_user)
 

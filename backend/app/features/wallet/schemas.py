@@ -31,3 +31,9 @@ class WalletTopUpResponse(BaseModel):
     new_balance: Decimal
     transaction_id: int
     message: str = "Баланс успешно пополнен"
+
+class PlatformBillingStats(BaseModel):
+    total_revenue: Decimal
+    total_balance: Decimal
+    total_topups: Decimal
+    transactions_count: int

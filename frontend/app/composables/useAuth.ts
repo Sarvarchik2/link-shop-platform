@@ -1,6 +1,9 @@
 export const useAuth = () => {
     const config = useRuntimeConfig()
-    const token = useCookie('auth_token')
+    const token = useCookie('auth_token', {
+        maxAge: 60 * 60 * 24 * 30, // 30 days
+        sameSite: 'lax'
+    })
     const user = useState<any>('user', () => null)
 
     // Lazy load localePath to avoid SSR issues
@@ -102,13 +105,27 @@ export const useAuth = () => {
 
     const fetchUser = async () => {
         if (!token.value) return
+
+        // Use internal URL for SSR, public URL for client
+        const baseUrl = process.server ? config.apiBaseInternal : config.public.apiBase
+
         try {
-            user.value = await $fetch(config.public.apiBase + '/users/me', {
+            user.value = await $fetch(baseUrl + '/users/me', {
                 headers: { Authorization: `Bearer ${token.value}` }
             })
-        } catch (e) {
-            token.value = null
-            user.value = null
+        } catch (e: any) {
+            // Only clear token if it's a 401 Unauthorized
+            // If it's a network error during SSR, don't clear the token!
+            if (e?.status === 401) {
+                token.value = null
+                user.value = null
+            } else if (!process.server) {
+                // On client, we might want to be more aggressive, but still...
+                if (e?.status) {
+                    token.value = null
+                    user.value = null
+                }
+            }
         }
     }
 

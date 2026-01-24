@@ -539,7 +539,11 @@
         "deleted": "O'chirildi",
         "confirm": "Tasdiqlash",
         "filters": "Filtrlar",
-        "clearFilters": "Filtrlarni tozalash"
+        "clearFilters": "Filtrlarni tozalash",
+        "phone": "Telefon",
+        "role": "Rol",
+        "noName": "Ismsiz",
+        "noData": "Ma'lumotlar yo'q"
     },
     "periods": {
         "today": "Bugun",
@@ -1017,12 +1021,14 @@
             "shopName": "Do'kon nomi",
             "shopUrl": "Do'kon URL manzili",
             "urlHint": "Faqat lotin harflari, raqamlar va chiziqcha",
+            "description": "Tavsif",
             "continue": "Davom etish",
             "selectPlan": "Mos tarifni tanlang",
             "selectPlanSubtitle": "Uni istalgan vaqtda boshqaruv panelida o'zgartirishingiz mumkin",
             "popular": "Ommabop",
             "launch": "Do'konni ishga tushirish"
         },
+        "back": "Orqaga",
         "title": "Do'kon yaratish",
         "subtitle": "Platformada do'koningizni ro'yxatdan o'tkazing",
         "steps": {
@@ -1094,6 +1100,55 @@
             "content": "Kontent",
             "offers": "Takliflar"
         },
+        "shops": {
+            "title": "Do'konlar",
+            "subtitle": "Platformadagi barcha do'konlarni boshqarish",
+            "search": "Izlash (nomi, slug yoki egasi bo'yicha)...",
+            "export": "Eksport",
+            "allShops": "Barcha do'konlar",
+            "active": "Faol",
+            "trial": "Sinov",
+            "expired": "Tugagan",
+            "deactivated": "Faolsizlantirilgan",
+            "stats": {
+                "all": "Jami do'konlar",
+                "working": "Ishlayapti",
+                "onTrial": "Sinovda",
+                "expired": "Tugagan"
+            },
+            "filters": {
+                "allStatuses": "Barcha holatlar",
+                "allTypes": "Barcha turlar",
+                "activeOnly": "Faol do'konlar",
+                "deactivatedOnly": "Faolsizlantirilgan"
+            },
+            "table": {
+                "notFound": "Do'konlar topilmadi"
+            }
+        },
+        "users": {
+            "title": "Foydalanuvchilarni boshqarish",
+            "subtitle": "Tizimdagi barcha foydalanuvchilar hisoblarini boshqarish",
+            "search": "Foydalanuvchilarni izlash...",
+            "all": "Jami",
+            "admins": "Adminlar",
+            "owners": "Egalar",
+            "clients": "Mijozlar",
+            "roles": {
+                "all": "Barcha rollar",
+                "platform_admin": "Administratorlar",
+                "shop_owner": "Do'kon egalari",
+                "user": "Xaridorlar"
+            },
+            "table": {
+                "user": "Foydalanuvchi",
+                "shops": "Do'konlar",
+                "orders": "Buyurtmalar",
+                "registered": "Ro'yxatdan o'tgan sana",
+                "notFound": "Foydalanuvchilar topilmadi"
+            },
+            "clear": "Tozalash"
+        },
         "dashboard": {
             "title": "Boshqaruv paneli",
             "welcome": "Platforma statistikasi va sharhi",
@@ -1134,7 +1189,14 @@
                 "trial": "Sinov",
                 "expired": "Tugagan",
                 "cancelled": "Bekor qilingan"
-            }
+            },
+            "salesTrends": "Savdo trendlari",
+            "last30Days": "Oxirgi 30 kun",
+            "total": "Jami",
+            "planDistribution": "Tariflar taqsimoti",
+            "topShops": "Eng yaxshi do'konlar",
+            "orders": "Buyurtmalar",
+            "ordersShort": "buy."
         },
         "plans": {
             "title": "Tarif rejalari",
@@ -1172,19 +1234,10 @@
                 "sort": "Tartiblash",
                 "isActive": "Faol",
                 "isTrial": "Sinov",
+                "trialPeriod": "Sinov davri (kun)",
                 "hasTelegram": "Telegram",
                 "canBroadcast": "Xabarnomalar"
             }
-        },
-        "finance": {
-            "title": "Moliya",
-            "subtitle": "Tranzaksiyalar va yechib olishlarni boshqarish",
-            "transactions": "Tranzaksiyalar",
-            "withdrawals": "Yechib olishlar",
-            "balance": "Platforma balansi",
-            "revenue": "Jami daromad",
-            "pending": "Kutilmoqda",
-            "paid": "To'landi"
         },
         "offers": {
             "title": "Maxsus takliflar",
@@ -1218,6 +1271,17 @@
             "deleted": "O'chirildi",
             "deleteError": "O'chirishda xatolik",
             "priceOnRequest": "So'rov bo'yicha"
+        },
+        "finance": {
+            "title": "Moliya",
+            "subtitle": "Tranzaksiyalar va yechib olishlarni boshqarish",
+            "transactions": "Tranzaksiyalar",
+            "withdrawals": "Yechib olishlar",
+            "balance": "Platforma balansi",
+            "revenue": "Jami daromad",
+            "pending": "Kutilmoqda",
+            "paid": "To'langan",
+            "amount": "Summa"
         }
     }
 }

@@ -3,7 +3,10 @@ from decimal import Decimal
 from typing import Optional, Tuple, List
 from .repository import WalletRepository, TransactionRepository
 from .models import Wallet, Transaction
-from .schemas import WalletBalanceResponse, WalletTopUpResponse, TransactionResponse, TransactionListResponse
+from .schemas import (
+    WalletBalanceResponse, WalletTopUpResponse, TransactionResponse, 
+    TransactionListResponse, PlatformBillingStats
+)
 
 class WalletService:
     """Сервис для работы с кошельком"""
@@ -109,4 +112,30 @@ class WalletService:
         return TransactionListResponse(
             transactions=[TransactionResponse.from_orm(t) for t in transactions],
             total=total
+        )
+
+    def get_platform_billing_stats(self) -> PlatformBillingStats:
+        """Получить статистику по биллингу всей платформы"""
+        from sqlalchemy import func
+        
+        # Общий баланс всех кошельков
+        total_balance = self.db.query(func.sum(Wallet.balance)).scalar() or 0
+        
+        # Общая выручка (PAYMENT транзакции)
+        # Сумма по модулю для всех платежей
+        total_revenue = self.db.query(func.sum(func.abs(Transaction.amount)))\
+            .filter(Transaction.type == 'PAYMENT', Transaction.status == 'COMPLETED').scalar() or 0
+            
+        # Общая сумма пополнений
+        total_topups = self.db.query(func.sum(Transaction.amount))\
+            .filter(Transaction.type == 'TOPUP', Transaction.status == 'COMPLETED').scalar() or 0
+            
+        # Общее количество транзакций
+        transactions_count = self.db.query(func.count(Transaction.id)).scalar() or 0
+        
+        return PlatformBillingStats(
+            total_revenue=total_revenue,
+            total_balance=total_balance,
+            total_topups=total_topups,
+            transactions_count=transactions_count
         )

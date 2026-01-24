@@ -51,7 +51,8 @@
               <div class="plan-price">
                 <span class="price-val">{{ plan.price === 0 ? $t('platformAdmin.plans.free') : formatPrice(plan.price)
                   }}</span>
-                <span class="price-period">/ {{ plan.period_days }} {{ $t('platformAdmin.plans.days') }}</span>
+                <span class="price-period">/ {{ plan.is_trial ? (plan.trial_period_days || 0) : plan.period_days }} {{
+                  $t('platformAdmin.plans.days') }}</span>
               </div>
               <div class="plan-slug"><code>{{ plan.slug }}</code></div>
             </div>
@@ -179,6 +180,11 @@
                   <input v-model.number="planForm.display_order" type="number" class="modern-input" />
                 </div>
 
+                <div v-if="planForm.is_trial" class="f-group">
+                  <label>{{ $t('platformAdmin.plans.form.trialPeriod') }}</label>
+                  <input v-model.number="planForm.trial_period_days" type="number" class="modern-input" required />
+                </div>
+
                 <div class="f-switches">
                   <label class="sw-row">
                     <input v-model="planForm.is_active" type="checkbox" />
@@ -223,6 +229,10 @@ const { formatPrice } = useCurrency()
 const toast = useToast()
 const config = useRuntimeConfig()
 
+// Use internal URL for SSR, public URL for client
+const apiBase = process.server ? config.apiBaseInternal : config.public.apiBase
+
+
 definePageMeta({ middleware: 'platform-admin' })
 
 const sidebarOpen = ref(false)
@@ -237,7 +247,7 @@ const planForm = reactive({
   description_ru: '', description_en: '', description_uz: '',
   features_ru: [], features_en: [], features_uz: [],
   is_active: true, is_trial: false, can_broadcast: false, has_telegram: false,
-  display_order: 0, max_products: 0, max_banners: 1
+  display_order: 0, max_products: 0, max_banners: 1, trial_period_days: 0
 })
 
 const features_ru_string = computed({
@@ -253,7 +263,7 @@ const features_uz_string = computed({
   set: (v) => planForm.features_uz = v.split(',').map(s => s.trim()).filter(s => s)
 })
 
-const { data: plans, pending, refresh } = useFetch(config.public.apiBase + '/platform/admin/subscription-plans', {
+const { data: plans, pending, refresh } = useFetch(apiBase + '/platform/admin/subscription-plans', {
   lazy: true,
   watch: [token],
   headers: computed(() => ({ 'Authorization': `Bearer ${token.value}` }))
@@ -294,7 +304,7 @@ const resetForm = () => {
     description_ru: '', description_en: '', description_uz: '',
     features_ru: [], features_en: [], features_uz: [],
     is_active: true, is_trial: false, can_broadcast: false, has_telegram: false,
-    display_order: 0, max_products: 0, max_banners: 1
+    display_order: 0, max_products: 0, max_banners: 1, trial_period_days: 0
   })
 }
 
@@ -466,7 +476,7 @@ const deletePlan = async (plan) => {
 
 .plan-card.inactive {
   opacity: 0.6;
-  grayscale: 1;
+  filter: grayscale(1);
 }
 
 .plan-card.trial {
@@ -579,6 +589,7 @@ const deletePlan = async (plan) => {
   min-height: 3.2em;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   margin-bottom: 24px;
@@ -689,14 +700,74 @@ const deletePlan = async (plan) => {
   color: #64748b;
 }
 
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-win {
+  background: white;
+  border-radius: 32px;
+  width: 100%;
+  max-width: 550px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
 .modal-win.large {
   max-width: 800px;
+}
+
+.modal-header {
+  padding: 24px 32px;
+  border-bottom: 1px solid #f1f5f9;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .modal-title-wrap {
   display: flex;
   align-items: center;
   gap: 24px;
+}
+
+.modal-title-wrap h3 {
+  font-size: 1.25rem;
+  font-weight: 950;
+  margin: 0;
+  letter-spacing: -0.5px;
+}
+
+.close-modal {
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: #f1f5f9;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: #64748b;
+}
+
+.close-modal:hover {
+  background: #ef4444;
+  color: white;
 }
 
 .lang-pills {
@@ -707,41 +778,79 @@ const deletePlan = async (plan) => {
 }
 
 .lang-pills button {
-  padding: 4px 12px;
+  padding: 6px 14px;
   border: none;
   border-radius: 8px;
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   font-weight: 900;
   cursor: pointer;
   background: transparent;
   color: #64748b;
+  transition: all 0.2s;
 }
 
 .lang-pills button.active {
   background: white;
   color: #111;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .plan-form {
   display: flex;
   flex-direction: column;
-  max-height: 80vh;
+  overflow: hidden;
 }
 
 .form-scroll {
-  overflow-y: auto;
   padding: 32px;
+  overflow-y: auto;
 }
 
 .form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 20px;
+  gap: 24px;
 }
 
 .span-2 {
   grid-column: span 2;
+}
+
+.f-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.f-group label {
+  font-size: 0.8rem;
+  font-weight: 850;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.modern-input {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1.5px solid #e2e8f0;
+  background: #f8fafc;
+  font-size: 0.95rem;
+  font-weight: 700;
+  transition: all 0.2s;
+}
+
+.modern-input:focus {
+  outline: none;
+  border-color: #111;
+  background: white;
+  box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.05);
+}
+
+textarea.modern-input {
+  resize: vertical;
+  min-height: 80px;
 }
 
 .f-switches {
@@ -749,53 +858,142 @@ const deletePlan = async (plan) => {
   display: flex;
   flex-wrap: wrap;
   gap: 24px;
+  padding: 24px;
   background: #f8fafc;
-  padding: 20px;
-  border-radius: 16px;
+  border-radius: 20px;
+  border: 1.5px solid #f1f5f9;
 }
 
 .sw-row {
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-weight: 800;
-  font-size: 0.9rem;
+  gap: 12px;
+  font-weight: 850;
+  font-size: 0.85rem;
+  color: #1e293b;
   cursor: pointer;
 }
 
 .sw-row input {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   cursor: pointer;
+  accent-color: #111;
 }
 
 .modal-footer {
   padding: 24px 32px;
+  background: #f8fafc;
   border-top: 1px solid #f1f5f9;
   display: flex;
   justify-content: flex-end;
+  gap: 16px;
+}
+
+.btn-cancel {
+  padding: 12px 24px;
+  border-radius: 14px;
+  border: 1.5px solid #e2e8f0;
+  background: white;
+  font-weight: 900;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: #64748b;
+}
+
+.btn-cancel:hover {
+  background: #f1f5f9;
+  color: #111;
+}
+
+.btn-save {
+  padding: 12px 32px;
+  border-radius: 14px;
+  border: none;
+  background: #111;
+  color: white;
+  font-weight: 900;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
   gap: 12px;
+}
+
+.btn-save:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+}
+
+.btn-save:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Animations */
+.scale-enter-active,
+.scale-leave-active {
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.scale-enter-from,
+.scale-leave-to {
+  opacity: 0;
+  transform: scale(0.95);
+}
+
+.loading-state {
+  padding: 100px 0;
+  text-align: center;
+}
+
+.loader {
+  width: 44px;
+  height: 44px;
+  border: 4px solid #f1f5f9;
+  border-top-color: #111;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto;
+}
+
+.loader-xs {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @media (max-width: 1024px) {
   .admin-main {
     margin-left: 0;
   }
-
-  .mobile-menu-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .form-grid {
     grid-template-columns: 1fr;
   }
 
   .span-2 {
     grid-column: span 1;
+  }
+
+  .modal-win {
+    margin-top: auto;
+    border-radius: 32px 32px 0 0;
+    max-height: 95vh;
   }
 }
 </style>

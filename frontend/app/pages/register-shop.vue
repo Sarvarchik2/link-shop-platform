@@ -8,7 +8,7 @@
     <div class="register-container">
       <header class="register-header">
         <NuxtLink :to="localePath('/')" class="logo-link">
-          <span class="logo-text">Link<span>Shop</span></span>
+          <span class="logo-text">Store<span>ly</span></span>
         </NuxtLink>
         <div class="header-steps">
           <div class="step-indicator" :class="{ active: currentStep >= 1, completed: currentStep > 1 }">
@@ -44,7 +44,7 @@
             <div class="form-group">
               <label>{{ $t('shopRegistration.premium.shopUrl') }}</label>
               <div class="input-wrapper slug-wrapper">
-                <span class="url-prefix">link-shop.uz/</span>
+                <span class="url-prefix">storely.uz/</span>
                 <input v-model="form.slug" type="text" required placeholder="urban-style"
                   class="premium-input slug-input" @input="formatSlug" />
               </div>
@@ -182,8 +182,8 @@ const registerShop = async () => {
 <style scoped>
 .register-shop-premium {
   min-height: 100vh;
-  background: #09090b;
-  color: white;
+  background: #ffffff;
+  color: #09090b;
   position: relative;
   overflow: hidden;
   padding: 40px 20px;
@@ -200,7 +200,7 @@ const registerShop = async () => {
   position: absolute;
   width: 600px;
   height: 600px;
-  background: radial-gradient(circle, rgba(147, 51, 234, 0.1) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(228, 228, 231, 0.3) 0%, transparent 70%);
   border-radius: 50%;
   filter: blur(80px);
 }
@@ -213,7 +213,7 @@ const registerShop = async () => {
 .blob-2 {
   bottom: -200px;
   left: -100px;
-  background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(244, 244, 245, 0.4) 0%, transparent 70%);
 }
 
 .register-container {
@@ -234,10 +234,11 @@ const registerShop = async () => {
   font-size: 1.5rem;
   font-weight: 900;
   letter-spacing: -1px;
+  color: #09090b;
 }
 
 .logo-text span {
-  color: #8b5cf6;
+  color: #71717a;
 }
 
 .header-steps {
@@ -259,29 +260,33 @@ const registerShop = async () => {
 }
 
 .step-indicator.completed {
-  color: #4ade80;
+  color: #22c55e;
   opacity: 1;
 }
 
 .step-num {
   width: 28px;
   height: 28px;
-  background: rgba(255, 255, 255, 0.1);
+  background: #f4f4f5;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
   font-size: 0.8rem;
+  border: 1px solid #e4e4e7;
 }
 
 .step-indicator.active .step-num {
-  background: #8b5cf6;
+  background: #09090b;
+  color: white;
+  border-color: #09090b;
 }
 
 .step-indicator.completed .step-num {
-  background: #4ade80;
-  color: #064e3b;
+  background: #22c55e;
+  color: white;
+  border-color: #22c55e;
 }
 
 .step-name {
@@ -292,12 +297,12 @@ const registerShop = async () => {
 .step-line {
   width: 40px;
   height: 2px;
-  background: rgba(255, 255, 255, 0.1);
+  background: #e4e4e7;
   border-radius: 2px;
 }
 
 .step-line.completed {
-  background: #4ade80;
+  background: #22c55e;
 }
 
 .title {
@@ -305,22 +310,23 @@ const registerShop = async () => {
   font-weight: 800;
   letter-spacing: -1.5px;
   margin-bottom: 12px;
+  color: #09090b;
 }
 
 .subtitle {
-  color: #a1a1aa;
+  color: #71717a;
   font-size: 1.1rem;
 }
 
 /* Form Styles */
 .premium-form {
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 32px;
+  background: white;
+  border: 1px solid #e4e4e7;
+  border-radius: 24px;
   padding: 48px;
   max-width: 600px;
   margin: 0 auto;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .form-group {
@@ -332,7 +338,7 @@ const registerShop = async () => {
   font-size: 0.9rem;
   font-weight: 600;
   margin-bottom: 10px;
-  color: #a1a1aa;
+  color: #52525b;
 }
 
 .input-wrapper {
@@ -344,48 +350,50 @@ const registerShop = async () => {
 .input-icon {
   position: absolute;
   left: 16px;
-  color: #52525b;
+  color: #a1a1aa;
 }
 
 .premium-input {
   width: 100%;
-  background: rgba(0, 0, 0, 0.2);
-  border: 1.5px solid rgba(255, 255, 255, 0.1);
-  border-radius: 14px;
+  background: #fafafa;
+  border: 1.5px solid #e4e4e7;
+  border-radius: 12px;
   padding: 14px 16px 14px 44px;
-  color: white;
+  color: #09090b;
   font-size: 1rem;
   transition: all 0.2s;
 }
 
 .premium-input:focus {
-  border-color: #8b5cf6;
-  background: rgba(0, 0, 0, 0.4);
+  border-color: #09090b;
+  background: white;
   outline: none;
-  box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
 }
 
 .slug-wrapper .premium-input {
-  padding-left: 105px;
+  padding-left: 95px;
   font-family: monospace;
   font-weight: 600;
-  color: #4ade80;
+  color: #09090b;
 }
 
 .url-prefix {
   position: absolute;
   left: 16px;
-  color: #52525b;
+  color: #71717a;
   font-size: 0.9rem;
 }
 
 textarea.premium-input {
   padding-left: 16px;
+  resize: vertical;
+  min-height: 80px;
 }
 
 .hint {
   font-size: 0.75rem;
-  color: #52525b;
+  color: #a1a1aa;
   margin-top: 8px;
   margin-left: 4px;
 }
@@ -398,9 +406,9 @@ textarea.premium-input {
 }
 
 .plan-card {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1.5px solid rgba(255, 255, 255, 0.08);
-  border-radius: 24px;
+  background: white;
+  border: 1.5px solid #e4e4e7;
+  border-radius: 20px;
   padding: 32px;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -408,22 +416,22 @@ textarea.premium-input {
 }
 
 .plan-card:hover {
-  border-color: rgba(255, 255, 255, 0.2);
+  border-color: #a1a1aa;
   transform: translateY(-5px);
-  background: rgba(255, 255, 255, 0.05);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
 }
 
 .plan-card.selected {
-  border-color: #8b5cf6;
-  background: rgba(139, 92, 246, 0.05);
+  border-color: #09090b;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 
 .plan-card.featured {
-  border-color: rgba(139, 92, 246, 0.5);
+  border-color: #71717a;
 }
 
 .plan-card.featured.selected {
-  border-color: #8b5cf6;
+  border-color: #09090b;
 }
 
 .popular-badge {
@@ -431,7 +439,7 @@ textarea.premium-input {
   top: -12px;
   left: 50%;
   transform: translateX(-50%);
-  background: #8b5cf6;
+  background: #09090b;
   color: white;
   padding: 4px 12px;
   border-radius: 100px;
@@ -448,20 +456,22 @@ textarea.premium-input {
   font-size: 1.5rem;
   font-weight: 800;
   margin-bottom: 8px;
+  color: #09090b;
 }
 
 .plan-price .amount {
   font-size: 1.75rem;
   font-weight: 900;
+  color: #09090b;
 }
 
 .plan-price .period {
-  color: #52525b;
+  color: #71717a;
   font-size: 0.9rem;
 }
 
 .plan-desc {
-  color: #a1a1aa;
+  color: #71717a;
   font-size: 0.9rem;
   margin-bottom: 24px;
   line-height: 1.5;
@@ -477,11 +487,11 @@ textarea.premium-input {
   gap: 10px;
   margin-bottom: 12px;
   font-size: 0.9rem;
-  color: #d4d4d8;
+  color: #52525b;
 }
 
 .check {
-  color: #4ade80;
+  color: #22c55e;
   margin-top: 3px;
 }
 
@@ -496,9 +506,9 @@ textarea.premium-input {
 .btn-submit {
   padding: 0 32px;
   height: 56px;
-  background: white;
-  color: black;
-  border-radius: 16px;
+  background: #09090b;
+  color: white;
+  border-radius: 14px;
   border: none;
   font-weight: 700;
   font-size: 1rem;
@@ -507,10 +517,11 @@ textarea.premium-input {
   align-items: center;
   gap: 10px;
   transition: all 0.2s;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .btn-submit {
-  background: #8b5cf6;
+  background: #09090b;
   color: white;
   width: auto;
 }
@@ -518,6 +529,7 @@ textarea.premium-input {
 .btn-next:hover,
 .btn-submit:hover {
   transform: scale(1.02);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .btn-next:disabled,
@@ -527,16 +539,22 @@ textarea.premium-input {
 }
 
 .btn-back {
-  background: none;
-  border: 1.5px solid rgba(255, 255, 255, 0.1);
-  color: white;
+  background: white;
+  border: 1.5px solid #e4e4e7;
+  color: #09090b;
   padding: 0 24px;
-  border-radius: 16px;
+  border-radius: 14px;
   font-weight: 600;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 10px;
+  transition: all 0.2s;
+}
+
+.btn-back:hover {
+  border-color: #09090b;
+  background: #fafafa;
 }
 
 .fade-in {
@@ -570,18 +588,127 @@ textarea.premium-input {
   }
 }
 
+.loading-plans {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #e4e4e7;
+  border-top-color: #09090b;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@media (max-width: 1024px) {
+  .plans-grid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  }
+}
+
 @media (max-width: 768px) {
+  .register-shop-premium {
+    padding: 20px 16px;
+  }
+
   .title {
     font-size: 1.8rem;
+    line-height: 1.2;
+  }
+
+  .subtitle {
+    font-size: 1rem;
   }
 
   .premium-form {
     padding: 24px;
+    border-radius: 20px;
   }
 
   .register-header {
     flex-direction: column;
-    gap: 30px;
+    gap: 24px;
+    margin-bottom: 40px;
+  }
+
+  .header-steps {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .step-name {
+    display: none;
+  }
+
+  .form-actions {
+    flex-direction: column-reverse;
+  }
+
+  .btn-next,
+  .btn-submit,
+  .btn-back {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .plans-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .plan-card {
+    padding: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .subtitle {
+    font-size: 0.9rem;
+  }
+
+  .premium-form {
+    padding: 20px;
+  }
+
+  .form-group label {
+    font-size: 0.85rem;
+  }
+
+  .premium-input {
+    font-size: 0.9rem;
+    padding: 12px 14px 12px 40px;
+  }
+
+  .slug-wrapper .premium-input {
+    padding-left: 90px;
+    font-size: 0.85rem;
+  }
+
+  .url-prefix {
+    font-size: 0.85rem;
+  }
+
+  .btn-next,
+  .btn-submit,
+  .btn-back {
+    height: 48px;
+    font-size: 0.9rem;
+  }
+
+  .plan-name {
+    font-size: 1.25rem;
+  }
+
+  .plan-price .amount {
+    font-size: 1.5rem;
   }
 }
 </style>

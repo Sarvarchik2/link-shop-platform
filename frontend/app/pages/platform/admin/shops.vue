@@ -35,28 +35,28 @@
             <div class="stat-icon-s"><iconify-icon icon="lucide:store" /></div>
             <div class="stat-body">
               <div class="stat-val">{{ shops?.length || 0 }}</div>
-              <div class="stat-lab">Всего магазинов</div>
+              <div class="stat-lab">{{ $t('platformAdmin.shops.stats.all') }}</div>
             </div>
           </div>
           <div class="stat-mini-card">
             <div class="stat-icon-s active"><iconify-icon icon="lucide:check-circle" /></div>
             <div class="stat-body">
               <div class="stat-val">{{ activeShopsCount }}</div>
-              <div class="stat-lab">Работают</div>
+              <div class="stat-lab">{{ $t('platformAdmin.shops.stats.working') }}</div>
             </div>
           </div>
           <div class="stat-mini-card">
             <div class="stat-icon-s trial"><iconify-icon icon="lucide:clock" /></div>
             <div class="stat-body">
               <div class="stat-val">{{ trialShopsCount }}</div>
-              <div class="stat-lab">На триале</div>
+              <div class="stat-lab">{{ $t('platformAdmin.shops.stats.onTrial') }}</div>
             </div>
           </div>
           <div class="stat-mini-card">
             <div class="stat-icon-s expired"><iconify-icon icon="lucide:alert-triangle" /></div>
             <div class="stat-body">
               <div class="stat-val">{{ expiredShopsCount }}</div>
-              <div class="stat-lab">Срок истек</div>
+              <div class="stat-lab">{{ $t('platformAdmin.shops.stats.expired') }}</div>
             </div>
           </div>
         </div>
@@ -70,20 +70,20 @@
 
           <div class="filter-actions">
             <select v-model="filterStatus" class="modern-select">
-              <option value="">Все статусы</option>
-              <option value="trial">Триал</option>
-              <option value="active">Активные</option>
-              <option value="expired">Истекли</option>
+              <option value="">{{ $t('platformAdmin.shops.filters.allStatuses') }}</option>
+              <option value="trial">{{ $t('platformAdmin.shops.trial') }}</option>
+              <option value="active">{{ $t('platformAdmin.shops.active') }}</option>
+              <option value="expired">{{ $t('platformAdmin.shops.expired') }}</option>
             </select>
 
             <select v-model="filterActive" class="modern-select">
-              <option value="">Все типы</option>
-              <option value="true">Активные маг.</option>
-              <option value="false">Деактивированные</option>
+              <option value="">{{ $t('platformAdmin.shops.filters.allTypes') }}</option>
+              <option value="true">{{ $t('platformAdmin.shops.filters.activeOnly') }}</option>
+              <option value="false">{{ $t('platformAdmin.shops.filters.deactivatedOnly') }}</option>
             </select>
 
             <button v-if="searchQuery || filterStatus || filterActive" @click="clearFilters" class="clear-btn">
-              Сбросить
+              {{ $t('platformAdmin.users.clear') }}
             </button>
           </div>
         </div>
@@ -95,7 +95,7 @@
           </div>
           <div v-else-if="displayedShops.length === 0" class="empty-wrap">
             <iconify-icon icon="lucide:search-x" />
-            <p>Ничего не найдено</p>
+            <p>{{ $t('platformAdmin.shops.table.notFound') }}</p>
           </div>
           <div v-else class="table-responsive">
             <table class="modern-table">
@@ -287,6 +287,9 @@ const config = useRuntimeConfig()
 const router = useRouter()
 const route = useRoute()
 
+// Use internal URL for SSR, public URL for client
+const apiBase = process.server ? config.apiBaseInternal : config.public.apiBase
+
 definePageMeta({ middleware: 'platform-admin' })
 
 const sidebarOpen = ref(false)
@@ -309,7 +312,7 @@ const passwordInput = ref('')
 const pendingAction = ref(null)
 const isConfirming = ref(false)
 
-const { data: shops, pending, refresh, error } = useFetch(config.public.apiBase + '/platform/shops', {
+const { data: shops, pending, refresh, error } = useFetch(apiBase + '/platform/shops', {
   lazy: true,
   watch: [token],
   headers: computed(() => ({ 'Authorization': `Bearer ${token.value}` }))

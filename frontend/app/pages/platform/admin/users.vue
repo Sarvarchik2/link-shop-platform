@@ -12,7 +12,7 @@
           </button>
           <div class="page-info">
             <h1 class="page-title">{{ $t('platformAdmin.users.title') }}</h1>
-            <p class="page-subtitle">Управление учетными записями всех пользователей системы</p>
+            <p class="page-subtitle">{{ $t('platformAdmin.users.subtitle') }}</p>
           </div>
         </div>
 
@@ -29,35 +29,47 @@
       </header>
 
       <div class="admin-scroll">
-        <!-- Stats Row -->
         <div class="stats-row">
           <div class="stat-mini-card">
             <div class="stat-icon-s"><iconify-icon icon="lucide:users" /></div>
             <div class="stat-body">
               <div class="stat-val">{{ users?.length || 0 }}</div>
-              <div class="stat-lab">Всего</div>
+              <div class="stat-lab">{{ $t('platformAdmin.users.all') }}</div>
             </div>
           </div>
           <div class="stat-mini-card">
             <div class="stat-icon-s admin"><iconify-icon icon="lucide:shield-check" /></div>
             <div class="stat-body">
               <div class="stat-val">{{ adminUsersCount }}</div>
-              <div class="stat-lab">Админы</div>
+              <div class="stat-lab">{{ $t('platformAdmin.users.admins') }}</div>
             </div>
           </div>
           <div class="stat-mini-card">
             <div class="stat-icon-s owner"><iconify-icon icon="lucide:store" /></div>
             <div class="stat-body">
               <div class="stat-val">{{ shopOwnersCount }}</div>
-              <div class="stat-lab">Владельцы</div>
+              <div class="stat-lab">{{ $t('platformAdmin.users.owners') }}</div>
             </div>
           </div>
           <div class="stat-mini-card">
             <div class="stat-icon-s user"><iconify-icon icon="lucide:user" /></div>
             <div class="stat-body">
               <div class="stat-val">{{ regularUsersCount }}</div>
-              <div class="stat-lab">Клиенты</div>
+              <div class="stat-lab">{{ $t('platformAdmin.users.clients') }}</div>
             </div>
+          </div>
+        </div>
+
+        <!-- Registration Chart -->
+        <div class="white-card user-chart-card">
+          <div class="card-header">
+            <h3 class="card-title">{{ $t('platformAdmin.dashboard.salesTrends') }} ({{ $t('platformAdmin.users.title')
+            }})</h3>
+          </div>
+          <div class="chart-wrapper">
+            <ClientOnly>
+              <AdminChart type="line" :data="registrationChartData" :options="lineOptions" />
+            </ClientOnly>
           </div>
         </div>
 
@@ -70,14 +82,14 @@
 
           <div class="filter-actions">
             <select v-model="filterRole" class="modern-select">
-              <option value="">Все роли</option>
-              <option value="platform_admin">Администраторы</option>
-              <option value="shop_owner">Владельцы магазинов</option>
-              <option value="user">Покупатели</option>
+              <option value="">{{ $t('platformAdmin.users.roles.all') }}</option>
+              <option value="platform_admin">{{ $t('platformAdmin.users.roles.platform_admin') }}</option>
+              <option value="shop_owner">{{ $t('platformAdmin.users.roles.shop_owner') }}</option>
+              <option value="user">{{ $t('platformAdmin.users.roles.user') }}</option>
             </select>
 
             <button v-if="searchQuery || filterRole" @click="clearFilters" class="clear-btn">
-              Сбросить
+              {{ $t('platformAdmin.users.clear') }}
             </button>
           </div>
         </div>
@@ -89,7 +101,7 @@
           </div>
           <div v-else-if="displayedUsers.length === 0" class="empty-wrap">
             <iconify-icon icon="lucide:user-off" />
-            <p>Пользователи не найдены</p>
+            <p>{{ $t('platformAdmin.users.table.notFound') }}</p>
           </div>
           <div v-else class="table-responsive">
             <table class="modern-table">
@@ -161,7 +173,8 @@
             <button @click="currentPage--" :disabled="currentPage === 1" class="page-btn">
               <iconify-icon icon="lucide:chevron-left" />
             </button>
-            <div class="page-info">Страница {{ currentPage }} из {{ totalPages }}</div>
+            <div class="page-info">{{ $t('common.page') }} {{ currentPage }} {{ $t('common.of') }} {{ totalPages }}
+            </div>
             <button @click="currentPage++" :disabled="currentPage === totalPages" class="page-btn">
               <iconify-icon icon="lucide:chevron-right" />
             </button>
@@ -180,6 +193,9 @@ const config = useRuntimeConfig()
 const router = useRouter()
 const route = useRoute()
 
+// Use internal URL for SSR, public URL for client
+const apiBase = process.server ? config.apiBaseInternal : config.public.apiBase
+
 definePageMeta({ middleware: 'platform-admin' })
 
 const sidebarOpen = ref(false)
@@ -192,16 +208,65 @@ const itemsPerPage = 12
 
 const handleLogout = () => { logout(); toast.success(t('auth.loggedOut')) }
 
-const { data: users, pending, error, refresh } = useFetch(config.public.apiBase + '/platform/admin/users', {
+// Statistics API for historical chart
+const { data: stats } = useFetch(apiBase + '/platform/admin/stats', {
+  lazy: true,
+  headers: computed(() => ({ 'Authorization': `Bearer ${token.value}` }))
+})
+
+const registrationChartData = computed(() => {
+  const history = stats.value?.history || []
+  return {
+    labels: history.map(h => formatDate(h.date)),
+    datasets: [
+      {
+        label: t('platformAdmin.users.title'),
+        data: history.map(h => h.users),
+        borderColor: '#3b82f6',
+        backgroundColor: 'rgba(59, 130, 246, 0.05)',
+        fill: true,
+        tension: 0.4,
+        pointRadius: 2,
+        pointHoverRadius: 5
+      }
+    ]
+  }
+})
+
+const lineOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: { display: false },
+    tooltip: {
+      backgroundColor: '#111',
+      padding: 12,
+      cornerRadius: 12
+    }
+  },
+  scales: {
+    y: {
+      beginAtZero: true,
+      grid: { color: 'rgba(0,0,0,0.03)', drawBorder: false },
+      ticks: { font: { size: 10, weight: '700' }, color: '#94a3b8' }
+    },
+    x: {
+      grid: { display: false },
+      ticks: { font: { size: 10, weight: '700' }, color: '#94a3b8', maxRotation: 0 }
+    }
+  }
+}
+
+const { data: users, pending, error, refresh } = useFetch(apiBase + '/platform/admin/users', {
   lazy: true, watch: [token],
   headers: computed(() => ({ 'Authorization': `Bearer ${token.value}` }))
 })
 
-const { data: shops } = useFetch(config.public.apiBase + '/platform/shops', {
+const { data: shops } = useFetch(apiBase + '/platform/shops', {
   lazy: true, headers: computed(() => ({ 'Authorization': `Bearer ${token.value}` }))
 })
 
-const { data: orders } = useFetch(config.public.apiBase + '/platform/admin/orders', {
+const { data: orders } = useFetch(apiBase + '/platform/admin/orders', {
   lazy: true, headers: computed(() => ({ 'Authorization': `Bearer ${token.value}` }))
 })
 
@@ -249,14 +314,15 @@ const getUserInitials = (u) => {
   return (f + l).toUpperCase()
 }
 
-const getUserName = (u) => `${u.first_name || ''} ${u.last_name || ''}`.trim() || u.phone || 'Без имени'
+const getUserName = (u) => `${u.first_name || ''} ${u.last_name || ''}`.trim() || u.phone || t('common.noName')
 
 const getRoleClass = (r) => ({ 'platform_admin': 'admin', 'shop_owner': 'owner', 'user': 'client' }[r] || 'client')
-const getRoleText = (r) => ({ 'platform_admin': 'Админ', 'shop_owner': 'Владелец', 'user': 'Клиент' }[r] || r)
+const getRoleText = (r) => t(`platformAdmin.users.roles.${r}`) || r
 
-const viewUserDetails = (u) => toast.info(`Информация о пользователе ${getUserName(u)}`)
+const viewUserDetails = (u) => toast.info(`${t('platformAdmin.users.title')}: ${getUserName(u)}`)
 const exportData = () => {
-  const csv = [['ID', 'Имя', 'Телефон', 'Роль', 'Создан'], ...(users.value || []).map(u => [u.id, getUserName(u), u.phone, u.role, u.created_at])].map(r => r.join(',')).join('\n')
+  const headers = ['ID', t('platformAdmin.users.table.user'), t('common.phone'), t('common.role'), t('platformAdmin.users.table.registered')]
+  const csv = [headers, ...(users.value || []).map(u => [u.id, getUserName(u), u.phone, getRoleText(u.role), u.created_at])].map(r => r.join(',')).join('\n')
   const b = new Blob([csv], { type: 'text/csv' }); const l = document.createElement('a')
   l.href = URL.createObjectURL(b); l.download = `users-${new Date().toISOString().split('T')[0]}.csv`; l.click()
 }
@@ -704,5 +770,32 @@ const exportData = () => {
     flex-direction: column;
     align-items: stretch;
   }
+}
+
+.white-card {
+  background: white;
+  padding: 32px;
+  border-radius: 28px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+}
+
+.user-chart-card {
+  margin-bottom: 32px;
+}
+
+.chart-wrapper {
+  height: 250px;
+  position: relative;
+}
+
+.card-header {
+  margin-bottom: 24px;
+}
+
+.card-title {
+  font-size: 1.25rem;
+  font-weight: 950;
+  color: #111;
+  margin: 0;
 }
 </style>

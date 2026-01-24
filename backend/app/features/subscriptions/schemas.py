@@ -11,6 +11,7 @@ class SubscriptionPlanBase(BaseModel):
     slug: str
     price: float
     period_days: int = 30
+    trial_period_days: int = 0
     
     description: Optional[str] = None
     description_ru: Optional[str] = None
@@ -42,6 +43,7 @@ class SubscriptionPlanUpdate(BaseModel):
     slug: Optional[str] = None
     price: Optional[float] = None
     period_days: Optional[int] = None
+    trial_period_days: Optional[int] = None
     
     description: Optional[str] = None
     description_ru: Optional[str] = None

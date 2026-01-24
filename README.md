@@ -38,7 +38,34 @@
 
 ## 📦 Установка и запуск
 
-### Backend
+### 🐳 Docker (Рекомендуется)
+
+Самый простой способ запустить проект - использовать Docker:
+
+```bash
+# Запустить все сервисы (PostgreSQL, MinIO, Redis, Backend, Frontend)
+docker-compose up -d
+
+# Посмотреть логи
+docker-compose logs -f
+
+# Остановить все сервисы
+docker-compose down
+```
+
+После запуска сервисы будут доступны:
+- **Frontend**: http://localhost:3000
+- **Backend API**: http://localhost:8000
+- **API Docs**: http://localhost:8000/docs
+- **MinIO Console**: http://localhost:9001
+
+📚 **Подробная документация:**
+- [Docker Guide](DOCKER_GUIDE.md) - полное руководство по работе с Docker
+- [CORS Fix](DOCKER_CORS_FIX.md) - решение проблем с CORS
+
+### 💻 Ручная установка
+
+#### Backend
 
 ```bash
 cd backend
@@ -63,7 +90,7 @@ uvicorn main:app --reload --port 8000
 
 Backend будет доступен по адресу: `http://localhost:8000`
 
-### Frontend
+#### Frontend
 
 ```bash
 cd frontend

@@ -9,14 +9,15 @@ from .schemas import (
     WalletTopUpRequest,
     WalletBalanceResponse,
     WalletTopUpResponse,
-    TransactionListResponse
+    TransactionListResponse,
+    PlatformBillingStats
 )
 
-router = APIRouter(prefix="/wallet", tags=["Wallet"])
+router = APIRouter(tags=["Wallet"])
 shop_service = ShopService()
 
 
-@router.get("/balance", response_model=WalletBalanceResponse)
+@router.get("/wallet/balance", response_model=WalletBalanceResponse)
 def get_wallet_balance(
     shop_slug: str = Query(..., description="Shop slug"),
     db: Session = Depends(get_db),
@@ -37,7 +38,7 @@ def get_wallet_balance(
     return wallet_service.get_balance(shop.id)
 
 
-@router.post("/topup", response_model=WalletTopUpResponse)
+@router.post("/wallet/topup", response_model=WalletTopUpResponse)
 def top_up_wallet(
     request: WalletTopUpRequest,
     shop_slug: str = Query(..., description="Shop slug"),
@@ -61,7 +62,7 @@ def top_up_wallet(
     return wallet_service.top_up(shop.id, request.amount)
 
 
-@router.get("/transactions", response_model=TransactionListResponse)
+@router.get("/wallet/transactions", response_model=TransactionListResponse)
 def get_wallet_transactions(
     shop_slug: str = Query(..., description="Shop slug"),
     limit: int = Query(20, ge=1, le=100),
@@ -96,3 +97,15 @@ def get_all_wallet_transactions(
     """
     wallet_service = WalletService(db)
     return wallet_service.get_all_transactions(limit, offset)
+
+
+@router.get("/platform/admin/wallet/stats", response_model=PlatformBillingStats)
+def get_platform_billing_stats(
+    db: Session = Depends(get_db),
+    admin = Depends(get_current_platform_admin)
+):
+    """
+    Получить финансовую статистику всей платформы (для админа)
+    """
+    wallet_service = WalletService(db)
+    return wallet_service.get_platform_billing_stats()

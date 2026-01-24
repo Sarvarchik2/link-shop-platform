@@ -107,6 +107,88 @@
             </div>
           </div>
 
+          <!-- Charts Row -->
+          <div class="charts-row">
+            <div class="white-card chart-card wide">
+              <div class="card-header">
+                <div class="header-main">
+                  <h3 class="card-title">{{ $t('platformAdmin.dashboard.salesTrends') }}</h3>
+                  <span class="card-badge">{{ $t('platformAdmin.dashboard.last30Days') }}</span>
+                </div>
+                <div class="chart-summary">
+                  <div class="cs-item">
+                    <span class="cs-label">{{ $t('platformAdmin.dashboard.total') }}</span>
+                    <span class="cs-val">{{ formatPrice(stats?.total_sales || 0) }}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="chart-wrapper">
+                <ClientOnly>
+                  <AdminChart type="line" :data="salesChartData" :options="lineOptions" />
+                </ClientOnly>
+              </div>
+            </div>
+            <div class="white-card chart-card">
+              <div class="card-header">
+                <h3 class="card-title">{{ $t('platformAdmin.dashboard.planDistribution') }}</h3>
+              </div>
+              <div class="chart-wrapper compact">
+                <ClientOnly>
+                  <AdminChart type="doughnut" :data="planChartData" :options="donutOptions" />
+                </ClientOnly>
+              </div>
+            </div>
+          </div>
+
+          <!-- Top Shops Row -->
+          <div class="white-card top-shops-card">
+            <div class="card-header">
+              <h3 class="card-title">{{ $t('platformAdmin.dashboard.topShops') }}</h3>
+              <NuxtLink :to="localePath('/platform/admin/shops')" class="ghost-btn-sm">
+                {{ $t('platformAdmin.dashboard.viewAll') }}
+              </NuxtLink>
+            </div>
+            <div class="top-shops-table-wrap">
+              <table class="top-shops-table">
+                <thead>
+                  <tr>
+                    <th>{{ $t('platformAdmin.shops.name') }}</th>
+                    <th>{{ $t('platformAdmin.dashboard.orders') }}</th>
+                    <th class="text-right">{{ $t('platformAdmin.dashboard.revenue') }}</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="shop in stats?.top_shops || []" :key="shop.id">
+                    <td>
+                      <div class="shop-entry">
+                        <div class="se-icon">{{ shop.name.charAt(0) }}</div>
+                        <span class="se-name">{{ shop.name }}</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="order-stat">
+                        <span class="os-val">{{ shop.orders_count }}</span>
+                        <span class="os-label">{{ $t('platformAdmin.dashboard.ordersShort') }}</span>
+                      </div>
+                    </td>
+                    <td class="text-right">
+                      <span class="revenue-val">{{ formatPrice(shop.revenue) }}</span>
+                    </td>
+                    <td class="text-right">
+                      <NuxtLink :to="localePath(`/platform/admin/shops?search=${shop.name}`)" class="action-icon">
+                        <iconify-icon icon="lucide:external-link" />
+                      </NuxtLink>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <div v-if="!stats?.top_shops?.length" class="empty-table">
+                {{ $t('common.noData') }}
+              </div>
+            </div>
+          </div>
+
           <!-- Secondary Grid -->
           <div class="main-grid">
             <!-- Left: Chart & Breakdown -->
@@ -239,11 +321,101 @@ const config = useRuntimeConfig()
 const localePath = useLocalePath()
 const route = useRoute()
 
+// Use internal URL for SSR, public URL for client
+const apiBase = process.server ? config.apiBaseInternal : config.public.apiBase
+
 definePageMeta({ middleware: 'platform-admin' })
 
 const sidebarOpen = ref(false)
 const selectedPeriod = ref('all')
 const sortByExpiry = ref(false)
+
+// Chart Computeds
+const salesChartData = computed(() => {
+  const history = stats.value?.history || []
+  return {
+    labels: history.map(h => formatDate(h.date)),
+    datasets: [
+      {
+        label: t('platformAdmin.dashboard.stats.revenue'),
+        data: history.map(h => h.sales),
+        borderColor: '#db2777',
+        backgroundColor: 'rgba(219, 39, 119, 0.05)',
+        fill: true,
+        tension: 0.4,
+        pointRadius: 2,
+        pointHoverRadius: 5
+      },
+      {
+        label: t('platformAdmin.dashboard.orders'),
+        data: history.map(h => h.orders),
+        borderColor: '#0284c7',
+        backgroundColor: 'transparent',
+        fill: false,
+        tension: 0.4,
+        pointRadius: 0,
+        borderDash: [5, 5]
+      }
+    ]
+  }
+})
+
+const planChartData = computed(() => {
+  const plans = stats.value?.plan_distribution || []
+  return {
+    labels: plans.map(p => p.name),
+    datasets: [
+      {
+        data: plans.map(p => p.count),
+        backgroundColor: ['#10b981', '#3b82f6', '#fbbf24', '#f472b6', '#8b5cf6', '#64748b'],
+        borderWidth: 2,
+        borderColor: '#ffffff'
+      }
+    ]
+  }
+})
+
+const lineOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: { display: false },
+    tooltip: {
+      mode: 'index',
+      intersect: false,
+      backgroundColor: '#111',
+      padding: 12,
+      cornerRadius: 12
+    }
+  },
+  hover: { mode: 'index', intersect: false },
+  scales: {
+    y: {
+      beginAtZero: true,
+      grid: { color: 'rgba(0,0,0,0.03)', drawBorder: false },
+      ticks: { font: { size: 10, weight: '700' }, color: '#94a3b8' }
+    },
+    x: {
+      grid: { display: false },
+      ticks: { font: { size: 10, weight: '700' }, color: '#94a3b8', maxRotation: 0 }
+    }
+  }
+}
+
+const donutOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: {
+      position: 'bottom',
+      labels: {
+        usePointStyle: true,
+        padding: 20,
+        font: { size: 11, weight: '700' }
+      }
+    }
+  }
+}
 
 const handleLogout = () => {
   logout()
@@ -266,20 +438,20 @@ const currentRoute = computed(() => {
 })
 
 // Statistics API
-const { data: stats, pending, refresh, error } = useFetch(config.public.apiBase + '/platform/admin/stats', {
+const { data: stats, pending, refresh, error } = useFetch(apiBase + '/platform/admin/stats', {
   lazy: true,
   watch: [token],
   headers: computed(() => ({ 'Authorization': `Bearer ${token.value}` }))
 })
 
 // Shops Data API
-const { data: shops } = useFetch(config.public.apiBase + '/platform/shops', {
+const { data: shops } = useFetch(apiBase + '/platform/shops', {
   lazy: true,
   headers: computed(() => ({ 'Authorization': `Bearer ${token.value}` }))
 })
 
 // Request Data (for badge)
-const { data: requests } = useFetch(config.public.apiBase + '/subscription/requests', {
+const { data: requests } = useFetch(apiBase + '/platform/admin/subscription-requests', {
   headers: computed(() => ({ 'Authorization': `Bearer ${token.value}` })),
   server: false
 })
@@ -1037,6 +1209,197 @@ const getStatusLabel = (s) => t(`platformAdmin.dashboard.status.${s}`) || s
     flex-direction: column;
     align-items: flex-start;
     gap: 24px;
+  }
+}
+
+/* New Metrics CSS */
+.charts-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 32px;
+  margin-bottom: 32px;
+}
+
+.chart-card.wide {
+  grid-column: span 1;
+}
+
+.chart-wrapper {
+  height: 300px;
+  position: relative;
+}
+
+.chart-wrapper.compact {
+  height: 250px;
+}
+
+.header-main {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.card-badge {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #64748b;
+  background: #f1f5f9;
+  padding: 2px 8px;
+  border-radius: 6px;
+  width: fit-content;
+}
+
+.chart-summary {
+  display: flex;
+  gap: 24px;
+}
+
+.cs-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.cs-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+}
+
+.cs-val {
+  font-size: 1.1rem;
+  font-weight: 900;
+  color: #111;
+}
+
+/* Top Shops Table */
+.top-shops-card {
+  margin-bottom: 32px;
+}
+
+.top-shops-table-wrap {
+  overflow-x: auto;
+}
+
+.top-shops-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 8px;
+}
+
+.top-shops-table th {
+  text-align: left;
+  padding: 0 12px 12px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.top-shops-table td {
+  padding: 16px 12px;
+  background: #f8fafc;
+  border-top: 1px solid transparent;
+  border-bottom: 1px solid transparent;
+}
+
+.top-shops-table tr td:first-child {
+  border-left: 1px solid transparent;
+  border-radius: 16px 0 0 16px;
+}
+
+.top-shops-table tr td:last-child {
+  border-right: 1px solid transparent;
+  border-radius: 0 16px 16px 0;
+}
+
+.shop-entry {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.se-icon {
+  width: 36px;
+  height: 36px;
+  background: #111;
+  color: white;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 950;
+  font-size: 0.9rem;
+}
+
+.se-name {
+  font-weight: 800;
+  color: #111;
+}
+
+.order-stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.os-val {
+  font-weight: 900;
+  color: #111;
+  font-size: 1rem;
+}
+
+.os-label {
+  font-size: 0.65rem;
+  color: #64748b;
+  font-weight: 700;
+}
+
+.revenue-val {
+  font-weight: 950;
+  color: #111;
+  font-size: 1.1rem;
+}
+
+.action-icon {
+  width: 32px;
+  height: 32px;
+  background: white;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  transition: all 0.2s;
+  border: 1px solid #e2e8f0;
+}
+
+.action-icon:hover {
+  background: #111;
+  color: white;
+  border-color: #111;
+}
+
+.ghost-btn-sm {
+  padding: 8px 12px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #64748b;
+  background: #f8fafc;
+  border-radius: 10px;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.ghost-btn-sm:hover {
+  background: #f1f5f9;
+  color: #111;
+}
+
+@media (max-width: 1024px) {
+  .charts-row {
+    grid-template-columns: 1fr;
   }
 }
 </style>

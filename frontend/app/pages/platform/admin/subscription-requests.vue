@@ -116,12 +116,16 @@ const config = useRuntimeConfig()
 const toast = useToast()
 const { token, logout } = useAuth()
 
+// Use internal URL for SSR, public URL for client
+const apiBase = process.server ? config.apiBaseInternal : config.public.apiBase
+
+
 definePageMeta({ middleware: 'platform-admin' })
 
 const sidebarOpen = ref(false)
 const processingId = ref(null)
 
-const { data: requests, pending, refresh } = await useFetch(`${config.public.apiBase}/platform/admin/subscription-requests`, {
+const { data: requests, pending, refresh } = await useFetch(apiBase + '/platform/admin/subscription-requests', {
   headers: computed(() => ({ 'Authorization': `Bearer ${token.value}` })),
   watch: [token]
 })
@@ -153,7 +157,7 @@ const sortedRequests = computed(() => {
 const handleAction = async (req, status) => {
   processingId.value = req.id
   try {
-    await $fetch(`${config.public.apiBase}/platform/admin/subscription-requests/${req.id}/status`, {
+    await $fetch(`${apiBase}/platform/admin/subscription-requests/${req.id}/status`, {
       method: 'PUT',
       body: { status },
       headers: { Authorization: `Bearer ${token.value}` }

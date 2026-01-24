@@ -129,36 +129,38 @@ class SubscriptionService:
                 now = datetime.utcnow()
                 
                 # Logic based on request type
+                period = plan.trial_period_days if plan.is_trial and plan.trial_period_days > 0 else plan.period_days
+                if period <= 0: period = 30
+                
                 if db_request.type == "renew":
                     # Extend existing subscription
                     if shop.subscription_expires_at and shop.subscription_expires_at > now:
                         # If active, add to current expiry
-                        expires_at = shop.subscription_expires_at + timedelta(days=30 * db_request.duration_months)
+                        expires_at = shop.subscription_expires_at + timedelta(days=period * db_request.duration_months)
                     else:
                         # If expired, start from now
-                        expires_at = now + timedelta(days=30 * db_request.duration_months)
-                        
-                    # Keep same plan (unless oddly requested otherwise, but renew implies same)
-                    # Ideally renew keeps same plan_id, but we respect request.plan_id just in case
+                        expires_at = now + timedelta(days=period * db_request.duration_months)
                     subscription_plan_id = db_request.plan_id
                     
                 elif db_request.type == "change":
-                    # Change plan - simplified logic: restart subscription with new plan
-                    # You might want pro-rated logic, but for now: New Plan Starts NOW.
-                    # Previous time is forfeited or you could add logic to convert it.
-                    # Simple approach: Reset start date to now.
-                    expires_at = now + timedelta(days=30 * db_request.duration_months)
+                    expires_at = now + timedelta(days=period * db_request.duration_months)
                     subscription_plan_id = db_request.plan_id
                     
                 else: # Default/New
-                    expires_at = now + timedelta(days=30 * db_request.duration_months)
+                    expires_at = now + timedelta(days=period * db_request.duration_months)
                     subscription_plan_id = db_request.plan_id
                 
                 shop_update_data = {
-                    "subscription_status": "active",
+                    "subscription_status": "trial" if plan.is_trial else "active",
                     "subscription_expires_at": expires_at,
                     "subscription_plan_id": subscription_plan_id
                 }
+
+                if plan.is_trial:
+                    used_trials = list(shop.used_trials_json or [])
+                    if plan.id not in used_trials:
+                        used_trials.append(plan.id)
+                    shop_update_data["used_trials_json"] = used_trials
                 
                 self.shop_repository.update(db, shop, shop_update_data)
         
@@ -314,4 +316,56 @@ class SubscriptionService:
             auto_renewal_enabled=request.enabled,
             message=message
         )
+
+    def start_trial(self, db: Session, shop_slug: str, plan_slug: str, current_user):
+        """Start a trial period for a specific plan"""
+        shop = self.shop_service.get_shop_by_slug(db, shop_slug)
+        if shop.owner_id != current_user.id and current_user.role != "platform_admin":
+            raise HTTPException(status_code=403, detail="Not authorized")
+        
+        plan = self.repository.get_plan_by_slug(db, plan_slug)
+        if not plan:
+            raise HTTPException(status_code=404, detail="План не найден")
+        
+        if not plan.is_active:
+            raise HTTPException(status_code=400, detail="План не активен")
+        
+        if not plan.is_trial and plan.price > 0:
+            # If plan doesn't have is_trial=True, but has price, 
+            # we check if TRIAL as a concept is allowed for this paid plan.
+            # In our current logic, we allow trial if trial_period_days > 0.
+            if plan.trial_period_days <= 0:
+                raise HTTPException(status_code=400, detail="Для этого тарифа не предусмотрен пробный период")
+        
+        # Check if trial already used for this specific plan
+        used_trials = shop.used_trials_json or []
+        if plan.id in used_trials:
+            raise HTTPException(
+                status_code=400, 
+                detail="Вы уже использовали пробный период для этого тарифа"
+            )
+        
+        # Update shop
+        now = datetime.utcnow()
+        trial_days = plan.trial_period_days if plan.trial_period_days > 0 else 7
+        expires_at = now + timedelta(days=trial_days)
+        
+        # Add to used trials
+        new_used_trials = list(used_trials)
+        new_used_trials.append(plan.id)
+        
+        shop_update_data = {
+            "subscription_status": "trial",
+            "subscription_expires_at": expires_at,
+            "subscription_plan_id": plan.id,
+            "used_trials_json": new_used_trials
+        }
+        
+        self.shop_repository.update(db, shop, shop_update_data)
+        
+        return {
+            "success": True,
+            "message": f"Пробный период для тарифа {plan.name} активирован на {trial_days} дней",
+            "expires_at": expires_at
+        }
 

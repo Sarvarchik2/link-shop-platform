@@ -14,6 +14,7 @@ class Shop(Base):
     subscription_plan_id = Column(Integer, ForeignKey("subscriptionplan.id"), nullable=True)
     auto_renewal_enabled = Column(Boolean, default=True)  # Автопродление подписки
     subscription_period_months = Column(Integer, default=1)  # Период подписки (1, 3, 6, 12)
+    used_trials_json = Column(JSON, default=[], nullable=True) # Список ID планов, на которые уже брали пробный период
     created_at = Column(DateTime, default=datetime.utcnow)
     is_active = Column(Boolean, default=True)
     # Contact information

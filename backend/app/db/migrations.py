@@ -122,6 +122,19 @@ def run_migrations(engine):
                     END $$;
                     """,
                     
+                    # Add trial_period_days to subscriptionplan
+                    """
+                    DO $$ 
+                    BEGIN
+                        IF NOT EXISTS (
+                            SELECT 1 FROM information_schema.columns 
+                            WHERE table_name='subscriptionplan' AND column_name='trial_period_days'
+                        ) THEN
+                            ALTER TABLE subscriptionplan ADD COLUMN trial_period_days INTEGER DEFAULT 0;
+                        END IF;
+                    END $$;
+                    """,
+                    
                     # ============ SHOP TABLE MIGRATIONS ============
                     
                     # Add telegram_bot_token to shop
@@ -146,6 +159,19 @@ def run_migrations(engine):
                             WHERE table_name='shop' AND column_name='is_bot_active'
                         ) THEN
                             ALTER TABLE shop ADD COLUMN is_bot_active BOOLEAN DEFAULT FALSE;
+                        END IF;
+                    END $$;
+                    """,
+                    
+                    # Add used_trials_json to shop
+                    """
+                    DO $$ 
+                    BEGIN
+                        IF NOT EXISTS (
+                            SELECT 1 FROM information_schema.columns 
+                            WHERE table_name='shop' AND column_name='used_trials_json'
+                        ) THEN
+                            ALTER TABLE shop ADD COLUMN used_trials_json JSONB DEFAULT '[]';
                         END IF;
                     END $$;
                     """,

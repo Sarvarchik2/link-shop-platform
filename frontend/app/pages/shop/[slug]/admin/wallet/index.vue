@@ -605,6 +605,26 @@ onMounted(() => {
     }
 }
 
+/* Warning Box */
+.warning-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    background: #FEF3C7;
+    border: 1.5px solid #FCD34D;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    color: #92400E;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.warning-box iconify-icon {
+    flex-shrink: 0;
+    color: #F59E0B;
+}
+
 .btn {
     height: 54px;
     padding: 0 24px;
@@ -626,5 +646,212 @@ onMounted(() => {
 .btn-secondary {
     background: #F3F4F6;
     color: #111;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px -10px rgba(0, 0, 0, 0.2);
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Modal Styles */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+}
+
+.modal-content {
+    background: white;
+    width: 100%;
+    max-width: 480px;
+    border-radius: 32px;
+    overflow: hidden;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    animation: modalSlideUp 0.3s ease-out;
+}
+
+@keyframes modalSlideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.modal-header {
+    padding: 24px 32px;
+    border-bottom: 1px solid #F3F4F6;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #111;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    color: #9CA3AF;
+    cursor: pointer;
+    padding: 4px;
+    transition: 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-close:hover {
+    color: #111;
+    transform: rotate(90deg);
+}
+
+.modal-body {
+    padding: 32px;
+}
+
+.field-group {
+    margin-bottom: 24px;
+}
+
+.field-group label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #4B5563;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.amount-field {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.big-input {
+    width: 100%;
+    height: 72px;
+    background: #F9FAFB;
+    border: 2px solid #F3F4F6;
+    border-radius: 20px;
+    padding: 0 80px 0 24px;
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: #111;
+    transition: 0.2s;
+    outline: none;
+}
+
+.big-input:focus {
+    background: white;
+    border-color: #111;
+    box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.05);
+}
+
+.field-currency {
+    position: absolute;
+    right: 24px;
+    font-weight: 800;
+    color: #9CA3AF;
+    font-size: 0.9rem;
+}
+
+.quick-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.quick-btn {
+    height: 48px;
+    background: white;
+    border: 1.5px solid #E5E7EB;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #374151;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.quick-btn:hover {
+    border-color: #111;
+    background: #F9FAFB;
+}
+
+.quick-btn.selected {
+    background: #111;
+    border-color: #111;
+    color: white;
+}
+
+.modal-footer {
+    padding: 24px 32px;
+    background: #F9FAFB;
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 12px;
+}
+
+.modal-footer .btn {
+    width: 100%;
+    justify-content: center;
+}
+
+/* Animations */
+.modal-fade-enter-active,
+.modal-fade-leave-active {
+    transition: opacity 0.3s ease;
+}
+
+.modal-fade-enter-from,
+.modal-fade-leave-to {
+    opacity: 0;
+}
+
+@media (max-width: 480px) {
+    .modal-content {
+        border-radius: 24px;
+    }
+
+    .modal-body {
+        padding: 24px;
+    }
+
+    .big-input {
+        font-size: 1.5rem;
+        height: 64px;
+    }
+
+    .quick-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .modal-footer {
+        grid-template-columns: 1fr;
+        padding: 24px;
+    }
 }
 </style>

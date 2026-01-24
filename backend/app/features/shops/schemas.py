@@ -66,6 +66,22 @@ class OrdersByStatus(BaseModel):
     delivered: int = 0
     cancelled: int = 0
 
+class DailyStat(BaseModel):
+    date: str
+    sales: float = 0.0
+    orders: int = 0
+    users: int = 0
+
+class PlanStat(BaseModel):
+    name: str
+    count: int
+
+class ShopRevenueStat(BaseModel):
+    id: int
+    name: str
+    revenue: float
+    orders_count: int
+
 class DashboardStats(BaseModel):
     total_sales: float = 0.0
     total_orders: int = 0
@@ -93,6 +109,9 @@ class DashboardStats(BaseModel):
     total_broadcasts: Optional[int] = 0
     plan_can_broadcast: Optional[bool] = False
     plan_limit_broadcasts: Optional[int] = None
+    history: Optional[list[DailyStat]] = None
+    plan_distribution: Optional[list[PlanStat]] = None
+    top_shops: Optional[list[ShopRevenueStat]] = None
 
 class AdminActionRequest(BaseModel):
     password: str

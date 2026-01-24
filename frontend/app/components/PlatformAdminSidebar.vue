@@ -118,7 +118,7 @@ const { data: shops } = useFetch(config.public.apiBase + '/platform/shops', {
 })
 const shopsCount = computed(() => shops.value?.length || 0)
 
-const { data: requests } = useFetch(config.public.apiBase + '/subscription/requests', {
+const { data: requests } = useFetch(config.public.apiBase + '/platform/admin/subscription-requests', {
   headers: computed(() => ({ 'Authorization': `Bearer ${token.value}` })),
   server: false
 })

@@ -7,13 +7,15 @@ from app.features.products.models import Product
 from app.features.orders.models import Order
 from app.features.users.models import User
 from app.features.banners.models import Banner
-from .schemas import ShopCreate, ShopUpdate, DashboardStats, OrdersByStatus
+from .schemas import (
+    ShopCreate, ShopUpdate, DashboardStats, OrdersByStatus, 
+    TelegramBotTestResponse, DailyStat, PlanStat, ShopRevenueStat
+)
 
 from app.features.subscriptions.models import SubscriptionPlan, SubscriptionRequest
 import httpx
 from app.core.crypto import crypto
 from .models import Shop, UserStoreTelegram
-from .schemas import ShopCreate, ShopUpdate, DashboardStats, OrdersByStatus, TelegramBotTestResponse
 
 class ShopService:
     def __init__(self):
@@ -76,9 +78,11 @@ class ShopService:
                     pending_plan_request = requested_plan.id
                     
                     # Set shop to Free/Trial
-                    shop_data["subscription_plan_id"] = free_plan.id if free_plan else None
                     shop_data["subscription_status"] = "trial"
-                    shop_data["subscription_expires_at"] = datetime.utcnow() + timedelta(days=7)
+                    trial_days = requested_plan.trial_period_days if requested_plan.trial_period_days > 0 else 7
+                    shop_data["subscription_expires_at"] = datetime.utcnow() + timedelta(days=trial_days)
+                    shop_data["used_trials_json"] = [requested_plan.id]
+                    shop_data["subscription_plan_id"] = requested_plan.id
                 else:
                     # Free plan: Activate immediately
                     shop_data["subscription_status"] = "active"
@@ -383,13 +387,56 @@ class ShopService:
         month_sales = db.query(func.sum(Order.total_price)).filter(Order.created_at >= month_start, Order.status != "cancelled").scalar() or 0.0
         month_orders = db.query(Order).filter(Order.created_at >= month_start, Order.status != "cancelled").count()
         
+        # Historical data (last 30 days)
+        from sqlalchemy import cast, Date
+        thirty_days_ago = (now - timedelta(days=30)).replace(hour=0, minute=0, second=0, microsecond=0)
+        
+        daily_sales_query = db.query(
+            cast(Order.created_at, Date).label('day'),
+            func.sum(Order.total_price).label('sales'),
+            func.count(Order.id).label('orders')
+        ).filter(
+            Order.created_at >= thirty_days_ago,
+            Order.status != "cancelled"
+        ).group_by(cast(Order.created_at, Date)).all()
+        
+        daily_users_query = db.query(
+            cast(User.created_at, Date).label('day'),
+            func.count(User.id).label('users')
+        ).filter(
+            User.created_at >= thirty_days_ago
+        ).group_by(cast(User.created_at, Date)).all()
+        
+        # Merge into a list of 30 days
+        stats_map = {}
+        for i in range(31):
+            d = (thirty_days_ago + timedelta(days=i)).date()
+            stats_map[d] = {"sales": 0.0, "orders": 0, "users": 0}
+            
+        for row in daily_sales_query:
+            if row.day in stats_map:
+                stats_map[row.day]["sales"] = float(row.sales or 0)
+                stats_map[row.day]["orders"] = int(row.orders or 0)
+                
+        for row in daily_users_query:
+            if row.day in stats_map:
+                stats_map[row.day]["users"] = int(row.users or 0)
+                
+        history = [
+            DailyStat(
+                date=d.strftime("%Y-%m-%d"),
+                sales=v["sales"],
+                orders=v["orders"],
+                users=v["users"]
+            ) for d, v in sorted(stats_map.items())
+        ]
+        
         # Subscription Stats
         subscriptions_active = db.query(Shop).filter(Shop.subscription_status == 'active').count()
         subscriptions_trial = db.query(Shop).filter(Shop.subscription_status == 'trial').count()
         subscriptions_expired = db.query(Shop).filter(Shop.subscription_status == 'expired').count()
         
         # Calculate MRR
-        # We need plan prices
         plans = db.query(SubscriptionPlan).all()
         plan_prices = {p.id: p.price for p in plans}
         
@@ -398,7 +445,37 @@ class ShopService:
         for s in active_shops_list:
             if s.subscription_plan_id in plan_prices:
                 subscriptions_mrr += plan_prices[s.subscription_plan_id]
+
+        # Plan distribution
+        plan_counts = db.query(
+            SubscriptionPlan.name,
+            func.count(Shop.id)
+        ).outerjoin(Shop, Shop.subscription_plan_id == SubscriptionPlan.id)\
+         .group_by(SubscriptionPlan.id, SubscriptionPlan.name).all()
         
+        plan_distribution = [PlanStat(name=row[0], count=row[1]) for row in plan_counts]
+        
+        # Top shops by revenue
+        top_shops_query = db.query(
+            Shop.id,
+            Shop.name,
+            func.sum(Order.total_price).label('revenue'),
+            func.count(Order.id).label('orders_count')
+        ).join(Order, Order.shop_id == Shop.id)\
+         .filter(Order.status != "cancelled")\
+         .group_by(Shop.id, Shop.name)\
+         .order_by(func.sum(Order.total_price).desc())\
+         .limit(5).all()
+        
+        top_shops = [
+            ShopRevenueStat(
+                id=row.id,
+                name=row.name,
+                revenue=float(row.revenue or 0),
+                orders_count=int(row.orders_count or 0)
+            ) for row in top_shops_query
+        ]
+
         return DashboardStats(
             total_sales=total_sales,
             total_orders=total_orders,
@@ -416,7 +493,10 @@ class ShopService:
             subscriptions_mrr=subscriptions_mrr,
             subscriptions_active=subscriptions_active,
             subscriptions_trial=subscriptions_trial,
-            subscriptions_expired=subscriptions_expired
+            subscriptions_expired=subscriptions_expired,
+            history=history,
+            plan_distribution=plan_distribution,
+            top_shops=top_shops
         )
 
     def delete_shop(self, db: Session, shop_id: int):
