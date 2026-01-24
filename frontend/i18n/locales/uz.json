@@ -896,6 +896,8 @@
                 "payAndActivate": "To'lash va faollashtirish",
                 "successMsg": "Obuna faollashtirildi!",
                 "errorMsg": "To'lov xatosi",
+                "changeWarningTitle": "Diqqat: Tarifni o'zgartirish",
+                "changeWarningDesc": "Yangi tarifga o'tishda joriy to'langan muddat bekor qilinadi. Yangi tarif to'lovdan so'ng darhol faollashadi va bugundan boshlab amal qiladi.",
                 "limits": {
                     "products": "Mahsulotlar: {count}",
                     "banners": "Bannerlar: {count}",

@@ -159,15 +159,15 @@
                   </td>
                   <td>
                     <div class="action-btns">
-                      <button @click="openSubscriptionModal(shop)" class="act-btn sub" v-tooltip="'Подписка'">
+                      <button @click="openSubscriptionModal(shop)" class="act-btn sub" title="Подписка">
                         <iconify-icon icon="lucide:credit-card" />
                       </button>
                       <button @click="openPasswordModal('activate', shop)" class="act-btn"
                         :class="shop.is_active ? 'deactivate' : 'activate'"
-                        v-tooltip="shop.is_active ? 'Выключить' : 'Включить'">
+                        :title="shop.is_active ? 'Выключить' : 'Включить'">
                         <iconify-icon :icon="shop.is_active ? 'lucide:power-off' : 'lucide:power'" />
                       </button>
-                      <button @click="openPasswordModal('delete', shop)" class="act-btn delete" v-tooltip="'Удалить'">
+                      <button @click="openPasswordModal('delete', shop)" class="act-btn delete" title="Удалить">
                         <iconify-icon icon="lucide:trash-2" />
                       </button>
                     </div>
@@ -442,106 +442,78 @@ const exportData = () => {
 </script>
 
 <style scoped>
-.platform-admin-shops {
-  background: #f8fafc;
-  min-height: 100vh;
-  display: flex;
-}
+/* Page specific styles */
 
-.admin-main {
-  flex: 1;
-  margin-left: 280px;
-  display: flex;
-  flex-direction: column;
-  transition: all 0.4s;
-}
+/* Page specific styles */
 
-.top-nav {
-  padding: 32px;
-  background: #fff;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.mobile-menu-btn {
-  display: none;
-  width: 44px;
-  height: 44px;
-  background: #f1f5f9;
-  border: none;
-  border-radius: 12px;
-  font-size: 1.5rem;
-  cursor: pointer;
-}
-
-.page-title {
-  font-size: 1.75rem;
-  font-weight: 950;
-  margin: 0;
-  letter-spacing: -1px;
-}
-
-.page-subtitle {
-  font-size: 0.85rem;
-  color: #64748b;
-  margin-top: 4px;
-  font-weight: 500;
-}
-
-.nav-right {
-  display: flex;
-  gap: 12px;
-}
-
-.refresh-btn,
 .export-btn {
-  padding: 10px 18px;
+  padding: 0 24px;
+  height: 44px;
   border-radius: 12px;
-  font-weight: 800;
+  background: #111;
+  color: white;
+  border: none;
+  font-weight: 900;
   font-size: 0.85rem;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   cursor: pointer;
   transition: all 0.2s;
-  border: 1.5px solid #e2e8f0;
-  background: white;
-  color: #1e293b;
 }
 
-.refresh-btn:hover,
 .export-btn:hover {
-  border-color: #111;
-  background: #f8fafc;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
 
-.refresh-btn.loading iconify-icon {
-  animation: rotate 1s linear infinite;
-}
-
-@keyframes rotate {
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.admin-scroll {
-  padding: 32px;
-  flex: 1;
-  overflow-y: auto;
-}
-
+/* Stats Row */
 .stats-row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 24px;
-  margin-bottom: 32px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+/* Tablet */
+@media (max-width: 1024px) {
+  .stats-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Mobile */
+@media (max-width: 640px) {
+  .stats-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .filters-bar {
+    flex-direction: column;
+    align-items: stretch;
+    height: auto;
+    padding: 16px;
+    gap: 12px;
+  }
+
+  .search-input-wrap {
+    width: 100%;
+  }
+
+  .filter-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .modern-select {
+    width: 100%;
+  }
+
+  .clear-btn {
+    width: 100%;
+    justify-content: center;
+  }
 }
 
 .stat-mini-card {

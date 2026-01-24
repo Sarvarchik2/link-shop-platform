@@ -23,6 +23,15 @@ def get_products(
     sort_by: Optional[str] = Query(None, description="price, name, sold_count, stock, created_at"),
     sort_order: Optional[str] = Query("desc", description="asc, desc")
 ):
+    # If shop_slug is provided, verify the shop is active
+    if shop_slug:
+        from app.features.shops.service import ShopService
+        shop_service = ShopService()
+        shop = shop_service.get_shop_by_slug(db, shop_slug, check_active=False)
+        if not shop.is_active:
+            from fastapi import HTTPException
+            raise HTTPException(status_code=403, detail="Shop is deactivated")
+    
     return product_service.get_products(
         db, skip=skip, limit=limit, shop_id=shop_id, shop_slug=shop_slug, category=category, brand=brand, query=q,
         sort_by=sort_by, sort_order=sort_order

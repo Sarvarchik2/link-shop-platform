@@ -101,6 +101,11 @@ services:
       PORT: 3000
     depends_on:
       - backend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.nuxt
+    command: npm run dev
     networks:
       - storely_network
     restart: unless-stopped

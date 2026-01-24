@@ -162,11 +162,11 @@
 
             <div class="modal-footer">
               <button type="button" @click="closeModal" class="btn-cancel">{{ $t('platformAdmin.offers.cancel')
-              }}</button>
+                }}</button>
               <button type="submit" class="btn-save" :disabled="saving">
                 <span v-if="saving" class="loader-xs"></span>
                 <span v-else>{{ editingOffer ? $t('platformAdmin.offers.save') : $t('platformAdmin.offers.create')
-                }}</span>
+                  }}</span>
               </button>
             </div>
           </form>
@@ -286,103 +286,19 @@ const deleteOffer = async (o) => {
 </script>
 
 <style scoped>
-.platform-admin-offers {
-  background: #f8fafc;
-  min-height: 100vh;
-  display: flex;
-}
-
-.admin-main {
-  flex: 1;
-  margin-left: 280px;
-  display: flex;
-  flex-direction: column;
-  transition: all 0.4s;
-}
-
-.top-nav {
-  padding: 32px;
-  background: #fff;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.mobile-menu-btn {
-  display: none;
-  width: 44px;
-  height: 44px;
-  background: #f1f5f9;
-  border: none;
-  border-radius: 12px;
-  font-size: 1.5rem;
-  cursor: pointer;
-}
-
-.page-title {
-  font-size: 1.75rem;
-  font-weight: 950;
-  margin: 0;
-  letter-spacing: -1px;
-}
-
-.page-subtitle {
-  font-size: 0.85rem;
-  color: #64748b;
-  margin-top: 4px;
-  font-weight: 600;
-}
-
-.nav-right {
-  display: flex;
-  gap: 12px;
-}
-
-.refresh-btn {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  border: 1.5px solid #e2e8f0;
-  background: white;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.25rem;
-}
-
-.primary-btn {
-  padding: 0 24px;
-  height: 44px;
-  border-radius: 12px;
-  background: #111;
-  color: white;
-  border: none;
-  font-weight: 900;
-  font-size: 0.85rem;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.primary-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-}
-
+/* Page specific styles */
 .admin-scroll {
   padding: 32px;
   flex: 1;
   overflow-y: auto;
 }
 
+/* Offers Grid */
 .offers-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-  gap: 32px;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+  padding-bottom: 40px;
 }
 
 .offer-card {
@@ -703,14 +619,12 @@ const deleteOffer = async (o) => {
 }
 
 @media (max-width: 1024px) {
-  .admin-main {
-    margin-left: 0;
-  }
+  /* Inherits from platform-admin.css */
+}
 
-  .mobile-menu-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+@media (max-width: 640px) {
+  .offers-grid {
+    grid-template-columns: 1fr;
   }
 }
 </style>

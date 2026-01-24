@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from sqlalchemy import func, cast, Date
 from fastapi import HTTPException
 from .repository import ShopRepository
 from .models import Shop
@@ -352,60 +353,113 @@ class ShopService:
         )
 
     def get_platform_stats(self, db: Session):
-        from sqlalchemy import func
+        """Platform admin stats - focus on SUBSCRIPTION REVENUE, not shop sales"""
+        from app.features.wallet.models import Transaction
         
+        # Basic counts
         total_shops = db.query(Shop).count()
         active_shops = db.query(Shop).filter(Shop.is_active == True).count()
-        
         total_users = db.query(User).count()
-        total_products = db.query(Product).count()
         
-        # Orders statistics
-        orders_query = db.query(Order).filter(Order.status != "cancelled")
-        total_orders = db.query(Order).count()
-        total_sales = db.query(func.sum(Order.total_price)).filter(Order.status != "cancelled").scalar() or 0.0
+        # Subscription statistics
+        subscriptions_active = db.query(Shop).filter(
+            Shop.subscription_status == "active",
+            Shop.subscription_expires_at > datetime.utcnow()
+        ).count()
         
-        orders_by_status = OrdersByStatus(
-            pending=db.query(Order).filter(Order.status == "pending").count(),
-            processing=db.query(Order).filter(Order.status == "processing").count(),
-            shipping=db.query(Order).filter(Order.status == "shipping").count(),
-            delivered=db.query(Order).filter(Order.status == "delivered").count(),
-            cancelled=db.query(Order).filter(Order.status == "cancelled").count()
-        )
+        subscriptions_trial = db.query(Shop).filter(Shop.subscription_status == "trial").count()
+        subscriptions_expired = db.query(Shop).filter(
+            Shop.subscription_status == "expired"
+        ).count() + db.query(Shop).filter(
+            Shop.subscription_expires_at < datetime.utcnow(),
+            Shop.subscription_status != "trial"
+        ).count()
         
+        # Calculate MRR (Monthly Recurring Revenue) from active subscriptions
+        active_subs_with_plans = db.query(Shop, SubscriptionPlan).join(
+            SubscriptionPlan, Shop.subscription_plan_id == SubscriptionPlan.id
+        ).filter(
+            Shop.subscription_status == "active",
+            Shop.subscription_expires_at > datetime.utcnow()
+        ).all()
+        
+        subscriptions_mrr = 0.0
+        for shop, plan in active_subs_with_plans:
+            # Convert to monthly revenue
+            period_months = shop.subscription_period_months or 1
+            monthly_rate = plan.price / period_months if period_months > 0 else plan.price
+            subscriptions_mrr += monthly_rate
+        
+        # Revenue from subscription purchases (wallet charges for subscriptions)
+        total_subscription_revenue = db.query(func.sum(Transaction.amount)).filter(
+            Transaction.type == "charge",
+            Transaction.description.like("%подписк%")
+        ).scalar() or 0.0
+        
+        # Time periods
         now = datetime.utcnow()
         today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
         week_start = today_start - timedelta(days=now.weekday())
         month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
         
-        today_sales = db.query(func.sum(Order.total_price)).filter(Order.created_at >= today_start, Order.status != "cancelled").scalar() or 0.0
-        today_orders = db.query(Order).filter(Order.created_at >= today_start, Order.status != "cancelled").count()
+        # Today's subscription revenue
+        today_sales = db.query(func.sum(Transaction.amount)).filter(
+            Transaction.type == "charge",
+            Transaction.description.like("%подписк%"),
+            Transaction.created_at >= today_start
+        ).scalar() or 0.0
         
-        week_sales = db.query(func.sum(Order.total_price)).filter(Order.created_at >= week_start, Order.status != "cancelled").scalar() or 0.0
-        week_orders = db.query(Order).filter(Order.created_at >= week_start, Order.status != "cancelled").count()
+        today_orders = db.query(Transaction).filter(
+            Transaction.type == "charge",
+            Transaction.description.like("%подписк%"),
+            Transaction.created_at >= today_start
+        ).count()
         
-        month_sales = db.query(func.sum(Order.total_price)).filter(Order.created_at >= month_start, Order.status != "cancelled").scalar() or 0.0
-        month_orders = db.query(Order).filter(Order.created_at >= month_start, Order.status != "cancelled").count()
+        # Week's subscription revenue
+        week_sales = db.query(func.sum(Transaction.amount)).filter(
+            Transaction.type == "charge",
+            Transaction.description.like("%подписк%"),
+            Transaction.created_at >= week_start
+        ).scalar() or 0.0
         
-        # Historical data (last 30 days)
-        from sqlalchemy import cast, Date
+        week_orders = db.query(Transaction).filter(
+            Transaction.type == "charge",
+            Transaction.description.like("%подписк%"),
+            Transaction.created_at >= week_start
+        ).count()
+        
+        # Month's subscription revenue
+        month_sales = db.query(func.sum(Transaction.amount)).filter(
+            Transaction.type == "charge",
+            Transaction.description.like("%подписк%"),
+            Transaction.created_at >= month_start
+        ).scalar() or 0.0
+        
+        month_orders = db.query(Transaction).filter(
+            Transaction.type == "charge",
+            Transaction.description.like("%подписк%"),
+            Transaction.created_at >= month_start
+        ).count()
+        
+        # Historical data (last 30 days) - subscription purchases
         thirty_days_ago = (now - timedelta(days=30)).replace(hour=0, minute=0, second=0, microsecond=0)
         
-        daily_sales_query = db.query(
-            cast(Order.created_at, Date).label('day'),
-            func.sum(Order.total_price).label('sales'),
-            func.count(Order.id).label('orders')
+        daily_revenue_query = db.query(
+            cast(Transaction.created_at, Date).label('day'),
+            func.sum(Transaction.amount).label('sales'),
+            func.count(Transaction.id).label('orders')
         ).filter(
-            Order.created_at >= thirty_days_ago,
-            Order.status != "cancelled"
-        ).group_by(cast(Order.created_at, Date)).all()
+            Transaction.type == "charge",
+            Transaction.description.like("%подписк%"),
+            Transaction.created_at >= thirty_days_ago
+        ).group_by(cast(Transaction.created_at, Date)).all()
         
-        daily_users_query = db.query(
-            cast(User.created_at, Date).label('day'),
-            func.count(User.id).label('users')
+        daily_shops_query = db.query(
+            cast(Shop.created_at, Date).label('day'),
+            func.count(Shop.id).label('users')
         ).filter(
-            User.created_at >= thirty_days_ago
-        ).group_by(cast(User.created_at, Date)).all()
+            Shop.created_at >= thirty_days_ago
+        ).group_by(cast(Shop.created_at, Date)).all()
         
         # Merge into a list of 30 days
         stats_map = {}
@@ -413,39 +467,20 @@ class ShopService:
             d = (thirty_days_ago + timedelta(days=i)).date()
             stats_map[d] = {"sales": 0.0, "orders": 0, "users": 0}
             
-        for row in daily_sales_query:
+        for row in daily_revenue_query:
             if row.day in stats_map:
                 stats_map[row.day]["sales"] = float(row.sales or 0)
                 stats_map[row.day]["orders"] = int(row.orders or 0)
                 
-        for row in daily_users_query:
+        for row in daily_shops_query:
             if row.day in stats_map:
                 stats_map[row.day]["users"] = int(row.users or 0)
-                
+        
         history = [
-            DailyStat(
-                date=d.strftime("%Y-%m-%d"),
-                sales=v["sales"],
-                orders=v["orders"],
-                users=v["users"]
-            ) for d, v in sorted(stats_map.items())
+            DailyStat(date=str(d), sales=v["sales"], orders=v["orders"], users=v["users"])
+            for d, v in sorted(stats_map.items())
         ]
         
-        # Subscription Stats
-        subscriptions_active = db.query(Shop).filter(Shop.subscription_status == 'active').count()
-        subscriptions_trial = db.query(Shop).filter(Shop.subscription_status == 'trial').count()
-        subscriptions_expired = db.query(Shop).filter(Shop.subscription_status == 'expired').count()
-        
-        # Calculate MRR
-        plans = db.query(SubscriptionPlan).all()
-        plan_prices = {p.id: p.price for p in plans}
-        
-        subscriptions_mrr = 0.0
-        active_shops_list = db.query(Shop).filter(Shop.subscription_status == 'active').all()
-        for s in active_shops_list:
-            if s.subscription_plan_id in plan_prices:
-                subscriptions_mrr += plan_prices[s.subscription_plan_id]
-
         # Plan distribution
         plan_counts = db.query(
             SubscriptionPlan.name,
@@ -455,33 +490,37 @@ class ShopService:
         
         plan_distribution = [PlanStat(name=row[0], count=row[1]) for row in plan_counts]
         
-        # Top shops by revenue
+        # Top revenue generating shops (by subscription value)
         top_shops_query = db.query(
             Shop.id,
             Shop.name,
-            func.sum(Order.total_price).label('revenue'),
-            func.count(Order.id).label('orders_count')
-        ).join(Order, Order.shop_id == Shop.id)\
-         .filter(Order.status != "cancelled")\
-         .group_by(Shop.id, Shop.name)\
-         .order_by(func.sum(Order.total_price).desc())\
+            SubscriptionPlan.price,
+            Shop.subscription_period_months
+        ).join(SubscriptionPlan, Shop.subscription_plan_id == SubscriptionPlan.id)\
+         .filter(Shop.subscription_status == "active")\
+         .order_by(SubscriptionPlan.price.desc())\
          .limit(5).all()
         
         top_shops = [
             ShopRevenueStat(
                 id=row.id,
                 name=row.name,
-                revenue=float(row.revenue or 0),
-                orders_count=int(row.orders_count or 0)
+                revenue=float(row.price or 0),
+                orders_count=int(row.subscription_period_months or 1)
             ) for row in top_shops_query
         ]
 
         return DashboardStats(
-            total_sales=total_sales,
-            total_orders=total_orders,
+            total_sales=total_subscription_revenue,
+            total_orders=db.query(Transaction).filter(
+                Transaction.type == "charge",
+                Transaction.description.like("%подписк%")
+            ).count(),
             total_users=total_users,
-            total_products=total_products,
-            orders_by_status=orders_by_status,
+            total_products=0,  # Not relevant for platform admin
+            orders_by_status=OrdersByStatus(
+                pending=0, processing=0, shipping=0, delivered=0, cancelled=0
+            ),
             today_sales=today_sales,
             today_orders=today_orders,
             week_sales=week_sales,
@@ -500,5 +539,36 @@ class ShopService:
         )
 
     def delete_shop(self, db: Session, shop_id: int):
+        """Delete shop but keep the owner's user account intact"""
         shop = self.get_shop_by_id(db, shop_id)
+        
+        # Delete related data first to avoid foreign key constraints
+        from app.features.products.models import Product
+        from app.features.orders.models import Order
+        from app.features.banners.models import Banner
+        from app.features.broadcasts.models import Broadcast
+        from app.features.wallet.models import Wallet, Transaction
+        
+        # Delete products
+        db.query(Product).filter(Product.shop_id == shop_id).delete()
+        
+        # Delete orders
+        db.query(Order).filter(Order.shop_id == shop_id).delete()
+        
+        # Delete banners
+        db.query(Banner).filter(Banner.shop_id == shop_id).delete()
+        
+        # Delete broadcasts
+        db.query(Broadcast).filter(Broadcast.shop_id == shop_id).delete()
+        
+        # Delete wallet transactions
+        db.query(Transaction).filter(Transaction.shop_id == shop_id).delete()
+        
+        # Delete wallet
+        db.query(Wallet).filter(Wallet.shop_id == shop_id).delete()
+        
+        # Delete telegram connections
+        db.query(UserStoreTelegram).filter(UserStoreTelegram.store_id == shop_id).delete()
+        
+        # Finally delete the shop itself
         self.repository.delete(db, shop)

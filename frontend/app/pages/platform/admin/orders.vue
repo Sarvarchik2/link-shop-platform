@@ -117,7 +117,7 @@
                   </td>
                   <td>
                     <div class="action-btns">
-                      <button class="act-btn" @click="viewOrder(order)" v-tooltip="'Детали'"><iconify-icon
+                      <button class="act-btn" @click="viewOrder(order)" title="Детали"><iconify-icon
                           icon="lucide:eye" /></button>
                     </div>
                   </td>

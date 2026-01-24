@@ -31,7 +31,7 @@ export default defineNuxtConfig({
     // host and port are strictly environment/preset specific in newer Nitro versions
   },
 
-  css: ['~/assets/css/main.css'],
+  css: ['~/assets/css/main.css', '~/assets/css/platform-admin.css'],
   postcss: {
     plugins: {
       tailwindcss: {},

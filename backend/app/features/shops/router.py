@@ -40,8 +40,11 @@ def get_shop_admin_details(
 
 @router.get("/platform/shops/{shop_slug}", response_model=ShopRead)
 def get_shop(shop_slug: str, db: Session = Depends(get_db)):
-    # Public endpoint - don't check active status to allow viewing
-    return shop_service.get_shop_by_slug(db, shop_slug, check_active=False)
+    # Public endpoint - but check if shop is active
+    shop = shop_service.get_shop_by_slug(db, shop_slug, check_active=False)
+    if not shop.is_active:
+        raise HTTPException(status_code=403, detail="Shop is deactivated")
+    return shop
 
 @router.put("/shop/{shop_slug}/admin/info", response_model=ShopRead)
 async def update_shop_settings(

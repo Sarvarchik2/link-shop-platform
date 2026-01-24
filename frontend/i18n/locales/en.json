@@ -896,6 +896,8 @@
                 "payAndActivate": "Pay and Activate",
                 "successMsg": "Subscription activated!",
                 "errorMsg": "Payment error",
+                "changeWarningTitle": "Attention: Plan Change",
+                "changeWarningDesc": "When switching to a new plan, your current paid period will be voided. The new plan activates immediately and starts from today.",
                 "limits": {
                     "products": "Products: {count}",
                     "banners": "Banners: {count}",

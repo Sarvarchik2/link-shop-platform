@@ -227,6 +227,18 @@
                             </div>
                         </div>
 
+                        <!-- Plan Change Warning -->
+                        <div v-if="shop?.subscription_plan_id && shop?.subscription_plan_id !== selectedPlan?.id && shop?.subscription_status === 'active'"
+                            class="change-warning-box">
+                            <div class="warning-icon">
+                                <iconify-icon icon="lucide:alert-triangle"></iconify-icon>
+                            </div>
+                            <div class="warning-content">
+                                <h4>{{ $t('admin.subscriptionPage.premium.changeWarningTitle') }}</h4>
+                                <p>{{ $t('admin.subscriptionPage.premium.changeWarningDesc') }}</p>
+                            </div>
+                        </div>
+
                         <div class="payment-method-box" :class="{ error: walletBalance < currentPrice.final }">
                             <div class="p-info">
                                 <div class="p-icon"><iconify-icon icon="lucide:wallet"></iconify-icon></div>
@@ -1088,6 +1100,37 @@ const openCancelModal = () => { /* Logic to call cancel sub endpoint */ }
     font-weight: 700;
     cursor: pointer;
     font-size: 1rem;
+}
+
+.change-warning-box {
+    display: flex;
+    gap: 16px;
+    padding: 16px;
+    background: #fffbeb;
+    border: 1px solid #fef3c7;
+    border-radius: 16px;
+    margin-bottom: 24px;
+}
+
+.change-warning-box .warning-icon {
+    font-size: 1.5rem;
+    color: #d97706;
+    display: flex;
+    align-items: center;
+}
+
+.change-warning-box .warning-content h4 {
+    margin: 0 0 4px 0;
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: #92400e;
+}
+
+.change-warning-box .warning-content p {
+    margin: 0;
+    font-size: 0.85rem;
+    line-height: 1.4;
+    color: #b45309;
 }
 
 /* Responsive Viewports */

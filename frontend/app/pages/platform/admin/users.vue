@@ -158,7 +158,7 @@
                   </td>
                   <td>
                     <div class="action-btns">
-                      <button @click="viewUserDetails(user)" class="act-btn" v-tooltip="'Детали'">
+                      <button @click="viewUserDetails(user)" class="act-btn" title="Детали">
                         <iconify-icon icon="lucide:eye" />
                       </button>
                     </div>
@@ -329,90 +329,37 @@ const exportData = () => {
 </script>
 
 <style scoped>
-.platform-admin-users {
-  background: #f8fafc;
-  min-height: 100vh;
-  display: flex;
-}
+/* Page specific styles */
 
-.admin-main {
-  flex: 1;
-  margin-left: 280px;
-  display: flex;
-  flex-direction: column;
-  transition: all 0.4s;
-}
+/* Page specific styles */
 
-.top-nav {
-  padding: 32px;
-  background: #fff;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.mobile-menu-btn {
-  display: none;
-  width: 44px;
-  height: 44px;
-  background: #f1f5f9;
-  border: none;
-  border-radius: 12px;
-  font-size: 1.5rem;
-  cursor: pointer;
-}
-
-.page-title {
-  font-size: 1.75rem;
-  font-weight: 950;
-  margin: 0;
-  letter-spacing: -1px;
-}
-
-.page-subtitle {
-  font-size: 0.85rem;
-  color: #64748b;
-  margin-top: 4px;
-  font-weight: 600;
-}
-
-.nav-right {
-  display: flex;
-  gap: 12px;
-}
-
-.refresh-btn,
 .export-btn {
-  padding: 10px 18px;
+  padding: 0 24px;
+  height: 44px;
   border-radius: 12px;
-  font-weight: 800;
+  background: #111;
+  color: white;
+  border: none;
+  font-weight: 900;
   font-size: 0.85rem;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   cursor: pointer;
   transition: all 0.2s;
-  border: 1.5px solid #e2e8f0;
-  background: white;
 }
 
-.refresh-btn:hover,
 .export-btn:hover {
-  border-color: #111;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
 
-.admin-scroll {
-  padding: 32px;
-  flex: 1;
-  overflow-y: auto;
-}
-
+/* Stats Row */
 .stats-row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 24px;
-  margin-bottom: 32px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin-bottom: 24px;
 }
 
 .stat-mini-card {
@@ -421,7 +368,8 @@ const exportData = () => {
   border-radius: 24px;
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 20px;
+  transition: all 0.3s;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
 }
 
@@ -755,23 +703,6 @@ const exportData = () => {
   color: #64748b;
 }
 
-@media (max-width: 1024px) {
-  .admin-main {
-    margin-left: 0;
-  }
-
-  .mobile-menu-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .filters-bar {
-    flex-direction: column;
-    align-items: stretch;
-  }
-}
-
 .white-card {
   background: white;
   padding: 32px;
@@ -797,5 +728,51 @@ const exportData = () => {
   font-weight: 950;
   color: #111;
   margin: 0;
+}
+
+/* Tablet */
+@media (max-width: 1024px) {
+  .stats-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Mobile */
+@media (max-width: 640px) {
+  .stats-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .filters-bar {
+    flex-direction: column;
+    align-items: stretch;
+    height: auto;
+    padding: 16px;
+    gap: 12px;
+  }
+
+  .search-input-wrap {
+    width: 100%;
+  }
+
+  .filter-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .modern-select {
+    width: 100%;
+  }
+
+  .clear-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* User Chart */
+  .chart-wrapper {
+    height: 250px;
+  }
 }
 </style>

@@ -269,11 +269,12 @@ class SubscriptionService:
         # Update shop subscription
         now = datetime.utcnow()
         
-        # If active subscription exists and not expired, extend from current expiry
-        if shop.subscription_status == "active" and shop.subscription_expires_at and shop.subscription_expires_at > now:
+        # If active subscription exists for THE SAME PLAN and not expired, extend from current expiry
+        is_same_plan = shop.subscription_plan_id == plan.id
+        if is_same_plan and shop.subscription_status == "active" and shop.subscription_expires_at and shop.subscription_expires_at > now:
             expires_at = shop.subscription_expires_at + timedelta(days=30 * request.period_months)
         else:
-            # Start new subscription from now
+            # If plan changed or expired, start new subscription from now (burn current time)
             expires_at = now + timedelta(days=30 * request.period_months)
         
         shop_update_data = {

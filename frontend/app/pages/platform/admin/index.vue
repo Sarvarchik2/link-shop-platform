@@ -84,7 +84,7 @@
                     <div class="progress-bar" :style="{ width: activeShopsPercentage + '%' }"></div>
                   </div>
                   <span class="progress-text">{{ activeShopsPercentage }}% {{ $t('platformAdmin.dashboard.ofTotal')
-                    }}</span>
+                  }}</span>
                 </div>
               </div>
               <div class="kpi-icon-wrap">
@@ -280,7 +280,7 @@
                     <div class="shop-details">
                       <div class="shop-n">{{ shop.name }}</div>
                       <div class="shop-o">{{ shop.owner_name || $t('common.create') + ': ' + formatDate(shop.created_at)
-                        }}</div>
+                      }}</div>
                     </div>
                     <div class="shop-status-badge" :class="shop.subscription_status">
                       {{ getStatusText(shop.subscription_status) }}
@@ -592,90 +592,32 @@ const getStatusLabel = (s) => t(`platformAdmin.dashboard.status.${s}`) || s
 </script>
 
 <style scoped>
-.platform-admin-dashboard {
-  background: #f8fafc;
-  min-height: 100vh;
-  display: flex;
+/* Page specific styles */
+
+/* KPI Grid */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 24px;
+  margin-bottom: 32px;
 }
 
-.dashboard-main {
-  flex: 1;
-  margin-left: 280px;
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-}
-
-.top-nav {
-  padding: 24px 32px;
-  background: #fff;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.mobile-menu-btn {
-  display: none;
-  width: 40px;
-  height: 40px;
-  border: none;
-  background: #f1f5f9;
-  border-radius: 12px;
-  font-size: 1.5rem;
-  cursor: pointer;
-}
-
-.page-title {
-  font-size: 1.5rem;
-  font-weight: 950;
-  margin: 0;
-  letter-spacing: -0.5px;
-}
-
-.page-subtitle {
-  font-size: 0.875rem;
-  color: #64748b;
-  margin: 4px 0 0;
-}
-
-.refresh-btn {
-  padding: 10px 16px;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-weight: 700;
-  font-size: 0.85rem;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.refresh-btn:hover {
-  background: #f1f5f9;
-  border-color: #cbd5e1;
-}
-
-.refresh-btn.loading iconify-icon {
-  animation: rotate 1s linear infinite;
-}
-
-@keyframes rotate {
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(360deg);
+@media (max-width: 1024px) {
+  .kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
-.dashboard-scroll {
-  flex: 1;
-  overflow-y: auto;
-  padding: 32px;
+@media (max-width: 640px) {
+  .kpi-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .filter-bar {
+    padding-bottom: 16px;
+    overflow-x: auto;
+  }
 }
 
 .filter-bar {
@@ -1171,16 +1113,6 @@ const getStatusLabel = (s) => t(`platformAdmin.dashboard.status.${s}`) || s
 }
 
 @media (max-width: 1024px) {
-  .dashboard-main {
-    margin-left: 0;
-  }
-
-  .mobile-menu-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
   .top-nav {
     gap: 16px;
   }
@@ -1194,6 +1126,10 @@ const getStatusLabel = (s) => t(`platformAdmin.dashboard.status.${s}`) || s
   .main-grid {
     grid-template-columns: 1fr;
   }
+
+  .kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 @media (max-width: 640px) {
@@ -1203,6 +1139,12 @@ const getStatusLabel = (s) => t(`platformAdmin.dashboard.status.${s}`) || s
 
   .kpi-grid {
     grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .filter-bar {
+    padding-bottom: 16px;
+    overflow-x: auto;
   }
 
   .pie-section {
