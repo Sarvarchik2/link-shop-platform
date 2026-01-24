@@ -99,3 +99,24 @@ class SubscriptionRequestRead(SubscriptionRequestBase):
     shop_slug: Optional[str] = None
     
     model_config = ConfigDict(from_attributes=True)
+
+
+# New schemas for wallet-based subscription purchase
+class SubscriptionPurchaseRequest(BaseModel):
+    plan_slug: str
+    period_months: int = 1  # 1, 3, 6, 12
+    payment_method: str = "wallet"  # wallet, payme
+
+class SubscriptionPurchaseResponse(BaseModel):
+    success: bool
+    subscription_id: Optional[int] = None
+    expires_at: Optional[datetime] = None
+    message: str
+
+class AutoRenewalToggleRequest(BaseModel):
+    enabled: bool
+
+class AutoRenewalToggleResponse(BaseModel):
+    auto_renewal_enabled: bool
+    message: str
+

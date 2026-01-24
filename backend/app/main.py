@@ -19,6 +19,7 @@ from app.features.banners.models import Banner
 from app.features.offers.models import Offer
 from app.features.preorders.models import PreOrder
 from app.features.broadcasts.models import Broadcast
+from app.features.wallet.models import Wallet, Transaction
 
 # Import routers
 from app.features.auth.router import router as auth_router
@@ -34,6 +35,7 @@ from app.features.offers.router import router as offers_router
 from app.features.users.router import router as users_router
 from app.features.broadcasts.router import router as broadcasts_router
 from app.features.telegram.router import router as telegram_router
+from app.features.wallet.router import router as wallet_router
 
 app = FastAPI(title="Storely Platform API")
 
@@ -43,8 +45,11 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:3000",
         "http://127.0.0.1:3000",
+        "http://0.0.0.0:3000",
         "http://localhost:8000",
         "http://127.0.0.1:8000",
+        "https://storely.uz",
+        "https://www.storely.uz",
         "https://storely.up.railway.app",
         "https://link-shop-platform-production.up.railway.app",
     ],
@@ -73,6 +78,7 @@ app.include_router(subscriptions_router, tags=["Subscriptions"])
 app.include_router(offers_router, tags=["Offers"])
 app.include_router(broadcasts_router, tags=["Broadcasts"])
 app.include_router(telegram_router, tags=["Telegram"])
+app.include_router(wallet_router, tags=["Wallet"])
 
 @app.on_event("startup")
 def on_startup():
@@ -113,6 +119,8 @@ def on_startup():
                     features="Полный доступ к платформе,До 50 товаров,Базовая аналитика",
                     is_trial=True,
                     can_broadcast=False,
+                    max_products=50,
+                    max_banners=1,
                     display_order=1
                 ),
                 SubscriptionPlan(
@@ -123,6 +131,8 @@ def on_startup():
                     description="Идеально для растущих магазинов с рассылками",
                     features="До 200 товаров,Рассылки в Telegram (до 500/мес),Приоритетная поддержка",
                     can_broadcast=True,
+                    max_products=200,
+                    max_banners=3,
                     display_order=2
                 ),
                 SubscriptionPlan(
@@ -133,6 +143,8 @@ def on_startup():
                     description="Безлимитные возможности для вашего бренда",
                     features="Безлимитные товары,Безлимитные рассылки,Подробная статистика,Личный менеджер",
                     can_broadcast=True,
+                    max_products=None,  # Unlimited
+                    max_banners=10,
                     display_order=3
                 )
             ]

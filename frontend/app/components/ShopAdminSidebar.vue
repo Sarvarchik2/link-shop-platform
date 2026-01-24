@@ -92,6 +92,19 @@
       </div>
 
       <div class="nav-section">
+        <div class="nav-section-title">{{ $t('admin.finance') }}</div>
+        <NuxtLink :to="localePath(`/shop/${shopSlug}/admin/wallet`)" class="nav-item"
+          :class="{ active: currentRoute === 'wallet' }" @click="closeSidebar">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+            <line x1="2" y1="10" x2="22" y2="10"></line>
+            <circle cx="18" cy="14.5" r="1.5" fill="currentColor"></circle>
+          </svg>
+          <span>{{ $t('admin.wallet') }}</span>
+        </NuxtLink>
+      </div>
+
+      <div class="nav-section">
         <div class="nav-section-title">{{ $t('admin.settings') }}</div>
         <NuxtLink :to="localePath(`/shop/${shopSlug}/admin/banner`)" class="nav-item"
           :class="{ active: currentRoute === 'banner' }" @click="closeSidebar">

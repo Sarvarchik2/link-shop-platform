@@ -13,6 +13,10 @@ class SubscriptionRepository:
     def get_plan_by_id(self, db: Session, plan_id: int) -> Optional[SubscriptionPlan]:
         return db.query(SubscriptionPlan).filter(SubscriptionPlan.id == plan_id).first()
 
+    def get_plan_by_slug(self, db: Session, slug: str) -> Optional[SubscriptionPlan]:
+        return db.query(SubscriptionPlan).filter(SubscriptionPlan.slug == slug).first()
+
+
     def create_plan(self, db: Session, plan_in: SubscriptionPlanCreate) -> SubscriptionPlan:
         db_plan = SubscriptionPlan(**plan_in.model_dump())
         db.add(db_plan)

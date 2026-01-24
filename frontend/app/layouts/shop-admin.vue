@@ -55,6 +55,7 @@ const currentRoute = computed(() => {
     if (path.includes('/info')) return 'info'
     if (path.includes('/delivery')) return 'delivery'
     if (path.includes('/subscription')) return 'subscription'
+    if (path.includes('/wallet')) return 'wallet'
     return 'dashboard'
 })
 </script>

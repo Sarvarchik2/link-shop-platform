@@ -1,190 +1,115 @@
 <template>
-  <div class="register-shop-page">
-    <div class="container py-8">
-      <div v-if="!user" class="max-w-md mx-auto auth-notice">
-        <p>{{ $t('shopRegistration.authNotice.text') }}</p>
-        <div class="auth-actions">
-          <NuxtLink :to="localePath(`/login?returnUrl=${route.fullPath}`)" class="btn-primary">{{
-            $t('shopRegistration.authNotice.login') }}</NuxtLink>
-          <NuxtLink :to="localePath(`/register?returnUrl=${route.fullPath}`)" class="btn-secondary">{{
-            $t('shopRegistration.authNotice.register') }}</NuxtLink>
-        </div>
-      </div>
+  <div class="register-shop-premium">
+    <div class="background-blobs">
+      <div class="blob blob-1"></div>
+      <div class="blob blob-2"></div>
+    </div>
 
-      <div v-else-if="checkingShops" class="max-w-md mx-auto auth-notice">
-        <p>{{ $t('platformAdmin.dashboard.loading') }}</p>
-      </div>
-
-      <div v-else-if="myShops && myShops.length > 0" class="max-w-md mx-auto auth-notice already-has-shop">
-        <div class="notice-icon">⚠️</div>
-        <h3>{{ $t('shopRegistration.alreadyExists.title') }}</h3>
-        <p>{{ $t('shopRegistration.alreadyExists.desc') }}</p>
-        <div class="auth-actions">
-          <NuxtLink :to="localePath(`/shop/${myShops[0].slug}/admin`)" class="btn-primary">{{
-            $t('shopRegistration.alreadyExists.goToAdmin') }}</NuxtLink>
-          <NuxtLink :to="localePath('/profile')" class="btn-secondary">{{
-            $t('shopRegistration.alreadyExists.backToProfile') }}
-          </NuxtLink>
-        </div>
-      </div>
-
-      <div v-else class="max-w-4xl mx-auto">
-        <!-- Step Indicator -->
-        <div class="mb-8 flex justify-center">
-          <div class="flex items-center gap-4">
-            <div class="flex items-center gap-2">
-              <div :class="['step-circle', { active: currentStep === 1, completed: currentStep > 1 }]">1</div>
-              <span :class="['step-label', { active: currentStep === 1, completed: currentStep > 1 }]">{{
-                $t('shopRegistration.steps.tariff') }}</span>
-            </div>
-            <div class="step-line border-t-2 border-dashed border-zinc-200 w-16"></div>
-            <div class="flex items-center gap-2">
-              <div :class="['step-circle', { active: currentStep === 2 }]">2</div>
-              <span :class="['step-label', { active: currentStep === 2 }]">{{ $t('shopRegistration.steps.details')
-                }}</span>
-            </div>
+    <div class="register-container">
+      <header class="register-header">
+        <NuxtLink :to="localePath('/')" class="logo-link">
+          <span class="logo-text">Link<span>Shop</span></span>
+        </NuxtLink>
+        <div class="header-steps">
+          <div class="step-indicator" :class="{ active: currentStep >= 1, completed: currentStep > 1 }">
+            <span class="step-num">1</span>
+            <span class="step-name">{{ $t('shopRegistration.premium.step1') }}</span>
+          </div>
+          <div class="step-line" :class="{ completed: currentStep > 1 }"></div>
+          <div class="step-indicator" :class="{ active: currentStep >= 2, completed: currentStep > 2 }">
+            <span class="step-num">2</span>
+            <span class="step-name">{{ $t('shopRegistration.premium.step2') }}</span>
           </div>
         </div>
+      </header>
 
-        <!-- Step 1: Plan Selection -->
-        <div v-if="currentStep === 1" class="register-card fade-in">
-          <div class="text-center mb-8">
-            <h1 class="page-title">{{ $t('shopRegistration.plans.title') }}</h1>
-            <p class="page-subtitle">{{ $t('shopRegistration.plans.subtitle') }}</p>
+      <div class="register-content">
+        <!-- Step 1: Shop Info -->
+        <div v-if="currentStep === 1" class="step-view fade-in">
+          <div class="text-center mb-10">
+            <h1 class="title">{{ $t('shopRegistration.premium.title') }}</h1>
+            <p class="subtitle">{{ $t('shopRegistration.premium.subtitle') }}</p>
           </div>
 
-          <div v-if="plansPending" class="text-center py-12">
-            <div class="loading-spinner"></div>
-          </div>
-
-          <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div v-for="plan in plans" :key="plan.id"
-              class="plan-card p-6 rounded-2xl border-2 transition-all cursor-pointer hover-lift"
-              :class="selectedPlan?.id === plan.id ? 'border-black bg-zinc-50 shadow-lg' : 'border-zinc-100 hover:border-zinc-300'"
-              @click="selectPlan(plan)">
-              <div class="flex justify-between items-start mb-4">
-                <div>
-                  <h3 class="font-bold text-lg">{{ getLocalizedValue(plan, 'name') }}</h3>
-                  <p class="text-zinc-500 text-sm">{{ getLocalizedValue(plan, 'description') }}</p>
-                </div>
-                <div v-if="selectedPlan?.id === plan.id"
-                  class="w-6 h-6 bg-black rounded-full flex items-center justify-center text-white">
-                  <iconify-icon icon="lucide:check" width="14"></iconify-icon>
-                </div>
-              </div>
-              <div class="mb-6">
-                <span class="text-3xl font-bold">{{ formatPrice(plan.price) }}</span>
-                <span class="text-zinc-500">/{{ $t('home.pricing.month') }}</span>
-              </div>
-              <ul class="space-y-3 mb-6">
-                <li v-for="(feature, i) in getLocalizedFeatures(plan)" :key="i"
-                  class="flex items-start gap-2 text-sm text-zinc-600">
-                  <iconify-icon icon="lucide:check" class="mt-0.5 text-green-500 flex-shrink-0"></iconify-icon>
-                  <span>{{ feature }}</span>
-                </li>
-              </ul>
-              <button class="w-full py-3 rounded-xl font-semibold transition-all"
-                :class="selectedPlan?.id === plan.id ? 'bg-black text-white shadow-md' : 'bg-zinc-100 text-zinc-900 hover:bg-zinc-200'">
-                {{ selectedPlan?.id === plan.id ? $t('shopRegistration.plans.selected') :
-                  $t('shopRegistration.plans.select') }}
-              </button>
-            </div>
-          </div>
-
-          <div class="mt-8 flex justify-end">
-            <button class="btn-primary flex items-center gap-2" :disabled="!selectedPlan" @click="currentStep = 2">
-              {{ $t('shopRegistration.next') }}
-              <iconify-icon icon="lucide:arrow-right" width="18"></iconify-icon>
-            </button>
-          </div>
-        </div>
-
-        <!-- Step 2: Shop Details -->
-        <div v-else class="register-card fade-in">
-          <div class="register-header">
-            <h1 class="page-title">{{ $t('shopRegistration.title') }}</h1>
-            <p class="page-subtitle">{{ $t('shopRegistration.subtitle') }}</p>
-          </div>
-
-          <form @submit.prevent="registerShop" class="register-form">
+          <form @submit.prevent="currentStep = 2" class="premium-form">
             <div class="form-group">
-              <label for="name">{{ $t('shopRegistration.form.name') }} *</label>
-              <input id="name" v-model="form.name" type="text" required
-                :placeholder="$t('shopRegistration.form.namePlaceholder')" class="form-input transition-smooth" />
-            </div>
-
-            <div class="form-group">
-              <label for="slug">{{ $t('shopRegistration.form.slug') }} *</label>
-              <div class="slug-input-wrapper transition-smooth">
-                <span class="slug-prefix">link-platform-shop.uz/</span>
-                <input id="slug" v-model="form.slug" type="text" required
-                  :placeholder="$t('shopRegistration.form.slugPlaceholder')" class="form-input slug-input"
-                  @input="formatSlug" />
-              </div>
-              <p class="form-hint">{{ $t('shopRegistration.form.slugHint') }}</p>
-            </div>
-
-            <div class="form-group">
-              <label for="description">{{ $t('shopRegistration.form.desc') }} ({{ $t('common.optional') }})</label>
-              <textarea id="description" v-model="form.description" rows="4"
-                :placeholder="$t('shopRegistration.form.descPlaceholder')" class="form-input transition-smooth" />
-            </div>
-
-            <div class="form-group">
-              <label>{{ $t('shopRegistration.form.logo') }}</label>
-              <div class="logo-upload-container">
-                <div class="logo-input-wrapper">
-                  <input v-model="form.logo_url" type="url" class="form-input transition-smooth"
-                    :placeholder="$t('shopRegistration.form.logoUrlPlaceholder')" />
-                  <span class="input-divider">{{ $t('common.or') }}</span>
-                  <button type="button" class="btn-upload transition-smooth" @click="$refs.logoInput.click()"
-                    :disabled="uploading">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                      <polyline points="17 8 12 3 7 8"></polyline>
-                      <line x1="12" y1="3" x2="12" y2="15"></line>
-                    </svg>
-                    {{ uploading ? '...' : $t('common.upload') }}
-                  </button>
-                  <input type="file" ref="logoInput" style="display: none" accept="image/*"
-                    @change="handleLogoUpload" />
-                </div>
-                <small class="form-hint">{{ $t('shopRegistration.form.logoHint') }}</small>
-
-                <div v-if="form.logo_url" class="logo-preview">
-                  <div class="preview-header">
-                    <span class="preview-label">{{ $t('shopRegistration.form.preview') }}:</span>
-                    <button type="button" class="btn-remove-logo" @click="form.logo_url = ''">{{ $t('common.delete')
-                    }}</button>
-                  </div>
-                  <img :src="form.logo_url" alt="Logo" class="preview-image" @error="logoError = true" />
-                  <p v-if="logoError" class="preview-error">{{ $t('shopRegistration.form.uploadError') }}</p>
-                </div>
+              <label>{{ $t('shopRegistration.premium.shopName') }}</label>
+              <div class="input-wrapper">
+                <iconify-icon icon="lucide:shopping-bag" class="input-icon"></iconify-icon>
+                <input v-model="form.name" type="text" required
+                  :placeholder="$t('shopRegistration.form.namePlaceholder')" class="premium-input" />
               </div>
             </div>
 
-            <div v-if="error" class="error-message">
-              {{ error }}
+            <div class="form-group">
+              <label>{{ $t('shopRegistration.premium.shopUrl') }}</label>
+              <div class="input-wrapper slug-wrapper">
+                <span class="url-prefix">link-shop.uz/</span>
+                <input v-model="form.slug" type="text" required placeholder="urban-style"
+                  class="premium-input slug-input" @input="formatSlug" />
+              </div>
+              <p class="hint">{{ $t('shopRegistration.premium.urlHint') }}</p>
             </div>
 
-            <div class="flex flex-col sm:flex-row gap-4">
-              <button type="button" class="btn-secondary w-full" @click="currentStep = 1">{{ $t('shopRegistration.back')
-              }}</button>
-              <button type="submit" :disabled="loading" class="submit-button w-full">
-                <span v-if="loading">{{ $t('shopRegistration.form.creating') }}</span>
-                <span v-else>{{ $t('shopRegistration.form.submit') }}</span>
+            <div class="form-group">
+              <label>{{ $t('shopRegistration.premium.description') || $t('shopRegistration.form.desc') }} ({{
+                $t('common.optional') }})</label>
+              <textarea v-model="form.description" rows="3" :placeholder="$t('shopRegistration.form.descPlaceholder')"
+                class="premium-input"></textarea>
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" class="btn-next" :disabled="!form.name || !form.slug">
+                {{ $t('shopRegistration.premium.continue') }}
+                <iconify-icon icon="lucide:arrow-right"></iconify-icon>
               </button>
             </div>
           </form>
+        </div>
 
-          <div class="info-box mt-8">
-            <h3>{{ $t('shopRegistration.info.title') }}</h3>
-            <ul>
-              <li>{{ $t('shopRegistration.info.planLabel') }} <strong>{{ getLocalizedValue(selectedPlan, 'name')
-                  }}</strong></li>
-              <li>{{ $t('shopRegistration.info.urlLabel') }} <strong>link-platform-shop.uz/{{ form.slug || 'your-slug'
-                  }}</strong></li>
-            </ul>
+        <!-- Step 2: Plan Selection -->
+        <div v-else-if="currentStep === 2" class="step-view fade-in">
+          <div class="text-center mb-10">
+            <h1 class="title">{{ $t('shopRegistration.premium.selectPlan') }}</h1>
+            <p class="subtitle">{{ $t('shopRegistration.premium.selectPlanSubtitle') }}</p>
+          </div>
+
+          <div v-if="plansPending" class="loading-plans">
+            <div class="spinner"></div>
+          </div>
+
+          <div v-else class="plans-grid">
+            <div v-for="plan in plans" :key="plan.id" class="plan-card"
+              :class="{ featured: plan.slug === 'premium', selected: selectedPlan?.id === plan.id }"
+              @click="selectedPlan = plan">
+              <div v-if="plan.slug === 'premium'" class="popular-badge">{{ $t('shopRegistration.premium.popular') }}
+              </div>
+              <div class="plan-header">
+                <h3 class="plan-name">{{ getLocalizedValue(plan, 'name') }}</h3>
+                <div class="plan-price">
+                  <span class="amount">{{ formatPrice(plan.price) }}</span>
+                  <span class="period">/{{ $t('home.pricing.month') }}</span>
+                </div>
+              </div>
+              <div class="plan-desc">{{ getLocalizedValue(plan, 'description') }}</div>
+              <ul class="plan-features">
+                <li v-for="(f, i) in getLocalizedFeatures(plan)" :key="i">
+                  <iconify-icon icon="lucide:check" class="check"></iconify-icon>
+                  <span>{{ f }}</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="form-actions mt-10">
+            <button @click="currentStep = 1" class="btn-back">
+              <iconify-icon icon="lucide:arrow-left"></iconify-icon>
+              {{ $t('shopRegistration.back') }}
+            </button>
+            <button @click="registerShop" class="btn-submit" :disabled="loading || !selectedPlan">
+              <span v-if="loading" class="spinner-small"></span>
+              <span v-else>{{ $t('shopRegistration.premium.launch') }}</span>
+            </button>
           </div>
         </div>
       </div>
@@ -198,90 +123,17 @@ definePageMeta({
 })
 
 const { token, user } = useAuth()
-const { t } = useI18n()
-const router = useRouter()
-const route = useRoute()
-const toast = useToast()
 const config = useRuntimeConfig()
+const router = useRouter()
+const toast = useToast()
 const { locale } = useI18n()
 const { formatPrice } = useCurrency()
 const localePath = useLocalePath()
 
-const getLocalizedValue = (obj, key) => {
-  if (!obj) return ''
-  const current = locale.value
-  if (current === 'ru' && obj[key + '_ru']) return obj[key + '_ru']
-  if (current === 'en' && obj[key + '_en']) return obj[key + '_en']
-  if (current === 'uz' && obj[key + '_uz']) return obj[key + '_uz']
-  return obj[key] || ''
-}
-
-const getLocalizedFeatures = (plan) => {
-  if (!plan) return []
-  const current = locale.value
-  let featuresStr = plan.features // default
-  if (current === 'ru' && plan.features_ru) featuresStr = plan.features_ru
-  if (current === 'en' && plan.features_en) featuresStr = plan.features_en
-  if (current === 'uz' && plan.features_uz) featuresStr = plan.features_uz
-
-  if (!featuresStr) return []
-  try {
-    // If it's a JSON string, parse it
-    if (typeof featuresStr === 'string' && (featuresStr.startsWith('[') || featuresStr.startsWith('{'))) {
-      return JSON.parse(featuresStr)
-    }
-    // If it's a comma separated string
-    if (typeof featuresStr === 'string') {
-      return featuresStr.split(',').map(f => f.trim())
-    }
-    return featuresStr // already an array?
-  } catch (e) {
-    return []
-  }
-}
-
-// Stepper State
 const currentStep = ref(1)
+const loading = ref(false)
 const selectedPlan = ref(null)
 
-// Step 1: Fetch Plans
-const { data: plans, pending: plansPending } = await useFetch(config.public.apiBase + '/subscription-plans', {
-  server: false,
-  transform: (data) => {
-    if (!Array.isArray(data)) return []
-
-    const filteredPlans = data
-      ?.filter(plan => plan.is_active)
-      ?.sort((a, b) => (a.display_order || 0) - (b.display_order || 0)) || []
-
-    return filteredPlans.map(plan => {
-      if (plan.features && !plan.features_list) {
-        try {
-          plan.features_list = JSON.parse(plan.features)
-        } catch (e) {
-          plan.features_list = []
-        }
-      }
-      return plan
-    })
-  }
-})
-
-// Auto-select plan from query param
-watch(plans, (newPlans) => {
-  if (newPlans && route.query.plan) {
-    const preselected = newPlans.find(p => p.slug === route.query.plan)
-    if (preselected) {
-      selectedPlan.value = preselected
-    }
-  }
-}, { immediate: true })
-
-const selectPlan = (plan) => {
-  selectedPlan.value = plan
-}
-
-// Step 2: Shop Form
 const form = reactive({
   name: '',
   slug: '',
@@ -289,154 +141,38 @@ const form = reactive({
   logo_url: ''
 })
 
-const loading = ref(false)
-const uploading = ref(false)
-const logoError = ref(false)
-const error = ref('')
-
-const handleLogoUpload = async (event) => {
-  const file = event.target.files[0]
-  if (!file) return
-
-  if (!file.type.startsWith('image/')) {
-    toast.error(t('shopRegistration.validation.imageRequired'))
-    return
-  }
-
-  if (file.size > 2 * 1024 * 1024) {
-    toast.error(t('shopRegistration.validation.sizeLimit'))
-    return
-  }
-
-  uploading.value = true
-  const formData = new FormData()
-  formData.append('file', file)
-
-  try {
-    const response = await $fetch(`${config.public.apiBase}/upload`, {
-      method: 'POST',
-      body: formData
-    })
-
-    form.logo_url = response.url
-    logoError.value = false
-    toast.success(t('shopRegistration.success.logoUploaded'))
-  } catch (e) {
-    console.error('Upload error:', e)
-    toast.error(t('shopRegistration.error.uploadFailed'))
-  } finally {
-    uploading.value = false
-    event.target.value = ''
-  }
-}
-
-const myShops = ref([])
-const checkingShops = ref(true)
-
-const formatSlug = () => {
-  form.slug = form.slug
-    .toLowerCase()
-    .replace(/[^a-z0-9-]/g, '')
-    .replace(/-+/g, '-')
-    .replace(/^-|-$/g, '')
-}
-
-// Check if user already has a shop
-const checkExistingShop = async () => {
-  if (!token.value || !user.value) {
-    checkingShops.value = false
-    return
-  }
-
-  // Use current route returnUrl for auth redirects
-  if (!user.value) return
-
-  const userRole = user.value?.role || (user.value?.roles?.includes('shop_owner') ? 'shop_owner' : 'user')
-
-  if (userRole === 'shop_owner' || userRole === 'platform_admin' || user.value?.roles?.includes('admin')) {
-    try {
-      const shops = await $fetch(`${config.public.apiBase}/platform/shops/me`, {
-        headers: {
-          'Authorization': `Bearer ${token.value}`
-        }
-      })
-      myShops.value = shops || []
-    } catch (e) {
-      if (e?.statusCode !== 404 && e?.statusCode !== 401) {
-        console.error('[Register Shop] Error checking shops:', e)
-      }
-      myShops.value = []
-    }
-  }
-  checkingShops.value = false
-}
-
-onMounted(async () => {
-  if (user.value) {
-    await checkExistingShop()
-  }
+// Fetch Plans
+const { data: plans, pending: plansPending } = await useFetch(config.public.apiBase + '/subscription-plans', {
+  server: false,
+  transform: (data) => data?.filter(p => p.is_active)?.sort((a, b) => (a.display_order || 0) - (b.display_order || 0)) || []
 })
 
-watch(() => user.value, async (newUser) => {
-  if (newUser) {
-    await checkExistingShop()
-  } else {
-    checkingShops.value = false
-    myShops.value = []
-  }
-}, { immediate: true })
+const formatSlug = () => {
+  form.slug = form.slug.toLowerCase().replace(/[^a-z0-9-]/g, '').replace(/-+/g, '-').replace(/^-|-$/g, '')
+}
+
+const getLocalizedValue = (obj, key) => obj[`${key}_${locale.value}`] || obj[key] || ''
+const getLocalizedFeatures = (plan) => {
+  const str = plan[`features_${locale.value}`] || plan.features || ''
+  return str.split(',').map(s => s.trim()).filter(Boolean)
+}
 
 const registerShop = async () => {
-  if (!token.value) {
-    navigateTo(localePath(`/login?returnUrl=${route.fullPath}`))
-    return
-  }
-
-  if (!selectedPlan.value) {
-    toast.error(t('shopRegistration.notifications.selectPlan'))
-    currentStep.value = 1
-    return
-  }
-
+  if (!selectedPlan.value) return
   loading.value = true
-  error.value = ''
 
   try {
     const data = await $fetch(`${config.public.apiBase}/platform/shops/register`, {
       method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token.value}`
-      },
-      body: {
-        ...form,
-        subscription_plan_id: selectedPlan.value.id
-      }
+      headers: { Authorization: `Bearer ${token.value}` },
+      body: { ...form, subscription_plan_id: selectedPlan.value.id }
     })
 
-    toast.success(t('shopRegistration.success.created'))
-
-    await new Promise(resolve => setTimeout(resolve, 500))
-
-    // Navigate to subscription page with selected plan param
-    await navigateTo(useLocalePath()(`/shop/${data.slug}/admin/settings/subscription?plan=${selectedPlan.value.slug}`))
+    toast.success('Магазин успешно создан!')
+    // Redirect to subscription activation page
+    router.push(localePath(`/shop/${data.slug}/admin/settings/subscription?activated=true`))
   } catch (e) {
-    console.error('[Register Shop] Failed:', e)
-    console.error('[Register Shop] Error Data:', e.data)
-
-    let errorDetail = t('shopRegistration.error.createFailed')
-
-    if (e.data?.detail) {
-      errorDetail = e.data.detail
-      // Handle specific cases
-      if (errorDetail.includes('User already has a shop')) {
-        await checkExistingShop() // Refresh shops list to show redirect UI
-        toast.info(t('shopRegistration.alreadyExists.title'))
-        return
-      }
-    }
-
-    error.value = errorDetail
-    toast.error(error.value)
+    toast.error(e.data?.detail || 'Ошибка создания магазина')
   } finally {
     loading.value = false
   }
@@ -444,61 +180,363 @@ const registerShop = async () => {
 </script>
 
 <style scoped>
-.register-shop-page {
+.register-shop-premium {
   min-height: 100vh;
-  background: #FAFAFA;
-  padding-bottom: 100px;
+  background: #09090b;
+  color: white;
+  position: relative;
+  overflow: hidden;
+  padding: 40px 20px;
 }
 
-.register-card {
-  background: white;
-  border-radius: 24px;
-  padding: 48px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+.background-blobs {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
 }
 
-.step-circle {
-  width: 32px;
-  height: 32px;
+.blob {
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(147, 51, 234, 0.1) 0%, transparent 70%);
   border-radius: 50%;
-  background: #f4f4f5;
-  color: #71717a;
+  filter: blur(80px);
+}
+
+.blob-1 {
+  top: -200px;
+  right: -100px;
+}
+
+.blob-2 {
+  bottom: -200px;
+  left: -100px;
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
+}
+
+.register-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 10;
+}
+
+.register-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 60px;
+}
+
+.logo-text {
+  font-size: 1.5rem;
+  font-weight: 900;
+  letter-spacing: -1px;
+}
+
+.logo-text span {
+  color: #8b5cf6;
+}
+
+.header-steps {
   display: flex;
   align-items: center;
-  justify-content: center;
-  font-weight: 600;
-  font-size: 0.875rem;
+  gap: 20px;
+}
+
+.step-indicator {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  opacity: 0.4;
   transition: all 0.3s;
 }
 
-.step-circle.active {
-  background: #18181b;
-  color: white;
-  box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.05);
+.step-indicator.active {
+  opacity: 1;
 }
 
-.step-circle.completed {
-  background: #22c55e;
-  color: white;
+.step-indicator.completed {
+  color: #4ade80;
+  opacity: 1;
 }
 
-.step-label {
-  font-size: 0.875rem;
-  color: #71717a;
-  font-weight: 500;
+.step-num {
+  width: 28px;
+  height: 28px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.8rem;
 }
 
-.step-label.active {
-  color: #18181b;
+.step-indicator.active .step-num {
+  background: #8b5cf6;
+}
+
+.step-indicator.completed .step-num {
+  background: #4ade80;
+  color: #064e3b;
+}
+
+.step-name {
+  font-size: 0.9rem;
   font-weight: 600;
 }
 
-.step-label.completed {
-  color: #22c55e;
+.step-line {
+  width: 40px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+}
+
+.step-line.completed {
+  background: #4ade80;
+}
+
+.title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  letter-spacing: -1.5px;
+  margin-bottom: 12px;
+}
+
+.subtitle {
+  color: #a1a1aa;
+  font-size: 1.1rem;
+}
+
+/* Form Styles */
+.premium-form {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 32px;
+  padding: 48px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.form-group {
+  margin-bottom: 24px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #a1a1aa;
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon {
+  position: absolute;
+  left: 16px;
+  color: #52525b;
+}
+
+.premium-input {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  padding: 14px 16px 14px 44px;
+  color: white;
+  font-size: 1rem;
+  transition: all 0.2s;
+}
+
+.premium-input:focus {
+  border-color: #8b5cf6;
+  background: rgba(0, 0, 0, 0.4);
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
+}
+
+.slug-wrapper .premium-input {
+  padding-left: 105px;
+  font-family: monospace;
+  font-weight: 600;
+  color: #4ade80;
+}
+
+.url-prefix {
+  position: absolute;
+  left: 16px;
+  color: #52525b;
+  font-size: 0.9rem;
+}
+
+textarea.premium-input {
+  padding-left: 16px;
+}
+
+.hint {
+  font-size: 0.75rem;
+  color: #52525b;
+  margin-top: 8px;
+  margin-left: 4px;
+}
+
+/* Plans Grid */
+.plans-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+.plan-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1.5px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  padding: 32px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
 }
 
 .plan-card:hover {
-  border-color: #18181b;
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-5px);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.plan-card.selected {
+  border-color: #8b5cf6;
+  background: rgba(139, 92, 246, 0.05);
+}
+
+.plan-card.featured {
+  border-color: rgba(139, 92, 246, 0.5);
+}
+
+.plan-card.featured.selected {
+  border-color: #8b5cf6;
+}
+
+.popular-badge {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #8b5cf6;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 100px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.plan-header {
+  margin-bottom: 20px;
+}
+
+.plan-name {
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.plan-price .amount {
+  font-size: 1.75rem;
+  font-weight: 900;
+}
+
+.plan-price .period {
+  color: #52525b;
+  font-size: 0.9rem;
+}
+
+.plan-desc {
+  color: #a1a1aa;
+  font-size: 0.9rem;
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+
+.plan-features {
+  list-style: none;
+  padding: 0;
+}
+
+.plan-features li {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+  font-size: 0.9rem;
+  color: #d4d4d8;
+}
+
+.check {
+  color: #4ade80;
+  margin-top: 3px;
+}
+
+/* Buttons */
+.form-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: flex-end;
+}
+
+.btn-next,
+.btn-submit {
+  padding: 0 32px;
+  height: 56px;
+  background: white;
+  color: black;
+  border-radius: 16px;
+  border: none;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.2s;
+}
+
+.btn-submit {
+  background: #8b5cf6;
+  color: white;
+  width: auto;
+}
+
+.btn-next:hover,
+.btn-submit:hover {
+  transform: scale(1.02);
+}
+
+.btn-next:disabled,
+.btn-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-back {
+  background: none;
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  padding: 0 24px;
+  border-radius: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .fade-in {
@@ -517,361 +555,33 @@ const registerShop = async () => {
   }
 }
 
-/* Original Styles... */
-.register-header {
-  text-align: center;
-  margin-bottom: 32px;
+.spinner-small {
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
 }
 
-.page-title {
-  font-size: 2rem;
-  font-weight: 900;
-  margin-bottom: 8px;
-  color: #111;
-}
-
-.page-subtitle {
-  font-size: 1rem;
-  color: #666;
-}
-
-.auth-notice {
-  text-align: center;
-  padding: 40px 20px;
-  background: #F9FAFB;
-  border-radius: 16px;
-  margin-bottom: 32px;
-  border: 2px solid #E5E7EB;
-}
-
-.auth-notice p {
-  font-size: 1.125rem;
-  margin-bottom: 24px;
-  color: #111;
-}
-
-.already-has-shop {
-  background: #FEF3C7;
-  border-color: #FCD34D;
-}
-
-.already-has-shop h3 {
-  color: #92400E;
-  margin-bottom: 12px;
-  font-size: 1.25rem;
-  font-weight: 700;
-}
-
-.already-has-shop p {
-  color: #78350F;
-  margin-bottom: 24px;
-}
-
-.notice-icon {
-  font-size: 3rem;
-  margin-bottom: 16px;
-}
-
-.auth-actions {
-  display: flex;
-  gap: 12px;
-  justify-content: center;
-}
-
-.register-form {
-  margin-bottom: 32px;
-}
-
-.form-group {
-  margin-bottom: 24px;
-}
-
-.form-group label {
-  display: block;
-  font-weight: 600;
-  margin-bottom: 8px;
-  color: #111;
-  font-size: 0.875rem;
-}
-
-.form-input {
-  width: 100%;
-  padding: 12px 16px;
-  border: 2px solid #E5E7EB;
-  border-radius: 12px;
-  font-size: 1rem;
-  transition: all 0.2s;
-  font-family: inherit;
-}
-
-.form-input:focus {
-  outline: none;
-  border-color: #111;
-}
-
-.slug-input-wrapper {
-  display: flex;
-  align-items: center;
-  border: 2px solid #E5E7EB;
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-.slug-prefix {
-  padding: 12px 16px;
-  background: #F9FAFB;
-  color: #666;
-  font-size: 0.875rem;
-  white-space: nowrap;
-}
-
-.slug-input {
-  border: none;
-  flex: 1;
-  border-radius: 0;
-}
-
-.slug-input-wrapper:focus-within {
-  border-color: #111;
-}
-
-.form-hint {
-  font-size: 0.75rem;
-  color: #666;
-  margin-top: 4px;
-}
-
-.logo-upload-container {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-@media (max-width: 640px) {
-  .logo-input-wrapper {
-    flex-direction: column;
-    align-items: stretch;
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
-}
-
-.logo-input-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.input-divider {
-  color: #666;
-  font-size: 0.875rem;
-  font-weight: 500;
-}
-
-.btn-upload {
-  display: inline-flex;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 10px 16px;
-  background: white;
-  border: 2px solid #E5E7EB;
-  border-radius: 12px;
-  color: #111;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-  white-space: nowrap;
-  font-size: 0.875rem;
-}
-
-.btn-upload:hover:not(:disabled) {
-  border-color: #111;
-  background: #F9FAFB;
-}
-
-.btn-upload:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.logo-preview {
-  margin-top: 12px;
-  padding: 16px;
-  background: #F9FAFB;
-  border-radius: 16px;
-  border: 2px dashed #E5E7EB;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-}
-
-.preview-header {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.preview-label {
-  font-size: 0.75rem;
-  color: #666;
-  font-weight: 600;
-}
-
-.btn-remove-logo {
-  background: none;
-  border: none;
-  color: #DC2626;
-  font-size: 0.75rem;
-  font-weight: 600;
-  cursor: pointer;
-  padding: 4px 8px;
-  border-radius: 6px;
-}
-
-.btn-remove-logo:hover {
-  background: #FEE2E2;
-}
-
-.preview-image {
-  max-height: 60px;
-  max-width: 100%;
-  width: auto;
-  height: auto;
-  object-fit: contain;
-  background: white;
-  padding: 8px;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-}
-
-.preview-error {
-  font-size: 0.75rem;
-  color: #DC2626;
-  margin-top: 0;
-}
-
-.error-message {
-  background: #FEE2E2;
-  color: #991B1B;
-  padding: 12px 16px;
-  border-radius: 12px;
-  margin-bottom: 16px;
-  font-size: 0.875rem;
-}
-
-.submit-button {
-  width: 100%;
-  padding: 16px;
-  background: #111;
-  color: white;
-  border: none;
-  border-radius: 12px;
-  font-size: 1rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.submit-button:hover:not(:disabled) {
-  background: #000;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.submit-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.info-box {
-  background: #F9FAFB;
-  border-radius: 16px;
-  padding: 24px;
-  border: 2px solid #E5E7EB;
-}
-
-.info-box h3 {
-  font-size: 1.125rem;
-  font-weight: 700;
-  margin-bottom: 12px;
-  color: #111;
-}
-
-.info-box ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.info-box li {
-  padding: 8px 0;
-  padding-left: 24px;
-  position: relative;
-  color: #666;
-  font-size: 0.875rem;
-  line-height: 1.6;
-}
-
-.info-box li:before {
-  content: '✓';
-  position: absolute;
-  left: 0;
-  color: #10B981;
-  font-weight: 700;
-}
-
-.info-box strong {
-  color: #111;
-  font-weight: 700;
-}
-
-.btn-primary,
-.btn-secondary {
-  display: inline-block;
-  padding: 12px 24px;
-  border-radius: 12px;
-  font-weight: 700;
-  text-decoration: none;
-  transition: all 0.2s;
-}
-
-.btn-primary {
-  background: #111;
-  color: white;
-}
-
-.btn-primary:hover {
-  background: #000;
-}
-
-.btn-secondary {
-  background: white;
-  color: #111;
-  border: 2px solid #E5E7EB;
-}
-
-.btn-secondary:hover {
-  border-color: #111;
 }
 
 @media (max-width: 768px) {
-  .register-card {
-    padding: 32px 24px;
-    border-radius: 16px;
+  .title {
+    font-size: 1.8rem;
   }
 
-  .page-title {
-    font-size: 1.5rem;
+  .premium-form {
+    padding: 24px;
   }
 
-  .auth-actions {
+  .register-header {
     flex-direction: column;
-  }
-
-  .grid-cols-2 {
-    grid-template-columns: 1fr;
+    gap: 30px;
   }
 }
 </style>

@@ -320,6 +320,11 @@ class ShopService:
             banners_usage_percent = (total_banners / plan_limit_banners) * 100
             if banners_usage_percent > 100: banners_usage_percent = 100.0
 
+        # Feature: Broadcasts
+        from app.features.broadcasts.models import Broadcast
+        total_broadcasts = db.query(Broadcast).filter(Broadcast.shop_id == shop.id).count()
+        plan_can_broadcast = plan.can_broadcast if plan else False
+
         return DashboardStats(
             total_sales=total_sales,
             total_orders=total_orders,
@@ -337,7 +342,9 @@ class ShopService:
             plan_limit_banners=plan_limit_banners,
             products_usage_percent=products_usage_percent,
             banners_usage_percent=banners_usage_percent,
-            total_banners=total_banners
+            total_banners=total_banners,
+            total_broadcasts=total_broadcasts,
+            plan_can_broadcast=plan_can_broadcast
         )
 
     def get_platform_stats(self, db: Session):

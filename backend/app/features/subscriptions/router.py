@@ -6,7 +6,9 @@ from app.core.dependencies import get_current_user, get_current_platform_admin
 from .service import SubscriptionService
 from .schemas import (
     SubscriptionPlanRead, SubscriptionPlanCreate, SubscriptionPlanUpdate,
-    SubscriptionRequestRead, SubscriptionRequestCreate, SubscriptionRequestUpdate
+    SubscriptionRequestRead, SubscriptionRequestCreate, SubscriptionRequestUpdate,
+    SubscriptionPurchaseRequest, SubscriptionPurchaseResponse,
+    AutoRenewalToggleRequest, AutoRenewalToggleResponse
 )
 
 router = APIRouter()
@@ -150,3 +152,33 @@ def cancel_subscription(
 ):
     """Cancel subscription - Shop Owner"""
     return subscription_service.cancel_subscription(db, shop_slug, current_user)
+
+
+# New wallet-based subscription purchase endpoints
+@router.post("/subscription/purchase", response_model=SubscriptionPurchaseResponse)
+def purchase_subscription(
+    request: SubscriptionPurchaseRequest,
+    shop_slug: str = Query(..., description="Shop Slug"),
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+    """
+    Purchase or renew subscription using wallet balance
+    
+    Supports period selection: 1, 3, 6, or 12 months with automatic discounts
+    """
+    return subscription_service.purchase_subscription(db, shop_slug, request, current_user)
+
+
+@router.patch("/subscription/auto-renewal", response_model=AutoRenewalToggleResponse)
+def toggle_auto_renewal(
+    request: AutoRenewalToggleRequest,
+    shop_slug: str = Query(..., description="Shop Slug"),
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+    """
+    Enable or disable auto-renewal for shop subscription
+    """
+    return subscription_service.toggle_auto_renewal(db, shop_slug, request, current_user)
+

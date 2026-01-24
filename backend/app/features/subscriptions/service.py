@@ -5,10 +5,13 @@ from datetime import datetime, timedelta
 from .repository import SubscriptionRepository
 from .schemas import (
     SubscriptionRequestCreate, SubscriptionPlanRead, SubscriptionRequestRead, 
-    SubscriptionRequestUpdate, SubscriptionPlanCreate, SubscriptionPlanUpdate
+    SubscriptionRequestUpdate, SubscriptionPlanCreate, SubscriptionPlanUpdate,
+    SubscriptionPurchaseRequest, SubscriptionPurchaseResponse,
+    AutoRenewalToggleRequest, AutoRenewalToggleResponse
 )
 from app.features.shops.service import ShopService
 from app.features.shops.repository import ShopRepository
+from decimal import Decimal
 
 class SubscriptionService:
     def __init__(self):
@@ -196,3 +199,119 @@ class SubscriptionService:
         self.shop_repository.update(db, shop, shop_update_data)
         
         return {"message": "Подписка успешно отменена"}
+
+    def purchase_subscription(
+        self, 
+        db: Session, 
+        shop_slug: str, 
+        request: SubscriptionPurchaseRequest, 
+        current_user
+    ) -> SubscriptionPurchaseResponse:
+        """Purchase subscription using wallet balance"""
+        from app.features.wallet.service import WalletService
+        
+        # Get shop and verify ownership
+        shop = self.shop_service.get_shop_by_slug(db, shop_slug)
+        if shop.owner_id != current_user.id and current_user.role != "platform_admin":
+            raise HTTPException(status_code=403, detail="Not authorized")
+        
+        # Get plan
+        plan = self.repository.get_plan_by_slug(db, request.plan_slug)
+        if not plan:
+            raise HTTPException(status_code=404, detail="План не найден")
+        
+        # Calculate price with period discount
+        period_multipliers = {
+            1: 1.0,      # No discount
+            3: 0.90,     # 10% discount
+            6: 0.80,     # 20% discount
+            12: 0.70     # 30% discount
+        }
+        
+        if request.period_months not in period_multipliers:
+            raise HTTPException(
+                status_code=400, 
+                detail="Период должен быть 1, 3, 6 или 12 месяцев"
+            )
+        
+        multiplier = period_multipliers[request.period_months]
+        total_price = Decimal(str(plan.price * request.period_months * multiplier))
+        
+        # Check and charge wallet
+        wallet_service = WalletService(db)
+        
+        if not wallet_service.has_sufficient_balance(shop.id, total_price):
+            raise HTTPException(
+                status_code=402,
+                detail=f"Недостаточно средств. Требуется: {total_price} сум"
+            )
+        
+        success, transaction = wallet_service.charge(
+            shop_id=shop.id,
+            amount=total_price,
+            description=f"Оплата подписки {plan.name} на {request.period_months} мес.",
+            meta_data={
+                "plan_slug": request.plan_slug,
+                "period_months": request.period_months,
+                "payment_method": request.payment_method
+            }
+        )
+
+        
+        if not success:
+            raise HTTPException(
+                status_code=500,
+                detail="Ошибка при списании средств"
+            )
+        
+        # Update shop subscription
+        now = datetime.utcnow()
+        
+        # If active subscription exists and not expired, extend from current expiry
+        if shop.subscription_status == "active" and shop.subscription_expires_at and shop.subscription_expires_at > now:
+            expires_at = shop.subscription_expires_at + timedelta(days=30 * request.period_months)
+        else:
+            # Start new subscription from now
+            expires_at = now + timedelta(days=30 * request.period_months)
+        
+        shop_update_data = {
+            "subscription_status": "active",
+            "subscription_expires_at": expires_at,
+            "subscription_plan_id": plan.id,
+            "subscription_period_months": request.period_months
+        }
+        
+        self.shop_repository.update(db, shop, shop_update_data)
+        
+        return SubscriptionPurchaseResponse(
+            success=True,
+            subscription_id=plan.id,
+            expires_at=expires_at,
+            message=f"Подписка успешно активирована до {expires_at.strftime('%d.%m.%Y')}"
+        )
+
+    def toggle_auto_renewal(
+        self,
+        db: Session,
+        shop_slug: str,
+        request: AutoRenewalToggleRequest,
+        current_user
+    ) -> AutoRenewalToggleResponse:
+        """Toggle auto-renewal for subscription"""
+        shop = self.shop_service.get_shop_by_slug(db, shop_slug)
+        if shop.owner_id != current_user.id and current_user.role != "platform_admin":
+            raise HTTPException(status_code=403, detail="Not authorized")
+        
+        shop_update_data = {
+            "auto_renewal_enabled": request.enabled
+        }
+        
+        self.shop_repository.update(db, shop, shop_update_data)
+        
+        message = "Автопродление включено" if request.enabled else "Автопродление выключено"
+        
+        return AutoRenewalToggleResponse(
+            auto_renewal_enabled=request.enabled,
+            message=message
+        )
+

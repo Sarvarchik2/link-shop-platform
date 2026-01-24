@@ -48,6 +48,8 @@ class ShopRead(ShopBase):
     created_at: datetime
     is_active: bool
     is_bot_active: bool
+    auto_renewal_enabled: bool = True
+    subscription_period_months: int = 1
     telegram_bot_token: Optional[str] = None # Will be masked on read
 
     model_config = ConfigDict(from_attributes=True)
@@ -88,6 +90,9 @@ class DashboardStats(BaseModel):
     products_usage_percent: Optional[float] = 0.0
     banners_usage_percent: Optional[float] = 0.0
     total_banners: Optional[int] = 0
+    total_broadcasts: Optional[int] = 0
+    plan_can_broadcast: Optional[bool] = False
+    plan_limit_broadcasts: Optional[int] = None
 
 class AdminActionRequest(BaseModel):
     password: str

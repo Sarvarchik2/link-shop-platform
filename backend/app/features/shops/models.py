@@ -12,6 +12,8 @@ class Shop(Base):
     subscription_status = Column(String, default="trial")
     subscription_expires_at = Column(DateTime, nullable=True)
     subscription_plan_id = Column(Integer, ForeignKey("subscriptionplan.id"), nullable=True)
+    auto_renewal_enabled = Column(Boolean, default=True)  # Автопродление подписки
+    subscription_period_months = Column(Integer, default=1)  # Период подписки (1, 3, 6, 12)
     created_at = Column(DateTime, default=datetime.utcnow)
     is_active = Column(Boolean, default=True)
     # Contact information

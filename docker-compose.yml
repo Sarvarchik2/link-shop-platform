@@ -1,9 +1,26 @@
 version: '3.8'
 
 services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: storely_postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: link_shop_platform
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   minio:
     image: minio/minio:latest
-    container_name: link_shop_minio
+    container_name: storely_minio
     ports:
       - "9000:9000"
       - "9001:9001"
@@ -23,5 +40,6 @@ services:
       - redis_data:/data
 
 volumes:
+  postgres_data:
   minio_data:
   redis_data:
