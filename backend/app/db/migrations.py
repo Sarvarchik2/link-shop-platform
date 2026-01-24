@@ -175,6 +175,32 @@ def run_migrations(engine):
                         END IF;
                     END $$;
                     """,
+
+                    # Add auto_renewal_enabled to shop
+                    """
+                    DO $$ 
+                    BEGIN
+                        IF NOT EXISTS (
+                            SELECT 1 FROM information_schema.columns 
+                            WHERE table_name='shop' AND column_name='auto_renewal_enabled'
+                        ) THEN
+                            ALTER TABLE shop ADD COLUMN auto_renewal_enabled BOOLEAN DEFAULT TRUE;
+                        END IF;
+                    END $$;
+                    """,
+
+                    # Add subscription_period_months to shop
+                    """
+                    DO $$ 
+                    BEGIN
+                        IF NOT EXISTS (
+                            SELECT 1 FROM information_schema.columns 
+                            WHERE table_name='shop' AND column_name='subscription_period_months'
+                        ) THEN
+                            ALTER TABLE shop ADD COLUMN subscription_period_months INTEGER DEFAULT 1;
+                        END IF;
+                    END $$;
+                    """,
                     
                     # ============ USER_STORE_TELEGRAM TABLE MIGRATIONS ============
                     
