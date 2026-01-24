@@ -49,7 +49,7 @@
                             <span class="current-label">{{ $t('admin.subscriptionPage.premium.currentPlan') }}</span>
                             <h2 class="current-name">{{ shop?.subscription_plan_id ?
                                 getPlanNameById(shop.subscription_plan_id) : $t('admin.subscriptionPage.premium.noPlan')
-                            }}</h2>
+                                }}</h2>
                         </div>
                         <div class="status-badge-wrap">
                             <span class="status-pill" :class="shop?.subscription_status">
@@ -70,7 +70,7 @@
                             <div class="toggle-text">
                                 <span class="toggle-title">{{ $t('admin.subscriptionPage.premium.autoRenew') }}</span>
                                 <span class="toggle-desc">{{ $t('admin.subscriptionPage.premium.autoRenewDesc')
-                                }}</span>
+                                    }}</span>
                             </div>
                             <div class="toggle-switch" :class="{ active: autoRenewalEnabled }">
                                 <div class="toggle-dot"></div>
@@ -188,7 +188,7 @@
                         <div class="total-calc" v-if="plan.price > 0">
                             <span class="label">{{ $t('admin.subscriptionPage.premium.toPay') }}</span>
                             <span class="total-val">{{ formatPrice(calculatePrice(plan, getPlanDuration(plan.id)).final)
-                            }}</span>
+                                }}</span>
                         </div>
 
                         <button class="btn-select-plan" @click="initiatePurchase(plan)" :disabled="loading">
@@ -818,58 +818,63 @@ const openCancelModal = () => { /* Logic to call cancel sub endpoint */ }
 
 .duration-chips {
     display: flex;
-    gap: 8px;
+    background: #F1F5F9;
+    padding: 6px;
+    border-radius: 20px;
+    gap: 4px;
     margin-bottom: 24px;
+    border: 1px solid #E2E8F0;
 }
 
 .chip {
     flex: 1;
-    height: 54px;
-    padding: 0 8px;
-    border-radius: 16px;
-    border: 2px solid #F1F5F9;
-    background: #F8FAFC;
-    color: #475569;
-    font-weight: 800;
-    font-size: 0.85rem;
-    cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    height: 48px;
+    border: none;
+    background: transparent;
+    border-radius: 14px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 2px;
-}
-
-.chip:hover:not(.active) {
-    border-color: #E2E8F0;
-    background: #F1F5F9;
-    transform: translateY(-2px);
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    z-index: 1;
 }
 
 .chip.active {
-    background: #111;
-    color: white;
-    border-color: #111;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+    background: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    color: #111;
 }
 
-.chip .months-val {
-    font-family: inherit;
+.chip:not(.active):hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.months-val {
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: inherit;
 }
 
 .disc-badge {
-    font-size: 0.65rem;
+    font-size: 0.6rem;
     font-weight: 900;
     color: #10B981;
-    background: rgba(16, 185, 129, 0.1);
-    padding: 2px 6px;
-    border-radius: 6px;
+    background: #DCFCE7;
+    padding: 1px 5px;
+    border-radius: 5px;
+    margin-top: 1px;
 }
 
 .active .disc-badge {
+    background: #10B981;
     color: white;
-    background: rgba(255, 255, 255, 0.2);
+}
+
+.chip:not(.active) .months-val {
+    color: #64748B;
 }
 
 .total-calc {
